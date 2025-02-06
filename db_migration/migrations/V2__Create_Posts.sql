@@ -41,7 +41,7 @@ CREATE TABLE public.posts (
 );
 
 
-ALTER TABLE public.posts OWNER TO test;
+ALTER TABLE public.posts OWNER TO local;
 
 --
 -- TOC entry 3026 (class 0 OID 16455)

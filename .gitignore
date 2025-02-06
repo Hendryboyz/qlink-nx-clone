@@ -6,7 +6,7 @@ tmp
 /out-tsc
 
 # dependencies
-node_modules
+node_modules/
 
 # IDEs and editors
 /.idea
@@ -44,7 +44,6 @@ Thumbs.db
 apps/**/.next
 
 build/
-node_modules/
 .secret-*
 **.sample
 .env

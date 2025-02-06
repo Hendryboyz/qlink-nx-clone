@@ -26,7 +26,7 @@ SET row_security = off;
 CREATE SCHEMA IF NOT EXISTS public;
 
 
-ALTER SCHEMA public OWNER TO test;
+ALTER SCHEMA public OWNER TO local;
 
 --
 -- TOC entry 3038 (class 0 OID 0)
@@ -52,7 +52,7 @@ END;
 $$;
 
 
-ALTER FUNCTION public.update_modified_column() OWNER TO test;
+ALTER FUNCTION public.update_modified_column() OWNER TO local;
 
 SET default_tablespace = '';
 
@@ -74,7 +74,7 @@ CREATE TABLE public.otp (
 );
 
 
-ALTER TABLE public.otp OWNER TO test;
+ALTER TABLE public.otp OWNER TO local;
 
 --
 -- TOC entry 201 (class 1259 OID 16392)
@@ -90,7 +90,7 @@ CREATE SEQUENCE public.otp_id_seq
     CACHE 1;
 
 
-ALTER SEQUENCE public.otp_id_seq OWNER TO test;
+ALTER SEQUENCE public.otp_id_seq OWNER TO local;
 
 --
 -- TOC entry 3040 (class 0 OID 0)
@@ -128,7 +128,7 @@ CREATE TABLE public.users (
 );
 
 
-ALTER TABLE public.users OWNER TO test;
+ALTER TABLE public.users OWNER TO local;
 
 --
 -- TOC entry 3041 (class 0 OID 0)
