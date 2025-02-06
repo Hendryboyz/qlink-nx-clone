@@ -7,12 +7,27 @@
 
 ## Start the app
 
-To start the development server run `nx serve app_name`. Open your browser and navigate to http://localhost:4200/. Happy coding!
+Rename config file with `mv .env.local .env` first
+
+To start the development server run `nx serve app_name`.  Happy coding!
+
+```shell
+nx serve be # start backend server
+nx serve bo # start frontend for back office
+nx serve client # start frontend for client
+```
+
+Open your browser navigate to
+* http://localhost:4200/ for frontend for client 
+* http://localhost:5173/ for back office
 
 ### DB migration
-1. ` docker-compose -f ./docker-compose.yml up -d`
-2. `npm run clean`
-3. `npm run migrate`
+
+```bash
+docker-compose -f ./docker-compose.yml up -d
+npm run clean
+npm run migrate
+```
 
 ## Generate code
 
