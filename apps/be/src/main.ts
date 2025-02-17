@@ -25,7 +25,7 @@ async function bootstrap() {
     },
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
     credentials: true,
-    allowedHeaders: ['Content-Type', 'Authorization'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'pre-token'],
   });
 
   app.setGlobalPrefix(globalPrefix);
@@ -34,7 +34,7 @@ async function bootstrap() {
     prefix: '/uploads/',
     index: false,
     redirect: false,
-    maxAge: 7 * 24 * 60 * 60 * 1000, 
+    maxAge: 7 * 24 * 60 * 60 * 1000,
   });
 
   app.useGlobalFilters(new AllExceptionsFilter());

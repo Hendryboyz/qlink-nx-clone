@@ -39,8 +39,7 @@ let isProd = false;
 export class AuthController {
   constructor(
     private authService: AuthService,
-    private otpService: OtpService,
-    private jwtService: JwtService
+    private otpService: OtpService
   ) {
     isProd = process.env.NODE_ENV !== 'development';
   }
@@ -101,10 +100,11 @@ export class AuthController {
   async sendOtp(@Body() body: SendOtpDto) {
     const { phone, type } = body;
     if (!Object.values(OtpTypeEnum).includes(type) ||
-   !phoneRegex.test(phone))
+      !phoneRegex.test(phone)) {
       throw new BadRequestException();
+    }
 
-      //! Avoid IP attack (rate-limit)
+    //! Avoid IP attack (rate-limit)
     // const recaptcha = body[CAPTCHA_KEY];
     // const verified = await this.authService.verifyRecaptcha(recaptcha)
     const verified = true

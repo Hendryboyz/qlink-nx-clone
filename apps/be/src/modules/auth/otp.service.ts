@@ -17,7 +17,8 @@ export type OtpJwtPayload = {
 
 @Injectable()
 export class OtpService {
-  constructor(private jwtService: JwtService,
+  constructor(
+    private jwtService: JwtService,
     private readonly otpRepository: OtpRepository,
     private readonly userService: UserService
   ) {}
@@ -50,6 +51,7 @@ export class OtpService {
       { expiresIn: OTP_TTL[type] }
     );
   }
+
   async verifyToken(
     token: string,
     type: OtpTypeEnum

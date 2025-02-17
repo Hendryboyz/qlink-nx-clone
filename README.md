@@ -12,9 +12,13 @@ Rename config file with `mv .env.local .env` first
 To start the development server run `nx serve app_name`.  Happy coding!
 
 ```shell
+## Run service one by one
 nx serve be # start backend server
 nx serve bo # start frontend for back office
 nx serve client # start frontend for client
+
+## Run all services at the same time
+nx run-many --targets serve
 ```
 
 Open your browser navigate to

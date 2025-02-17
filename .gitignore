@@ -39,6 +39,7 @@ testem.log
 Thumbs.db
 
 .nx/cache
+.nx/workspace-data
 
 # Next.js
 apps/**/.next
@@ -49,3 +50,6 @@ build/
 .env
 #amplify-do-not-edit-end
 uploads/
+
+vite.config.*.timestamp*
+vitest.config.*.timestamp*

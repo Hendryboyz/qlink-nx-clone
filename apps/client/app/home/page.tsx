@@ -45,7 +45,7 @@ export default function Index() {
         </div>
         {/* News */}
       </div>
-      <div className="bg-orange-300 p-6  max-w-md">
+      <div className="bg-orange-300 p-6 max-w-md">
         <h2 className="text-primary pl-6 font-bold italic text-2xl mb-3">Latest News</h2>
         <div className="space-y-4">
           {posts.map((item, index) => (

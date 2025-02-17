@@ -29,26 +29,25 @@ const Step1 = (props: Props) => {
             errors.phone = 'Required';
           } else if (!/^[0-9]{12}$/.test(values.phone)) {
             errors.phone = 'Invalid phone number';
+            return errors;
           }
-          return errors;
         }}
         onSubmit={(values, { setSubmitting, setFieldError }) => {
-          setSubmitting(true)
-          const phone = String(values.phone)
+          setSubmitting(true);
+          const phone = String(values.phone);
           API.post('/auth/otp/send', {
             phone,
-            type: OtpTypeEnum.REGISTER
+            type: OtpTypeEnum.REGISTER,
           })
-          .then(res => {
-           if (res.bizCode == CODE_SUCCESS) {
-            setPhone(phone)
-            props.onSuccess()
-           }
-            else {
-              setFieldError('phone', res.message)
-          } 
-          })
-          .finally(() => setSubmitting(false))
+            .then((res) => {
+              if (res.bizCode == CODE_SUCCESS) {
+                setPhone(phone);
+                props.onSuccess();
+              } else {
+                setFieldError('phone', res.message);
+              }
+            })
+            .finally(() => setSubmitting(false));
         }}
       >
         {({
@@ -75,7 +74,8 @@ const Step1 = (props: Props) => {
                         id="phone"
                         name="phone"
                         placeholder="Mobile Number"
-                        type="number"
+                        type="tel"
+                        pattern="^(09)[0-9]{8}$"
                         className="flex-grow ml-2"
                       />
                     </div>
@@ -88,13 +88,13 @@ const Step1 = (props: Props) => {
                 </div>
               </form>
             </div>
-            <div className='mt-auto'>
+            <div className="mt-auto">
               <div className="flex justify-between items-center mb-11">
                 <span className="text-xl text-white">Sign Up</span>
                 <SubmitButton
                   isLoading={isSubmitting}
                   onClick={() => {
-                    if (isValid) handleSubmit()
+                    if (isValid) handleSubmit();
                   }}
                 />
               </div>
