@@ -27,8 +27,25 @@ type Props = {
   imgUrl?: string;
 };
 
+const getTypeDefaultImage = (type: PostCategoryEnum) => {
+  switch (type) {
+    case PostCategoryEnum.NEWS:
+      return '/assets/news.jpg';
+    case PostCategoryEnum.PROMO:
+      return '/assets/promotion.jpg';
+    case PostCategoryEnum.EVENT:
+      return '/assets/events.jpg';
+    default:
+      return '/assets/events.jpg';
+  }
+}
+
 const NewsItem: React.FC<Props> = ({ type, date, title, imgUrl, id }) => {
   const router = useRouter();
+
+
+  const imageSource = imgUrl ? `${API_PUBLIC_HOST}${imgUrl}` : getTypeDefaultImage(type);
+
   return (
     <div
       className="sm:basis-full md:basis-1/3 lg:basis-1/4 flex items-start space-x-4"
@@ -37,7 +54,7 @@ const NewsItem: React.FC<Props> = ({ type, date, title, imgUrl, id }) => {
       }}
     >
       <div className="rounded-xl w-24 h-24 bg-gray-300 flex-shrink-0">
-        <img className="rounded-xl" src={`${API_PUBLIC_HOST}${imgUrl}`} />
+        <img className="rounded-xl w-full h-full object-cover" src={imageSource} />
       </div>
       <div className="py-3">
         <div className="flex items-center space-x-2 mb-1">
