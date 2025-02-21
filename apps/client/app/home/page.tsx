@@ -27,10 +27,10 @@ export default function Index() {
     })
   },[])
   return (
-    <div className="w-full  min-h-full flex-1">
+    <div className="w-full min-h-full flex-col">
       <Header />
       <div className="p-6">
-        <Carousel images={[]} className="mb-9" />
+        {/*<Carousel images={[]} className="mb-9" />*/}
         <div className="grid grid-cols-2 gap-11">
           {menuItems.map((item, index) => (
             <div key={index} className="flex flex-col items-center" onClick={() => {
@@ -45,11 +45,17 @@ export default function Index() {
         </div>
         {/* News */}
       </div>
-      <div className="bg-orange-300 p-6 max-w-md">
-        <h2 className="text-primary pl-6 font-bold italic text-2xl mb-3">Latest News</h2>
-        <div className="space-y-4">
+      <div className="bg-orange-300 p-6 sm:m-0 md:m-5 lg:m-10">
+        <h2 className="text-primary text-center pl-6 font-bold italic text-2xl mb-3">Latest News</h2>
+        <div className="flex flex-wrap justify-between gap-10 space-y-4">
           {posts.map((item, index) => (
-            <NewsItem key={index} type={item.category} title={item.title} date={new Date(item.publishStartDate)} imgUrl={item.coverImage} id={item.id} />
+            <NewsItem
+              key={index}
+              type={item.category}
+              title={item.title}
+              date={new Date(item.publishStartDate)}
+              imgUrl={item.coverImage} id={item.id}
+            />
           ))}
         </div>
         <div className="mt-4 text-center">

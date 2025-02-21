@@ -31,7 +31,7 @@ const NewsItem: React.FC<Props> = ({ type, date, title, imgUrl, id }) => {
   const router = useRouter();
   return (
     <div
-      className="flex items-start space-x-4"
+      className="sm:basis-full md:basis-1/3 lg:basis-1/4 flex items-start space-x-4"
       onClick={() => {
         router.push(`/news/detail/${id}`);
       }}
