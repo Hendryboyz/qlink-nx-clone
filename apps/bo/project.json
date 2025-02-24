@@ -10,7 +10,8 @@
       "defaultConfiguration": "production",
       "options": {
         "outputPath": "dist/apps/bo",
-        "configFile": "apps/bo/vite.config.ts"
+        "configFile": "apps/bo/vite.config.ts",
+        "generatePackageJson": true
       },
       "configurations": {
         "development": {

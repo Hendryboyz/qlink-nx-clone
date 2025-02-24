@@ -9,7 +9,8 @@
       "outputs": ["{options.outputPath}"],
       "defaultConfiguration": "production",
       "options": {
-        "outputPath": "dist/apps/client"
+        "outputPath": "dist/apps/client",
+        "generateLockfile": true
       },
       "configurations": {
         "development": {

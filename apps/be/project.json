@@ -9,13 +9,15 @@
       "outputs": ["{options.outputPath}"],
       "defaultConfiguration": "production",
       "options": {
+        "webpackConfig": "apps/be/webpack.config.js",
         "target": "node",
         "compiler": "tsc",
         "outputPath": "dist/apps/be",
         "main": "apps/be/src/main.ts",
         "tsConfig": "apps/be/tsconfig.app.json",
         "assets": ["apps/be/src/assets"],
-        "webpackConfig": "apps/be/webpack.config.js"
+        "generatePackageJson": true,
+        "externalDependencies": "all"
       },
       "configurations": {
         "development": {},
