@@ -13,5 +13,8 @@ WORKDIR /app
 COPY --from=builder /source/dist /app
 RUN cp /app/apps/be/package*.json . && \
       npm install
+COPY .env.dev /app/.env
 
-ENTRYPOINT ["node", "apps/be/main.js"]
+EXPOSE 3000
+
+CMD ["node", "apps/be/main.js"]
