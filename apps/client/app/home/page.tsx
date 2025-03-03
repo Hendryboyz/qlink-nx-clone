@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import { useEffect } from 'react';
 import Header from '$/components/Header';
-import Carousel from '$/components/Carousel';
+// import Carousel from '$/components/Carousel';
 import { PostEntity } from '@org/types';
 import NewsItem from '$/components/News/item';
 import { useRouter } from 'next/navigation';
@@ -27,7 +27,7 @@ export default function Index() {
     })
   },[])
   return (
-    <div className="w-full min-h-full flex-col">
+    <div className="w-full md:w-10/12 min-h-full flex-col">
       <Header />
       <div className="p-6">
         {/*<Carousel images={[]} className="mb-9" />*/}
@@ -45,9 +45,9 @@ export default function Index() {
         </div>
         {/* News */}
       </div>
-      <div className="bg-orange-300 p-6 sm:m-0 md:m-5 lg:m-10">
+      <div className="bg-orange-300 p-6">
         <h2 className="text-primary text-center pl-6 font-bold italic text-2xl mb-3">Latest News</h2>
-        <div className="flex flex-wrap justify-between gap-10 space-y-4">
+        <div className="grid gap-5 grid-rows-3 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 mb-3">
           {posts.map((item, index) => (
             <NewsItem
               key={index}

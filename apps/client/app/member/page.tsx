@@ -147,75 +147,78 @@ const Member = () => {
   return (
     <div className="w-full min-h-full flex-1">
       <Header title="Member" />
-      <div className="p-6 bg-gray-300 relative">
-        <div className="border-white rounded-full border-4 w-16 h-16 ml-6" />
-        <img
-          src="/assets/mail.png"
-          alt="mail icon"
-          className="absolute right-6 top-6"
-        />
-      </div>
-      <div>
-        {(Object.entries(ATTRS) as [KEY, Columns[KEY]][]).map(([key, data]) => {
-          const isValueChanged = valueBeforeEditRef.current !== editValue;
+      <div className="md:px-36">
+        <div className="p-6 bg-gray-300 relative">
+          <div className="border-white rounded-full border-4 w-16 h-16 ml-6" />
+          <img
+            src="/assets/mail.png"
+            alt="mail icon"
+            className="absolute right-6 top-6"
+          />
+        </div>
+        <div>
+          {(Object.entries(ATTRS) as [KEY, Columns[KEY]][]).map(([key, data]) => {
+            const isValueChanged = valueBeforeEditRef.current !== editValue;
 
-          return (
-            <div
-              className="flex justify-between items-center py-3 pl-12 pr-6 border-b-2 border-gray-100"
-              key={key}
-            >
-              <div className="flex flex-col text-gray-400">
-                <span className="text-xs mb-1">{data.title}</span>
-                {editKey === key ? (
-                  <input
-                    ref={inputRefs.current[key as EditableKey]}
-                    value={editValue}
-                    onChange={(e) => setEditValue(e.target.value)}
-                    onBlur={() => {
-                      // Delay turning off edit mode to prevent IconButton unmounting 
-                      setTimeout(() => {
-                        setEditKey(null) 
-                      }, 100)
-                    }}
-                  />
+            return (
+              <div
+                className="flex justify-between items-center py-3 pl-12 pr-6 border-b-2 border-gray-100"
+                key={key}
+              >
+                <div className="flex flex-col text-gray-400">
+                  <span className="text-xs mb-1">{data.title}</span>
+                  {editKey === key ? (
+                    <input
+                      ref={inputRefs.current[key as EditableKey]}
+                      value={editValue}
+                      onChange={(e) => setEditValue(e.target.value)}
+                      onBlur={() => {
+                        // Delay turning off edit mode to prevent IconButton unmounting
+                        setTimeout(() => {
+                          setEditKey(null)
+                        }, 100)
+                      }}
+                    />
+                  ) : (
+                    <span className="font-semibold">{user?.[key]}</span>
+                  )}
+                </div>
+                {editKey === key && isValueChanged ? (
+                  <div className="flex gap-1">
+                    <IconButton color="blue" onClick={() => {
+                      saveChange()
+                    }}>
+                      <CheckIcon height={18} width={18} />
+                    </IconButton>
+                    <IconButton
+                      color="blue"
+                      onClick={() => {
+                        setEditKey(null);
+                      }}
+                    >
+                      <Cross2Icon height={18} width={18} />
+                    </IconButton>
+                  </div>
                 ) : (
-                  <span className="font-semibold">{user?.[key]}</span>
+                  data.editable && (
+                    <img
+                      src="/assets/pencil.png"
+                      alt="edit"
+                      onClick={() => {
+                        const value = get(user, `${key}`, '').toString();
+                        setEditKey(key as EditableKey);
+                        setEditValue(value);
+                        valueBeforeEditRef.current = value;
+                      }}
+                    />
+                  )
                 )}
               </div>
-              {editKey === key && isValueChanged ? (
-                <div className="flex gap-1">
-                  <IconButton color="blue" onClick={() => {
-                    saveChange()
-                  }}>
-                    <CheckIcon height={18} width={18} />
-                  </IconButton>
-                  <IconButton
-                    color="blue"
-                    onClick={() => {
-                      setEditKey(null);
-                    }}
-                  >
-                    <Cross2Icon height={18} width={18} />
-                  </IconButton>
-                </div>
-              ) : (
-                data.editable && (
-                  <img
-                    src="/assets/pencil.png"
-                    alt="edit"
-                    onClick={() => {
-                      const value = get(user, `${key}`, '').toString();
-                      setEditKey(key as EditableKey);
-                      setEditValue(value);
-                      valueBeforeEditRef.current = value;
-                    }}
-                  />
-                )
-              )}
-            </div>
-          );
-        })}
+            );
+          })}
+        </div>
       </div>
+
     </div>
   );
 };
