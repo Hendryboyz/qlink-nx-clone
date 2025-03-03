@@ -4,14 +4,17 @@ COPY package*.json ./
 RUN apk add --update python3 make g++ && rm -rf /var/cache/apk/*
 RUN npm install
 COPY . .
+COPY .env.dev /source/.env
+
 RUN NODE_ENV=production npx nx run bo:build:production
 
-FROM node:20.18.3-alpine AS runner
+FROM nginx:1.27.4-alpine AS runner
 ENV NODE_ENV=production
 
 WORKDIR /app
-COPY --from=builder /source/dist /app
-COPY --from=builder /source/node_modules /app/node_modules
+COPY --from=builder /source/dist/apps/bo /usr/share/nginx/html
+COPY ./deployments/configs/nginx.dev.conf /etc/nginx/conf.d/default.conf
 
-ENTRYPOINT ["npm", "--prefix", "apps/client", "start"]
+EXPOSE 80
 
+CMD ["nginx", "-g", "daemon off;"]

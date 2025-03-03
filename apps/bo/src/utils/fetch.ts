@@ -246,5 +246,8 @@ class Api {
   }
 }
 
-const API = new Api('/api/bo');
+const publicApiURL: string = import.meta.env.VITE_BO_PUBLIC_API_URL || '';
+
+const API = new Api(`${publicApiURL}/api/bo`);
+// const API = new Api('/api/bo');
 export default API;

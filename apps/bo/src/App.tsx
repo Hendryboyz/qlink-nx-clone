@@ -38,10 +38,10 @@ const MainLayout = ({ collapsed }: { collapsed: boolean }) => (
 
 function App() {
   const [collapsed, setCollapsed] = useState(false);
-
+  const routerBasename: string = import.meta.env.VITE_BO_ROUTER_BASENAME || '';
   return (
     <ConfigProvider locale={enUS}>
-      <Router>
+      <Router basename={routerBasename}>
         <Routes>
           <Route path="/login" element={<Login />} />
           <Route path="/unauthorized" element={<Unauthorized />} />

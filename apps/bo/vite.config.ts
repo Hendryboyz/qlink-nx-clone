@@ -6,6 +6,7 @@ export default defineConfig(async () => {
   const tsconfigPaths = (await import('vite-tsconfig-paths')).default;
   return {
     plugins: [react(), tsconfigPaths()],
+    base: process.env.VITE_BO_ROUTER_BASENAME || '',
     server: {
       fs: {
         allow: ['..'],
