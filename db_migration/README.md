@@ -48,6 +48,7 @@ flyway -v
 1. 檢查 `.env` 文件中的數據庫連接設置。
 2. 確保您有運行遷移的必要權限。
 3. 查看 Flyway 輸出以獲取具體的錯誤信息。
+4. OWNER TO `local`: 請換成個環境的 admin username 再進行 migration
 
 有關更多信息，請參閱 [Flyway 文檔](https://flywaydb.org/documentation/)。
 

@@ -46,7 +46,7 @@ export async function middleware(request: NextRequest) {
     if (!result) {
       return NextResponse.redirect(new URL('/', request.url));
     }
-  } else if (request.nextUrl.pathname == '/' && token) {
+  } else if (request.nextUrl.pathname === '/' && token) {
     const result = await validateToken(token);
     if (result) {
       return NextResponse.redirect(new URL('/home', request.url));
