@@ -32,6 +32,7 @@ import { OtpTypeEnum } from '@org/types';
 import { AuthGuard } from '@nestjs/passport';
 import { JwtService } from '@nestjs/jwt';
 import { RequestWithUser } from '../../types';
+import process from 'node:process';
 
 const oneMonth = 30 * 24 * 60 * 60 * 1000;
 let isProd = false;
@@ -106,29 +107,35 @@ export class AuthController {
 
     //! Avoid IP attack (rate-limit)
     // const recaptcha = body[CAPTCHA_KEY];
-    // const verified = await this.authService.verifyRecaptcha(recaptcha)
-    const verified = true
-    if (verified) {
-      if (type == OtpTypeEnum.REGISTER) {
-        const registerBefore = await this.authService.isPhoneExist(phone)
-        if (registerBefore) return {
-          bizCode: INVALID,
-          message: 'Invalid phone number'
-        }
-
-      }
-      return this.otpService
-        .generateOtp(phone, type)
-        .then(() => ({
-          bizCode: CODE_SUCCESS,
-          data: true
-        }))
-        .catch((err) => {
-          console.error(err)
-          throw new InternalServerErrorException()
-        });
+    // const isHuman = await this.authService.verifyRecaptcha(recaptcha)
+    const isHuman = true
+    if (!isHuman) {
+      throw new UnauthorizedException();
     }
-    throw new UnauthorizedException();
+    if (type == OtpTypeEnum.REGISTER) {
+      const registerBefore = await this.authService.isPhoneExist(phone)
+      if (registerBefore) return {
+        bizCode: INVALID,
+        message: 'Invalid phone number'
+      }
+
+    }
+    if (process.env.IS_OTP_ENABLED === 'false') {
+      return {
+        bizCode: CODE_SUCCESS,
+        data: true
+      };
+    }
+    return this.otpService
+      .generateOtp(phone, type)
+      .then(() => ({
+        bizCode: CODE_SUCCESS,
+        data: true
+      }))
+      .catch((err) => {
+        console.error(err)
+        throw new InternalServerErrorException()
+      });
   }
 
   @Post('otp/verify')

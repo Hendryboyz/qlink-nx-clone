@@ -1,9 +1,10 @@
-import { BadRequestException, Injectable, InternalServerErrorException } from '@nestjs/common';
+import { BadRequestException, Injectable, InternalServerErrorException, Logger } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { OtpTypeEnum } from '@org/types';
 import { OtpRepository } from './otp.repository';
 import { isEmpty } from 'lodash';
 import { UserService } from '../user/user.service';
+import * as process from 'node:process';
 
 const OTP_TTL: Record<OtpTypeEnum, string> = {
   [OtpTypeEnum.REGISTER]: '30m',
@@ -17,6 +18,7 @@ export type OtpJwtPayload = {
 
 @Injectable()
 export class OtpService {
+  private logger = new Logger(this.constructor.name);
   constructor(
     private jwtService: JwtService,
     private readonly otpRepository: OtpRepository,
@@ -31,7 +33,7 @@ export class OtpService {
     }
     const code = Math.floor(1000 + Math.random() * 9000).toString();
     await this.otpRepository.create({ phone, type, code })
-    // 在這裡實現發送 OTP 到用戶手機的邏輯
+    this.sendOTP(phone, code);
     return code;
   }
 
@@ -40,6 +42,12 @@ export class OtpService {
     code: string,
     type: OtpTypeEnum
   ): Promise<string> {
+    if (process.env.IS_OTP_ENABLED === 'false') {
+      return this.jwtService.sign(
+        { phone, verified: true, type },
+        { expiresIn: OTP_TTL[type] }
+      );
+    }
     const otpEntity = await this.otpRepository.findOne(phone, code, type);
     if (isEmpty(otpEntity)) {
       throw new BadRequestException("Invalid code")
@@ -65,5 +73,9 @@ export class OtpService {
       throw new BadRequestException('Invalid token');
     }
     return false;
+  }
+
+  private sendOTP(phone: string, code: string) {
+    this.logger.log(`Send OTP(${code}) to ${phone}`);
   }
 }

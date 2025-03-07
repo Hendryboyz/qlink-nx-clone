@@ -9,10 +9,16 @@ import Success from './Success';
 import { PayloadProvider } from './PayloadContext';
 
 const SignUp = () => {
+  const isOTPEnabled: boolean = process.env.IS_OTP_ENABLED === 'true';
   const [step, handleChangeStep] = useState(1);
   const goNextStep = useCallback(() => {
-    handleChangeStep(pre => pre+1)
-  }, [handleChangeStep])
+    handleChangeStep(pre => {
+      if (pre === 1 && !isOTPEnabled) {
+        return pre + 2;
+      }
+      return pre+1;
+    })
+  }, [isOTPEnabled, handleChangeStep])
   const children = useMemo(() => {
     switch (step) {
       case 1:
