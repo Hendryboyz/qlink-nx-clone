@@ -9,7 +9,7 @@ export default function Index() {
 // check login status, if login-in, direct to /home
   }, [])
   return (
-    <div className="w-full flex flex-col justify-between items-center min-h-full flex-1  bg-primary">
+    <div className="w-full flex flex-col justify-between items-center min-h-full flex-1 bg-primary">
       <Banner />
       <div className="text-center w-full p-14">
         <Button className="mb-6" theme='light'>

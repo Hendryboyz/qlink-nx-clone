@@ -99,7 +99,7 @@ export class AuthController {
   }
   @Post('otp/send')
   async sendOtp(@Body() body: SendOtpDto) {
-    const { phone, type } = body;
+    const { phone, type, recaptchaToken } = body;
     if (!Object.values(OtpTypeEnum).includes(type) ||
       !phoneRegex.test(phone)) {
       throw new BadRequestException();
@@ -107,8 +107,7 @@ export class AuthController {
 
     //! Avoid IP attack (rate-limit)
     // const recaptcha = body[CAPTCHA_KEY];
-    // const isHuman = await this.authService.verifyRecaptcha(recaptcha)
-    const isHuman = true
+    const isHuman = await this.authService.verifyRecaptcha(recaptchaToken)
     if (!isHuman) {
       throw new UnauthorizedException();
     }

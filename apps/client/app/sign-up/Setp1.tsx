@@ -1,15 +1,17 @@
 import { Fragment } from 'react';
 import Container from './Container';
-import { Formik, FormikErrors, Field, ErrorMessage } from 'formik';
+import { Formik, FormikErrors, Field, ErrorMessage, Form } from 'formik';
 import Link from 'next/link';
 import API from '$/utils/fetch';
 import { OtpTypeEnum } from 'types/src';
 import { CODE_SUCCESS } from 'common/src';
 import { usePayload } from './PayloadContext';
 import SubmitButton from '$/components/Button/SubmitButton';
+import ReCAPTCHA from "react-google-recaptcha";
 
 interface FormData {
   phone: string;
+  recaptchaToken: string;
 }
 type Props = {
   onSuccess: () => void;
@@ -17,8 +19,8 @@ type Props = {
 
 const Step1 = (props: Props) => {
   const { setPhone } = usePayload()
-  const initValue: FormData = { phone: '' };
-
+  const initValue: FormData = { phone: '', recaptchaToken: '' };
+  // const recaptchaSitekey = process.env.NEXT_PUBLIC_RECAPTHCA_SITEKEY || '';
   return (
     <Container title="Create an account" step={1}>
       <Formik
@@ -29,14 +31,20 @@ const Step1 = (props: Props) => {
             errors.phone = 'Required';
           } else if (!/^[0-9]{12}$/.test(values.phone)) {
             errors.phone = 'Invalid phone number';
-            return errors;
           }
+
+          if (!values.recaptchaToken) {
+            errors.recaptchaToken = 'Miss Recaptcha validation';
+          }
+          return errors;
         }}
         onSubmit={(values, { setSubmitting, setFieldError }) => {
           setSubmitting(true);
           const phone = String(values.phone);
+          const recaptchaToken = String(values.recaptchaToken);
           API.post('/auth/otp/send', {
             phone,
+            recaptchaToken,
             type: OtpTypeEnum.REGISTER,
           })
             .then((res) => {
@@ -65,7 +73,7 @@ const Step1 = (props: Props) => {
               <h4 className="text-primary text-xl mt-20">
                 Mobile Verification
               </h4>
-              <form>
+              <Form id="signupForm">
                 <div className="mt-6">
                   <label htmlFor="phone">
                     <div className="flex items-center bg-white border-white p-4 rounded-xl border-2 w-full">
@@ -86,8 +94,19 @@ const Step1 = (props: Props) => {
                     component="span"
                   />
                 </div>
-              </form>
+              </Form>
             </div>
+            <ReCAPTCHA
+              className="mt-6"
+              sitekey={process.env.NEXT_PUBLIC_RECAPTHCA_SITEKEY || ''}
+              onChange={(token) => {
+                if (token) {
+                  values.recaptchaToken = token;
+                } else {
+                  values.recaptchaToken = '';
+                }
+              }}
+            />
             <div className="mt-auto">
               <div className="flex justify-between items-center mb-11">
                 <span className="text-xl text-white">Sign Up</span>

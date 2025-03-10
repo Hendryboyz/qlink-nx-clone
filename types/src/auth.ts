@@ -26,7 +26,7 @@ export interface LoginDto {
 export interface SendOtpDto {
   phone: string;
   type: OtpTypeEnum;
-  'g-recaptcha-response'?: string;
+  recaptchaToken?: string;
 }
 
 export interface VerifyOtpDto {

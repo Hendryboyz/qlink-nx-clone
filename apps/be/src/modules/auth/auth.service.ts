@@ -1,7 +1,7 @@
 import {
   BadRequestException,
-  Injectable,
-  UnauthorizedException,
+  Injectable, Logger,
+  UnauthorizedException
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { UserService } from '../user/user.service';
@@ -28,6 +28,7 @@ import {
   passwordRegex,
   phoneRegex,
 } from '@org/common';
+import { ConfigService } from '@nestjs/config';
 
 type AuthSuccessBO = {
   access_token: string;
@@ -36,9 +37,11 @@ type AuthSuccessBO = {
 
 @Injectable()
 export class AuthService {
+  private logger = new Logger(this.constructor.name);
   constructor(
     private userService: UserService,
-    private jwtService: JwtService
+    private jwtService: JwtService,
+    private config: ConfigService,
   ) {}
 
   async login(phone: string, password: string): Promise<AuthSuccessBO> {
@@ -88,7 +91,7 @@ export class AuthService {
   async resetPassword(payload: ResetPasswordDto, token: string) {
     const { type, verified, phone }: OtpJwtPayload =
       this.jwtService.verify(token);
-      
+
     if (
       type != OtpTypeEnum.RESET_PASSWORD ||
       verified != true ||
@@ -110,29 +113,32 @@ export class AuthService {
       data: true
     };
   }
-  async verifyRecaptcha(recaptchaResponse) {
-    const secretKey = 'YOUR_SECRET_KEY';
+
+  async verifyRecaptcha(recaptchaToken: string): Promise<boolean> {
+    const secretKey = this.config.get<string>('RECAPTCHA_SECRET_KEY');
     const verifyUrl = 'https://www.google.com/recaptcha/api/siteverify';
 
     try {
       const response = await axios.post(verifyUrl, null, {
         params: {
           secret: secretKey,
-          response: recaptchaResponse,
+          response: recaptchaToken,
         },
       });
+      this.logger.debug(response.data);
       return response.data.success;
     } catch (error) {
-      console.error('reCAPTCHA verification error:', error);
+      this.logger.error('reCAPTCHA verification error:', error);
       return false;
     }
   }
+
   private async validateUser(
     phone: string,
     password: string
   ): Promise<Partial<User> | undefined> {
     const user = await this.userService.findOne(phone);
- 
+
     if (user && (await bcrypt.compare(password, user.password))) {
       return omit(user, 'password');
     }
