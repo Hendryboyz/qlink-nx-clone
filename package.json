@@ -18,6 +18,9 @@
   "dependencies": {
     "@ant-design/icons": "^5.5.1",
     "@ant-design/pro-components": "^2.7.19",
+    "@aws-sdk/client-s3": "^3.758.0",
+    "@aws-sdk/credential-providers": "^3.758.0",
+    "@aws-sdk/s3-request-presigner": "^3.758.0",
     "@emotion/css": "^11.13.0",
     "@nestjs/common": "^10.3.3",
     "@nestjs/config": "^3.2.3",
