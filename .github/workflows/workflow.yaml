@@ -1,6 +1,8 @@
 name: GitHub Actions Demo
 run-name: ${{ github.actor }} is testing out GitHub Actions 🚀
 on: [push]
+env:
+  AWS_REGION: ap-northeast-1
 jobs:
   Explore-GitHub-Actions:
     runs-on: ubuntu-latest
@@ -16,3 +18,32 @@ jobs:
         run: |
           ls ${{ github.workspace }}
       - run: echo "🍏 This job's status is ${{ job.status }}."
+  Build-and-Push-Image:
+    name: Build & Push Docker Image
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Determine Dockerfile Path
+        run: |
+          DOCKERFILE="deployments/dockerfiles/backend.Dockerfile"
+          echo "DOCKERFILE=$DOCKERFILE" >> $GITHUB_ENV
+          echo "Using Dockerfile: $DOCKERFILE"
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v1
+
+      - name: Build Docker Image
+        run: |
+          VERSION=latest
+          PROJECT=qapp-dev-backend
+          docker build -t ${{ steps.login-ecr.outputs.registry }}/$PROJECT:VERSION -f ${{ env.DOCKERFILE }} $PROJECT
