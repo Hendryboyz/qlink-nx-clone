@@ -1,0 +1,97 @@
+{
+    "containerDefinitions": [
+        {
+            "name": "backend-app",
+            "image": "038462772752.dkr.ecr.ap-northeast-1.amazonaws.com/qapp-dev-backend@sha256:2c7a217b1c88f5184bf6a8c6f48ffdbe647857d4095ba9ee91f5b951bd5964f9",
+            "cpu": 256,
+            "memory": 512,
+            "portMappings": [
+                {
+                    "name": "backend-app-3000-tcp",
+                    "containerPort": 3000,
+                    "hostPort": 3000,
+                    "protocol": "tcp"
+                }
+            ],
+            "essential": true,
+            "environment": [],
+            "environmentFiles": [
+                {
+                    "value": "arn:aws:s3:::qapp-dev-configs-bucket/.dev.env",
+                    "type": "s3"
+                }
+            ],
+            "mountPoints": [],
+            "volumesFrom": [],
+            "logConfiguration": {
+                "logDriver": "awslogs",
+                "options": {
+                    "awslogs-group": "/qapp/dev/ecs/backend",
+                    "awslogs-region": "ap-northeast-1",
+                    "awslogs-stream-prefix": "qapp_backend-log-stream-dev"
+                },
+                "secretOptions": []
+            },
+            "systemControls": []
+        }
+    ],
+    "family": "qapp-dev-backend-definition",
+    "taskRoleArn": "arn:aws:iam::038462772752:role/qapp-dev-ECS_task-iam_role",
+    "executionRoleArn": "arn:aws:iam::038462772752:role/qapp-dev-ECS-task_execution_role",
+    "networkMode": "awsvpc",
+    "volumes": [
+        {
+            "name": "configs-storage",
+            "host": {}
+        }
+    ],
+    "status": "ACTIVE",
+    "requiresAttributes": [
+        {
+            "name": "com.amazonaws.ecs.capability.logging-driver.awslogs"
+        },
+        {
+            "name": "ecs.capability.execution-role-awslogs"
+        },
+        {
+            "name": "com.amazonaws.ecs.capability.ecr-auth"
+        },
+        {
+            "name": "com.amazonaws.ecs.capability.docker-remote-api.1.19"
+        },
+        {
+            "name": "ecs.capability.env-files.s3"
+        },
+        {
+            "name": "com.amazonaws.ecs.capability.docker-remote-api.1.21"
+        },
+        {
+            "name": "com.amazonaws.ecs.capability.task-iam-role"
+        },
+        {
+            "name": "ecs.capability.execution-role-ecr-pull"
+        },
+        {
+            "name": "com.amazonaws.ecs.capability.docker-remote-api.1.18"
+        },
+        {
+            "name": "ecs.capability.task-eni"
+        }
+    ],
+    "placementConstraints": [],
+    "compatibilities": [
+        "EC2",
+        "FARGATE"
+    ],
+    "requiresCompatibilities": [
+        "FARGATE"
+    ],
+    "cpu": "256",
+    "memory": "512",
+    "tags": [
+        {
+            "key": "Environment",
+            "value": "dev"
+        }
+    ]
+}

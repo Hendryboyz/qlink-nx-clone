@@ -4,7 +4,7 @@ COPY package*.json ./
 RUN apk add --update python3 make g++ && rm -rf /var/cache/apk/*
 RUN npm install
 COPY . .
-COPY .env.dev /source/.env
+COPY .env /source/.env
 
 RUN NODE_ENV=production npx nx run client:build:production
 

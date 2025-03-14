@@ -13,7 +13,7 @@ WORKDIR /app
 COPY --from=builder /source/dist /app
 RUN cp /app/apps/be/package*.json . && \
       npm install
-COPY .env.dev /app/.env
+COPY .env /app/.env
 
 EXPOSE 3000
 
