@@ -27,7 +27,7 @@ export default function Index() {
 
 const Banner = () => {
   return (
-    <div className="border-white border-solid text-white border-2 w-fit text-3xl text-h  p-1 font-bold mt-auto mb-auto">
+    <div className="border-white border-solid text-white border-2 w-fit text-3xl text-h p-1 font-bold mt-auto mb-auto">
       <p>QLINK</p>
       <p className="tracking-wide">RIDER</p>
       <p className="tracking-widest">CLUB</p>

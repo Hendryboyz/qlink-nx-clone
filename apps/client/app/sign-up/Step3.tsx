@@ -14,21 +14,54 @@ import { usePopup } from '$/hooks/PopupProvider';
 import { DEFAULT_ERROR_MSG } from 'common/src';
 
 const SignupSchema = Yup.object().shape({
-  firstName: Yup.string().max(50, 'Too Long').required('Required'),
-  midName: Yup.string().max(50, 'Too Long'),
-  lastName: Yup.string().max(50, 'Too Long!').required('Required'),
-  addressState: Yup.string().required('Required'),
-  addressCity: Yup.string().required('Required'),
-  password: Yup.string().matches(passwordRegex, 'Must include uppercase and symbol').required('Required'),
-  rePassword: Yup.string().oneOf([Yup.ref('password')], 'Passwords do not match').required('Required'),
+  firstName: Yup.string()
+    .max(50, 'First name must be at most 50 characters long.')
+    .required('First name is required.'),
+
+  midName: Yup.string()
+    .max(50, 'Middle name must be at most 50 characters long.'),
+
+  lastName: Yup.string()
+    .max(50, 'Last name must be at most 50 characters long.')
+    .required('Last name is required.'),
+
+  addressState: Yup.string()
+    .required('State is required.'),
+
+  addressCity: Yup.string()
+    .required('City is required.'),
+
+  password: Yup.string()
+    .min(6, 'Password must be at least 6 characters long.')
+    .matches(
+      passwordRegex,
+      'Password must contain at least one uppercase letter, one lowercase letter, and one number.'
+    )
+    .required('Password is required.'),
+
+  rePassword: Yup.string()
+    .oneOf([Yup.ref('password')], 'Passwords do not match.')
+    .required('Please confirm your password.'),
+
   birthday: Yup.string()
-    .matches(/^\d{4}-\d{2}-\d{2}$/, 'Date must be in YYYY-MM-DD format')
+    .matches(/^\d{4}-\d{2}-\d{2}$/, 'Birthday must be in YYYY-MM-DD format.')
     .nullable(),
-  source: Yup.number().nullable(),
-  email: Yup.string().email('Invalid email').nullable(),
-  whatsapp: Yup.string().nullable(),
-  facebook: Yup.string().nullable(),
-  addressDetail: Yup.string().nullable(),
+
+  source: Yup.number()
+    .nullable(),
+
+  email: Yup.string()
+    .email('Please enter a valid email address.')
+    .nullable(),
+
+  whatsapp: Yup.string()
+    .nullable(),
+
+  facebook: Yup.string()
+    .nullable(),
+
+  addressDetail: Yup.string()
+    .nullable(),
 });
 interface FormData {
   password: string;
