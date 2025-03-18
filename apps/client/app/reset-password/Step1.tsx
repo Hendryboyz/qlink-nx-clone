@@ -4,19 +4,21 @@ import { Formik, FormikErrors, Field, ErrorMessage } from 'formik';
 import Container from './Container';
 import API from '$/utils/fetch';
 import { OtpTypeEnum, SendOtpDto } from '@org/types';
-import { CODE_SUCCESS } from '@org/common';
+import { CODE_SUCCESS, clientPhoneRegex } from '@org/common';
 import { usePayload } from './PayloadContext';
 import { Fragment } from 'react';
 import SubmitButton from '$/components/Button/SubmitButton';
 import { NOOP } from '$/utils';
+import Recaptcha from '$/components/Fields/Recaptcha';
 interface FormData {
   phone: string;
+  recaptchaToken: string;
 }
 type Props = {
   onSuccess: () => void;
 };
 const Step1 = (props: Props) => {
-  const initValue: FormData = { phone: '' };
+  const initValue: FormData = { phone: '', recaptchaToken: '' };
   const { setPhone } = usePayload();
   return (
     <Container title="Forgot password?">
@@ -26,7 +28,7 @@ const Step1 = (props: Props) => {
           const errors: FormikErrors<FormData> = {};
           if (!values.phone) {
             errors.phone = 'Required';
-          } else if (!/^[0-9]{12}$/.test(values.phone)) {
+          } else if (!clientPhoneRegex.test(values.phone)) {
             errors.phone = 'Invalid phone number';
           }
           return errors;
@@ -38,8 +40,7 @@ const Step1 = (props: Props) => {
             phone,
             type: OtpTypeEnum.RESET_PASSWORD,
           };
-          API
-            .post('/auth/otp/send', payload)
+          API.post('/auth/otp/send', payload)
             .then((res) => {
               if (res.bizCode == CODE_SUCCESS) {
                 setPhone(phone);
@@ -59,7 +60,8 @@ const Step1 = (props: Props) => {
           handleBlur,
           handleSubmit,
           isSubmitting,
-          isValid
+          isValid,
+          setFieldValue,
         }) => (
           <Fragment>
             <div className="mt-auto">
@@ -84,13 +86,20 @@ const Step1 = (props: Props) => {
                   className="text-red-500"
                   component="span"
                 />
+                <div className="mt-6">
+                  <Recaptcha
+                    recaptchaToken={values.recaptchaToken}
+                    recaptchaError={errors.recaptchaToken}
+                    setFieldValue={setFieldValue}
+                  />
+                </div>
               </form>
             </div>
             <div className="flex justify-between items-center mt-auto">
               <span className="text-xl text-white">Send</span>
               <SubmitButton
                 isLoading={isSubmitting}
-                onClick={() => isValid ? handleSubmit() : NOOP()}
+                onClick={() => (isValid ? handleSubmit() : NOOP())}
               />
             </div>
           </Fragment>

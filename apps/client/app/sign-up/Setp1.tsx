@@ -4,10 +4,10 @@ import { Formik, FormikErrors, Field, ErrorMessage, Form } from 'formik';
 import Link from 'next/link';
 import API from '$/utils/fetch';
 import { OtpTypeEnum } from 'types/src';
-import { CODE_SUCCESS } from 'common/src';
+import { clientPhoneRegex, CODE_SUCCESS } from 'common/src';
 import { usePayload } from './PayloadContext';
 import SubmitButton from '$/components/Button/SubmitButton';
-import ReCAPTCHA from "react-google-recaptcha";
+import Recaptcha from '$/components/Fields/Recaptcha';
 
 interface FormData {
   phone: string;
@@ -20,7 +20,6 @@ type Props = {
 const Step1 = (props: Props) => {
   const { setPhone } = usePayload()
   const initValue: FormData = { phone: '', recaptchaToken: '' };
-  const recaptchaSitekey = process.env.NEXT_PUBLIC_RECAPTHCA_SITEKEY || '';
   return (
     <Container title="Create an account" step={1}>
       <Formik
@@ -29,7 +28,7 @@ const Step1 = (props: Props) => {
           const errors: FormikErrors<FormData> = {};
           if (!values.phone) {
             errors.phone = 'Required';
-          } else if (!/^[0-9]{12}$/.test(values.phone)) {
+          } else if (!clientPhoneRegex.test(values.phone)) {
             errors.phone = 'Invalid phone number';
           }
           return errors;
@@ -80,7 +79,6 @@ const Step1 = (props: Props) => {
                         name="phone"
                         placeholder="Mobile Number"
                         type="tel"
-                        pattern="^(09)[0-9]{8}$"
                         className="flex-grow ml-2"
                       />
                     </div>
@@ -92,34 +90,11 @@ const Step1 = (props: Props) => {
                   />
                 </div>
                 <div className="mt-6">
-                  <Field
-                    validate={(value: string) => {
-                      let errorMessage = '';
-                      if (!value) {
-                        errorMessage = 'Miss recaptcha validation';
-                      }
-                      return errorMessage;
-                    }}
-                    type="hidden"
-                    id="recaptchaToken"
-                    name="recaptchaToken"
-                    value={values.recaptchaToken}
+                  <Recaptcha
+                    recaptchaToken={values.recaptchaToken}
+                    recaptchaError={errors.recaptchaToken}
+                    setFieldValue={setFieldValue}
                   />
-                  <ReCAPTCHA
-                    sitekey={recaptchaSitekey}
-                    onChange={async (token) => {
-                      if (token) {
-                        values.recaptchaToken = token;
-                      } else {
-                        values.recaptchaToken = '';
-                      }
-
-                      await setFieldValue("recaptchaToken", token, true);
-                    }}
-                  />
-                  { errors.recaptchaToken ? (<span className="text-red-500">
-                    {errors.recaptchaToken}
-                  </span>) : null}
                 </div>
               </Form>
             </div>

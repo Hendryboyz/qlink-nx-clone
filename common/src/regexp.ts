@@ -1,5 +1,7 @@
 export const phoneRegex: RegExp = /^\d{12}$/;
 
+export const clientPhoneRegex: RegExp = /^(234)[0-9]{0,9}$/;
+
 export const alphaMax50Regex: RegExp = /^[a-zA-Z]{1,50}$/;
 
 export const alphaWithSpacesMax50Regex: RegExp = /^[a-zA-Z\s]{1,50}$/;
