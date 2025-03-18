@@ -20,7 +20,7 @@ type Props = {
 const Step1 = (props: Props) => {
   const { setPhone } = usePayload()
   const initValue: FormData = { phone: '', recaptchaToken: '' };
-  // const recaptchaSitekey = process.env.NEXT_PUBLIC_RECAPTHCA_SITEKEY || '';
+  const recaptchaSitekey = process.env.NEXT_PUBLIC_RECAPTHCA_SITEKEY || '';
   return (
     <Container title="Create an account" step={1}>
       <Formik
@@ -31,10 +31,6 @@ const Step1 = (props: Props) => {
             errors.phone = 'Required';
           } else if (!/^[0-9]{12}$/.test(values.phone)) {
             errors.phone = 'Invalid phone number';
-          }
-
-          if (!values.recaptchaToken) {
-            errors.recaptchaToken = 'Miss Recaptcha validation';
           }
           return errors;
         }}
@@ -67,6 +63,7 @@ const Step1 = (props: Props) => {
           handleSubmit,
           isSubmitting,
           isValid,
+          setFieldValue,
         }) => (
           <Fragment>
             <div>
@@ -94,19 +91,38 @@ const Step1 = (props: Props) => {
                     component="span"
                   />
                 </div>
+                <div className="mt-6">
+                  <Field
+                    validate={(value: string) => {
+                      let errorMessage = '';
+                      if (!value) {
+                        errorMessage = 'Miss recaptcha validation';
+                      }
+                      return errorMessage;
+                    }}
+                    type="hidden"
+                    id="recaptchaToken"
+                    name="recaptchaToken"
+                    value={values.recaptchaToken}
+                  />
+                  <ReCAPTCHA
+                    sitekey={recaptchaSitekey}
+                    onChange={async (token) => {
+                      if (token) {
+                        values.recaptchaToken = token;
+                      } else {
+                        values.recaptchaToken = '';
+                      }
+
+                      await setFieldValue("recaptchaToken", token, true);
+                    }}
+                  />
+                  { errors.recaptchaToken ? (<span className="text-red-500">
+                    {errors.recaptchaToken}
+                  </span>) : null}
+                </div>
               </Form>
             </div>
-            <ReCAPTCHA
-              className="mt-6"
-              sitekey={process.env.NEXT_PUBLIC_RECAPTHCA_SITEKEY || ''}
-              onChange={(token) => {
-                if (token) {
-                  values.recaptchaToken = token;
-                } else {
-                  values.recaptchaToken = '';
-                }
-              }}
-            />
             <div className="mt-auto">
               <div className="flex justify-between items-center mb-11">
                 <span className="text-xl text-white">Sign Up</span>
