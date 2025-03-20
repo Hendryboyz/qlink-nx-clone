@@ -8,8 +8,7 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { imageFileFilter, imageStorage } from '../utils/file-upload.util';
 import { TransformInterceptor } from '$/interceptors/response.interceptor';
 import { ConfigService } from '@nestjs/config';
-import { PutObjectCommand, GetObjectCommand, S3Client } from '@aws-sdk/client-s3';
-import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
+import { PutObjectCommand, S3Client } from '@aws-sdk/client-s3';
 import { fromInstanceMetadata } from "@aws-sdk/credential-providers";
 import * as fs from 'node:fs';
 
@@ -18,6 +17,7 @@ export class UploadController {
   private readonly logger: Logger = new Logger(this.constructor.name);
   private readonly bucketName: string;
   private readonly s3Client: S3Client;
+  private readonly cdnHostname: string;
 
   constructor(private configService: ConfigService) {
     this.s3Client = new S3Client({
@@ -25,6 +25,7 @@ export class UploadController {
       credentials: this.getAWSCredentials(),
     });
     this.bucketName = this.configService.get<string>('AWS_S3_BUCKET');
+    this.cdnHostname = this.configService.get<string>('AWS_CLOUDFRONT_HOSTNAME');
   }
 
   private getAWSCredentials() {
@@ -55,27 +56,15 @@ export class UploadController {
 
     try {
       const s3Key: string = await this.uploadToS3(file);
-      const presignedUrl: string = await this.generatePresignedUrl(s3Key);
 
       return {
         s3Uri: `s3://${this.bucketName}/${s3Key}`,
-        publicUrl: presignedUrl,
+        imageUrl: `${this.cdnHostname}/${s3Key}`,
       };
     } catch (error) {
       this.logger.error('Error uploading to S3:', error);
       throw new Error('Failed to upload file');
     }
-  }
-
-  private async generatePresignedUrl(s3Key: string): Promise<string> {
-    // Generate presigned URL
-    const getObjectCmd = new GetObjectCommand({
-      Bucket: this.bucketName,
-      Key: s3Key,
-    });
-    return await getSignedUrl(this.s3Client, getObjectCmd, {
-      expiresIn: 3600,
-    });
   }
 
   private async uploadToS3(file: Express.Multer.File) {
@@ -94,6 +83,9 @@ export class UploadController {
 
     // Remove file from local storage
     fs.unlink(serverPath, (err) => {
+      if (!err) {
+        return;
+      }
       this.logger.error(`Fail to delete: ${err.message}`);
     });
 

@@ -91,8 +91,8 @@ export const createQuillModules = (handleImageUpload: () => void) => ({
       [{ indent: '-1' }, { indent: '+1' }],
       [{ align: [] }],
       [{ color: [] }, { background: [] }],
-      ['link', 'image'],
-      ['clean'],
+      ['link', 'clean'],
+      ['image'],
     ],
     handlers: {
       image: handleImageUpload,

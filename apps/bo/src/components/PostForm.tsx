@@ -13,7 +13,7 @@ import {
   Card,
 } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
-import ReactQuill from 'react-quill';
+import ReactQuill, { Quill } from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
 import '../quill-image-resize.css';
 import dayjs from 'dayjs';
@@ -21,7 +21,7 @@ import utc from 'dayjs/plugin/utc';
 import API from '../utils/fetch';
 import { FormValues } from '../types/post';
 import { PostEntity } from '@org/types';
-import { quillFormats, createQuillModules } from '../config/quillConfig';
+import { quillFormats, createQuillModules } from '$/config/quillConfig';
 import { UploadChangeParam } from 'antd/lib/upload';
 import { UploadFile } from 'antd/es/upload/interface';
 import { CODE_SUCCESS } from '@org/common';
@@ -37,18 +37,25 @@ interface PostFormProps {
   initialValues?: PostEntity;
 }
 
+type S3ImageContent = {
+  presignedUrl: string | null;
+  s3Uri: string | null;
+};
+
 const PostForm: React.FC<PostFormProps> = ({
   onSubmit,
   onCancel,
   initialValues,
 }) => {
   const [form] = Form.useForm<FormValues>();
-  const [previewImage, setPreviewImage] = useState<string | null>(
-    initialValues?.coverImage || null
-  );
-  const [coverImageUrl, setCoverImageUrl] = useState<string | null>(
-    initialValues?.coverImage || null
-  );
+  const [previewImage, setPreviewImage] = useState<S3ImageContent>({
+    presignedUrl: initialValues?.coverImage,
+    s3Uri: null, // initialValues?.s3Uri,
+  });
+  const [coverImageUrl, setCoverImageUrl] = useState<S3ImageContent>({
+    presignedUrl: initialValues?.coverImage,
+    s3Uri: null, //initialValues?.s3Uri,
+  });
   const [content, setContent] = useState(initialValues?.content || '');
   const quillRef = useRef<ReactQuill>(null);
 
@@ -63,8 +70,14 @@ const PostForm: React.FC<PostFormProps> = ({
       });
       console.log('🚀 ~ useEffect ~ initialValues:', initialValues.content);
       setContent(initialValues.content);
-      setPreviewImage(initialValues.coverImage);
-      setCoverImageUrl(initialValues.coverImage);
+      setPreviewImage({
+        presignedUrl: initialValues.coverImage,
+        s3Uri: null,
+      });
+      setCoverImageUrl({
+        presignedUrl: initialValues.coverImage,
+        s3Uri: null,
+      });
     } else {
       form.resetFields();
       setContent('');
@@ -73,36 +86,58 @@ const PostForm: React.FC<PostFormProps> = ({
     }
   }, [initialValues, form]);
 
-  const uploadAction = useCallback(async (file: File | Blob) => {
+  const uploadImage = useCallback(async (file: File | Blob) => {
     return API.uploadImage(file)
     .then((res) => {
-        if (res.bizCode != CODE_SUCCESS) {
+        if (res.bizCode !== CODE_SUCCESS) {
           message.error('Upload failed: ' + (res.message || 'Unknown error'));
         return { imageUrl: '' };
         }
-        return { imageUrl: res.data.imageUrl };
+        const { imageUrl, s3Uri } = res.data;
+
+        return { imageUrl, s3Uri };
       })
       .catch((error) => {
         message.error(
           'Upload failed: ' + (error.response.data.message || 'Unknown error')
         );
-        return { imageUrl: '' };
+        return { imageUrl: '' , s3Uri: ''};
       });
   }, []);
+
   const handleImageUpload = useCallback(() => {
     const input = document.createElement('input');
     input.setAttribute('type', 'file');
     input.setAttribute('accept', 'image/*');
     input.click();
 
+    const insertImageOperations = (
+      position: number, imageUrl: string, s3Uri: string) => {
+      const operations = [];
+      if (position > 0) {
+        operations.push({ retain: position });
+      }
+      operations.push({
+        attributes: {
+          alt: s3Uri,
+        },
+        insert: {
+          image: imageUrl,
+        },
+      });
+      return operations;
+    };
+
     input.onchange = async () => {
       if (input.files) {
         const file = input.files[0];
-        const { imageUrl } = await uploadAction(file);
+        const { imageUrl, s3Uri } = await uploadImage(file);
         const quill = quillRef.current?.getEditor();
         if (quill) {
           const range = quill.getSelection(true);
-          quill.insertEmbed(range.index, 'image', imageUrl);
+          const Delta  = Quill.import("delta");
+          const insertImage = new Delta(insertImageOperations(range.index, imageUrl, s3Uri));
+          quill.updateContents(insertImage);
         }
       }
     };
@@ -120,8 +155,14 @@ const PostForm: React.FC<PostFormProps> = ({
       } else if (file.originFileObj) {
         fileToUpload = file.originFileObj;
       } else if (file.url) {
-        setPreviewImage(file.url);
-        setCoverImageUrl(file.url);
+        setPreviewImage({
+          presignedUrl: file.url,
+          s3Uri: null,
+        });
+        setCoverImageUrl({
+          presignedUrl: file.url,
+          s3Uri: null,
+        });
         return;
       } else {
         console.warn(`Unsupported file type: ${file.name}`);
@@ -132,9 +173,15 @@ const PostForm: React.FC<PostFormProps> = ({
       }
 
       if (fileToUpload) {
-        const { imageUrl } = await uploadAction(fileToUpload);
-        setPreviewImage(imageUrl);
-        setCoverImageUrl(imageUrl);
+        const { imageUrl, s3Uri } = await uploadImage(fileToUpload);
+        setPreviewImage({
+          presignedUrl: imageUrl,
+          s3Uri,
+        });
+        setCoverImageUrl({
+          presignedUrl: imageUrl,
+          s3Uri,
+        });
       } else {
         message.error(`Can't handle ${file.name}.`);
       }
@@ -208,7 +255,7 @@ const PostForm: React.FC<PostFormProps> = ({
             onChange={handleCoverImageUpload}
           >
             {previewImage ? (
-              <img src={previewImage} alt="cover" style={{ width: '100%' }} />
+              <img src={previewImage.presignedUrl} alt={previewImage.s3Uri} style={{ width: '100%' }} />
             ) : (
               <div>
                 <PlusOutlined />

@@ -6,6 +6,7 @@ export type FormValues = Pick<PostEntity, 'title' | 'category' | 'isActive'> & {
 }
 
 export interface UploadImageResponse {
+  s3Uri: string;
   imageUrl: string;
 }
 

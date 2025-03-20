@@ -57,7 +57,7 @@ const PostManagement: React.FC = () => {
 
       setIsFormVisible(false);
       setEditingPost(null);
-      fetchPosts();
+      await fetchPosts();
     } catch (error) {
       console.error('Error submitting post:', error);
       message.error(
