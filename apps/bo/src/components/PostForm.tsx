@@ -37,25 +37,14 @@ interface PostFormProps {
   initialValues?: PostEntity;
 }
 
-type S3ImageContent = {
-  presignedUrl: string | null;
-  s3Uri: string | null;
-};
-
 const PostForm: React.FC<PostFormProps> = ({
   onSubmit,
   onCancel,
   initialValues,
 }) => {
   const [form] = Form.useForm<FormValues>();
-  const [previewImage, setPreviewImage] = useState<S3ImageContent>({
-    presignedUrl: initialValues?.coverImage,
-    s3Uri: null, // initialValues?.s3Uri,
-  });
-  const [coverImageUrl, setCoverImageUrl] = useState<S3ImageContent>({
-    presignedUrl: initialValues?.coverImage,
-    s3Uri: null, //initialValues?.s3Uri,
-  });
+  const [previewImage, setPreviewImage] = useState<string>(initialValues?.coverImage || null);
+  const [coverImageUrl, setCoverImageUrl] = useState<string>(initialValues?.coverImage || null);
   const [content, setContent] = useState(initialValues?.content || '');
   const quillRef = useRef<ReactQuill>(null);
 
@@ -70,14 +59,8 @@ const PostForm: React.FC<PostFormProps> = ({
       });
       console.log('🚀 ~ useEffect ~ initialValues:', initialValues.content);
       setContent(initialValues.content);
-      setPreviewImage({
-        presignedUrl: initialValues.coverImage,
-        s3Uri: null,
-      });
-      setCoverImageUrl({
-        presignedUrl: initialValues.coverImage,
-        s3Uri: null,
-      });
+      setPreviewImage(initialValues.coverImage);
+      setCoverImageUrl(initialValues.coverImage);
     } else {
       form.resetFields();
       setContent('');
@@ -155,14 +138,8 @@ const PostForm: React.FC<PostFormProps> = ({
       } else if (file.originFileObj) {
         fileToUpload = file.originFileObj;
       } else if (file.url) {
-        setPreviewImage({
-          presignedUrl: file.url,
-          s3Uri: null,
-        });
-        setCoverImageUrl({
-          presignedUrl: file.url,
-          s3Uri: null,
-        });
+        setPreviewImage(file.url);
+        setCoverImageUrl(file.url);
         return;
       } else {
         console.warn(`Unsupported file type: ${file.name}`);
@@ -173,15 +150,9 @@ const PostForm: React.FC<PostFormProps> = ({
       }
 
       if (fileToUpload) {
-        const { imageUrl, s3Uri } = await uploadImage(fileToUpload);
-        setPreviewImage({
-          presignedUrl: imageUrl,
-          s3Uri,
-        });
-        setCoverImageUrl({
-          presignedUrl: imageUrl,
-          s3Uri,
-        });
+        const { imageUrl } = await uploadImage(fileToUpload);
+        setPreviewImage(imageUrl);
+        setCoverImageUrl(imageUrl);
       } else {
         message.error(`Can't handle ${file.name}.`);
       }
@@ -255,7 +226,7 @@ const PostForm: React.FC<PostFormProps> = ({
             onChange={handleCoverImageUpload}
           >
             {previewImage ? (
-              <img src={previewImage.presignedUrl} alt={previewImage.s3Uri} style={{ width: '100%' }} />
+              <img src={previewImage} alt="CoverImage" style={{ width: '100%' }} />
             ) : (
               <div>
                 <PlusOutlined />

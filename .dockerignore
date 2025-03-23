@@ -6,4 +6,5 @@ scripts
 *Dockerfile*
 node_modules
 .env.template
-.nx/
+.nx/**/
+dist/**/

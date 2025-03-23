@@ -11,36 +11,32 @@ import { PostCategoryEnum, ICreatePost } from '@org/types'
   export class CreatePostDto implements ICreatePost {
     @IsString()
     title: string;
-  
+
     @IsEnum(PostCategoryEnum)
     category: PostCategoryEnum;
-  
+
     @IsString()
     content: string;
-  
+
     @IsString()
     @IsOptional()
     coverImage?: string;
-  
+
     @IsBoolean()
     isActive: boolean;
-  
+
     @IsDate()
     publishStartDate: Date;
-  
+
     @IsDate()
     publishEndDate: Date;
   }
-  
+
   export class UpdatePostDto extends PartialType(CreatePostDto) {
     @IsEnum(PostCategoryEnum)
     @IsOptional()
     override category?: PostCategoryEnum;
-  
-    @IsString()
-    @IsOptional()
-    coverImage?: string;
-  
+
     @IsBoolean()
     @IsOptional()
     isActive?: boolean;
