@@ -7,7 +7,7 @@
 
 ## Start the app
 
-Rename config file with `mv .env.local .env` first
+Rename config file with `mv .env.dev-local .env` first
 
 To start the development server run `nx serve app_name`.  Happy coding!
 
@@ -44,41 +44,6 @@ Learn more about [Nx generators on the docs](https://nx.dev/plugin-features/use-
 
 ## Ready to deploy?
 
-### Run on local
-
-#### .git/config
-
-```config
-[core]
-	repositoryformatversion = 0
-	filemode = true
-	bare = false
-	logallrefupdates = true
-	ignorecase = true
-	precomposeunicode = true
-[remote "origin"]
-  url = git@github.com:Tu-Szu-Chi/qride-nx.git
-	fetch = +refs/heads/*:refs/remotes/origin/*
-[branch "main"]
-	remote = origin
-	merge = refs/heads/main
-[remote "client"]
-	url = https://git.heroku.com/q-client.git
-	fetch = +refs/heads/*:refs/remotes/heroku/*
-[remote "be"]
-	url = https://git.heroku.com/q-be.git
-	fetch = +refs/heads/*:refs/remotes/heroku/*
-[remote "bo"]
-	url = https://git.heroku.com/q-bo.git
-	fetch = +refs/heads/*:refs/remotes/heroku/*
-
-```
-
-```shell
-heroku login (if auth expired)
-git push <app> main
-# app => [client, be, bo]
-```
 
 ## Note
 
