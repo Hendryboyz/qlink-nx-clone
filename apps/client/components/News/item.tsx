@@ -44,7 +44,7 @@ const NewsItem: React.FC<Props> = ({ type, date, title, imgUrl, id }) => {
   const router = useRouter();
 
 
-  const imageSource = imgUrl ? `${API_PUBLIC_HOST}${imgUrl}` : getTypeDefaultImage(type);
+  const imageSource = imgUrl ? imgUrl : getTypeDefaultImage(type);
 
   return (
     <div
