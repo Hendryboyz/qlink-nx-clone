@@ -17,7 +17,7 @@ jobs:
           ls ${{ github.workspace }}
       - run: echo "🍏 This job's status is ${{ job.status }}."
   Build-Project-Image:
-    uses: ./github/workflows/build.yaml
+    uses: ./.github/workflows/build.yaml
     with:
       build-env: demo
       dockerfile: deployments/dockerfiles/backend.Dockerfile
