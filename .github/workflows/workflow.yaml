@@ -18,6 +18,7 @@ jobs:
       - run: echo "🍏 This job's status is ${{ job.status }}."
   Build-Project-Image:
     uses: ./.github/workflows/build.yaml
+    secrets: inherit
     with:
       build-env: demo
       dockerfile: deployments/dockerfiles/backend.Dockerfile
