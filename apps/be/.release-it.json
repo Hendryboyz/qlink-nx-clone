@@ -1,0 +1,71 @@
+{
+    "git": {
+        "changelog": "git log --pretty=format:\"* %s (%h)\" ${from}...${to}",
+        "requireCleanWorkingDir": false,
+        "requireBranch": false,
+        "requireUpstream": true,
+        "requireCommits": false,
+        "requireCommitsFail": true,
+        "commitsPath": "",
+        "addUntrackedFiles": false,
+        "commit": true,
+        "commitMessage": "Release ${version}",
+        "commitArgs": [],
+        "tag": true,
+        "tagExclude": null,
+        "tagName": "client-${version}",
+        "tagMatch": null,
+        "getLatestTagFromAllRefs": false,
+        "tagAnnotation": "Release ${version}",
+        "tagArgs": [],
+        "push": true,
+        "pushArgs": ["--follow-tags"],
+        "pushRepo": ""
+    },
+    "npm": {
+        "publish": false
+    },
+    "github": {
+        "release": false
+    },
+    "gitlab": {
+        "release": false
+    },
+    "plugins": {
+        "@release-it/bumper": {
+            "in": "project.json"
+        },
+        "@release-it/conventional-changelog": {
+            "infile": "CHANGELOG.md",
+            "preset": {
+                "name": "conventionalcommits",
+                "types": [
+                    {
+                        "type": "feat",
+                        "section": "Features"
+                    },
+                    {
+                        "type": "fix",
+                        "section": "Bug Fixes"
+                    },
+                    {
+                        "type": "refactor",
+                        "section": "Refactor"
+                    },
+                    {
+                        "type": "perf",
+                        "section": "Performance Improvements"
+                    },
+                    {
+                        "type": "ci",
+                        "section": "CI/CD Improvements"
+                    },
+                    { "type": "chore", "hidden": true },
+                    { "type": "docs", "hidden": true },
+                    { "type": "style", "hidden": true },
+                    { "type": "test", "hidden": true }
+                ]
+            }
+        }
+    }
+}

@@ -9,7 +9,8 @@
     "info": "node db_migration/flyway.js info",
     "validate": "node db_migration/flyway.js validate",
     "baseline": "node db_migration/flyway.js baseline",
-    "repair": "node db_migration/flyway.js repair"
+    "repair": "node db_migration/flyway.js repair",
+    "release-backend": "release-it --config apps/be/.release-it.json"
   },
   "private": true,
   "engines": {
@@ -92,6 +93,7 @@
     "@nx/webpack": "17.2.8",
     "@nx/workspace": "17.2.4",
     "@pmmmwh/react-refresh-webpack-plugin": "^0.5.11",
+    "@release-it/bumper": "^6.0.1",
     "@svgr/webpack": "^8.1.0",
     "@swc-node/register": "~1.6.8",
     "@swc/cli": "~0.1.65",
@@ -138,6 +140,7 @@
     "postcss": "^8.4.38",
     "prettier": "^2.8.8",
     "react-refresh": "^0.10.0",
+    "release-it": "^17.11.0",
     "sass": "1.62.1",
     "tailwindcss": "^3.4.4",
     "ts-jest": "^29.1.2",
