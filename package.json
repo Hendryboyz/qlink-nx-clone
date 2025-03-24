@@ -94,6 +94,7 @@
     "@nx/workspace": "17.2.4",
     "@pmmmwh/react-refresh-webpack-plugin": "^0.5.11",
     "@release-it/bumper": "^6.0.1",
+    "@release-it/conventional-changelog": "^9.0.4",
     "@svgr/webpack": "^8.1.0",
     "@swc-node/register": "~1.6.8",
     "@swc/cli": "~0.1.65",

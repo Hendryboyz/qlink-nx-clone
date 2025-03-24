@@ -1,7 +1,7 @@
 {
     "git": {
         "changelog": "git log --pretty=format:\"* %s (%h)\" ${from}...${to}",
-        "requireCleanWorkingDir": false,
+        "requireCleanWorkingDir": true,
         "requireBranch": false,
         "requireUpstream": true,
         "requireCommits": false,
@@ -13,7 +13,7 @@
         "commitArgs": [],
         "tag": true,
         "tagExclude": null,
-        "tagName": "client-${version}",
+        "tagName": "backend-${version}",
         "tagMatch": null,
         "getLatestTagFromAllRefs": false,
         "tagAnnotation": "Release ${version}",
@@ -33,7 +33,8 @@
     },
     "plugins": {
         "@release-it/bumper": {
-            "in": "project.json"
+            "in": "apps/be/project.json",
+            "out": "apps/be/project.json"
         },
         "@release-it/conventional-changelog": {
             "infile": "CHANGELOG.md",
