@@ -35,38 +35,6 @@
         "@release-it/bumper": {
             "in": "apps/be/project.json",
             "out": "apps/be/project.json"
-        },
-        "@release-it/conventional-changelog": {
-            "infile": "CHANGELOG.md",
-            "preset": {
-                "name": "conventionalcommits",
-                "types": [
-                    {
-                        "type": "feat",
-                        "section": "Features"
-                    },
-                    {
-                        "type": "fix",
-                        "section": "Bug Fixes"
-                    },
-                    {
-                        "type": "refactor",
-                        "section": "Refactor"
-                    },
-                    {
-                        "type": "perf",
-                        "section": "Performance Improvements"
-                    },
-                    {
-                        "type": "ci",
-                        "section": "CI/CD Improvements"
-                    },
-                    { "type": "chore", "hidden": true },
-                    { "type": "docs", "hidden": true },
-                    { "type": "style", "hidden": true },
-                    { "type": "test", "hidden": true }
-                ]
-            }
         }
     }
 }
