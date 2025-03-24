@@ -9,6 +9,9 @@ on:
       dockerfile:
         required: true
         type: string
+      version-file:
+        required: true
+        type: string
       ecr-repository:
         required: true
         type: string
@@ -60,7 +63,7 @@ jobs:
           RECAPTHCA_SITEKEY=${{ secrets.RECAPTHCA_SITEKEY }}
           envsubst < .env.template > .env
           cat .env
-          VERSION="latest" # take real version number from package.json
+          VERSION=$(grep '"version"' ${{ inputs.version-file }} | sed 's/.*"version":\ "\(.*\)",/\1/')
           IMAGE_TAG=${{ steps.login-ecr.outputs.registry }}/${{ inputs.ecr-repository }}:$VERSION
           docker buildx build --platform=linux/amd64 -t $IMAGE_TAG -f ${{ env.DOCKERFILE }} .
           echo "image=$IMAGE_TAG" >> $GITHUB_OUTPUT
