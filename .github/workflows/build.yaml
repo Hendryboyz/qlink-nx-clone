@@ -18,8 +18,10 @@ on:
       task-container-name:
         required: true
         type: string
+
 env:
   AWS_REGION: ap-northeast-1
+
 jobs:
   Build-and-Push-Image:
     name: Build & Push Docker Image
@@ -45,7 +47,7 @@ jobs:
           ENVVARS_JSON: ${{ toJSON(vars) }}
         run: |
           echo "$ENVVARS_JSON" | jq -r 'keys[] as $k | "\($k)=\(.[$k])"' >> $GITHUB_ENV
-          DOCKERFILE="deployments/dockerfiles/${{ inputs.dockerfile }}"
+          DOCKERFILE=${{ inputs.dockerfile }}
           echo "DOCKERFILE=$DOCKERFILE" >> $GITHUB_ENV
           echo "Using Dockerfile: $DOCKERFILE"
 
@@ -68,6 +70,6 @@ jobs:
         id: task-def
         uses: aws-actions/amazon-ecs-render-task-definition@v1
         with:
-          task-definition: deployments/tasks/${{ inputs.build-env }}/${{ inputs.task-definition }}
+          task-definition: ${{ inputs.task-definition }}
           container-name: ${{ inputs.task-container-name }}
           image: ${{ steps.build-image.outputs.image }}

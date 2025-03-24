@@ -23,6 +23,6 @@ jobs:
       build-env: demo
       dockerfile: deployments/dockerfiles/backend.Dockerfile
       ecr-repository: qapp-dev-backend
-      task-definition: backend.json
+      task-definition: deployments/tasks/demo/backend.json
       task-container-name: backend-app
 
