@@ -1,12 +1,6 @@
 name: GitHub Actions Demo
 run-name: ${{ github.actor }} is testing out GitHub Actions 🚀
 on: [push]
-#on:
-#  push:
-#    paths:
-#      - 'apps/be/**'
-env:
-  AWS_REGION: ap-northeast-1
 jobs:
   Explore-GitHub-Actions:
     runs-on: ubuntu-latest
@@ -22,55 +16,12 @@ jobs:
         run: |
           ls ${{ github.workspace }}
       - run: echo "🍏 This job's status is ${{ job.status }}."
+  Build-Project-Image:
+    uses: ./github/workflows/build.yaml
+    with:
+      build-env: demo
+      dockerfile: deployments/dockerfiles/backend.Dockerfile
+      ecr-repository: qapp-dev-backend
+      task-definition: backend.json
+      task-container-name: backend-app
 
-  Build-and-Push-Image:
-    name: Build & Push Docker Image
-    runs-on: ubuntu-latest
-    environment: demo
-    steps:
-      - name: Checkout Code
-        uses: actions/checkout@v3
-
-      - name: Configure AWS Credentials
-        uses: aws-actions/configure-aws-credentials@v1
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ${{ env.AWS_REGION }}
-
-      - name: Login to Amazon ECR
-        id: login-ecr
-        uses: aws-actions/amazon-ecr-login@v1
-
-      - name: Environment Variables Injection and Determine Dockerfile Path
-        env:
-          ENVVARS_JSON: ${{ toJSON(vars) }}
-        run: |
-          echo "$ENVVARS_JSON" | jq -r 'keys[] as $k | "\($k)=\(.[$k])"' >> $GITHUB_ENV
-          DOCKERFILE="deployments/dockerfiles/backend.Dockerfile"
-          echo "DOCKERFILE=$DOCKERFILE" >> $GITHUB_ENV
-          echo "Using Dockerfile: $DOCKERFILE"
-
-      - name: Build Docker Image
-        id: build-image
-        run: |
-          DB_PASSWORD=${{ secrets.DB_PASSWORD }}
-          DB_USERNAME=${{ secrets.DB_USERNAME }}
-          RECAPTCHA_SECRET_KEY=${{ secrets.RECAPTCHA_SECRET_KEY }}
-          RECAPTHCA_SITEKEY=${{ secrets.RECAPTHCA_SITEKEY }}
-          envsubst < .env.template > .env
-          echo "Generated .env"
-          cat .env
-          VERSION="latest"
-          PROJECT="qapp-dev-backend"
-          IMAGE_TAG=${{ steps.login-ecr.outputs.registry }}/$PROJECT:$VERSION
-          docker buildx build --platform=linux/amd64 -t $IMAGE_TAG -f ${{ env.DOCKERFILE }} .
-          echo "image=$IMAGE_TAG" >> $GITHUB_OUTPUT
-
-      - name: Fill in the new image ID in the Amazon ECS task definition
-        id: task-def
-        uses: aws-actions/amazon-ecs-render-task-definition@v1
-        with:
-          task-definition: deployments/tasks/demo/backend.json
-          container-name: backend-app
-          image: ${{ steps.build-image.outputs.image }}
