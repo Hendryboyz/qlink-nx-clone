@@ -1,0 +1,40 @@
+{
+    "git": {
+        "changelog": "git log --pretty=format:\"* %s (%h)\" ${from}...${to}",
+        "requireCleanWorkingDir": true,
+        "requireBranch": false,
+        "requireUpstream": true,
+        "requireCommits": false,
+        "requireCommitsFail": true,
+        "commitsPath": "",
+        "addUntrackedFiles": false,
+        "commit": true,
+        "commitMessage": "Release ${version}",
+        "commitArgs": [],
+        "tag": true,
+        "tagExclude": null,
+        "tagName": "backoffice-${version}",
+        "tagMatch": null,
+        "getLatestTagFromAllRefs": false,
+        "tagAnnotation": "Release ${version}",
+        "tagArgs": [],
+        "push": true,
+        "pushArgs": ["--follow-tags"],
+        "pushRepo": ""
+    },
+    "npm": {
+        "publish": false
+    },
+    "github": {
+        "release": false
+    },
+    "gitlab": {
+        "release": false
+    },
+    "plugins": {
+        "@release-it/bumper": {
+            "in": "apps/bo/project.json",
+            "out": "apps/bo/project.json"
+        }
+    }
+}
