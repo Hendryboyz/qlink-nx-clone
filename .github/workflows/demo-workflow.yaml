@@ -1,5 +1,5 @@
-name: GitHub Actions Demo
-run-name: ${{ github.actor }} is testing out GitHub Actions 🚀
+name: QApp Build & Deploy
+run-name: ${{ github.actor }} is running qapp build & deployment for demo 🚀
 on:
   workflow_dispatch:
   push:
@@ -8,7 +8,7 @@ on:
       - backoffice-**
       - backend-**
 jobs:
-  Explore-GitHub-Actions:
+  Explore-Worflow-Status:
     runs-on: ubuntu-latest
     steps:
       - run: echo "🎉 The job was automatically triggered by a ${{ github.event_name }} event."
@@ -23,9 +23,9 @@ jobs:
           ls ${{ github.workspace }}
       - run: echo "🍏 This job's status is ${{ job.status }}."
 
-  Build-Backend-Image:
-    if: ${{ startsWith(github.ref_name, 'backend-')}}
-    uses: ./.github/workflows/build.yaml
+  Build_Deploy-Backend:
+    if: ${{ startsWith(github.ref_name, 'backend-') }}
+    uses: ./.github/workflows/cicd.yaml
     secrets: inherit
     with:
       build-env: demo
@@ -34,4 +34,28 @@ jobs:
       ecr-repository: qapp-dev-backend
       task-definition: deployments/tasks/demo/backend.json
       task-container-name: backend-app
+
+  Build_Deploy-Backoffice:
+    if: ${{ startsWith(github.ref_name, 'backoffice-') }}
+    uses: ./.github/workflows/cicd.yaml
+    secrets: inherit
+    with:
+      build-env: demo
+      version-file: apps/bo/project.json
+      dockerfile: deployments/dockerfiles/bo.Dockerfile
+      ecr-repository: qapp-dev-backoffice
+      task-definition: deployments/tasks/demo/backoffice.json
+      task-container-name: backoffice-app
+
+  Build_Deploy-Client:
+    if: ${{ startsWith(github.ref_name, 'client-') }}
+    uses: ./.github/workflows/cicd.yaml
+    secrets: inherit
+    with:
+      build-env: demo
+      version-file: apps/client/project.json
+      dockerfile: deployments/dockerfiles/client.Dockerfile
+      ecr-repository: qapp-dev-client
+      task-definition: deployments/tasks/demo/client.json
+      task-container-name: client-app
 

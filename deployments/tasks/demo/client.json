@@ -1,0 +1,95 @@
+{
+  "containerDefinitions": [
+    {
+      "name": "client-app",
+      "image": "038462772752.dkr.ecr.ap-northeast-1.amazonaws.com/qapp-dev-client:latest",
+      "cpu": 256,
+      "memory": 512,
+      "portMappings": [
+        {
+          "containerPort": 3000,
+          "hostPort": 3000,
+          "protocol": "tcp"
+        }
+      ],
+      "essential": true,
+      "environment": [],
+      "environmentFiles": [
+        {
+          "value": "arn:aws:s3:::qapp-dev-configs-bucket/.dev.env",
+          "type": "s3"
+        }
+      ],
+      "mountPoints": [],
+      "volumesFrom": [],
+      "logConfiguration": {
+        "logDriver": "awslogs",
+        "options": {
+          "awslogs-group": "/qapp/dev/ecs/client",
+          "awslogs-region": "ap-northeast-1",
+          "awslogs-stream-prefix": "qapp_client-log-stream-dev"
+        }
+      },
+      "systemControls": []
+    }
+  ],
+  "family": "qapp-dev-client-definition",
+  "taskRoleArn": "arn:aws:iam::038462772752:role/qapp-dev-ECS_task-iam_role",
+  "executionRoleArn": "arn:aws:iam::038462772752:role/qapp-dev-ECS-task_execution_role",
+  "networkMode": "awsvpc",
+  "revision": 7,
+  "volumes": [
+    {
+      "name": "configs-storage",
+      "host": {}
+    }
+  ],
+  "status": "ACTIVE",
+  "requiresAttributes": [
+    {
+      "name": "com.amazonaws.ecs.capability.logging-driver.awslogs"
+    },
+    {
+      "name": "ecs.capability.execution-role-awslogs"
+    },
+    {
+      "name": "com.amazonaws.ecs.capability.ecr-auth"
+    },
+    {
+      "name": "com.amazonaws.ecs.capability.docker-remote-api.1.19"
+    },
+    {
+      "name": "ecs.capability.env-files.s3"
+    },
+    {
+      "name": "com.amazonaws.ecs.capability.task-iam-role"
+    },
+    {
+      "name": "ecs.capability.execution-role-ecr-pull"
+    },
+    {
+      "name": "com.amazonaws.ecs.capability.docker-remote-api.1.18"
+    },
+    {
+      "name": "ecs.capability.task-eni"
+    }
+  ],
+  "placementConstraints": [],
+  "compatibilities": [
+    "EC2",
+    "FARGATE"
+  ],
+  "requiresCompatibilities": [
+    "FARGATE"
+  ],
+  "cpu": "256",
+  "memory": "512",
+  "registeredAt": "2025-03-04T01:25:27.714Z",
+  "registeredBy": "arn:aws:iam::038462772752:user/terraform",
+  "tags": [
+    {
+      "key": "Environment",
+      "value": "dev"
+    }
+  ]
+}
