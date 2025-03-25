@@ -22,16 +22,9 @@
         "pushArgs": ["--follow-tags"],
         "pushRepo": ""
     },
-    "npm": {
-        "publish": false,
-        "ignoreVersion": true
-    },
-    "github": {
-        "release": false
-    },
-    "gitlab": {
-        "release": false
-    },
+    "npm": false,
+    "github": false,
+    "gitlab": false,
     "plugins": {
         "@release-it/bumper": {
             "in": "apps/client/project.json",
