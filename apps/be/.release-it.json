@@ -23,7 +23,8 @@
         "pushRepo": ""
     },
     "npm": {
-        "publish": false
+        "publish": false,
+        "ignoreVersion": true
     },
     "github": {
         "release": false
