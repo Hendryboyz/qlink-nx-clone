@@ -20,7 +20,13 @@ const News = () => {
       <div className="space-y-3 p-6">
           {posts.map((item, index) => (
             <div key={index}>
-            <NewsItem key={index} type={item.category} title={item.title} date={new Date(item.publishStartDate)} imgUrl={item.coverImage} id={item.id} />
+            <NewsItem
+              key={index}
+              type={item.category}
+              title={item.title}
+              date={new Date(item.publishStartDate)}
+              imgUrl={item.coverImage}
+              id={item.id} />
             </div>
           ))}
         </div>

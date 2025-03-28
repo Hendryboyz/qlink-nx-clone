@@ -32,7 +32,7 @@ const Popup: React.FC<{ content: PopupContent; onClose: () => void }> = ({
           <h2 className="text-xl font-bold">{content.title}</h2>
         </div>
         {content.content && content.content}
-        {(content.useDefault == undefined || content.useDefault == true) && <div className='flex justify-center'>
+        {(content.useDefault === undefined || content.useDefault) && <div className='flex justify-center'>
           <Button theme='dark' className='text-xs w-20 py-3' onClick={onClose}>OK</Button>
           </div>}
       </div>

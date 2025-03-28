@@ -19,20 +19,24 @@ const Detail: NextPage<Props> = ({ params }) => {
   useEffect(() => {
     API.get<PostEntity>(`/posts/detail/${params.id}`).then((res) => {
       setPost(res);
+      console.log(res);
     });
   }, []);
 
   return (
-    <div className="w-full  min-h-full flex-1">
+    <div className="w-full min-h-full flex-1">
       <Header title="News" />
       {post && (
         <div>
-          <div className="h-60  flex items-end" style={{
-            backgroundImage: `url(${API_PUBLIC_HOST}${post.coverImage})`,
-            backgroundSize: 'cover'
-          }}>
-            <h1 className="font-bold text-lg p-6">{post.title}</h1>
-          </div>
+          <h1 className="font-bold text-lg p-6">{post.title}</h1>
+          <div
+            className="h-60 flex items-end"
+            style={{
+              backgroundImage: `url(${post.coverImage})`,
+              backgroundSize: 'cover',
+              backgroundPosition: 'center center',
+            }}
+          ></div>
           <div className="p-6">
             <span>{fromDate(new Date(post.publishStartDate))}</span>
             <div dangerouslySetInnerHTML={{ __html: post.content }} />

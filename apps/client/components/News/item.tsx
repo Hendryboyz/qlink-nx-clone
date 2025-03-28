@@ -48,13 +48,17 @@ const NewsItem: React.FC<Props> = ({ type, date, title, imgUrl, id }) => {
 
   return (
     <div
-      className="flex items-start space-x-4"
+      className="flex items-start space-x-4 hover:cursor-pointer"
       onClick={() => {
         router.push(`/news/detail/${id}`);
       }}
     >
       <div className="rounded-xl w-24 h-24 bg-gray-300 flex-shrink-0">
-        <img className="rounded-xl w-full h-full object-cover7b0fda7e38995450b19cae64525ad0bffddfb2ec" src={imageSource} />
+        <img
+          className="rounded-xl w-full h-full object-cover7b0fda7e38995450b19cae64525ad0bffddfb2ec"
+          src={imageSource}
+          alt="preview-image"
+        />
       </div>
       <div className="py-3">
         <div className="flex items-center space-x-2 mb-1">

@@ -1,5 +1,6 @@
 'use client';
 
+import React from 'react';
 import { PopupProvider } from '$/hooks/PopupProvider';
 import './global.css';
 import { StyledJsxRegistry } from './registry';
