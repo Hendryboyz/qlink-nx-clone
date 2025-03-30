@@ -1,15 +1,18 @@
 import Link from 'next/link';
 import React from 'react';
 
-const menuItems = [
+const mainItems = [
   ['Home', '/home'],
   ['Member', '/member'],
   ['My Garage', '/garage'],
-  ['Service Records', ''],
-  ['Coupons', ''],
+  // ['Service Records', ''],
+  // ['Coupons', ''],
   ['News', '/news'],
-  ['Promotion', ''],
-  ['Contact Us', ''],
+  // ['Promotion', ''],
+  // ['Contact Us', ''],
+];
+
+const supportItems = [
   ['Privacy Policy', '/privacy-policy'],
   ['Terms of Service', '/terms-of-service'],
 ];
@@ -38,13 +41,29 @@ const Menu: React.FC<Props> = ({ isOpen, onClose }) => {
           </button>
           <nav className="px-6 text-xl">
             <ul>
-              {menuItems.map((item, index) => (
-                <li key={index} className="py-4">
-                  <Link href={item[1]} className="hover:underline">
-                    {item[0]}
-                  </Link>
-                </li>
-              ))}
+              {mainItems.map((item, index) => {
+                const [title, link] = item;
+                return (
+                  <li key={index} className="py-4">
+                    <Link href={link} className="hover:underline">
+                      {title}
+                    </Link>
+                  </li>
+                )
+              })}
+            </ul>
+            <hr className="my-3" />
+            <ul>
+              {supportItems.map((item, index) => {
+                const [title, link] = item;
+                return (
+                  <li key={index} className="py-4">
+                    <Link href={link} className="text-base hover:underline">
+                      {title}
+                    </Link>
+                  </li>
+                )
+              })}
             </ul>
           </nav>
         </div>
