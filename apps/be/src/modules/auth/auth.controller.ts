@@ -19,7 +19,7 @@ import {
   phoneRegex,
 } from '@org/common';
 import { AuthService } from './auth.service';
-import { Response } from 'express';
+import { Response, CookieOptions } from 'express';
 import {
   RegisterDto,
   LoginDto,
@@ -160,25 +160,18 @@ export class AuthController {
     this.setToken(res, token, userId, true)
     return true;
   }
-  setToken(res: Response, token, userId, remember: boolean = false) {
+
+  private setToken(res: Response, token: string, userId: string, remember: boolean = false): void {
+    const cookieOptions: CookieOptions = {
+      secure: isProd,
+    };
+
     if (remember) {
-      res.cookie(ACCESS_TOKEN, token, {
-        secure: isProd,
-        sameSite: 'strict',
-        maxAge: oneMonth,
-      });
-      res.cookie(HEADER_USER_ID, userId, {
-        secure: isProd,
-        sameSite:  'strict',
-        maxAge: oneMonth,
-      });
-    } else {
-      res.cookie(ACCESS_TOKEN, token, {
-        secure: isProd,
-      });
-      res.cookie(HEADER_USER_ID, userId, {
-        secure: isProd,
-      });
+      cookieOptions.sameSite = 'strict';
+      cookieOptions.maxAge = oneMonth;
     }
+
+    res.cookie(ACCESS_TOKEN, token, cookieOptions);
+    res.cookie(HEADER_USER_ID, userId, cookieOptions);
   }
 }

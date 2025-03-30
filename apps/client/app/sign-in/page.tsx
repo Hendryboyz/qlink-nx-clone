@@ -4,8 +4,8 @@ import { Formik, FormikErrors, Field, ErrorMessage } from 'formik';
 import Link from 'next/link';
 import Title from '../../components/Title';
 import GradientBackground from '../../../client/components/GradientBackground';
+import { Fragment } from 'react';
 import API from '$/utils/fetch';
-import { Fragment, useState } from 'react';
 import SubmitButton from '$/components/Button/SubmitButton';
 import { NOOP } from '$/utils';
 import { useRouter } from 'next/navigation';
@@ -21,7 +21,6 @@ export default function SignIn() {
   const initValue: FormData = { phone: '', password: '', rememberMe: false };
   const router = useRouter();
   const { showPopup } = usePopup();
-
   return (
     <GradientBackground>
       <div className="w-full py-16 pb-10 px-12 flex flex-col h-full flex-1 ">
@@ -46,12 +45,12 @@ export default function SignIn() {
               password: values.password,
               remember_me: values.rememberMe,
             })
-              .then((res) => {
+              .then((_) => {
                 router.push('/member');
               })
               .catch((err) => {
                 console.log(err);
-                showPopup({ title: 'Incorrect password'})
+                showPopup({ title: 'Incorrect Credentials'})
               })
               .finally(() => setSubmitting(false));
           }}

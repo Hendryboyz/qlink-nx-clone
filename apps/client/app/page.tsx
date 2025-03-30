@@ -16,9 +16,7 @@ export default function Index() {
           <Link href="/sign-up">Sign Up</Link>
         </Button>
         <Button className="mb-4">
-          <Link href="/sign-in">
-          Sign In
-          </Link>
+          <Link href="/sign-in">Sign In</Link>
         </Button>
       </div>
     </div>
