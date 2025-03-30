@@ -32,6 +32,9 @@ const Step2 = (props: Props) => {
       (e.target.nextSibling as HTMLInputElement).focus();
     }
   };
+
+  // TODO: handle resend OTP
+
   const handleSubmit = () => {
     const payload: VerifyOtpDto = {
       phone: phone || 'None',
