@@ -12,7 +12,9 @@ const Success = () => {
       </Title>
       <h4 className="text-primary text-xl">Account activated</h4>
       <div className="mt-auto">
-        <Button>Register My Products Now</Button>
+        <Link href="/garage/add">
+          <Button>Register My Products Now</Button>
+        </Link>
         <Link href="/home">
           <Button theme="transparent" className="text-white">
             Skip

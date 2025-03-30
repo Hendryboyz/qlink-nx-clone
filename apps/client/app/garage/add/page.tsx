@@ -131,6 +131,7 @@ export default function GarageAdd() {
                   onClick={() => handleSubmit()}
                 />
               }
+              customBackAction={() => { router.push('/garage'); }}
             />
             <div>
               {(Object.entries(ATTRS) as [KEY, Columns[KEY]][]).map(
@@ -153,7 +154,7 @@ export default function GarageAdd() {
                             }))}
                             label={data.title}
                           />
-                        ) : 
+                        ) :
                           <Field
                             id={key}
                             name={key}

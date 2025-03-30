@@ -26,7 +26,9 @@ const Header: React.FC<Props> = ({ title, useBackBtn, customBtn, customBackActio
       >
         <div className="container mx-auto flex justify-between items-center">
           {useBackBtn ? (
-            <img src="/assets/arrow_left.svg" onClick={() => customBackAction ? customBackAction() : router.back()} />
+            <img src="/assets/arrow_left.svg" onClick={
+              () => customBackAction ? customBackAction() : router.back()
+            } />
           ) : (
             <button
               className="text-2xl"
