@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import { useEffect } from 'react';
 import Header from '$/components/Header';
-// import Carousel from '$/components/Carousel';
+import Carousel from '$/components/Carousel';
 import { PostEntity } from '@org/types';
 import NewsItem from '$/components/News/item';
 import { useRouter } from 'next/navigation';
@@ -30,7 +30,7 @@ export default function Index() {
     <div className="w-full md:w-10/12 min-h-full flex-col">
       <Header />
       <div className="p-6">
-        {/*<Carousel images={[]} className="mb-9" />*/}
+        <Carousel images={[]} className="mb-9" />
         <div className="grid grid-cols-2 gap-11">
           {menuItems.map((item, index) => (
             <div key={index} className="flex flex-col items-center" onClick={() => {

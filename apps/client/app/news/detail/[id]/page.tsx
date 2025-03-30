@@ -6,7 +6,7 @@ import { fromDate } from '@org/common';
 import { NextPage } from 'next';
 import API from '$/utils/fetch';
 import { PostEntity } from '@org/types';
-import { API_PUBLIC_HOST } from '$/utils';
+import NewsType from '$/components/News/type';
 
 type Props = {
   params: {
@@ -28,17 +28,24 @@ const Detail: NextPage<Props> = ({ params }) => {
       <Header title="News" />
       {post && (
         <div>
-          <h1 className="font-bold text-lg p-6">{post.title}</h1>
           <div
-            className="h-60 flex items-end"
+            className="h-60 flex flex-col justify-between"
             style={{
-              backgroundImage: `url(${post.coverImage})`,
+              backgroundImage: post.coverImage
+                ? `url(${post.coverImage})`
+                : undefined,
+              backgroundColor: post.coverImage ? undefined : '#D9D9D9',
               backgroundSize: 'cover',
               backgroundPosition: 'center center',
             }}
-          ></div>
+          >
+            <div className="flex m-6 justify-end">
+              <NewsType type={post.category} />
+            </div>
+            <h1 className="font-bold text-2xl p-6">{post.title}</h1>
+          </div>
           <div className="p-6">
-            <span>{fromDate(new Date(post.publishStartDate))}</span>
+            <div className="my-5">{fromDate(new Date(post.publishStartDate))}</div>
             <div dangerouslySetInnerHTML={{ __html: post.content }} />
           </div>
         </div>
