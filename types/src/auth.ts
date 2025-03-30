@@ -27,6 +27,7 @@ export interface SendOtpDto {
   phone: string;
   type: OtpTypeEnum;
   recaptchaToken?: string;
+  resend?: boolean;
 }
 
 export interface VerifyOtpDto {

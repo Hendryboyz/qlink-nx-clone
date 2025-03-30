@@ -50,7 +50,7 @@ export default function SignIn() {
               })
               .catch((err) => {
                 console.log(err);
-                showPopup({ title: 'Incorrect Credentials'})
+                showPopup({ title: 'Incorrect Credentials'});
               })
               .finally(() => setSubmitting(false));
           }}

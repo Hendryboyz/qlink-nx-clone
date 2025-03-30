@@ -1,36 +1,22 @@
 import {
-  Controller,
-  Post,
-  Body,
-  UnauthorizedException,
-  Res,
-  Headers,
   BadRequestException,
+  Body,
+  Controller,
+  Headers,
   InternalServerErrorException,
-  UseGuards,
+  Logger,
+  Post,
   Req,
+  Res,
+  UnauthorizedException,
+  UseGuards
 } from '@nestjs/common';
-import {
-  ACCESS_TOKEN,
-  CODE_SUCCESS,
-  HEADER_PRE_TOKEN,
-  HEADER_USER_ID,
-  INVALID,
-  phoneRegex,
-} from '@org/common';
+import { ACCESS_TOKEN, CODE_SUCCESS, HEADER_PRE_TOKEN, HEADER_USER_ID, INVALID, phoneRegex } from '@org/common';
 import { AuthService } from './auth.service';
-import { Response, CookieOptions } from 'express';
-import {
-  RegisterDto,
-  LoginDto,
-  SendOtpDto,
-  VerifyOtpDto,
-  ResetPasswordDto,
-} from '@org/types';
+import { CookieOptions, Response } from 'express';
+import { LoginDto, OtpTypeEnum, RegisterDto, ResetPasswordDto, SendOtpDto, VerifyOtpDto } from '@org/types';
 import { OtpService } from './otp.service';
-import { OtpTypeEnum } from '@org/types';
 import { AuthGuard } from '@nestjs/passport';
-import { JwtService } from '@nestjs/jwt';
 import { RequestWithUser } from '../../types';
 import process from 'node:process';
 
@@ -38,6 +24,7 @@ const oneMonth = 30 * 24 * 60 * 60 * 1000;
 let isProd = false;
 @Controller('auth')
 export class AuthController {
+  private logger = new Logger(this.constructor.name);
   constructor(
     private authService: AuthService,
     private otpService: OtpService
@@ -105,36 +92,42 @@ export class AuthController {
       throw new BadRequestException();
     }
 
+    let isResendAllowed = false;
+    if (body.resend) {
+      isResendAllowed = await this.otpService.allowResend(phone, type);
+    }
+
     //! Avoid IP attack (rate-limit)
-    // const recaptcha = body[CAPTCHA_KEY];
-    const isHuman = await this.authService.verifyRecaptcha(recaptchaToken)
+    const isHuman = isResendAllowed || await this.authService.verifyRecaptcha(recaptchaToken);
     if (!isHuman) {
       throw new UnauthorizedException();
     }
-    if (type == OtpTypeEnum.REGISTER) {
+
+    if (type === OtpTypeEnum.REGISTER) {
       const registerBefore = await this.authService.isPhoneExist(phone)
       if (registerBefore) return {
         bizCode: INVALID,
         message: 'Invalid phone number'
       }
-
     }
+
     if (process.env.IS_OTP_ENABLED === 'false') {
       return {
         bizCode: CODE_SUCCESS,
         data: true
       };
     }
-    return this.otpService
-      .generateOtp(phone, type)
-      .then(() => ({
+
+    try {
+      await this.otpService.generateOtp(phone, type);
+      return {
         bizCode: CODE_SUCCESS,
         data: true
-      }))
-      .catch((err) => {
-        console.error(err)
-        throw new InternalServerErrorException()
-      });
+      }
+    } catch (e) {
+      this.logger.error(e)
+      throw new InternalServerErrorException()
+    }
   }
 
   @Post('otp/verify')
@@ -144,7 +137,7 @@ export class AuthController {
       .verifyOtp(phone, code, type)
       .then((token) => ({ bizCode: CODE_SUCCESS, data: token }))
       .catch((err) => {
-        console.error(err)
+        this.logger.error(err)
         return {
           bizCode: INVALID,
           message: 'Invalid code'

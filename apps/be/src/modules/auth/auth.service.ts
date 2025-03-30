@@ -81,13 +81,16 @@ export class AuthService {
       user: userVO,
     };
   }
+
   async isPhoneExist(phone: string): Promise<boolean> {
     const userEntity = await this.userService.findOne(phone)
     return !isNull(userEntity)
   }
+
   refreshToken(userId: string, phone: string) {
     return this.signToken(phone, userId)
   }
+
   async resetPassword(payload: ResetPasswordDto, token: string) {
     const { type, verified, phone }: OtpJwtPayload =
       this.jwtService.verify(token);
@@ -138,7 +141,6 @@ export class AuthService {
     password: string
   ): Promise<Partial<User> | undefined> {
     const user = await this.userService.findOne(phone);
-
     if (user && (await bcrypt.compare(password, user.password))) {
       return omit(user, 'password');
     }

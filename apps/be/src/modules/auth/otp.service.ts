@@ -2,7 +2,7 @@ import { BadRequestException, Injectable, InternalServerErrorException, Logger }
 import { JwtService } from '@nestjs/jwt';
 import { OtpTypeEnum } from '@org/types';
 import { OtpRepository } from './otp.repository';
-import { isEmpty } from 'lodash';
+import * as _ from 'lodash';
 import { UserService } from '../user/user.service';
 import * as process from 'node:process';
 
@@ -24,17 +24,31 @@ export class OtpService {
     private readonly otpRepository: OtpRepository,
     private readonly userService: UserService
   ) {}
+
   async generateOtp(phone: string, type: OtpTypeEnum): Promise<string> {
     // !check rate-limit
-    if (isEmpty(phone)) throw new InternalServerErrorException('Invalid phone');
+    if (_.isEmpty(phone)) throw new InternalServerErrorException('Invalid phone');
     if (OtpTypeEnum.RESET_PASSWORD == type) {
         const user = await this.userService.findOne(phone);
-        if (isEmpty(user)) throw new InternalServerErrorException('Invalid phone');
+        if (_.isEmpty(user)) throw new InternalServerErrorException('Invalid phone');
     }
     const code = Math.floor(1000 + Math.random() * 9000).toString();
     await this.otpRepository.create({ phone, type, code })
     this.sendOTP(phone, code);
     return code;
+  }
+
+  async allowResend(phone: string, type: OtpTypeEnum): Promise<boolean> {
+    if (process.env.IS_OTP_ENABLED === 'false') return true;
+
+    const previousOTP = await this.otpRepository.findPreviousOne(phone, type);
+    if (!previousOTP) {
+      return false;
+    }
+    const timeToResend = new Date();
+    const elapsedTime = timeToResend.getTime() - previousOTP.created_at.getTime();
+    const tenMinutes = 10 * 60;
+    return elapsedTime <= tenMinutes;
   }
 
   async verifyOtp(
@@ -49,7 +63,7 @@ export class OtpService {
       );
     }
     const otpEntity = await this.otpRepository.findOne(phone, code, type);
-    if (isEmpty(otpEntity)) {
+    if (_.isEmpty(otpEntity)) {
       throw new BadRequestException("Invalid code")
     }
     await this.otpRepository.verify(otpEntity.id)
@@ -78,4 +92,5 @@ export class OtpService {
   private sendOTP(phone: string, code: string) {
     this.logger.log(`Send OTP(${code}) to ${phone}`);
   }
+
 }

@@ -13,8 +13,9 @@ type Props = {
 };
 
 const Step2 = (props: Props) => {
+  const secsBeforeResend: number = 60; // 1 minutes
   const [otp, setOtp] = useState<string[]>(new Array(4).fill(''));
-  const [countdown, setCountdown] = useState(3 * 60);
+  const [countdown, setCountdown] = useState(secsBeforeResend);
   const [isActive, setIsActive] = useState(true);
   const [isLoading, setLoading] = useState<boolean>(false);
   const [isSending, setSending] = useState<boolean>(false);
@@ -30,6 +31,7 @@ const Step2 = (props: Props) => {
     } else if (countdown === 0) {
       setIsActive(false);
     }
+
     return () => {
       if (interval) clearInterval(interval);
     };
@@ -42,14 +44,16 @@ const Step2 = (props: Props) => {
       .toString()
       .padStart(2, '0')}`;
   }, []);
-  const handleSendOTP = useCallback(() => {
+
+  const handleResendOTP = useCallback(() => {
     API.post('/auth/otp/send', {
       phone,
       type: OtpTypeEnum.REGISTER,
+      resend: true,
     })
       .then((res) => {
         if (res.bizCode == CODE_SUCCESS) {
-          setCountdown(180);
+          setCountdown(secsBeforeResend);
           setIsActive(true);
         } else {
           showPopup({ title: DEFAULT_ERROR_MSG})
@@ -73,6 +77,7 @@ const Step2 = (props: Props) => {
       (e.target.nextSibling as HTMLInputElement).focus();
     }
   };
+
   const handleSubmit = () => {
     setLoading(true);
     API.post('/auth/otp/verify', {
@@ -122,7 +127,11 @@ const Step2 = (props: Props) => {
             Resend in {formatTime(countdown)}
           </h4>
         ) : (
-          <Button isLoading={isSending} className="mt-5 text-xs" onClick={handleSendOTP}>
+          <Button
+            isLoading={isSending}
+            className="mt-5 text-xs hover:cursor-pointer"
+            onClick={handleResendOTP}
+          >
             Resend
           </Button>
         )}
