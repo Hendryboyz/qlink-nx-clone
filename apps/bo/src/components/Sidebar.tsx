@@ -85,17 +85,17 @@ const Sidebar: React.FC<SidebarProps> = ({ collapsed, setCollapsed }) => {
             </Menu.Item>
           </>
         )}
-        <Menu.Item key="4" icon={<NotificationOutlined />}>
-          <Link to="/advertisements">Advertisement Management</Link>
-        </Menu.Item>
+        {/*<Menu.Item key="4" icon={<NotificationOutlined />}>*/}
+        {/*  <Link to="/advertisements">Advertisement Management</Link>*/}
+        {/*</Menu.Item>*/}
         <Menu.Item key="5" icon={<GiftOutlined />}>
           <Link to="/coupons">Coupon Management</Link>
         </Menu.Item>
-        {user && user.role === 'admin' && (
-          <Menu.Item key="6" icon={<BarChartOutlined />}>
-            <Link to="/reports">Report Data</Link>
-          </Menu.Item>
-        )}
+        {/*{user && user.role === 'admin' && (*/}
+        {/*  <Menu.Item key="6" icon={<BarChartOutlined />}>*/}
+        {/*    <Link to="/reports">Report Data</Link>*/}
+        {/*  </Menu.Item>*/}
+        {/*)}*/}
         <Menu.Item key="post-management" icon={<FileTextOutlined />}>
           <Link to="/post-management">Post Management</Link>
         </Menu.Item>
