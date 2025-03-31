@@ -57,4 +57,4 @@ deployments/local-dockerfiles/
 
 .env
 /.dev.env
-/.env.dev*
+/.env.dev
