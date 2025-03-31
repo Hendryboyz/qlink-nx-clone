@@ -10,6 +10,7 @@ import { useRouter } from 'next/navigation';
 import { usePopup } from '$/hooks/PopupProvider';
 import { DEFAULT_ERROR_MSG } from '@org/common';
 import DropdownField from '$/components/Dropdown';
+import Button from '$/components/Button';
 const CreateSchema = Yup.object().shape({
   id: Yup.string().required('Required'),
   model: Yup.string().required('Required'),
@@ -86,7 +87,7 @@ export default function GarageAdd() {
   const [models, setModels] = useState<ModelVO[]>([]);
   const initValue: FormData = defaultValue;
   const router = useRouter();
-  const { showPopup } = usePopup();
+  const { showPopup, hidePopup } = usePopup();
   useEffect(() => {
     //TODO: fetch model list
     setModels([
@@ -111,8 +112,33 @@ export default function GarageAdd() {
             year: values.year,
             model: values.model,
           } as ProductDto)
-            .then((res) => {
-              router.push('/garage');
+            .then((_) => {
+              showPopup({
+                useDefault: false,
+                title: 'Your product has been registered.',
+                content: (
+                  <div className='flex items-center justify-center gap-6'>
+                    <Button
+                      className='py-2 text-base w-36'
+                      onClick={() => {
+                        router.push('/garage');
+                        hidePopup();
+                      }}
+                    >
+                      Garage
+                    </Button>
+                    <Button
+                      className='py-2 text-base w-36'
+                      onClick={() => {
+                        router.push('/home');
+                        hidePopup();
+                      }}
+                    >
+                      Home
+                    </Button>
+                  </div>
+                )
+              })
             })
             .catch((err) => {
               showPopup({ title: DEFAULT_ERROR_MSG });
