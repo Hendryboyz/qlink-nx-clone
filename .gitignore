@@ -47,7 +47,6 @@ apps/**/.next
 build/
 .secret-*
 **.sample
-.env
 #amplify-do-not-edit-end
 uploads/
 
@@ -55,3 +54,7 @@ vite.config.*.timestamp*
 vitest.config.*.timestamp*
 deployments/local-dockerfiles/
 /pushecr.sh
+
+.env
+/.dev.env
+/.env.dev*
