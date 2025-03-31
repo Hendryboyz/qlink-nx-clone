@@ -37,12 +37,12 @@ export default function Garage() {
     <GarageEdit
       data={editData}
       onCancel={() => {
-        handleFetch()
+        handleFetch();
         setEditData(null);
         setIsEditMode(false);
       }}
       onRemove={() => {
-        handleFetch()
+        handleFetch();
         setEditData(null);
         setIsEditMode(false);
       }}
@@ -52,11 +52,11 @@ export default function Garage() {
       <Header title="My Garage" />
       <div className="px-6 py-4">
         <div className="container mx-auto">
-          <div className="grid grid-cols-1 gap-6">
+          <div className="grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10 justify-items-center">
             {products.map((product) => (
               <div
                 key={product.id}
-                className="max-w-sm rounded-2xl overflow-hidden shadow-lg"
+                className="flex flex-col w-5/6 rounded-2xl overflow-hidden shadow-lg"
                 onClick={() => {
                   setCurrentProduct(product);
                   setIsModalOpen(true);
@@ -70,16 +70,16 @@ export default function Garage() {
                 </div>
               </div>
             ))}
-            <div className="mt-6 flex justify-center">
-              <img
-                src="/assets/add.png"
-                alt="add"
-                className="w-6"
-                onClick={() => {
-                  router.push('/garage/add');
-                }}
-              />
-            </div>
+          </div>
+          <div className="mt-6 flex justify-center">
+            <img
+              src="/assets/add.png"
+              alt="add"
+              className="w-6"
+              onClick={() => {
+                router.push('/garage/add');
+              }}
+            />
           </div>
         </div>
         {isModalOpen && (

@@ -17,16 +17,16 @@ const News = () => {
   }, [])
     return <div className="w-full min-h-full flex-1">
       <Header title="News" />
-      <div className="space-y-3 p-6">
+      <div className="space-y-3 p-6 md:grid md:grid-cols-2 lg:grid-cols-3">
           {posts.map((item, index) => (
             <div key={index}>
-            <NewsItem
-              key={index}
-              type={item.category}
-              title={item.title}
-              date={new Date(item.publishStartDate)}
-              imgUrl={item.coverImage}
-              id={item.id} />
+              <NewsItem
+                key={index}
+                type={item.category}
+                title={item.title}
+                date={new Date(item.publishStartDate)}
+                imgUrl={item.coverImage}
+                id={item.id} />
             </div>
           ))}
         </div>
