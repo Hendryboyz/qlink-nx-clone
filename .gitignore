@@ -54,3 +54,4 @@ uploads/
 vite.config.*.timestamp*
 vitest.config.*.timestamp*
 deployments/local-dockerfiles/
+/pushecr.sh
