@@ -146,6 +146,7 @@ export default function GarageEdit({ data, onCancel, onRemove }: Props) {
       })
       .finally(hidePopup)
   }, [initValue])
+
   const handleRemove = () => {
     showPopup({
       useDefault: false,
@@ -155,8 +156,8 @@ export default function GarageEdit({ data, onCancel, onRemove }: Props) {
         <Button className='py-2 text-xs w-20' onClick={hidePopup}>Cancel</Button>
       </div>)
     })
-
   };
+
   return (
     <div className="w-full  min-h-full flex-1">
       <Formik
@@ -285,14 +286,16 @@ export default function GarageEdit({ data, onCancel, onRemove }: Props) {
                   );
                 }
               )}
-              <div className="flex items-center w-full justify-center mt-9">
-                <span className="text-primary-500 font-bold">
+              <div
+                className="flex items-center w-full justify-center mt-9 hover:cursor-pointer"
+                onClick={() => handleRemove()}
+              >
+                <span className="text-primary-500 font-bold mr-2">
                   Don&apos;t own the bike anymore?
                 </span>
                 <img
                   alt="remove"
                   src="/assets/trash.png"
-                  onClick={() => handleRemove()}
                 />
               </div>
             </div>
