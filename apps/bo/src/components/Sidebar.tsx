@@ -19,6 +19,15 @@ interface SidebarProps {
   setCollapsed: (collapsed: boolean) => void;
 }
 
+type ItemProps = {
+  title: string;
+  link?: string;
+  icon: JSX.Element;
+  adminOnly?: boolean;
+  clickHandler?: () => void;
+  hidden: boolean;
+};
+
 const Sidebar: React.FC<SidebarProps> = ({ collapsed, setCollapsed }) => {
   const navigate = useNavigate();
   const location = useLocation();
@@ -26,37 +35,78 @@ const Sidebar: React.FC<SidebarProps> = ({ collapsed, setCollapsed }) => {
   const userString = localStorage.getItem('user');
   const user = userString ? JSON.parse(userString) : null;
 
-  useEffect(() => {
-    const path = location.pathname;
-    const key = getKeyFromPath(path);
-    setSelectedKeys([key]);
-  }, [location]);
-
-  const getKeyFromPath = (path: string): string => {
-    switch (path) {
-      case '/dashboard':
-        return '1';
-      case '/members':
-        return '2';
-      case '/dealers':
-        return '3';
-      case '/advertisements':
-        return '4';
-      case '/coupons':
-        return '5';
-      case '/reports':
-        return '6';
-      case '/post-management':
-        return 'post-management';
-      default:
-        return '1';
-    }
-  };
-
   const handleLogout = () => {
     localStorage.removeItem('user');
     navigate('/login');
   };
+
+  const menuItems: ItemProps[] = [
+    {
+      title: 'Dashboard',
+      link: '/dashboard',
+      icon: <DashboardOutlined />,
+      hidden: false,
+    },
+    {
+      title: 'Member Management',
+      link: '/members',
+      icon: <UserOutlined />,
+      adminOnly: true,
+      hidden: false,
+    },
+    {
+      title: 'Dealer Management',
+      link: '/dealers',
+      icon: <ShopOutlined />,
+      adminOnly: true,
+      hidden: true,
+    },
+    {
+      title: 'Advertisement Management',
+      link: '/advertisements',
+      icon: <NotificationOutlined />,
+      hidden: true,
+    },
+    {
+      title: 'Coupon Management',
+      link: '/coupons',
+      icon: <GiftOutlined />,
+      hidden: true,
+    },
+    {
+      title: 'Report Data',
+      link: '/reports',
+      icon: <BarChartOutlined />,
+      adminOnly: true,
+      hidden: true,
+    },
+    {
+      title: 'Post Management',
+      link: '/post-management',
+      icon: <FileTextOutlined />,
+      hidden: false,
+    },
+    {
+      title: 'Logout',
+      icon: <LogoutOutlined />,
+      clickHandler: handleLogout,
+      hidden: false,
+    },
+  ];
+
+  useEffect(() => {
+    const path = location.pathname;
+    const key = getKeysFromPath(path);
+    setSelectedKeys([key.toString()]);
+  }, [location]);
+
+  const getKeysFromPath = (path: string): number => {
+    const selectedKey = menuItems.findIndex(item => item.link === path);
+    if (selectedKey === -1) return 1;
+    return selectedKey;
+  };
+
+
 
   return (
     <Sider
@@ -72,36 +122,18 @@ const Sidebar: React.FC<SidebarProps> = ({ collapsed, setCollapsed }) => {
     >
       <div className="logo" />
       <Menu theme="dark" mode="inline" selectedKeys={selectedKeys}>
-        <Menu.Item key="1" icon={<DashboardOutlined />}>
-          <Link to="/dashboard">Dashboard</Link>
-        </Menu.Item>
-        {user && user.role === 'admin' && (
-          <>
-            <Menu.Item key="2" icon={<UserOutlined />}>
-              <Link to="/members">Member Management</Link>
+        { menuItems
+          .filter((item: ItemProps) =>
+            !item.hidden &&
+            (!item.adminOnly
+            || (user && user.role === 'admin'))
+          )
+          .map((item: ItemProps, index: number) => (
+            <Menu.Item key={index} icon={item.icon} onClick={item.clickHandler}>
+              { item.link ? <Link to={item.link}>{item.title}</Link> : item.title }
             </Menu.Item>
-            <Menu.Item key="3" icon={<ShopOutlined />}>
-              <Link to="/dealers">Dealer Management</Link>
-            </Menu.Item>
-          </>
-        )}
-        {/*<Menu.Item key="4" icon={<NotificationOutlined />}>*/}
-        {/*  <Link to="/advertisements">Advertisement Management</Link>*/}
-        {/*</Menu.Item>*/}
-        <Menu.Item key="5" icon={<GiftOutlined />}>
-          <Link to="/coupons">Coupon Management</Link>
-        </Menu.Item>
-        {/*{user && user.role === 'admin' && (*/}
-        {/*  <Menu.Item key="6" icon={<BarChartOutlined />}>*/}
-        {/*    <Link to="/reports">Report Data</Link>*/}
-        {/*  </Menu.Item>*/}
-        {/*)}*/}
-        <Menu.Item key="post-management" icon={<FileTextOutlined />}>
-          <Link to="/post-management">Post Management</Link>
-        </Menu.Item>
-        <Menu.Item key="7" icon={<LogoutOutlined />} onClick={handleLogout}>
-          Logout
-        </Menu.Item>
+          ))
+        }
       </Menu>
     </Sider>
   );
