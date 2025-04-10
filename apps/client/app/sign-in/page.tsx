@@ -46,7 +46,7 @@ export default function SignIn() {
               remember_me: values.rememberMe,
             })
               .then((_) => {
-                router.push('/member');
+                router.push('/home');
               })
               .catch((err) => {
                 console.log(err);

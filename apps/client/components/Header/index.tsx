@@ -1,6 +1,7 @@
 import React, { BaseHTMLAttributes, ReactNode, useState } from 'react';
 import Menu from './Menu';
-import { useRouter } from 'next/navigation';
+import { useRouter, usePathname } from 'next/navigation';
+import classNames from 'classnames';
 
 type Props = BaseHTMLAttributes<HTMLDivElement> & {
   title?: string;
@@ -10,6 +11,7 @@ type Props = BaseHTMLAttributes<HTMLDivElement> & {
 };
 const Header: React.FC<Props> = ({ title, useBackBtn, customBtn, customBackAction }) => {
   const router = useRouter();
+  const pathname = usePathname()
   const [isOpen, toggleOpen] = useState<boolean>(false);
   return (
     <>
@@ -38,7 +40,15 @@ const Header: React.FC<Props> = ({ title, useBackBtn, customBtn, customBackActio
             </button>
           )}
           {title && <h1 className="text-white text-xl font-bold">{title}</h1>}
-          <div>{customBtn ? customBtn : <img src="/assets/logo.png" />}</div>
+          <div>{
+            customBtn ? customBtn :
+            <img onClick={() => { router.push('/home') }}
+                 className={classNames(
+                   {"hover:cursor-pointer": pathname !== '/home' },
+                 )}
+                 src="/assets/logo.png"
+                 alt="logo" />
+          }</div>
           {!title && <div className="w-6"></div>}
         </div>
         <Menu isOpen={isOpen} onClose={() => toggleOpen((pre) => !pre)} />

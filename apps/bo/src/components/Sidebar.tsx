@@ -20,7 +20,7 @@ interface SidebarProps {
 }
 
 type ItemProps = {
-  title: string;
+  label: string;
   link?: string;
   icon: JSX.Element;
   adminOnly?: boolean;
@@ -42,52 +42,52 @@ const Sidebar: React.FC<SidebarProps> = ({ collapsed, setCollapsed }) => {
 
   const menuItems: ItemProps[] = [
     {
-      title: 'Dashboard',
+      label: 'Dashboard',
       link: '/dashboard',
       icon: <DashboardOutlined />,
       hidden: false,
     },
     {
-      title: 'Member Management',
+      label: 'Member Management',
       link: '/members',
       icon: <UserOutlined />,
       adminOnly: true,
       hidden: false,
     },
     {
-      title: 'Dealer Management',
+      label: 'Dealer Management',
       link: '/dealers',
       icon: <ShopOutlined />,
       adminOnly: true,
       hidden: true,
     },
     {
-      title: 'Advertisement Management',
+      label: 'Advertisement Management',
       link: '/advertisements',
       icon: <NotificationOutlined />,
       hidden: true,
     },
     {
-      title: 'Coupon Management',
+      label: 'Coupon Management',
       link: '/coupons',
       icon: <GiftOutlined />,
       hidden: true,
     },
     {
-      title: 'Report Data',
+      label: 'Report Data',
       link: '/reports',
       icon: <BarChartOutlined />,
       adminOnly: true,
       hidden: true,
     },
     {
-      title: 'Post Management',
+      label: 'Post Management',
       link: '/post-management',
       icon: <FileTextOutlined />,
       hidden: false,
     },
     {
-      title: 'Logout',
+      label: 'Logout',
       icon: <LogoutOutlined />,
       clickHandler: handleLogout,
       hidden: false,
@@ -105,8 +105,6 @@ const Sidebar: React.FC<SidebarProps> = ({ collapsed, setCollapsed }) => {
     if (selectedKey === -1) return 1;
     return selectedKey;
   };
-
-
 
   return (
     <Sider
@@ -129,8 +127,11 @@ const Sidebar: React.FC<SidebarProps> = ({ collapsed, setCollapsed }) => {
             || (user && user.role === 'admin'))
           )
           .map((item: ItemProps, index: number) => (
-            <Menu.Item key={index} icon={item.icon} onClick={item.clickHandler}>
-              { item.link ? <Link to={item.link}>{item.title}</Link> : item.title }
+            <Menu.Item
+              key={index}
+              icon={item.icon}
+              onClick={item.clickHandler}>
+              { item.link ? <Link to={item.link}>{item.label}</Link> : item.label }
             </Menu.Item>
           ))
         }

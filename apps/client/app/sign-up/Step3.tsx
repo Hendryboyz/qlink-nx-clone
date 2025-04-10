@@ -315,7 +315,7 @@ const Step3 = (props: Props) => {
                         .filter(([k, v]) => {
                           return isNaN(Number(k)) && v !== UserSourceType.NONE
                         })
-                        .map(([k, v]) => ({value: Number(v), label: UserSourceDisplay[v]}))}
+                        .map(([_, v]) => ({value: Number(v), label: UserSourceDisplay[v]}))}
                   >
                     <ErrorMessage
                       name="source"
