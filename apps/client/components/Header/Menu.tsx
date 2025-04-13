@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import React from 'react';
+import API from '$/utils/fetch';
 
 const mainItems = [
   ['Home', '/home'],
@@ -49,10 +50,9 @@ const Menu: React.FC<Props> = ({ isOpen, onClose }) => {
                       {title}
                     </Link>
                   </li>
-                )
+                );
               })}
             </ul>
-            <hr className="my-3" />
             <ul>
               {supportItems.map((item, index) => {
                 const [title, link] = item;
@@ -62,9 +62,19 @@ const Menu: React.FC<Props> = ({ isOpen, onClose }) => {
                       {title}
                     </Link>
                   </li>
-                )
+                );
               })}
             </ul>
+            <hr className="my-3" />
+            <Link
+              className="py-4 text-base hover:cursor-pointer hover:underline"
+              href="/sign-in"
+              onClick={() => {
+                API.clearToken();
+              }}
+            >
+              Logout
+            </Link>
           </nav>
         </div>
       </div>
