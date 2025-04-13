@@ -30,7 +30,7 @@ export default function Editable({editKey, title, type = 'text', defaultValue, v
   const [currentValue, setCurrentValue] = useState(defaultValue);
   const [currentCursor, setCursor] = useState([defaultValue ? defaultValue.length : null, defaultValue ? defaultValue.length : null]);
 
-  const inputRef = useRef<HTMLInputElement>();
+  const inputRef = useRef<HTMLInputElement>(null);
 
   // focus input while editing
   useEffect(() => {
