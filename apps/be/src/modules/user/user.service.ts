@@ -13,6 +13,7 @@ export class UserService {
       const user = await this.userRepository.findByPhone(phone)
       return user;
   }
+
   async getUserInfo(userId: string): Promise<UserVO | undefined> {
     const user = await this.userRepository.findById(userId)
     return {
@@ -23,6 +24,10 @@ export class UserService {
   // async findById(id: string): Promise<User | undefined> {
   //   return this.userRepository.findOne({ where: { id } });
   // }
+
+  async isEmailExist(email: string): Promise<boolean> {
+    return await this.userRepository.isEmailExist(email);
+  }
 
   async create(createUserDto: RegisterDto, hashedPassword: string): Promise<UserVO> {
     const userEntity = await this.userRepository.create({
@@ -52,7 +57,7 @@ export class UserService {
 //     return false;
 //   }
 async updatePassword(userId: string, password: string): Promise<UserVO> {
-  
+
   const userEntity = await this.userRepository.update(userId, { password });
   return {
     ...omit(userEntity, [
@@ -67,7 +72,7 @@ async updatePassword(userId: string, password: string): Promise<UserVO> {
 
   async updateUser(userId: string, updateData: UserUpdateDto): Promise<UserVO> {
     if (updateData.password != null) throw new BadRequestException();
-    
+
     const userEntity = await this.userRepository.update(userId, updateData);
     return {
       ...omit(userEntity, [

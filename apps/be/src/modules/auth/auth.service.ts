@@ -72,6 +72,10 @@ export class AuthService {
 
     this.validateRegisterPayload(payload);
 
+    if (await this.userService.isEmailExist(payload.email)) {
+      throw this.generateBadRequest(`Duplicate email: ${payload.email}`, 'email');
+    }
+
     const hashedPassword = await this.hashedPassword(payload.password);
     const userVO = await this.userService.create(payload, hashedPassword);
     // 在實際應用中,您需要發送OTP給用戶(例如通過電子郵件或短信)
@@ -81,6 +85,10 @@ export class AuthService {
       user: userVO,
     };
   }
+
+  private generateBadRequest =
+    (message: string = '', type: string) =>
+      new BadRequestException({ bizCode: INVALID_PAYLOAD, data: { error: {type, message}} });
 
   async isPhoneExist(phone: string): Promise<boolean> {
     const userEntity = await this.userService.findOne(phone)
@@ -151,7 +159,7 @@ export class AuthService {
       phone,
       type,
       password,
-      rePassword: re_password,
+      rePassword,
       firstName: first_name,
       midName: mid_name = '',
       lastName: last_name,
@@ -164,36 +172,39 @@ export class AuthService {
       whatsapp = '',
       facebook = '',
     } = payload;
-    const badRequestGenerator = (message: string = '', type: string) =>
-      new BadRequestException({ bizCode: INVALID_PAYLOAD, data: { error: {type, message}} });
-    // 1. validate phone format
-    if (!phoneRegex.test(phone)) throw badRequestGenerator('Invalid phone', 'phone');
-    if (!Object.values(UserType).includes(type)) throw badRequestGenerator('Invalid user-type', 'type');
-    if (!passwordRegex.test(password))
-      throw badRequestGenerator('Invalid password', 'password');
-    if (password != re_password) throw badRequestGenerator('Unconfirmed password', 're_password');
+
+    if (!phoneRegex.test(phone)) throw this.generateBadRequest('Invalid phone', 'phone');
+    if (!Object.values(UserType).includes(type)) throw this.generateBadRequest('Invalid user-type', 'type');
+    if (!passwordRegex.test(password)) throw this.generateBadRequest('Invalid password', 'password');
+    if (password !== rePassword) throw this.generateBadRequest('Unconfirmed password', 're_password');
+
     // ! need improvement
     if (
-      !alphaMax50Regex.test(first_name) ||
-      !alphaMax50Regex.test(last_name) ||
-      (mid_name != '' && !alphaMax50Regex.test(mid_name))
+      !alphaMax50Regex.test(first_name)
+      ||!alphaMax50Regex.test(last_name)
+      ||(mid_name !== '' && !alphaMax50Regex.test(mid_name))
     )
-      throw badRequestGenerator('Invalid name', 'first_name');
+      throw this.generateBadRequest('Invalid name', 'first_name');
+
     if (
       !alphaMax50Regex.test(address_city) ||
       !alphaMax50Regex.test(address_state) ||
       (address_detail != '' && !alphaMax50Regex.test(address_detail))
     )
-      throw badRequestGenerator('Invalid address', 'address_city');
+      throw this.generateBadRequest('Invalid address', 'address_city');
+
     if (birthday != '' && !birthdayRegex.test(birthday))
-      throw badRequestGenerator('Invalid birthday', 'birthday');
+      throw this.generateBadRequest('Invalid birthday', 'birthday');
+
+    this.logger.debug(source, Object.values(UserSourceType).includes(source));
     if (
       !Number.isNaN(source) &&
       !Object.values(UserSourceType).includes(source)
     )
-      throw badRequestGenerator('Invalid source', 'source');
+      throw this.generateBadRequest('Invalid source', 'source');
+
     if (email != '' && !emailRegex.test(email))
-      throw badRequestGenerator('Invalid email', 'email');
+      throw this.generateBadRequest('Invalid email', 'email');
     // whatsapp
     // facebook
   }

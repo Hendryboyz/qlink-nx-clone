@@ -20,6 +20,7 @@ export class UserRepository {
     const result: QueryResult<UserEntity> = await this.pool.query(query);
     return result.rows[0] || null;
   }
+
   async findById(id: string): Promise<UserEntity | null> {
     const query = 'SELECT * FROM users WHERE id = $1 AND is_delete = false';
     const values = [id];
@@ -29,6 +30,19 @@ export class UserRepository {
       return rows[0] || null;
     } catch (error) {
       console.error('Error fetching user by ID:', error);
+      throw error;
+    }
+  }
+
+  async isEmailExist(email: string): Promise<boolean | null> {
+    const query = 'SELECT COUNT(*) FROM users WHERE email = $1 AND is_delete = false';
+    const values = [email];
+
+    try {
+      const { rows } = await this.pool.query(query, values);
+      return rows[0]['count'] > 0;
+    } catch (error) {
+      console.error('Error count user by email:', error);
       throw error;
     }
   }

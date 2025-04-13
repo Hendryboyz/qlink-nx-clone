@@ -36,11 +36,12 @@ export class AllExceptionsFilter implements ExceptionFilter {
       // 處理HTTP異常，保持原有的HTTP狀態碼
       const exceptionResponse = exception.getResponse();
       statusCode = exception.getStatus();
+      // console.error(typeof exceptionResponse, exception.message, exception.getResponse());
       responseBody = {
         bizCode: this.mapHttpStatusToBizCode(statusCode),
-        data: null,
-        message: typeof exceptionResponse === 'object' 
-          ? (exceptionResponse as any).message 
+        data: exception.getResponse(),
+        message: typeof exceptionResponse === 'object'
+          ? (exceptionResponse as any).message
           : exceptionResponse
       };
     } else if (exception instanceof Error) {
@@ -50,7 +51,7 @@ export class AllExceptionsFilter implements ExceptionFilter {
         data: null,
         message: exception.message
       };
-      
+
       // 可以添加錯誤日誌
       this.logger.error(
         `Exception occurred: ${JSON.stringify(responseBody.message)}`,

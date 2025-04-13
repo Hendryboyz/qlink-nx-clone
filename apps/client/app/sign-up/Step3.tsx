@@ -73,6 +73,7 @@ interface FormData {
   facebook: string;
   addressDetail: string;
 }
+
 const defaultValue: FormData = {
   password: '',
   rePassword: '',
@@ -104,12 +105,18 @@ const Step3 = (props: Props) => {
   const [showDatePicker, toggleDatePicker] = useState(false);
   const { phone, token } = usePayload();
   const {showPopup} = usePopup()
+  const sourceOptions = typedObjectEntries(UserSourceType)
+    .filter(([k, v]) => {
+      return isNaN(Number(k)) && v !== UserSourceType.NONE
+    })
+    .map(([_, v]) => ({value: Number(v), label: UserSourceDisplay[v]}))
+
   return (
     <Container title="Account detail" step={3}>
       <Formik
         initialValues={initValue}
         validationSchema={SignupSchema}
-        onSubmit={(values, { setSubmitting }) => {
+        onSubmit={(values, { setSubmitting, setFieldError }) => {
           const payload: RegisterDto = {
             phone: phone || 'None',
             type: UserType.CLIENT,
@@ -122,7 +129,7 @@ const Step3 = (props: Props) => {
             addressCity: values.addressCity,
             addressDetail: values.addressDetail,
             birthday: values.birthday,
-            source: UserSourceType.NONE,
+            source: values.source,
             email: values.email,
             whatsapp: values.whatsapp,
             facebook: values.facebook,
@@ -138,8 +145,13 @@ const Step3 = (props: Props) => {
             .then((res) => {
               if (res.bizCode == CODE_SUCCESS) props.onSuccess();
               else {
-                showPopup({ title: DEFAULT_ERROR_MSG})
+                showPopup({ title: DEFAULT_ERROR_MSG });
               }
+            })
+            .catch(e => {
+              showPopup({ title: DEFAULT_ERROR_MSG });
+              const { type: field, message } = e.data.data.error;
+              setFieldError(field, message);
             })
             .finally(() => setSubmitting(false));
         }}
@@ -248,11 +260,11 @@ const Step3 = (props: Props) => {
                   </label>
                   <DropdownField
                     label="addressState"
-                      id="addressState"
-                      name="addressState"
-                      placeholder="State"
-                      className={DEFAULT_INPUT_STYLES}
-                      options={STATES.map(value => ({value}))}
+                    id="addressState"
+                    name="addressState"
+                    placeholder="State"
+                    className={DEFAULT_INPUT_STYLES}
+                    options={STATES.map(value => ({value}))}
                   >
                     <ErrorMessage
                       name="addressState"
@@ -306,16 +318,12 @@ const Step3 = (props: Props) => {
                     </div>
                   </label>
                   <DropdownField
-                    label="Source"
-                      id="Source"
-                      name="Source"
-                      placeholder="Source"
-                      className={DEFAULT_INPUT_STYLES}
-                      options={typedObjectEntries(UserSourceType)
-                        .filter(([k, v]) => {
-                          return isNaN(Number(k)) && v !== UserSourceType.NONE
-                        })
-                        .map(([_, v]) => ({value: Number(v), label: UserSourceDisplay[v]}))}
+                    label="source"
+                    id="Source"
+                    name="Source"
+                    placeholder="Source"
+                    className={DEFAULT_INPUT_STYLES}
+                    options={sourceOptions}
                   >
                     <ErrorMessage
                       name="source"
