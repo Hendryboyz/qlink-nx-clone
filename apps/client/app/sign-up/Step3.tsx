@@ -103,13 +103,13 @@ const Step3 = (props: Props) => {
   const [showPassword, togglePassword] = useState(false);
   const [showRePassword, toggleRePassword] = useState(false);
   const [showDatePicker, toggleDatePicker] = useState(false);
-  const { phone, token } = usePayload();
+  const {phone, token} = usePayload();
   const {showPopup} = usePopup()
   const sourceOptions = typedObjectEntries(UserSourceType)
     .filter(([k, v]) => {
       return isNaN(Number(k)) && v !== UserSourceType.NONE
     })
-    .map(([_, v]) => ({value: Number(v), label: UserSourceDisplay[v]}))
+    .map(([_, v]) => ({value: v, label: UserSourceDisplay[v]}))
 
   return (
     <Container title="Account detail" step={3}>
@@ -129,7 +129,7 @@ const Step3 = (props: Props) => {
             addressCity: values.addressCity,
             addressDetail: values.addressDetail,
             birthday: values.birthday,
-            source: values.source,
+            source: Number(values.source),
             email: values.email,
             whatsapp: values.whatsapp,
             facebook: values.facebook,
@@ -319,8 +319,8 @@ const Step3 = (props: Props) => {
                   </label>
                   <DropdownField
                     label="source"
-                    id="Source"
-                    name="Source"
+                    id="source"
+                    name="source"
                     placeholder="Source"
                     className={DEFAULT_INPUT_STYLES}
                     options={sourceOptions}

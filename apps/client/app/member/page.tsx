@@ -1,12 +1,12 @@
 'use client';
 
 import React, { useCallback, useEffect, useState } from 'react';
-import { UserUpdateDto, UserVO } from '@org/types';
+import { UserSourceType, UserUpdateDto, UserVO } from '@org/types';
 import Header from '$/components/Header';
 import * as Yup from 'yup';
 import API from '$/utils/fetch';
 import Editable from '$/components/Fields/Editable';
-import { STATES } from '@org/common';
+import { STATES, UserSourceDisplay } from '@org/common';
 
 export default function Member() {
   const [user, setUser] = useState<UserVO | null>(null);
@@ -177,12 +177,13 @@ export default function Member() {
             saveChange={saveChange}
             isChangeAllowed={true}
           />
-          {/*<Editable*/}
-          {/*  key="source"*/}
-          {/*  title="Source"*/}
-          {/*  defaultValue={(user && user.source) ? UserSourceDisplay[user.source as UserSourceType] : UserSourceDisplay[UserSourceType.NONE]}*/}
-          {/*  isChangeAllowed={false}*/}
-          {/*/>*/}
+          <Editable
+            key="source"
+            editKey="source"
+            title="Source"
+            defaultValue={(user && user.source) ? UserSourceDisplay[user.source as UserSourceType] : UserSourceDisplay[UserSourceType.NONE]}
+            isChangeAllowed={false}
+          />
         </div>}
       </div>
     </div>

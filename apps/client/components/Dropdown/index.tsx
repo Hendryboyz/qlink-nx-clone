@@ -10,30 +10,33 @@ interface Props extends FieldAttributes<any> {
   children?: React.ReactNode;
 }
 
-const DropdownField: React.FC<Props> = ({name, options, placeholder, children, className, ...rest}) => {
+const DropdownField: React.FC<Props> = ({name, label, options, placeholder, children, className, ...rest}) => {
+  // console.log(options);
   return (
-    <div className='flex items-center justify-between'>
-      <Field
-        as="select"
-        id={name}
-        name={name}
-        className={`w-full appearance-none focus:outline-none ${className}`}
-        {...rest}
-      >
-        {placeholder && (
-          <option value="" disabled selected hidden>
-            {placeholder}
-          </option>
-        )}
-        {options.map((option) => (
-          <option key={option.value} value={option.value}>
-            {option.label ? option.label : option.value}
-          </option>
-        ))}
-      </Field>
-      {children}
+    <>
+      <label htmlFor={label} className="flex items-center justify-between">
+        <Field
+          as="select"
+          id={name}
+          name={name}
+          className={`w-full appearance-none focus:outline-none ${className}`}
+          {...rest}
+        >
+          {placeholder && (
+            <option value="" disabled selected hidden>
+              {placeholder}
+            </option>
+          )}
+          {options.map((option) => (
+            <option key={option.value} value={option.value}>
+              {option.label ? option.label : option.value}
+            </option>
+          ))}
+        </Field>
+        {children}
         <img src="/assets/arrow_down.png" />
-    </div>
+      </label>
+    </>
   );
 };
 
