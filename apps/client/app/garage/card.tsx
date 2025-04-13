@@ -25,52 +25,48 @@ const ProductCard = ({ data, handleEdit }: { data: ProductVO, handleEdit: (data:
   } = data;
 
   return (
-    <div>
-      <div className="flex items-end relative bg-gray-200 h-40">
-        <div className="ml-9">
+    <>
+      <div className="flex justify-between min-h-[164px] bg-gray-200">
+        <div className="ml-9 mb-3 self-end">
           <p className="text-xl font-light text-white">{data.year}</p>
           <h2 className="text-3xl font-black text-primary-500">{model}</h2>
         </div>
         <img
-          className="absolute"
+          className="mr-8 mt-8 self-start"
           src="/assets/edit.png"
           alt="edit"
           onClick={() => {
-            handleEdit(data)
-          }}
-          style={{
-            right: 24,
-            top: 24,
+            handleEdit(data);
           }}
         />
       </div>
-      <div className={`space-y-2 py-4 px-6 bg-gray-700 text-white ${rowCss}`} >
+      <div className={`space-y-2 py-4 px-6 bg-gray-700 text-white ${rowCss}`}>
         <div>
-          <p >Registration ID</p>
-          <p className="font-semibold">{id}</p>
+          <p>Registration ID</p>
+          <p className="font-semibold pb-1">{id}</p>
         </div>
         <div>
-          <p >VIN Number</p>
-          <p className="font-semibold">{vin}</p>
+          <p>VIN Number</p>
+          <p className="font-semibold pb-1">{vin}</p>
         </div>
         <div>
-          <p >Engine Serial Number</p>
-          <p className="font-semibold">{engineNumber}</p>
+          <p>Engine Serial Number</p>
+          <p className="font-semibold pb-1">{engineNumber}</p>
         </div>
         <div>
-          <p >Purchase Date</p>
-          <p className="font-semibold">{purchaseDate}</p>
+          <p>Purchase Date</p>
+          <p className="font-semibold pb-1">{purchaseDate}</p>
         </div>
         <div>
-          <p >Registration Date</p>
-          <p className="font-semibold">{registrationDate}</p>
+          <p>Registration Date</p>
+          <p className="font-semibold pb-1">{registrationDate}</p>
         </div>
         <div>
-          <p >Dealer Name</p>
-          <p className="font-semibold">{dealerName}</p>
+          <p>Dealer Name</p>
+          <p className="font-semibold pb-1">{dealerName}</p>
         </div>
       </div>
-    </div>
+    </>
   );
 };
 

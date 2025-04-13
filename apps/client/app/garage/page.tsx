@@ -7,6 +7,7 @@ import ProductCard from './card';
 import { useRouter } from 'next/navigation';
 import API from '$/utils/fetch';
 import GarageEdit from './edit';
+import defaultMotorImage from '$/public/assets/sym125.png';
 
 export default function Garage() {
   const router = useRouter();
@@ -25,6 +26,7 @@ export default function Garage() {
     dealerName: '',
     model: '',
   });
+  console.log(defaultMotorImage.src);
   const handleFetch = useCallback(() => {
     API.get<ProductVO[]>('/product/list').then((res) => {
       setProducts(res);
@@ -56,13 +58,22 @@ export default function Garage() {
             {products.map((product) => (
               <div
                 key={product.id}
-                className="flex flex-col w-5/6 rounded-2xl overflow-hidden shadow-lg"
+                className="flex flex-col max-w-[312px] w-full rounded-2xl overflow-hidden shadow-lg"
                 onClick={() => {
                   setCurrentProduct(product);
                   setIsModalOpen(true);
                 }}
               >
-                <div className="h-24 bg-gray-300" />{' '}
+                {/*<div className="h-24 bg-gray-300" />*/}
+                <div
+                  style={{
+                    height: '6rem',
+                    backgroundImage: `url(${defaultMotorImage.src})`,
+                    backgroundSize: 'cover',
+                    backgroundPosition: 'center center',
+                    // backgroundColor: ' rgb(217 217 217)'
+                  }}
+                />
                 {/* Placeholder for image */}
                 <div className="px-4 py-3 bg-gray-500 flex justify-between text-white">
                   <div className="font-bold text-sm mb-2">{product.model}</div>
