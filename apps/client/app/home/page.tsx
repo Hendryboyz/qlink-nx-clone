@@ -39,7 +39,7 @@ export default function Index() {
               <div className="w-20 h-20 bg-gray-300 rounded-full flex items-center justify-center text-2xl mb-3">
                 {item.icon}
               </div>
-              <span className="text-sm">{item.title}</span>
+              <span className="text-[18px]">{item.title}</span>
             </div>
           ))}
         </div>
