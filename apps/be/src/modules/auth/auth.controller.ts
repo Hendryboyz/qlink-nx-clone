@@ -68,6 +68,7 @@ export class AuthController {
       data: user
     };
   }
+
   @Post('reset-password')
   async resetPassword(
     @Body() body: ResetPasswordDto,
