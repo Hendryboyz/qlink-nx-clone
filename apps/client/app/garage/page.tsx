@@ -26,7 +26,6 @@ export default function Garage() {
     dealerName: '',
     model: '',
   });
-  console.log(defaultMotorImage.src);
   const handleFetch = useCallback(() => {
     API.get<ProductVO[]>('/product/list').then((res) => {
       setProducts(res);

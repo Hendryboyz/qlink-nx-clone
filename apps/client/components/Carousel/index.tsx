@@ -15,7 +15,8 @@ type ImageCarouselProps = HTMLAttributes<HTMLDivElement> & {
   images: ImageItem[];
 }
 
-const Carousel: React.FC<ImageCarouselProps> = ({ images, className }) => {
+
+const ReactSlickCarousel: React.FC<ImageCarouselProps> = ({ images, className }) => {
   const settings: Settings = {
     dots: true,
     infinite: true,
@@ -24,14 +25,14 @@ const Carousel: React.FC<ImageCarouselProps> = ({ images, className }) => {
     slidesToScroll: 1,
     autoplay: false,
     autoplaySpeed: 3000,
-    dotsClass: 'slick-dots bottom-6'
+    dotsClass: '!bottom-6 slick-dots'
   };
 
   return (
     <div className={`w-full max-w-3xl mx-auto ${className}`}>
       <Slider {...settings}>
         {[1,2,3].map((image, index) => (
-          <div key={index} className={`rounded-xl relative h-64 w-full bg-blue-${image}00`}>
+          <div key={index} className={`rounded-xl relative h-64 w-full bg-blue-100`}>
             {/* <Image
               src={image.src}
               alt={image.alt}
@@ -45,4 +46,4 @@ const Carousel: React.FC<ImageCarouselProps> = ({ images, className }) => {
   );
 };
 
-export default Carousel;
+export default ReactSlickCarousel;

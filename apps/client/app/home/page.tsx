@@ -30,7 +30,7 @@ export default function Index() {
     <div className="w-full md:w-10/12 min-h-full flex-col">
       <Header />
       <div className="p-6">
-        <Carousel images={[]} className="mb-9" />
+          <Carousel images={[]} className="mb-12" />
         <div className="grid grid-cols-2 gap-11">
           {menuItems.map((item, index) => (
             <div key={index} className="flex flex-col items-center" onClick={() => {
@@ -39,14 +39,16 @@ export default function Index() {
               <div className="w-20 h-20 bg-gray-300 rounded-full flex items-center justify-center text-2xl mb-3">
                 {item.icon}
               </div>
-              <span className="text-[18px]">{item.title}</span>
+              <span className="text-[18px] font-[GilroyBold]">{item.title}</span>
             </div>
           ))}
         </div>
         {/* News */}
       </div>
       <div className="bg-orange-300 p-6">
-        <h2 className="text-primary text-center pl-6 font-bold italic text-2xl mb-3">Latest News</h2>
+        <h2 className="text-primary pl-6 pb-6 font-bold italic text-2xl mb-3">
+          Latest News
+        </h2>
         <div className="grid gap-5 grid-rows-3 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 mb-3">
           {posts.map((item, index) => (
             <NewsItem

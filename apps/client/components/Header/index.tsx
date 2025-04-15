@@ -15,9 +15,9 @@ const Header: React.FC<Props> = ({ title, useBackBtn, customBtn, customBackActio
   const [isOpen, toggleOpen] = useState<boolean>(false);
   return (
     <>
-      <style>{`body { padding-top: 96px; }`}</style>
+      <style>{`body { padding-top: 72px; }`}</style>
       <header
-        className="bg-primary pt-14 pb-2 text-white px-4 w-full"
+        className="bg-primary pt-8 pb-2 text-white px-4 w-full"
         style={{
           position: 'fixed',
           top: 0,
