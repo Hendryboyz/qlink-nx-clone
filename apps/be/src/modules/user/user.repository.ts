@@ -1,7 +1,7 @@
 import { BadRequestException, Inject, Injectable } from '@nestjs/common';
 import { Pool, QueryResult } from 'pg';
 import { UserDto, UserEntity, UserUpdateDto } from '@org/types';
-import { KNEX_CONNECTION } from '../../database.module';
+import { KNEX_CONNECTION } from '$/database.module';
 import { Knex } from 'knex';
 import { isEmpty } from 'lodash';
 

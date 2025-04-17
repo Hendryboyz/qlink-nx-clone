@@ -5,15 +5,16 @@ export interface UserEntity {
   email?: string;
   password: string;
   firstName: string;
-  midName?: string; 
+  midName?: string;
   lastName: string;
+  avatarS3Uri?: string;
   addressState: string;
   addressCity: string;
-  addressDetail?: string; 
-  birthday?: string; 
-  source?: number; 
-  whatsapp?: string; 
-  facebook?: string; 
+  addressDetail?: string;
+  birthday?: string;
+  source?: number;
+  whatsapp?: string;
+  facebook?: string;
   createdAt: Date;
   updatedAt: Date;
   isDelete: boolean;
@@ -36,11 +37,12 @@ export interface UserUpdateDto {
   facebook?: string;
   type?: UserType;
   firstName?: string;
-  midName?: string; 
+  midName?: string;
   lastName?: string;
   addressState?: string;
   addressCity?: string;
   isDelete?: boolean;
+  avatarS3Uri?: string;
 }
 
 export enum UserType {

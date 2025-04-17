@@ -30,7 +30,6 @@ import { StorageModule } from '$/modules/upload/storage.module';
           {
             path: 'posts',
             module: PostsBoModule,
-            children: [ StorageModule ],
           },
           {
             path: 'auth',

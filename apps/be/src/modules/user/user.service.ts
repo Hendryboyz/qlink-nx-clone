@@ -1,23 +1,29 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable, Logger } from '@nestjs/common';
 import { RegisterDto, UserEntity, UserUpdateDto, UserVO } from '@org/types';
 import { UserRepository } from './user.repository';
 import { omit } from 'lodash';
 
+type UserOmitFields = ('birthday' | 'whatsapp' | 'facebook');
+
 @Injectable()
 export class UserService {
+  private logger = new Logger(this.constructor.name);
   constructor(
     private readonly userRepository: UserRepository
   ) {}
 
   async findOne(phone: string): Promise<UserEntity> {
-      const user = await this.userRepository.findByPhone(phone)
-      return user;
+      return await this.userRepository.findByPhone(phone)
   }
 
   async getUserInfo(userId: string): Promise<UserVO | undefined> {
     const user = await this.userRepository.findById(userId)
+    return this.filterUserInfo(user);
+  }
+
+  private filterUserInfo(user: UserEntity, additionOmitFields: UserOmitFields[] = []): UserVO | undefined {
     return {
-      ...omit(user, ['isDelete', 'createdAt', 'updatedAt', 'password']),
+      ...omit(user, ['isDelete', 'createdAt', 'updatedAt', 'password', ...additionOmitFields]),
     }
   }
 
@@ -56,31 +62,22 @@ export class UserService {
 //     }
 //     return false;
 //   }
-async updatePassword(userId: string, password: string): Promise<UserVO> {
 
-  const userEntity = await this.userRepository.update(userId, { password });
-  return {
-    ...omit(userEntity, [
-      'createdAt',
-      'updatedAt',
-      'isDelete',
-      'password',
-      'birthday'
-    ]),
-  };
-}
+  async updatePassword(userId: string, password: string): Promise<UserVO> {
+    const userEntity = await this.userRepository.update(userId, { password });
+    return this.filterUserInfo(userEntity, [ 'birthday' ]);
+  }
 
   async updateUser(userId: string, updateData: UserUpdateDto): Promise<UserVO> {
     if (updateData.password != null) throw new BadRequestException();
 
     const userEntity = await this.userRepository.update(userId, updateData);
-    return {
-      ...omit(userEntity, [
-        'createdAt',
-        'updatedAt',
-        'isDelete',
-        'password',
-      ]),
-    };
+    return this.filterUserInfo(userEntity);
+  }
+
+  public async updateUserAvatar(userId: string, s3Key: string) {
+    this.logger.debug(`Updating user ${userId} avatar with ${s3Key}`);
+    const userEntity = await this.userRepository.update(userId, { avatarS3Uri: s3Key });
+    return this.filterUserInfo(userEntity);
   }
 }
