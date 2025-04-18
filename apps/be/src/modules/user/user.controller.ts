@@ -44,9 +44,11 @@ export class UserController {
   async getInfo(@UserId() userId: string) {
     const user = await this.userService.getUserInfo(userId);
     const { avatarS3Uri } = user;
-    user.avatarImageUrl =
-      `${this.cdnHostname}/` + avatarS3Uri.slice(`${this.bucketName}/`.length);
-    this.logger.debug(user.avatarImageUrl);
+    if (user.avatarS3Uri) {
+      user.avatarImageUrl =
+        `${this.cdnHostname}/` + avatarS3Uri.slice(`${this.bucketName}/`.length);
+      this.logger.debug(user.avatarImageUrl);
+    }
     return user;
   }
 
