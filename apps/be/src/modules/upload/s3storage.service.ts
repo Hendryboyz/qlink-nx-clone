@@ -6,7 +6,7 @@ import {
   S3Client,
 } from '@aws-sdk/client-s3';
 import { ConfigService } from '@nestjs/config';
-import { fromInstanceMetadata } from '@aws-sdk/credential-providers';
+import { fromContainerMetadata } from '@aws-sdk/credential-providers';
 import fs from 'node:fs';
 
 @Injectable()
@@ -25,7 +25,7 @@ export class S3storageService {
 
   private getAWSCredentials() {
     if (process.env.NODE_ENV === 'production') {
-      return fromInstanceMetadata();
+      return fromContainerMetadata();
     } else {
       return {
         accessKeyId: this.configService.get<string>('AWS_ACCESS_KEY_ID'),
@@ -62,7 +62,7 @@ export class S3storageService {
         ContentType: mimeType,
       })
     );
-    
+
     this.removeLocalFile(serverPath);
 
     return s3Key;
