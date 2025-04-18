@@ -31,6 +31,7 @@ export class PostsService {
   }
 
   private async tryPersistImage(imageUrl: string): Promise<string> {
+    if (!imageUrl) return '';
     const tempPrefix = 'tmp/';
     const isNewImage: boolean = imageUrl.includes(tempPrefix)
     if (!isNewImage) return imageUrl;
