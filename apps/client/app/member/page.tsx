@@ -7,11 +7,12 @@ import * as Yup from 'yup';
 import API from '$/utils/fetch';
 import Editable from '$/components/Fields/Editable';
 import { STATES, UserSourceDisplay } from '@org/common';
-import { GetProp, Upload, UploadProps } from 'antd';
+import { Upload, UploadProps } from 'antd';
 
 export default function Member() {
   const [user, setUser] = useState<UserVO | null>(null);
-  const [avatarUrl, setAvatarUrl] = useState('');
+  const [avatarUrl, setAvatarUrl] = useState<string | undefined>('');
+  const [uploading, setUploading] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -21,6 +22,7 @@ export default function Member() {
         setLoading(true);
         const data = await API.get<UserVO>('/user/info');
         setUser(data);
+        setAvatarUrl(data.avatarImageUrl);
         setError(null);
       } catch (err) {
         console.error('Error fetching user info:', err);
@@ -56,26 +58,36 @@ export default function Member() {
     return <div>Loading...</div>;
   }
 
-  type FileType = Parameters<GetProp<UploadProps, 'beforeUpload'>>[0];
-
-  const getBase64 = (img: FileType, callback: (url: string) => void) => {
-    const reader = new FileReader();
-    reader.addEventListener('load', () => callback(reader.result as string));
-    reader.readAsDataURL(img);
+  const handleUpload: UploadProps['customRequest'] = async ({ file, onSuccess, onError }) => {
+    const formData = new FormData();
+    formData.append('avatar', file as File);
+    try {
+      setUploading(true);
+      const res = await API.post('/user/avatar', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+      const result = await res.data;
+      setAvatarUrl(result.imageUrl);
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setUploading(false);
+    }
   };
-
-  const handleChange: UploadProps['onChange'] = (info) => {
-    getBase64(info.file.originFileObj as FileType, (url) => {
-      setAvatarUrl(url);
-    });
-  };
-
+  console.debug(avatarUrl, user);
   return (
     <div className="w-full min-h-full flex-1">
       <Header title="Member" />
       <div className="md:px-36">
         <div className="p-6 bg-gray-300 relative">
-          <Upload name="avatar" showUploadList={false} onChange={handleChange}>
+          <Upload
+            name="avatar"
+            showUploadList={false}
+            disabled={uploading}
+            customRequest={handleUpload}
+          >
             <img
               className="border-white rounded-full border-4 w-16 h-16 ml-6 hover:cursor-pointer"
               src={avatarUrl !== '' ? avatarUrl : '/assets/user.svg'}

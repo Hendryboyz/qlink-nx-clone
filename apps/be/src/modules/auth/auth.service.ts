@@ -189,7 +189,7 @@ export class AuthService {
     if (
       !alphaMax50Regex.test(address_city) ||
       !alphaMax50Regex.test(address_state) ||
-      (address_detail != '' && !alphaMax50Regex.test(address_detail))
+      (address_detail !== '' && !alphaMax50Regex.test(address_detail))
     )
       throw this.generateBadRequest('Invalid address', 'address_city');
 

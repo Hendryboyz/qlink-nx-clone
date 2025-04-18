@@ -1,19 +1,24 @@
 import {
-  Controller,
-  UseGuards,
-  Get,
-  Put,
+  BadRequestException,
   Body,
-  UseInterceptors,
+  Controller,
+  Get,
+  Logger,
+  Post,
+  Put,
   UploadedFile,
-  BadRequestException, Post, Logger
+  UseGuards,
+  UseInterceptors,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { AuthGuard } from '@nestjs/passport';
 import { UserId } from '$/decorators/userId.decorator';
 import { UserService } from './user.service';
 import { UserUpdateDto } from '@org/types';
-import { imageFileFilter, imageStorage } from '$/modules/utils/file-upload.util';
+import {
+  imageFileFilter,
+  imageStorage,
+} from '$/modules/utils/file-upload.util';
 import { TransformInterceptor } from '$/interceptors/response.interceptor';
 import { S3storageService } from '$/modules/upload/s3storage.service';
 import { ConfigService } from '@nestjs/config';
@@ -26,15 +31,23 @@ export class UserController {
   constructor(
     private userService: UserService,
     private configService: ConfigService,
-    private storageService: S3storageService) {
+    private storageService: S3storageService
+  ) {
     this.bucketName = this.configService.get<string>('AWS_S3_BUCKET');
-    this.cdnHostname = this.configService.get<string>('AWS_CLOUDFRONT_HOSTNAME');
+    this.cdnHostname = this.configService.get<string>(
+      'AWS_CLOUDFRONT_HOSTNAME'
+    );
   }
 
   @UseGuards(AuthGuard('jwt'))
   @Get('/info')
   async getInfo(@UserId() userId: string) {
-    return this.userService.getUserInfo(userId);
+    const user = await this.userService.getUserInfo(userId);
+    const { avatarS3Uri } = user;
+    user.avatarImageUrl =
+      `${this.cdnHostname}/` + avatarS3Uri.slice(`${this.bucketName}/`.length);
+    this.logger.debug(user.avatarImageUrl);
+    return user;
   }
 
   @UseGuards(AuthGuard('jwt'))
@@ -52,7 +65,10 @@ export class UserController {
     }),
     TransformInterceptor
   )
-  async uploadAvatar(@UserId() userId: string, @UploadedFile() avatar: Express.Multer.File) {
+  async uploadAvatar(
+    @UserId() userId: string,
+    @UploadedFile() avatar: Express.Multer.File
+  ) {
     if (!avatar) {
       throw new BadRequestException('No file uploaded');
     }
@@ -62,10 +78,13 @@ export class UserController {
         userId,
         avatar.path,
         avatar.filename,
-        avatar.mimetype,
+        avatar.mimetype
       );
 
-      await this.userService.updateUserAvatar(userId, `${this.bucketName}/${s3Key}`);
+      await this.userService.updateUserAvatar(
+        userId,
+        `${this.bucketName}/${s3Key}`
+      );
 
       return {
         s3Uri: `s3://${this.bucketName}/${s3Key}`,

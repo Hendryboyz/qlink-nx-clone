@@ -24,6 +24,7 @@ export type User = Omit<UserEntity, 'createdAt' | 'updatedAt' | 'isDelete'>;
 
 export type UserVO = Omit<User, 'password' | 'birthday'> & {
   birthday?: string;
+  avatarImageUrl?: string;
 }
 export type UserDto = Omit<User, 'id' | 'createdAt' | 'updatedAt' | 'isDelete' | 'birthday'> & {
   birthday?: string;
@@ -42,7 +43,7 @@ export interface UserUpdateDto {
   addressState?: string;
   addressCity?: string;
   isDelete?: boolean;
-  avatarS3Uri?: string;
+  avatarS3uri?: string;
 }
 
 export enum UserType {

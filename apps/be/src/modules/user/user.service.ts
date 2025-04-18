@@ -77,7 +77,7 @@ export class UserService {
 
   public async updateUserAvatar(userId: string, s3Key: string) {
     this.logger.debug(`Updating user ${userId} avatar with ${s3Key}`);
-    const userEntity = await this.userRepository.update(userId, { avatarS3Uri: s3Key });
+    const userEntity = await this.userRepository.update(userId, { avatarS3uri: s3Key });
     return this.filterUserInfo(userEntity);
   }
 }
