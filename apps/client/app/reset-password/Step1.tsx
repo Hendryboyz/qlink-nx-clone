@@ -39,6 +39,7 @@ const Step1 = (props: Props) => {
           const payload: SendOtpDto = {
             phone,
             type: OtpTypeEnum.RESET_PASSWORD,
+            recaptchaToken: values.recaptchaToken,
           };
           API.post('/auth/otp/send', payload)
             .then((res) => {
@@ -66,7 +67,7 @@ const Step1 = (props: Props) => {
           <Fragment>
             <div className="mt-auto">
               <form>
-                <h4 className="text-primary text-xl mb-6">
+                <h4 className="text-[#FFF0D3] text-xl mb-6">
                   Mobile Verification
                 </h4>
                 <label htmlFor="phone" className="block">
@@ -95,9 +96,10 @@ const Step1 = (props: Props) => {
                 </div>
               </form>
             </div>
-            <div className="flex justify-between items-center mt-auto">
-              <span className="text-xl text-white">Send</span>
+            <div className="flex justify-end items-center mt-auto">
               <SubmitButton
+                buttonColor="beige"
+                text="Send"
                 isLoading={isSubmitting}
                 onClick={() => (isValid ? handleSubmit() : NOOP())}
               />

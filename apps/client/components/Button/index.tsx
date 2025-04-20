@@ -25,7 +25,7 @@ const Button: React.FC<ButtonProps> = ({
       break;
     }
     case 'light': {
-      themeClasses = 'bg-white border-primary text-primary';
+      themeClasses = 'bg-[#FFF0D3] border-primary text-primary';
       break;
     }
     case 'transparent': {
@@ -37,7 +37,7 @@ const Button: React.FC<ButtonProps> = ({
   return (
     <div className={`${themeClasses} ${baseClasses}  ${className}`} {...props}>
       {isLoading ? (
-        <div className={`w-8 h-8 border-4 border-white 
+        <div className={`w-8 h-8 border-4 border-white
           ${theme == 'dark' ? 'border-t-primary-500' : 'border-t-primary'} rounded-full animate-spin`}></div>
       ) : (
         children

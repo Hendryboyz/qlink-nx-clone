@@ -9,7 +9,7 @@ type Props = {
 const Container = ({ title, bottomEle, children }: Props) => {
   return (
     <div className="w-full py-16 pb-10 px-12 flex flex-col h-full flex-1 ">
-      <Title className="mb-12 text-left w-10 text-primary">
+      <Title className="mb-12 text-left w-10 text-[#FFF0D3]">
         {title}
       </Title>
       {children}

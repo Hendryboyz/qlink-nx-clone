@@ -117,7 +117,8 @@ const Step3 = () => {
             </div>
             <div className="flex justify-end items-center mt-auto">
               <Button
-                theme="dark"
+                theme="light"
+                className="uppercase"
                 style={{ width: '85px' }}
                 isLoading={isSubmitting}
                 onClick={() => isValid ? handleSubmit() : NOOP()}

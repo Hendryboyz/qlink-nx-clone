@@ -43,9 +43,12 @@ export default function Index() {
             </div>
           ))}
         </div>
-        {/* News */}
       </div>
-      <div className="bg-orange-300 p-6">
+      {/* News */}
+      <div className="mt-5 mb-10 px-6">
+        <hr className="border border-[#E19500] bg-[#E19500]" />
+      </div>
+      <div className="p-6">
         <h2 className="text-primary pl-6 pb-6 font-bold italic text-2xl mb-3">
           Latest News
         </h2>

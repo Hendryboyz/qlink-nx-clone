@@ -1,7 +1,7 @@
 'use client';
 
 import { useCallback, useMemo, useState } from 'react';
-import GradientBackground from '../../components/Background/GradientBackground';
+import { ColorBackground } from '../../components/Background';
 import Step1 from './Step1';
 import Step2 from './Step2';
 import Step3 from './Step3';
@@ -25,9 +25,9 @@ export default function SignUp() {
 
   return (
     <PayloadProvider>
-    <GradientBackground>
+    <ColorBackground color="#D70127">
       {children}
-    </GradientBackground>
+    </ColorBackground>
     </PayloadProvider>
   );
 }

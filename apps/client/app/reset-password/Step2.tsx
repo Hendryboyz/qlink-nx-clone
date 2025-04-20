@@ -59,13 +59,13 @@ const Step2 = (props: Props) => {
       title="OTP Verification"
       bottomEle={
         <div className="flex justify-between items-center mt-auto">
-          <span className="text-xl text-white">Next</span>
-          <SubmitButton onClick={handleSubmit} isLoading={isLoading} />
+          <span className="text-xl text-[#FFF0D3]">Back</span>
+          <SubmitButton text="Next" buttonColor="beige" onClick={handleSubmit} isLoading={isLoading} />
         </div>
       }
     >
       <div className="mt-auto">
-        <h4 className="text-primary text-sm mb-6 text-center">
+        <h4 className="text-[#FFF0D3] text-sm mb-6 text-center">
           Please enter the 4-digit OTP (One-Time Password) sent to your
           registered mobile number.
         </h4>
@@ -86,7 +86,7 @@ const Step2 = (props: Props) => {
             />
           ))}
         </div>
-        <h4 className="text-center text-gray-500 mt-6">
+        <h4 className="text-center text-[#FF7D7D] mt-6">
           Didn&apos;t receive code?
           <br />
           Resend in 60s
