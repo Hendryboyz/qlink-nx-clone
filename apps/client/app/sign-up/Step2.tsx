@@ -10,7 +10,7 @@ import { usePopup } from '$/hooks/PopupProvider';
 
 type Props = {
   onSuccess: () => void;
-  // goBack: () => void;
+  goBack: () => void;
 };
 
 const Step2 = (props: Props) => {
@@ -138,7 +138,7 @@ const Step2 = (props: Props) => {
         )}
       </div>
       <div className="flex justify-between items-center mt-auto">
-        <span className="text-xl text-red-600">Back</span>
+        <span className="text-xl text-red-600 hover:underline hover:cursor-pointer" onClick={props.goBack}>Back</span>
         <SubmitButton text="Next" isLoading={isLoading} onClick={handleSubmit} />
       </div>
     </Container>

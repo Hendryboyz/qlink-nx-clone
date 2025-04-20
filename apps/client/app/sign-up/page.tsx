@@ -12,15 +12,20 @@ const SignUp = () => {
   const [step, handleChangeStep] = useState(1);
   const goNextStep = useCallback(() => {
     handleChangeStep(pre => pre+1)
-  }, [handleChangeStep])
+  }, [handleChangeStep]);
+
+  const goFirstStep = useCallback(() => {
+    handleChangeStep(1)
+  }, [handleChangeStep]);
+
   const children = useMemo(() => {
     switch (step) {
       case 1:
         return <Step1 onSuccess={goNextStep} />;
       case 2:
-        return <Step2 onSuccess={goNextStep} />;
+        return <Step2 onSuccess={goNextStep} goBack={goFirstStep} />;
       case 3:
-        return <Step3 onSuccess={goNextStep} />;
+        return <Step3 onSuccess={goNextStep} goBack={goFirstStep} />;
       case 4:
         return <Success />;
     }

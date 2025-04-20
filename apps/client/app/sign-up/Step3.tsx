@@ -108,7 +108,7 @@ const DEFAULT_ERROR_MSG_CLASS = 'text-red-500 absolute';
 
 type Props = {
   onSuccess: () => void;
-  // goBack: () => void;
+  goBack: () => void;
 };
 
 const Step3 = (props: Props) => {
@@ -385,7 +385,7 @@ const Step3 = (props: Props) => {
                     />
                   </label>
                   <div className="flex justify-between items-center mt-8">
-                    <span className="text-xl text-red-600">Back</span>
+                    <span className="text-xl text-red-600 hover:underline hover:cursor-pointer" onClick={props.goBack}>Back</span>
                     <SubmitButton
                       text="Next"
                       isLoading={isSubmitting}
