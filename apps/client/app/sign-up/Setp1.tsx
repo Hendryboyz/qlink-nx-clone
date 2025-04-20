@@ -99,19 +99,19 @@ const Step1 = (props: Props) => {
               </Form>
             </div>
             <div className="mt-auto">
-              <div className="flex justify-between items-center mb-11">
-                <span className="text-xl text-white">Sign Up</span>
+              <div className="flex justify-end text-red-500 items-center mb-11">
                 <SubmitButton
+                  text="Next"
                   isLoading={isSubmitting}
                   onClick={() => {
                     if (isValid) handleSubmit();
                   }}
                 />
               </div>
-              <p className="text-white text-center">
+              <p className="text-[#DF6B00] text-center">
                 Already a member?&nbsp;
                 <Link href="/sign-in">
-                  <span className="">Log in</span>
+                  <span className="hover:underline">Log in</span>
                 </Link>
               </p>
             </div>

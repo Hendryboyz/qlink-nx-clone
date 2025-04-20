@@ -5,7 +5,16 @@ import * as Yup from 'yup';
 import API from '$/utils/fetch';
 import { RegisterDto, UserSourceType, UserType } from 'types/src';
 import { usePayload } from './PayloadContext';
-import { CODE_SUCCESS, fromDate, HEADER_PRE_TOKEN, passwordRegex, STATES, typedObjectEntries, UserSourceDisplay } from '@org/common';
+import {
+  alphaWithSpacesMax50Regex,
+  CODE_SUCCESS,
+  fromDate,
+  HEADER_PRE_TOKEN,
+  passwordRegex,
+  STATES,
+  typedObjectEntries,
+  UserSourceDisplay
+} from '@org/common';
 import SubmitButton from '$/components/Button/SubmitButton';
 import { DayPicker } from 'react-day-picker';
 import DatePickerClassNames from 'react-day-picker/style.module.css';
@@ -27,7 +36,9 @@ const SignupSchema = Yup.object().shape({
 
   addressState: Yup.string().required('State is required.'),
 
-  addressCity: Yup.string().required('City is required.'),
+  addressCity: Yup.string()
+    .matches(alphaWithSpacesMax50Regex, 'City only allow letter(a-z, A-Z and space)')
+    .required('City is required.'),
 
   password: Yup.string()
     .min(6, 'Password must be at least 6 characters long.')
@@ -94,8 +105,10 @@ const DEFAULT_INPUT_STYLES =
   'block items-center justify-center rounded-xl py-5 pl-8 pr-6 w-full bg-white border-white border-2 font-bold text-xs';
 
 const DEFAULT_ERROR_MSG_CLASS = 'text-red-500 absolute';
+
 type Props = {
   onSuccess: () => void;
+  // goBack: () => void;
 };
 
 const Step3 = (props: Props) => {
@@ -372,8 +385,9 @@ const Step3 = (props: Props) => {
                     />
                   </label>
                   <div className="flex justify-between items-center mt-8">
-                    <span className="text-xl text-white">Next</span>
+                    <span className="text-xl text-red-600">Back</span>
                     <SubmitButton
+                      text="Next"
                       isLoading={isSubmitting}
                       onClick={() => handleSubmit()}
                     />

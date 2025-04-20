@@ -3,7 +3,7 @@
 import { Formik, FormikErrors, Field, ErrorMessage } from 'formik';
 import Link from 'next/link';
 import Title from '../../components/Title';
-import GradientBackground from '../../../client/components/GradientBackground';
+import GradientBackground from '../../components/Background/GradientBackground';
 import { Fragment } from 'react';
 import API from '$/utils/fetch';
 import SubmitButton from '$/components/Button/SubmitButton';

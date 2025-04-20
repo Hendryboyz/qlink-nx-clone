@@ -1,6 +1,6 @@
 'use client';
 
-import GradientBackground from '../../components/GradientBackground';
+import { ColorBackground } from '../../components/Background';
 import { useCallback, useMemo, useState } from 'react';
 import Step1 from './Setp1';
 import Step2 from './Step2';
@@ -26,7 +26,7 @@ const SignUp = () => {
     }
   }, [step, goNextStep])
   return <PayloadProvider>
-    <GradientBackground>{children}</GradientBackground>
+    <ColorBackground color="#FFF0D3">{children}</ColorBackground>
   </PayloadProvider>;
 };
 
