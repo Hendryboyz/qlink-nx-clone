@@ -90,7 +90,7 @@ export default function Member() {
           >
             <img
               className="border-white rounded-full border-4 w-16 h-16 ml-6 hover:cursor-pointer"
-              src={avatarUrl !== '' ? avatarUrl : '/assets/user.svg'}
+              src={avatarUrl ? avatarUrl : '/assets/user.svg'}
               alt="avatar icon"
               onClick={handleAvatarUpload}
             />
