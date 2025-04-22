@@ -12,12 +12,18 @@ interface SubmitButtonProps extends ButtonHTMLAttributes<HTMLDivElement> {
 
 const SubmitButton: React.FC<SubmitButtonProps> = ({text, isLoading, buttonColor = 'red', ...props }) => {
 
-  let iconColor = '#D70127';
-  let arrowColor = 'white';
+  let iconColor = {
+    text: 'text-[#D70127]',
+    bg: 'bg-[#D70127]',
+  };
+  let arrowColor = 'text-white';
 
   if (buttonColor === 'beige') {
-    arrowColor = '#D70127';
-    iconColor = '#FFF0D3';
+    arrowColor = 'text-[#D70127]';
+    iconColor = {
+      text: 'text-[#FFF0D3]',
+      bg: 'bg-[#FFF0D3]',
+    };
   }
 
   return (
@@ -29,12 +35,12 @@ const SubmitButton: React.FC<SubmitButtonProps> = ({text, isLoading, buttonColor
      ${isLoading ? 'cursor-not-allowed' : 'cursor-pointer'}
     `}
     >
-      <div className={`mr-5 text-xl text-[${iconColor}]`}>{text}</div>
-      <div className={`rounded-full p-2 bg-[${iconColor}]`}>
+      <div className={`mr-5 text-xl ${iconColor.text}`}>{text}</div>
+      <div className={`rounded-full p-2 ${iconColor.bg}`}>
         {isLoading ? (
           <div className="w-8 h-8 border-4 border-primary border-t-white rounded-full animate-spin"></div>
         ) : (
-          <div className={`rounded-full text-[${arrowColor}]`}>
+          <div className={`rounded-full ${arrowColor}`}>
             <ArrowRightIcon width={30} height={30} />
           </div>
         )}

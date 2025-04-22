@@ -8,13 +8,14 @@ interface StepIndicatorProps {
 
 const StepIndicator: React.FC<StepIndicatorProps> = ({ currentStep, steps }) => {
   const componentColor = {
-    active: "#DF6B00",
-    inactive: "#FFCFA3",
+    active: "border-[#DF6B00] text-[#DF6B00]",
+    inactive: "border-[#FFCFA3] text-[#FFCFA3]",
+    progressActive: "bg-[#DF6B00]",
+    progressInactive: "bg-[#FFCFA3]",
+    bgActive: "bg-[#DF6B00]",
+    bgInactive: "bg-[#FFF0D3]",
   };
-  const backgroundColor= {
-    active: "#DF6B00",
-    inactive: "#FFF0D3",
-  };
+
   return (
     <div className="flex items-center">
       {steps.map((step, index) => (
@@ -22,8 +23,8 @@ const StepIndicator: React.FC<StepIndicatorProps> = ({ currentStep, steps }) => 
           <div className={`
             flex items-center justify-center
             w-7 h-7 rounded-full border-2 text-xs
-            ${step < currentStep ? `bg-[${backgroundColor.active}]` : `bg-[${backgroundColor.inactive}]`}
-            ${step <= currentStep ? `border-[${componentColor.active}] text-[${componentColor.active}]` : `text-[${componentColor.inactive}] border border-[${componentColor.inactive}]`}
+            ${step < currentStep ? componentColor.bgActive : componentColor.bgInactive}
+            ${step <= currentStep ? componentColor.active : `border ${componentColor.inactive}`}
             font-bold text-xl
           `}>
             {(step < currentStep) ? <CheckIcon className="text-white" /> : index + 1}
@@ -31,7 +32,7 @@ const StepIndicator: React.FC<StepIndicatorProps> = ({ currentStep, steps }) => 
           {step < steps.length && (
             <div className={`
               flex-grow h-1
-              ${step < currentStep ? `bg-[${componentColor.active}]` : `bg-[${componentColor.inactive}]`}
+              ${step < currentStep ? componentColor.progressActive : componentColor.progressInactive}
             `}></div>
           )}
         </React.Fragment>
