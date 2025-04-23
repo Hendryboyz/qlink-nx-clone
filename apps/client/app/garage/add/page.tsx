@@ -130,7 +130,7 @@ export default function GarageAdd() {
                     <Button
                       className='py-2 text-base w-36'
                       onClick={() => {
-                        router.push('/home');
+                        router.push('/');
                         hidePopup();
                       }}
                     >
