@@ -1,14 +1,14 @@
 'use client';
 
-import { Formik, FormikErrors, Field, ErrorMessage } from 'formik';
-import Link from 'next/link';
-import Title from '../../components/Title';
-import GradientBackground from '../../components/Background/GradientBackground';
 import { Fragment } from 'react';
+import { useRouter } from 'next/navigation';
+import Link from 'next/link';
+import { Formik, FormikErrors, Field, ErrorMessage } from 'formik';
+import Banner from '$/components/Banner';
+import { ColorBackground } from '$/components/Background';
 import API from '$/utils/fetch';
 import SubmitButton from '$/components/Button/SubmitButton';
 import { NOOP } from '$/utils';
-import { useRouter } from 'next/navigation';
 import { usePopup } from '$/hooks/PopupProvider';
 
 interface FormData {
@@ -22,11 +22,9 @@ export default function SignIn() {
   const router = useRouter();
   const { showPopup } = usePopup();
   return (
-    <GradientBackground>
+    <ColorBackground color="#D70127">
       <div className="w-full py-16 pb-10 px-12 flex flex-col h-full flex-1 ">
-        <Title className="mb-12 text-left w-10 text-primary">
-          Welcome Back!
-        </Title>
+        <Banner className="self-center" />
         <Formik
           initialValues={initValue}
           validate={(values) => {
@@ -115,19 +113,20 @@ export default function SignIn() {
                           setFieldValue('rememberMe', !values.rememberMe);
                         }}
                       />
-                      <span className='text-xs ml-2 mt-0.5'>Keep me signed in</span>
+                      <span className='ml-2 mt-0.5 text-white'>Keep me signed in</span>
                     </label>
                     <Link href="/reset-password">
-                      <h4 className="mt-2 text-gray-500 text-right">
+                      <h4 className="mt-2 text-red-300 text-right">
                         Forgot password?
                       </h4>
                     </Link>
                   </div>
                 </div>
               </div>
-              <div className="flex justify-between items-center mt-auto">
-                <span className="text-xl text-white">Sign In</span>
+              <div className="flex justify-end items-center mt-auto">
                 <SubmitButton
+                  buttonColor="beige"
+                  text="Sign In"
                   onClick={() => (isValid ? handleSubmit() : NOOP())}
                   isLoading={isSubmitting}
                 />
@@ -135,10 +134,10 @@ export default function SignIn() {
             </Fragment>
           )}
         </Formik>
-        <Link href="/sign-up" className="text-center mt-8 text-gray-500">
+        <Link href="/sign-up" className="text-center mt-8 text-red-300">
           <h4>Don&apos;t have account? Sign up</h4>
         </Link>
       </div>
-    </GradientBackground>
+    </ColorBackground>
   );
 }

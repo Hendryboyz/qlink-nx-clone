@@ -4,7 +4,7 @@ import API from '$/utils/fetch';
 import { Cross2Icon, ExitIcon } from '@radix-ui/react-icons';
 
 const mainItems = [
-  ['Home', '/home'],
+  ['Home', '/'],
   ['Member', '/member'],
   ['My Garage', '/garage'],
   // ['Service Records', ''],
