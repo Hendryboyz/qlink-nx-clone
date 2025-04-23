@@ -25,13 +25,14 @@ async function validateToken(token: string): Promise<boolean> {
 // 這個函數可以是異步的，如果您需要等待 API 響應
 const protectedPaths = ['/member', '/garage'];
 
+
 export async function middleware(request: NextRequest) {
   // 獲取 token，這裡假設它存儲在 cookie 中
   const token = request.cookies.get(ACCESS_TOKEN)?.value;
 
-  if (request.nextUrl.pathname === '/' && token) {
-    const isTokenValid = await validateToken(token);
-    console.log(isTokenValid);
+
+  if (await isRedirectMemberAfterLoggin(request, token)) {
+    return NextResponse.redirect(new URL('/member', request.url));
   }
 
   // 定義需要保護的路徑
@@ -58,6 +59,18 @@ export async function middleware(request: NextRequest) {
   }
 }
 
+async function isRedirectMemberAfterLoggin(request: NextRequest, token: string | undefined) {
+  const loginHiddenPaths = ['/sign-in', '/sign-up', '/reset-password'];
+  const isLoginHidden = loginHiddenPaths.some((path) =>
+    request.nextUrl.pathname.startsWith(path)
+  );
+
+  if (isLoginHidden && token) {
+    return await validateToken(token);
+  } else {
+    return false;
+  }
+}
 // 配置中間件應該運行的路徑
 export const config = {
   matcher: protectedPaths.map((path) => `${path}/:path*`),
