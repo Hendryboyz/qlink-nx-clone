@@ -2,6 +2,7 @@ import Link from 'next/link';
 import React from 'react';
 import API from '$/utils/fetch';
 import { Cross2Icon, ExitIcon } from '@radix-ui/react-icons';
+import { useRouter } from 'next/navigation';
 
 const mainItems = [
   ['Home', '/'],
@@ -24,6 +25,7 @@ type Props = {
   onClose?: () => void;
 };
 const Menu: React.FC<Props> = ({ isOpen, onClose }) => {
+  const router = useRouter();
   return (
     <>
       <div
@@ -67,16 +69,16 @@ const Menu: React.FC<Props> = ({ isOpen, onClose }) => {
               })}
             </ul>
             <div className="m-3 mt-6">
-              <Link
+              <a
                 className="hover:cursor-pointer hover:underline text-gray-500"
-                href="/sign-in"
                 onClick={() => {
                   API.clearToken();
+                  router.push('/sign-in')
                 }}
               >
                 <ExitIcon height={18} width={18} className="inline mr-2 pb-0.5" />
                 Logout
-              </Link>
+              </a>
             </div>
           </nav>
         </div>
