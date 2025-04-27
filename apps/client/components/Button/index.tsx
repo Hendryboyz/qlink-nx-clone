@@ -13,7 +13,7 @@ const Button: React.FC<ButtonProps> = ({
   ...props
 }) => {
   const baseClasses =
-    'py-4 text-xl flex justify-center items-center border-2 rounded-3xl';
+    'py-4 text-sm flex justify-center items-center border-2 rounded-3xl';
   let themeClasses;
   switch (theme) {
     case 'primary': {

@@ -132,16 +132,20 @@ export default function GarageEdit({ data, onCancel, onRemove }: Props) {
     }
   }, [editKey]);
   const removeAction = useCallback(() => {
+    hidePopup();
     API.delete('/product/remove', {
       data: { id: initValue.id } as ProductRemoveDto,
     })
       .then(() => {
+        showPopup({
+          useDefault: true,
+          title: 'Product has been removed',
+        });
         onRemove();
       })
       .catch((err) => {
         showPopup({ title: DEFAULT_ERROR_MSG });
-      })
-      .finally(hidePopup);
+      });
   }, [initValue])
 
   const handleRemove = () => {
@@ -149,10 +153,10 @@ export default function GarageEdit({ data, onCancel, onRemove }: Props) {
       useDefault: false,
       title: 'Remove from your account?',
       content: (<div className='flex items-center justify-between gap-5 w-full'>
-        <Button className='py-2 text-lg w-full rounded-lg h-12' onClick={hidePopup}>Cancel</Button>
-        <Button className='py-2 text-lg w-full rounded-lg h-12' onClick={removeAction}>Yes</Button>
+        <Button className='py-2 w-full rounded-lg h-12' onClick={hidePopup}>Cancel</Button>
+        <Button className='py-2 w-full rounded-lg h-12' onClick={removeAction}>Yes</Button>
       </div>)
-    })
+    });
   };
 
   return (
