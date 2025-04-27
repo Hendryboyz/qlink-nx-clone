@@ -11,6 +11,7 @@ import { usePopup } from '$/hooks/PopupProvider';
 import { DEFAULT_ERROR_MSG } from '@org/common';
 import DropdownField from '$/components/Dropdown';
 import Button from '$/components/Button';
+import { DEFAULT_MODELS } from '$/utils';
 const CreateSchema = Yup.object().shape({
   id: Yup.string().required('Required'),
   model: Yup.string().required('Required'),
@@ -90,11 +91,7 @@ export default function GarageAdd() {
   const { showPopup, hidePopup } = usePopup();
   useEffect(() => {
     //TODO: fetch model list
-    setModels([
-      { id: 1, title: 'Ninja 400' },
-      { id: 2, title: 'Duke 250' },
-      { id: 3, title: 'Duke 390' },
-    ]);
+    setModels(DEFAULT_MODELS);
   }, []);
   return (
     <div className="w-full  min-h-full flex-1">

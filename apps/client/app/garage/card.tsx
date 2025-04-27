@@ -3,6 +3,7 @@
 import React from 'react';
 import { ProductVO } from '@org/types';
 import { css } from '@emotion/css';
+import { DEFAULT_MODELS } from '$/utils';
 
 const rowCss = css`
 &>div:not(:last-child)  {
@@ -23,13 +24,13 @@ const ProductCard = ({ data, handleEdit }: { data: ProductVO, handleEdit: (data:
     purchaseDate,
     dealerName,
   } = data;
-
+  const modelDefined = DEFAULT_MODELS.find(m => m.id.toString() === model);
   return (
     <>
       <div className="flex justify-between min-h-[164px] bg-gray-200">
         <div className="ml-9 mb-3 self-end">
           <p className="text-xl font-light text-white">{data.year}</p>
-          <h2 className="text-3xl font-black text-primary-500">{model}</h2>
+          <h2 className="text-3xl font-black text-primary-500">{modelDefined ? modelDefined.title : model}</h2>
         </div>
         <img
           className="mr-8 mt-8 self-start"
