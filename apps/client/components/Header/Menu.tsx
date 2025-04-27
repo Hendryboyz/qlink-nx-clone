@@ -73,7 +73,7 @@ const Menu: React.FC<Props> = ({ isOpen, onClose }) => {
                 className="hover:cursor-pointer hover:underline text-gray-500"
                 onClick={() => {
                   API.clearToken();
-                  router.push('/sign-in')
+                  setTimeout(() => router.push('/sign-in'), 500);
                 }}
               >
                 <ExitIcon height={18} width={18} className="inline mr-2 pb-0.5" />
