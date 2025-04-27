@@ -17,6 +17,7 @@ import { usePopup } from '$/hooks/PopupProvider';
 import { DEFAULT_ERROR_MSG } from '@org/common';
 import DropdownField from '$/components/Dropdown';
 import Button from '$/components/Button';
+import { DEFAULT_MODELS } from '$/utils';
 
 const CreateSchema = Yup.object().shape({
   id: Yup.string().required('Required'),
@@ -116,11 +117,7 @@ export default function GarageEdit({ data, onCancel, onRemove }: Props) {
   const { showPopup, hidePopup } = usePopup();
   useEffect(() => {
     //TODO: fetch model list
-    setModels([
-      { id: 1, title: 'Ninja 400' },
-      { id: 2, title: 'Duke 250' },
-      { id: 3, title: 'Duke 390' },
-    ]);
+    setModels(DEFAULT_MODELS);
   }, []);
   useEffect(() => {
     (Object.keys(ATTRS) as Array<keyof typeof ATTRS>).forEach((key) => {
@@ -144,16 +141,16 @@ export default function GarageEdit({ data, onCancel, onRemove }: Props) {
       .catch((err) => {
         showPopup({ title: DEFAULT_ERROR_MSG });
       })
-      .finally(hidePopup)
+      .finally(hidePopup);
   }, [initValue])
 
   const handleRemove = () => {
     showPopup({
       useDefault: false,
-      title: 'You want to remove this bike?',
-      content: (<div className='flex items-center justify-center gap-3'>
-        <Button className='py-2 text-xs w-20' onClick={removeAction}>OK</Button>
-        <Button className='py-2 text-xs w-20' onClick={hidePopup}>Cancel</Button>
+      title: 'Remove from your account?',
+      content: (<div className='flex items-center justify-between gap-5 w-full'>
+        <Button className='py-2 text-lg w-full rounded-lg h-12' onClick={hidePopup}>Cancel</Button>
+        <Button className='py-2 text-lg w-full rounded-lg h-12' onClick={removeAction}>Yes</Button>
       </div>)
     })
   };
