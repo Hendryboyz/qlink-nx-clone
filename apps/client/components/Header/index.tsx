@@ -15,9 +15,10 @@ const Header: React.FC<Props> = ({ title, useBackBtn, customBtn, customBackActio
   const router = useRouter();
   const pathname = usePathname()
   const [isOpen, toggleOpen] = useState<boolean>(false);
+  const contentPaddingTop = title ? 44 : 76;
   return (
     <>
-      <style>{`body { padding-top: 76px; }`}</style>
+      <style>{`body { padding-top: ${contentPaddingTop}px; }`}</style>
       <header
         className="bg-primary pt-2 pb-2 text-white px-4 w-full"
         style={{
@@ -44,15 +45,18 @@ const Header: React.FC<Props> = ({ title, useBackBtn, customBtn, customBackActio
               <HamburgerMenuIcon />
             </button>
           )}
+
           {title ? (
             <h1 className="text-white text-xl font-bold">{title}</h1>
           ) : (
             <div>
-              {customBtn ? customBtn : <Banner className="text-xs/[0.75rem]" />}
+              <Banner className="text-xs/[0.75rem]" />
             </div>
           )}
+
           {title ?
-            <div className="w-6"></div> :
+            (customBtn ? customBtn : <div className="w-6"></div>)
+            :
             (<div className="rounded-3xl border-white border-2 p-1 hover:cursor-pointer">
               <PersonIcon
                 width={30}

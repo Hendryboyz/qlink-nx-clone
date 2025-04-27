@@ -76,27 +76,33 @@ export default function Member() {
       setUploading(false);
     }
   };
-  console.debug(avatarUrl, user);
+
   return (
     <div className="w-full min-h-full flex-1">
       <Header title="Member" />
       <div className="md:px-36">
-        <div className="p-6 bg-gray-300 relative">
-          <Upload
-            name="avatar"
-            showUploadList={false}
-            disabled={uploading}
-            customRequest={handleUpload}
-          >
-            <img
-              className="border-white rounded-full border-4 w-16 h-16 ml-6 hover:cursor-pointer"
-              src={avatarUrl ? avatarUrl : '/assets/user.svg'}
-              alt="avatar icon"
-              onClick={handleAvatarUpload}
-            />
-          </Upload>
+        <div className="p-6 bg-gray-300 relative flex justify-between">
+          <div className="flex">
+            <Upload
+              name="avatar"
+              showUploadList={false}
+              disabled={uploading}
+              customRequest={handleUpload}
+            >
+              <img
+                className="border-white rounded-full border-4 w-16 h-16 ml-6 hover:cursor-pointer"
+                src={avatarUrl ? avatarUrl : '/assets/user.svg'}
+                alt="avatar icon"
+                onClick={handleAvatarUpload}
+              />
+            </Upload>
+            <p className="content-center flex flex-col ml-5">
+              <span className="text-2xl text-gray-500">{user?.firstName}</span>
+              <span className="text-xl text-gray-500">{user?.lastName}</span>
+            </p>
+          </div>
           <img
-            className="absolute right-6 top-6"
+            className="right-6 top-6 w-6 h-6 content-end"
             src="/assets/mail.png"
             alt="mail icon"
           />
