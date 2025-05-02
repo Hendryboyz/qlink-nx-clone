@@ -78,7 +78,7 @@ const Step1 = (props: Props) => {
                       name="phone"
                       placeholder="Mobile Number"
                       type="number"
-                      className="flex-grow ml-2"
+                      className="flex-grow ml-2 text-lg"
                     />
                   </div>
                 </label>

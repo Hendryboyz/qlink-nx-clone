@@ -182,6 +182,7 @@ export default function GarageAdd() {
                             id={key}
                             name={key}
                             type={data.type || 'text'}
+                            className="text-lg"
                             placeholder=""
                           />
                         }

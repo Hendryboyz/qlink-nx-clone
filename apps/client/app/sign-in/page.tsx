@@ -74,7 +74,7 @@ export default function SignIn() {
                       name="phone"
                       placeholder="Mobile Number"
                       type="number"
-                      className="flex-grow ml-2"
+                      className="flex-grow ml-2 text-lg"
                       autoComplete="on"
                     />
                   </div>
@@ -93,7 +93,7 @@ export default function SignIn() {
                         name="password"
                         placeholder="Password"
                         type="password"
-                        className="flex-grow ml-2"
+                        className="flex-grow ml-2 text-lg"
                       />
                     </div>
                   </label>

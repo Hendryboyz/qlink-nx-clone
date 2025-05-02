@@ -229,7 +229,7 @@ export default function GarageEdit({ data, onCancel, onRemove }: Props) {
                               name={key}
                               type={formData.type || 'text'}
                               placeholder=""
-                              className="bg-white"
+                              className="bg-white text-lg"
                               onBlur={(e: React.FocusEvent<HTMLInputElement>) => {
                                 setFieldValue(key, initValue[key]);
                                 setEditKey(null);

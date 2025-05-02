@@ -22,7 +22,7 @@ interface FormData {
   rePassword: string;
 }
 const DEFAULT_INPUT_STYLES =
-  'flex items-center justify-between bg-white border-white p-4 rounded-xl border-2 w-full';
+  'flex items-center justify-between bg-white border-white p-4 rounded-xl border-2 w-full text-lg';
 
 const Step3 = () => {
   const initValue: FormData = { password: '', rePassword: '' };

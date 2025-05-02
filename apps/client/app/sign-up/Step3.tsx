@@ -102,7 +102,7 @@ const defaultValue: FormData = {
 };
 
 const DEFAULT_INPUT_STYLES =
-  'block items-center justify-center rounded-xl py-5 pl-8 pr-6 w-full bg-white border-white border-2 font-bold text-xs';
+  'block items-center justify-center rounded-xl py-5 pl-8 pr-6 w-full bg-white border-white border-2 font-bold text-lg';
 
 const DEFAULT_ERROR_MSG_CLASS = 'text-red-500 absolute';
 
@@ -149,19 +149,18 @@ const Step3 = (props: Props) => {
           };
 
           setSubmitting(true);
-          API
-            .post('/auth/register', payload, {
-              headers: {
-                [HEADER_PRE_TOKEN]: token,
-              },
-            })
+          API.post('/auth/register', payload, {
+            headers: {
+              [HEADER_PRE_TOKEN]: token,
+            },
+          })
             .then((res) => {
               if (res.bizCode == CODE_SUCCESS) props.onSuccess();
               else {
                 showPopup({ title: DEFAULT_ERROR_MSG });
               }
             })
-            .catch(e => {
+            .catch((e) => {
               showPopup({ title: DEFAULT_ERROR_MSG });
               const { type: field, message } = e.data.data.error;
               setFieldError(field, message);
@@ -183,7 +182,7 @@ const Step3 = (props: Props) => {
             <div className="flex-1 overflow-auto mt-6 -mx-3">
               <form onSubmit={handleSubmit} className="h-full overflow-auto">
                 <div className="space-y-6 ml-2 mr-4">
-                  <div className={DEFAULT_INPUT_STYLES}>
+                  <div className={`${DEFAULT_INPUT_STYLES}`}>
                     <p className="text-gray-300">{phone}</p>
                   </div>
                   <label htmlFor="password">
@@ -277,14 +276,14 @@ const Step3 = (props: Props) => {
                     name="addressState"
                     placeholder="State"
                     className={DEFAULT_INPUT_STYLES}
-                    options={STATES.map(value => ({value}))}
+                    options={STATES.map((value) => ({ value }))}
                   >
                     <ErrorMessage
                       name="addressState"
                       className={DEFAULT_ERROR_MSG_CLASS}
                       component="span"
                     />
-                    </DropdownField>
+                  </DropdownField>
                   <label htmlFor="addressCity">
                     <Field
                       id="addressCity"
@@ -343,7 +342,7 @@ const Step3 = (props: Props) => {
                       className={DEFAULT_ERROR_MSG_CLASS}
                       component="span"
                     />
-                    </DropdownField>
+                  </DropdownField>
                   <label htmlFor="email">
                     <Field
                       id="email"
@@ -385,7 +384,12 @@ const Step3 = (props: Props) => {
                     />
                   </label>
                   <div className="flex justify-between items-center mt-8">
-                    <span className="text-xl text-red-600 hover:underline hover:cursor-pointer" onClick={props.goBack}>Back</span>
+                    <span
+                      className="text-xl text-red-600 hover:underline hover:cursor-pointer"
+                      onClick={props.goBack}
+                    >
+                      Back
+                    </span>
                     <SubmitButton
                       text="Next"
                       isLoading={isSubmitting}
