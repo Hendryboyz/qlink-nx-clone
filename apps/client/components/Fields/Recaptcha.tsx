@@ -13,13 +13,6 @@ const Recaptcha = (props: RecaptchaProps) => {
   return (
     <>
       <Field
-        validate={(value: string) => {
-          let errorMessage = '';
-          if (!value) {
-            errorMessage = 'Miss recaptcha validation';
-          }
-          return errorMessage;
-        }}
         type="hidden"
         id="recaptchaToken"
         name="recaptchaToken"

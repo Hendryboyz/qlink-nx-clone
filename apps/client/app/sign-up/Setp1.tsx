@@ -34,9 +34,14 @@ const Step1 = (props: Props) => {
           return errors;
         }}
         onSubmit={(values, { setSubmitting, setFieldError }) => {
-          setSubmitting(true);
           const phone = String(values.phone);
           const recaptchaToken = String(values.recaptchaToken);
+          if (!recaptchaToken) {
+            setSubmitting(false);
+            setFieldError('recaptchaToken', 'Miss recaptcha validation');
+            return;
+          }
+          setSubmitting(true);
           API.post('/auth/otp/send', {
             phone,
             recaptchaToken,
