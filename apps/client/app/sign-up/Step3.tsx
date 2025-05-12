@@ -21,6 +21,7 @@ import DatePickerClassNames from 'react-day-picker/style.module.css';
 import DropdownField from '$/components/Dropdown';
 import { usePopup } from '$/hooks/PopupProvider';
 import { DEFAULT_ERROR_MSG } from 'common/src';
+import TogglePasswordField from '$/components/Fields/TogglePasswordField';
 
 const SignupSchema = Yup.object().shape({
   firstName: Yup.string()
@@ -44,7 +45,7 @@ const SignupSchema = Yup.object().shape({
     .min(6, 'Password must be at least 6 characters long.')
     .matches(
       passwordRegex,
-      'Password must contain at least one letter(a-z or A-Z) and one number.'
+      'Password must contain at least one letter and one number.'
     )
     .required('Password is required.'),
 
@@ -113,8 +114,6 @@ type Props = {
 
 const Step3 = (props: Props) => {
   const initValue: FormData = defaultValue;
-  const [showPassword, togglePassword] = useState(false);
-  const [showRePassword, toggleRePassword] = useState(false);
   const [showDatePicker, toggleDatePicker] = useState(false);
   const {phone, token} = usePayload();
   const {showPopup} = usePopup()
@@ -182,26 +181,18 @@ const Step3 = (props: Props) => {
             <div className="flex-1 overflow-auto mt-6 -mx-3">
               <form onSubmit={handleSubmit} className="h-full overflow-auto">
                 <div className="space-y-6 ml-2 mr-4">
-                  <div className={`${DEFAULT_INPUT_STYLES}`}>
-                    <p className="text-gray-300">{phone}</p>
-                  </div>
-                  <label htmlFor="password">
-                    <div className="relative">
-                      <Field
-                        id="password"
-                        name="password"
-                        type={showPassword ? 'text' : 'password'}
-                        placeholder="Password"
-                        className={`${DEFAULT_INPUT_STYLES} pr-12`}
-                      />
-                      <img
-                        src="assets/eye.svg"
-                        alt="hidden"
-                        onClick={() => togglePassword((pre) => !pre)}
-                        className="absolute"
-                        style={{ right: 18, top: 20 }}
-                      />
+                  <label id="phone">
+                    <div className={`${DEFAULT_INPUT_STYLES}`}>
+                      <p className="text-gray-300">{phone}</p>
                     </div>
+                  </label>
+                  <label htmlFor="password">
+                    <TogglePasswordField
+                      id="password"
+                      name="password"
+                      placeholder="Password"
+                      className={`${DEFAULT_INPUT_STYLES} pr-12`}
+                    />
                     <ErrorMessage
                       name="password"
                       className={DEFAULT_ERROR_MSG_CLASS}
@@ -209,22 +200,12 @@ const Step3 = (props: Props) => {
                     />
                   </label>
                   <label htmlFor="rePassword">
-                    <div className="relative">
-                      <Field
-                        id="rePassword"
-                        name="rePassword"
-                        type={showRePassword ? 'text' : 'password'}
-                        placeholder="Re-enter Password"
-                        className={`${DEFAULT_INPUT_STYLES} pr-12`}
-                      />
-                      <img
-                        src="assets/eye.svg"
-                        alt="hidden"
-                        onClick={() => toggleRePassword((pre) => !pre)}
-                        className="absolute"
-                        style={{ right: 18, top: 20 }}
-                      />
-                    </div>
+                    <TogglePasswordField
+                      id="rePassword"
+                      name="rePassword"
+                      placeholder="Re-enter Password"
+                      className={`${DEFAULT_INPUT_STYLES} pr-12`}
+                    />
                     <ErrorMessage
                       name="rePassword"
                       className={DEFAULT_ERROR_MSG_CLASS}
