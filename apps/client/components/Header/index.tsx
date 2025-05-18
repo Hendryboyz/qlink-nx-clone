@@ -59,7 +59,7 @@ const Header: React.FC<Props> = ({ title, useBackBtn, customBtn, customBackActio
             :
             (<div className="hover:cursor-pointer">
               <img
-                src="assets/user_circle.svg"
+                src="/assets/user_circle.svg"
                 width={40}
                 height={40}
                 onClick={() => router.push('/sign-in')}

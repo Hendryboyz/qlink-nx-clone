@@ -104,7 +104,7 @@ const Step1 = (props: Props) => {
               </Form>
             </div>
             <div className="mt-auto">
-              <div className="flex justify-end text-red-500 items-center mb-11">
+              <div className="flex justify-end text-red-500 items-center mt-12">
                 <SubmitButton
                   text="Next"
                   isLoading={isSubmitting}
@@ -113,7 +113,7 @@ const Step1 = (props: Props) => {
                   }}
                 />
               </div>
-              <p className="text-[#DF6B00] text-center">
+              <p className="text-[#DF6B00] text-center mt-12">
                 Already a member?&nbsp;
                 <Link href="/sign-in">
                   <span className="hover:underline">Log in</span>

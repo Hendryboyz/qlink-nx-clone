@@ -10,10 +10,10 @@ import { useRouter } from 'next/navigation';
 import API from '$/utils/fetch';
 
 const menuItems = [
-  { title: 'My Garage', icon: '🏠', url: '/garage' },
-  { title: 'Register Bike', icon: '🚲', url: '' },
-  { title: 'Service Records', icon: '📋', url: '' },
-  { title: 'Coupons', icon: '🎟️', url: '' },
+  { title: 'My Garage', icon: '/assets/my_garage.png', url: '/garage' },
+  { title: 'Register Bike', icon: '/assets/my_garage.png', url: '' },
+  // { title: 'Service Records', icon: '📋', url: '' },
+  // { title: 'Coupons', icon: '🎟️', url: '' },
 ];
 
 
@@ -53,9 +53,11 @@ export default function Index() {
                 router.push(item.url);
               }}
             >
-              <div className="w-20 h-20 bg-gray-300 rounded-full flex items-center justify-center text-2xl mb-3">
-                {item.icon}
-              </div>
+              <img
+                className="w-20 h-20 bg-gray-300 rounded-full mb-3"
+                src={item.icon}
+                alt={item.title}
+              />
               <span className="text-[18px] font-[GilroyBlack] text-[#65696E]">
                 {item.title}
               </span>
@@ -64,14 +66,14 @@ export default function Index() {
         </div>
       </div>
       {/* News */}
-      <div className="mt-5 mb-10 px-6">
+      <div className="mt-5 mb-8 px-6">
         <hr className="border border-[#E19500] bg-[#E19500]" />
       </div>
       <div className="p-6">
-        <h2 className="font-[GilroyBlack] text-primary pl-6 pb-6 font-bold italic text-2xl mb-3">
+        <h2 className="font-[GilroyBlack] text-primary pl-6 font-bold italic text-2xl mb-9">
           Latest News
         </h2>
-        <div className="grid gap-5 grid-rows-3 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 mb-3">
+        <div className="grid gap-4 grid-rows-4 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
           {posts.map((item, index) => (
             <NewsItem
               key={index}
