@@ -34,7 +34,7 @@ const DropdownField: React.FC<Props> = ({name, label, options, placeholder, chil
           ))}
         </Field>
         {children}
-        <img src="/assets/arrow_down.png" />
+        <img src="/assets/chevron_down.svg" />
       </label>
     </>
   );

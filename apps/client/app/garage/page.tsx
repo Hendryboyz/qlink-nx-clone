@@ -83,7 +83,7 @@ export default function Garage() {
           </div>
           <div className="mt-6 flex justify-center">
             <img
-              src="/assets/add.png"
+              src="/assets/add_square.svg"
               alt="add"
               className="w-6"
               onClick={() => {
