@@ -153,8 +153,8 @@ export default function GarageEdit({ data, onCancel, onRemove }: Props) {
       useDefault: false,
       title: 'Remove from your account?',
       content: (<div className='flex items-center justify-between gap-5 w-full'>
-        <Button className='py-2 w-full rounded-lg h-12' onClick={hidePopup}>Cancel</Button>
-        <Button className='py-2 w-full rounded-lg h-12' onClick={removeAction}>Yes</Button>
+        <Button className='py-2 w-full text-sm rounded-lg h-12' onClick={hidePopup}>Cancel</Button>
+        <Button className='py-2 w-full text-sm rounded-lg h-12' onClick={removeAction}>Yes</Button>
       </div>)
     });
   };

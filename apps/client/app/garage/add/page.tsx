@@ -116,7 +116,7 @@ export default function GarageAdd() {
                 content: (
                   <div className='flex items-center justify-center gap-6'>
                     <Button
-                      className='py-2 text-base w-36'
+                      className='py-2 text-sm w-36'
                       onClick={() => {
                         router.push('/garage');
                         hidePopup();
@@ -125,7 +125,7 @@ export default function GarageAdd() {
                       Garage
                     </Button>
                     <Button
-                      className='py-2 text-base w-36'
+                      className='py-2 text-sm w-36'
                       onClick={() => {
                         router.push('/');
                         hidePopup();

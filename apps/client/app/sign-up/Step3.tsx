@@ -25,42 +25,42 @@ import TogglePasswordField from '$/components/Fields/TogglePasswordField';
 
 const SignupSchema = Yup.object().shape({
   firstName: Yup.string()
-    .max(50, 'First name must be at most 50 characters long.')
-    .required('First name is required.'),
+    .max(50, 'At most 50 characters long.')
+    .required('Required.'),
 
   midName: Yup.string()
-    .max(50, 'Middle name must be at most 50 characters long.'),
+    .max(50, 'At most 50 characters long.'),
 
   lastName: Yup.string()
-    .max(50, 'Last name must be at most 50 characters long.')
-    .required('Last name is required.'),
+    .max(50, 'At most 50 characters long.')
+    .required('Required.'),
 
-  addressState: Yup.string().required('State is required.'),
+  addressState: Yup.string().required('Required.'),
 
   addressCity: Yup.string()
-    .matches(alphaWithSpacesMax50Regex, 'City only allow letter(a-z, A-Z and space)')
-    .required('City is required.'),
+    .matches(alphaWithSpacesMax50Regex, 'Only allow letter(a-z, A-Z and space)')
+    .required('Required.'),
 
   password: Yup.string()
-    .min(6, 'Password must be at least 6 characters long.')
+    .min(6, 'Must be at least 6 characters long.')
     .matches(
       passwordRegex,
-      'Password must contain at least one letter and one number.'
+      'Must include letter and number.'
     )
     .required('Password is required.'),
 
   rePassword: Yup.string()
     .oneOf([Yup.ref('password')], 'Passwords do not match.')
-    .required('Please confirm your password.'),
+    .required('Confirm your password.'),
 
   birthday: Yup.string()
-    .matches(/^\d{4}-\d{2}-\d{2}$/, 'Birthday must be in YYYY-MM-DD format.')
+    .matches(/^\d{4}-\d{2}-\d{2}$/, 'Must be in YYYY-MM-DD format.')
     .nullable(),
 
   source: Yup.number().nullable(),
 
   email: Yup.string()
-    .email('Please enter a valid email address.')
+    .email('Enter a valid email.')
     .nullable(),
 
   whatsapp: Yup.string().nullable(),
@@ -186,7 +186,7 @@ const Step3 = (props: Props) => {
                       <p className="text-gray-300">{phone}</p>
                     </div>
                   </label>
-                  <label htmlFor="password">
+                  <label htmlFor="password" className="!mb-10">
                     <TogglePasswordField
                       id="password"
                       name="password"
@@ -199,19 +199,22 @@ const Step3 = (props: Props) => {
                       component="span"
                     />
                   </label>
-                  <label htmlFor="rePassword">
-                    <TogglePasswordField
-                      id="rePassword"
-                      name="rePassword"
-                      placeholder="Re-enter Password"
-                      className={`${DEFAULT_INPUT_STYLES} pr-12`}
-                    />
-                    <ErrorMessage
-                      name="rePassword"
-                      className={DEFAULT_ERROR_MSG_CLASS}
-                      component="span"
-                    />
-                  </label>
+                  <div>
+                    <label htmlFor="rePassword">
+                      <TogglePasswordField
+                        id="rePassword"
+                        name="rePassword"
+                        placeholder="Re-enter Password"
+                        className={`${DEFAULT_INPUT_STYLES} pr-12`}
+                      />
+                      <ErrorMessage
+                        name="rePassword"
+                        className={DEFAULT_ERROR_MSG_CLASS}
+                        component="span"
+                      />
+                    </label>
+                  </div>
+
                   <label htmlFor="firstName">
                     <Field
                       id="firstName"
@@ -280,11 +283,16 @@ const Step3 = (props: Props) => {
                   </label>
                   <label htmlFor="birthday">
                     <Field
+                      type="date"
                       id="birthday"
                       name="birthday"
-                      placeholder="Birthday"
+                      placeholder="Birthday(YYYY-MM-DD)"
                       className={DEFAULT_INPUT_STYLES}
-                      onClick={() => toggleDatePicker((p) => !p)}
+                      onChange={(e: any) => {
+                        console.log(e.target.value);
+                        setFieldValue('birthday', e.target.value);
+                      }}
+                      // onClick={() => toggleDatePicker((p) => !p)}
                     />
                     <ErrorMessage
                       name="birthday"

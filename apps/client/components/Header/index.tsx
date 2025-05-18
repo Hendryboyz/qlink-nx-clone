@@ -15,7 +15,7 @@ const Header: React.FC<Props> = ({ title, useBackBtn, customBtn, customBackActio
   const router = useRouter();
   const pathname = usePathname()
   const [isOpen, toggleOpen] = useState<boolean>(false);
-  const contentPaddingTop = title ? 44 : 76;
+  const contentPaddingTop = title ? 36 : 64;
   return (
     <>
       <style>{`body { padding-top: ${contentPaddingTop}px; }`}</style>
@@ -50,17 +50,18 @@ const Header: React.FC<Props> = ({ title, useBackBtn, customBtn, customBackActio
             <h1 className="text-white text-xl font-bold">{title}</h1>
           ) : (
             <div>
-              <Banner className="text-xs/[0.75rem]" />
+              <Banner size="h-8 w-8" />
             </div>
           )}
 
           {title ?
             (customBtn ? customBtn : <div className="w-6"></div>)
             :
-            (<div className="rounded-3xl border-white border-2 p-1 hover:cursor-pointer">
-              <PersonIcon
-                width={30}
-                height={30}
+            (<div className="hover:cursor-pointer">
+              <img
+                src="assets/user_circle.svg"
+                width={40}
+                height={40}
                 onClick={() => router.push('/sign-in')}
               />
             </div>)}

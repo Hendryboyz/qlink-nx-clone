@@ -1,14 +1,21 @@
 import { BaseHTMLAttributes } from 'react';
 
-const Banner = ({ className, ...props }: BaseHTMLAttributes<HTMLDivElement>) => {
+interface BannerProps extends BaseHTMLAttributes<HTMLDivElement> {
+  size?: string;
+}
+
+const Banner = ({size, className, ...props }: BannerProps) => {
+
   return (
     <div
-      className={`border-white border-solid text-white border-2 w-fit text-3xl text-h p-1 font-bold mt-auto mb-auto ${className}`}
+      className="m-auto ${className}"
       {...props}
     >
-      <p>QLINK</p>
-      <p className="tracking-wide">RIDER</p>
-      <p className="tracking-widest">CLUB</p>
+      <img
+        src="/assets/qrc_logo.svg"
+        alt="logo"
+        className={size ? size : "h-28 w-28"}
+      />
     </div>
   );
 };

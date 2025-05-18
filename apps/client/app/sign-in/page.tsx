@@ -102,7 +102,7 @@ export default function SignIn() {
                     className="text-red-500"
                     component="span"
                   />
-                  <div className="flex justify-between items-center">
+                  <div className="flex mt-5 justify-between items-center text-xs">
                     <label htmlFor="rememberMe" className='flex items-center pl-1'>
                       <Field
                         id="rememberMe"
@@ -116,7 +116,7 @@ export default function SignIn() {
                       <span className='ml-2 mt-0.5 text-white'>Keep me signed in</span>
                     </label>
                     <Link href="/reset-password">
-                      <h4 className="mt-2 text-red-300 text-right">
+                      <h4 className="text-red-300 text-right">
                         Forgot password?
                       </h4>
                     </Link>
@@ -134,7 +134,7 @@ export default function SignIn() {
             </Fragment>
           )}
         </Formik>
-        <Link href="/sign-up" className="text-center mt-8 text-red-300">
+        <Link href="/sign-up" className="text-center text-sm mt-8 text-red-300">
           <h4>Don&apos;t have account? Sign up</h4>
         </Link>
       </div>

@@ -8,7 +8,8 @@ module.exports = {
       extend: {
         fontFamily: {
           'gilroy': ['Gilroy', 'sans-serif'],
-          'gilroy-bold': ['GilroyBold', 'sans-serif']
+          'gilroy-bold': ['GilroyBold', 'sans-serif'],
+          'gilroy-black': ['GilroyBlack', 'sans-serif']
         },
         colors: {
           primary: {

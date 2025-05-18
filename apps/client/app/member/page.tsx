@@ -101,11 +101,6 @@ export default function Member() {
               <span className="text-xl text-gray-500">{user?.lastName}</span>
             </p>
           </div>
-          <img
-            className="right-6 top-6 w-6 h-6 content-end"
-            src="/assets/mail.png"
-            alt="mail icon"
-          />
         </div>
         {user && (
           <div>
