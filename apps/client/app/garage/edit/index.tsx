@@ -276,7 +276,7 @@ export default function GarageEdit({ data, onCancel, onRemove }: Props) {
                             ) : (
                               formData.editable && (
                                 <img
-                                  src="/assets/pencil.png"
+                                  src="/assets/edit_pencil.svg"
                                   alt="edit"
                                   onClick={() => {
                                     setEditKey(key);

@@ -34,7 +34,7 @@ const ProductCard = ({ data, handleEdit }: { data: ProductVO, handleEdit: (data:
         </div>
         <img
           className="mr-8 mt-8 self-start"
-          src="/assets/edit.png"
+          src="/assets/file_edit.svg"
           alt="edit"
           onClick={() => {
             handleEdit(data);

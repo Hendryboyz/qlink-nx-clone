@@ -151,7 +151,7 @@ export default function GarageAdd() {
               useBackBtn={true}
               customBtn={
                 <img
-                  src="/assets/file_check.png"
+                  src="/assets/save.svg"
                   onClick={() => handleSubmit()}
                 />
               }

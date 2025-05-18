@@ -70,7 +70,7 @@ export default function Editable({editKey, title, type = 'text', defaultValue, v
     } else {
       return (
         <img
-          src="/assets/pencil.png"
+          src="/assets/edit_pencil.svg"
           alt="edit"
           onClick={() => { setIsEditing(wasEditing => !wasEditing); }}
         />
