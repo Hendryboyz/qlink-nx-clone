@@ -96,6 +96,7 @@ type Props = {
 export default function GarageEdit({ data, onCancel, onRemove }: Props) {
   const DEFAULT_ERROR_MSG_CLASS =
     'text-red-500 absolute top-0 right-0 text-xs text-right';
+  const POPUP_BUTTON_STYLE = 'py-2 px-3 text-sm w-36 rounded-lg h-8';
   const [models, setModels] = useState<ModelVO[]>([]);
   const [editKey, setEditKey] = useState<KEY | null>(null);
   const [editValue, setEditValue] = useState<string | number>('');
@@ -153,8 +154,18 @@ export default function GarageEdit({ data, onCancel, onRemove }: Props) {
       useDefault: false,
       title: 'Remove from your account?',
       content: (<div className='flex items-center justify-between gap-5 w-full'>
-        <Button className='py-2 w-full text-sm rounded-lg h-12' onClick={hidePopup}>Cancel</Button>
-        <Button className='py-2 w-full text-sm rounded-lg h-12' onClick={removeAction}>Yes</Button>
+        <Button
+          className={POPUP_BUTTON_STYLE}
+          onClick={hidePopup}
+        >
+          Cancel
+        </Button>
+        <Button
+          className={POPUP_BUTTON_STYLE}
+          onClick={removeAction}
+        >
+          Yes
+        </Button>
       </div>)
     });
   };

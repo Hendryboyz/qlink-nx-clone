@@ -46,7 +46,7 @@ export default function Editable({editKey, title, type = 'text', defaultValue, v
   const showEditButton = () => {
     if (isEditing) {
       return (
-        <div className="flex gap-1">
+        <div className="flex gap-1 self-end mb-[3px]">
           <IconButton color="blue" disabled={error !== ''} onClick={() => {
             if (saveChange && isChangeAllowed) {
               saveChange(editKey, currentValue);
@@ -150,7 +150,7 @@ export default function Editable({editKey, title, type = 'text', defaultValue, v
         <div className="h-auto min-h-8 flex flex-col content-around mt-1">
           {isEditing ? (
             <>
-              <Input className="w-80" />
+              <Input className="min-w-60 mr-1 text-lg" />
               {error && <span className="text-red-600">{error}</span>}
             </>
           ) : (
