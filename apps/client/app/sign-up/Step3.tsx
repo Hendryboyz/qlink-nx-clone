@@ -180,13 +180,13 @@ const Step3 = (props: Props) => {
             <h4 className="text-primary text-xl mt-20">Enter Account Detail</h4>
             <div className="flex-1 overflow-auto mt-6 -mx-3">
               <form onSubmit={handleSubmit} className="h-full overflow-auto">
-                <div className="space-y-6 ml-2 mr-4">
+                <div className="space-y-7 ml-2 mr-4">
                   <label id="phone">
                     <div className={`${DEFAULT_INPUT_STYLES}`}>
                       <p className="text-gray-300">{phone}</p>
                     </div>
                   </label>
-                  <label htmlFor="password" className="!mb-10">
+                  <label htmlFor="password">
                     <TogglePasswordField
                       id="password"
                       name="password"
@@ -199,22 +199,19 @@ const Step3 = (props: Props) => {
                       component="span"
                     />
                   </label>
-                  <div>
-                    <label htmlFor="rePassword">
-                      <TogglePasswordField
-                        id="rePassword"
-                        name="rePassword"
-                        placeholder="Re-enter Password"
-                        className={`${DEFAULT_INPUT_STYLES} pr-12`}
-                      />
-                      <ErrorMessage
-                        name="rePassword"
-                        className={DEFAULT_ERROR_MSG_CLASS}
-                        component="span"
-                      />
-                    </label>
-                  </div>
-
+                  <label htmlFor="rePassword">
+                    <TogglePasswordField
+                      id="rePassword"
+                      name="rePassword"
+                      placeholder="Re-enter Password"
+                      className={`${DEFAULT_INPUT_STYLES} pr-12`}
+                    />
+                    <ErrorMessage
+                      name="rePassword"
+                      className={DEFAULT_ERROR_MSG_CLASS}
+                      component="span"
+                    />
+                  </label>
                   <label htmlFor="firstName">
                     <Field
                       id="firstName"

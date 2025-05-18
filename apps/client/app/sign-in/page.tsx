@@ -81,7 +81,7 @@ export default function SignIn() {
                 </label>
                 <ErrorMessage
                   name="phone"
-                  className="text-red-500"
+                  className="text-red-200"
                   component="span"
                 />
                 <div>
@@ -99,7 +99,7 @@ export default function SignIn() {
                   </label>
                   <ErrorMessage
                     name="password"
-                    className="text-red-500"
+                    className="text-red-200"
                     component="span"
                   />
                   <div className="flex mt-5 justify-between items-center text-xs">

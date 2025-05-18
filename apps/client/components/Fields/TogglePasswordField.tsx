@@ -14,8 +14,7 @@ export default function TogglePasswordField({name, ...props}: InputHTMLAttribute
         src="assets/eye.svg"
         alt="hidden"
         onClick={() => togglePassword((pre) => !pre)}
-        className="absolute"
-        style={{ right: 25, top: '28%' }}
+        className="absolute top-1/2 right-[25px] transform -translate-y-1/2"
       />
     </div>
   )
