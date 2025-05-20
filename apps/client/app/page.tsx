@@ -10,8 +10,8 @@ import { useRouter } from 'next/navigation';
 import API from '$/utils/fetch';
 
 const menuItems = [
-  { title: 'My Garage', icon: '/assets/my_garage.png', url: '/garage' },
-  { title: 'Register Bike', icon: '/assets/my_garage.png', url: '' },
+  { title: 'My Garage', icon: '/assets/garage_icon.svg', url: '/garage' },
+  { title: 'Register Bike', icon: '/assets/register_icon.svg', url: '/garage/add' },
   // { title: 'Service Records', icon: '📋', url: '' },
   // { title: 'Coupons', icon: '🎟️', url: '' },
 ];
@@ -48,19 +48,19 @@ export default function Index() {
           {menuItems.map((item, index) => (
             <div
               key={index}
-              className="flex flex-col items-center"
+              className="flex flex-col items-center hover:cursor-pointer"
               onClick={() => {
                 router.push(item.url);
               }}
             >
               <img
-                className="w-20 h-20 bg-gray-300 rounded-full mb-3"
+                className="w-28 h-28 bg-gray-300 rounded-md mb-3"
                 src={item.icon}
                 alt={item.title}
               />
-              <span className="text-[18px] font-[GilroyBlack] text-[#65696E]">
-                {item.title}
-              </span>
+              {/*<span className="text-[18px] font-[GilroyBlack] text-[#65696E]">*/}
+              {/*  {item.title}*/}
+              {/*</span>*/}
             </div>
           ))}
         </div>
