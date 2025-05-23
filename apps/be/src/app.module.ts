@@ -9,6 +9,7 @@ import { RouterModule } from '@nestjs/core';
 import { PostsModule } from './modules/posts/posts.module';
 import { PostsBoModule } from './modules/bo/posts/posts.module';
 import { StorageModule } from '$/modules/upload/storage.module';
+import { BoUserModule } from '$/modules/bo/user/bo-user.module';
 
 @Module({
   imports: [
@@ -22,6 +23,7 @@ import { StorageModule } from '$/modules/upload/storage.module';
     PostsModule,
     BoAuthModule,
     PostsBoModule,
+    BoUserModule,
     StorageModule,
     RouterModule.register([
       {
@@ -34,6 +36,10 @@ import { StorageModule } from '$/modules/upload/storage.module';
           {
             path: 'auth',
             module: BoAuthModule,
+          },
+          {
+            path: 'users',
+            module: BoUserModule,
           },
         ],
       },

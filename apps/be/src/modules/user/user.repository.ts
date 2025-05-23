@@ -1,4 +1,4 @@
-import { BadRequestException, Inject, Injectable } from '@nestjs/common';
+import { BadRequestException, Inject, Injectable, Logger } from '@nestjs/common';
 import { Pool, QueryResult } from 'pg';
 import { UserDto, UserEntity, UserUpdateDto } from '@org/types';
 import { KNEX_CONNECTION } from '$/database.module';
@@ -7,6 +7,7 @@ import { isEmpty } from 'lodash';
 
 @Injectable()
 export class UserRepository {
+  private logger = new Logger(this.constructor.name);
   constructor(
     private readonly pool: Pool,
     @Inject(KNEX_CONNECTION) private readonly knex: Knex
@@ -69,5 +70,32 @@ export class UserRepository {
     const [obj] = await this.knex('users').where({ id }).update(userToUpdate).returning('id');
 
     return await this.findById(obj.id);
+  }
+
+  public async findByPage(page: number, limit: number) {
+    const offset = (page - 1) * limit;
+    try {
+      const data = await this.knex('users')
+        .select([
+          'id',
+          'first_name',
+          'mid_name',
+          'last_name',
+          'phone',
+          'address_state',
+          'address_city',
+          'type',
+        ])
+        .where({
+          is_delete: false,
+        })
+        .offset(offset)
+        .limit(limit);
+      const [{ count }] = await this.knex('users').count('id as count');
+      return { data, total: parseInt(count as string, 10) };
+    } catch (error) {
+      this.logger.error(`Error fetching users: ${error.message}`, error.stack);
+      throw error;
+    }
   }
 }

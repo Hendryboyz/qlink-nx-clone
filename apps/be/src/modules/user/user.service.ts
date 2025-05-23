@@ -80,4 +80,17 @@ export class UserService {
     const userEntity = await this.userRepository.update(userId, { avatarS3uri: s3Key });
     return this.filterUserInfo(userEntity);
   }
+
+  public async findByPage(
+    page: number = 1,
+    limit: number = 10,
+  ): Promise<{
+    data: UserVO[];
+    total: number;
+    page: number;
+    limit: number;
+  }> {
+    const {data, total} = await this.userRepository.findByPage(page, limit);
+    return {data, total, page, limit };
+  }
 }
