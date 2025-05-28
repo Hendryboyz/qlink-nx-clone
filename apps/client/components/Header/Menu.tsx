@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import React from 'react';
 import API from '$/utils/fetch';
-import { Cross2Icon, ExitIcon } from '@radix-ui/react-icons';
+import { Cross2Icon } from '@radix-ui/react-icons';
 import { useRouter } from 'next/navigation';
 
 const mainItems = [
@@ -35,15 +35,15 @@ const Menu: React.FC<Props> = ({ isOpen, onClose }) => {
         onClick={onClose}
       />
       <div
-        className={`fixed top-0 left-0 h-full pt-12 w-64 bg-orange-600 z-50 text-white transform transition-transform duration-300 ease-in-out ${
+        className={`fixed top-0 left-0 h-full pt-3 w-64 bg-orange-600 z-50 text-white transform transition-transform duration-300 ease-in-out ${
           isOpen ? 'translate-x-0' : '-translate-x-full'
         }`}
       >
-        <div className="px-6">
-          <button onClick={onClose} className="text-4xl mb-4">
+        <div className="px-9">
+          <button onClick={onClose} className="text-4xl">
             <Cross2Icon height={24} width={24} />
           </button>
-          <nav className="px-6 text-xl">
+          <nav className="mt-9 text-xl pl-7">
             <ul>
               {mainItems.map((item, index) => {
                 const [title, link] = item;
@@ -68,7 +68,7 @@ const Menu: React.FC<Props> = ({ isOpen, onClose }) => {
                 );
               })}
             </ul>
-            <div className="m-3 mt-6">
+            <div className="mt-6">
               <a
                 className="hover:cursor-pointer hover:underline text-gray-500"
                 onClick={() => {
@@ -76,7 +76,7 @@ const Menu: React.FC<Props> = ({ isOpen, onClose }) => {
                   setTimeout(() => router.push('/sign-in'), 500);
                 }}
               >
-                <ExitIcon height={18} width={18} className="inline mr-2 pb-0.5" />
+                <img height={18} width={18} className="inline mr-2 pb-0.5" src='/assets/logout.svg' />
                 Logout
               </a>
             </div>

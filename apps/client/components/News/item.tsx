@@ -48,7 +48,7 @@ const NewsItem: React.FC<Props> = ({ type, date, title, imgUrl, id }) => {
       <div className="pt-3">
         <div className="flex items-center space-x-2 mb-1">
           <NewsType type={type} />
-          <span className="text-xs">{fromDate(date)}</span>
+          <span className="text-[13px]">{fromDate(date)}</span>
         </div>
         <p className="text-sm font-bold h-16">{title}</p>
       </div>

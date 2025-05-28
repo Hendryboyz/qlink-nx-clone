@@ -23,7 +23,7 @@ type Props = {
 const NewsType: React.FC<Props> = ({ type }: Props) => {
   return (
     <span
-      className={`text-xs text-white px-2 py-1 rounded ${getTypeColor(type)}`}
+      className={`text-[8px] text-white h-3 w-9 text-center rounded ${getTypeColor(type)}`}
     >
       {type}
     </span>

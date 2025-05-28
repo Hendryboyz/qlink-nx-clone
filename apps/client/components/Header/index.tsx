@@ -1,5 +1,5 @@
 import React, { BaseHTMLAttributes, ReactNode, useState } from 'react';
-import { HamburgerMenuIcon, PersonIcon } from '@radix-ui/react-icons';
+import { HamburgerMenuIcon } from '@radix-ui/react-icons';
 import { useRouter, usePathname } from 'next/navigation';
 import Menu from './Menu';
 // import classNames from 'classnames';
@@ -15,12 +15,11 @@ const Header: React.FC<Props> = ({ title, useBackBtn, customBtn, customBackActio
   const router = useRouter();
   const pathname = usePathname()
   const [isOpen, toggleOpen] = useState<boolean>(false);
-  const contentPaddingTop = title ? 36 : 64;
   return (
     <>
-      <style>{`body { padding-top: ${contentPaddingTop}px; }`}</style>
+      <style>{`body { padding-top: 48px; }`}</style>
       <header
-        className="bg-primary pt-2 pb-2 text-white px-4 w-full"
+        className="bg-primary pt-3 text-white px-4 w-full h-12"
         style={{
           position: 'fixed',
           top: 0,
@@ -29,7 +28,7 @@ const Header: React.FC<Props> = ({ title, useBackBtn, customBtn, customBackActio
           zIndex: 30,
         }}
       >
-        <div className="container mx-auto flex justify-between items-center">
+        <div className="container m-auto flex justify-between items-center">
           {useBackBtn ? (
             <img
               src="/assets/arrow_left.svg"
@@ -42,7 +41,7 @@ const Header: React.FC<Props> = ({ title, useBackBtn, customBtn, customBackActio
               className="text-2xl"
               onClick={() => toggleOpen((pre) => !pre)}
             >
-              <HamburgerMenuIcon />
+              <HamburgerMenuIcon width={24} height={24} />
             </button>
           )}
 
@@ -50,7 +49,7 @@ const Header: React.FC<Props> = ({ title, useBackBtn, customBtn, customBackActio
             <h1 className="text-white text-xl font-bold">{title}</h1>
           ) : (
             <div>
-              <Banner size="h-8 w-8" />
+              <Banner size="h-6 w-6" />
             </div>
           )}
 
@@ -60,8 +59,6 @@ const Header: React.FC<Props> = ({ title, useBackBtn, customBtn, customBackActio
             (<div className="hover:cursor-pointer">
               <img
                 src="/assets/user_circle.svg"
-                width={40}
-                height={40}
                 onClick={() => router.push('/sign-in')}
               />
             </div>)}

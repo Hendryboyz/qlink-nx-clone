@@ -29,32 +29,32 @@ export default function Index() {
   return (
     <div className="w-full md:w-10/12 min-h-full flex-col">
       <Header />
-      <div className="p-5">
+      <div className="pt-5 px-5">
         {/*<Carousel images={[]} className="mb-12" />*/}
-        <div className="mb-5 relative">
+        <div className="mb-8 relative">
           <img
-            className="rounded-xl w-full h-64 max-w-3xl mx-auto object-cover hover:cursor-pointer"
+            className="rounded-xl w-full h-64 max-sm:h-[150px] max-w-3xl mx-auto object-cover hover:cursor-pointer"
             src={'/assets/banner.jpg'}
             alt={'banner'}
             onClick={() => router.push('/sign-up')}
           />
           <div
-            className="uppercase text-6xl text-red-600 absolute text-center top-1/2 w-full font-[GilroyBlack]"
+            className="uppercase text-3xl text-red-600 absolute text-center top-1/2 w-full font-[GilroyBlack]"
           >
             Join the club
           </div>
         </div>
-        <div className="grid grid-cols-2 gap-11">
+        <div className="grid grid-cols-2 gap-10 justify-items-center">
           {menuItems.map((item, index) => (
             <div
               key={index}
-              className="flex flex-col items-center hover:cursor-pointer"
+              className="hover:cursor-pointer max-sm:odd:justify-self-end max-sm:even:justify-self-start"
               onClick={() => {
                 router.push(item.url);
               }}
             >
               <img
-                className="w-28 h-28 bg-gray-300 rounded-md mb-3"
+                className="w-[120px] h-[120px] bg-gray-300 rounded-[12px] mb-3"
                 src={item.icon}
                 alt={item.title}
               />
@@ -66,10 +66,10 @@ export default function Index() {
         </div>
       </div>
       {/* News */}
-      <div className="mt-5 mb-8 px-6">
+      <div className="my-8 px-6">
         <hr className="border border-[#E19500] bg-[#E19500]" />
       </div>
-      <div className="p-6">
+      <div className="px-6">
         <h2 className="font-[GilroyBlack] text-primary pl-6 font-bold italic text-2xl mb-9">
           Latest News
         </h2>
