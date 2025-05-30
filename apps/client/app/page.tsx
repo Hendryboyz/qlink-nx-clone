@@ -3,17 +3,15 @@
 import React, { useState } from 'react';
 import { useEffect } from 'react';
 import Header from '$/components/Header';
-import Carousel from '$/components/Carousel';
 import { PostEntity } from '@org/types';
 import NewsItem from '$/components/News/item';
 import { useRouter } from 'next/navigation';
 import API from '$/utils/fetch';
+// import Carousel from '$/components/Carousel';
 
 const menuItems = [
   { title: 'My Garage', icon: '/assets/garage_icon.svg', url: '/garage' },
   { title: 'Register Bike', icon: '/assets/register_icon.svg', url: '/garage/add' },
-  // { title: 'Service Records', icon: '📋', url: '' },
-  // { title: 'Coupons', icon: '🎟️', url: '' },
 ];
 
 
@@ -39,7 +37,7 @@ export default function Index() {
             onClick={() => router.push('/sign-up')}
           />
           <div
-            className="uppercase text-3xl text-red-600 absolute text-center top-1/2 w-full font-[GilroyBlack]"
+            className="uppercase text-3xl text-red-600 absolute text-center top-1/2 w-full font-[GilroyHeavy] italic"
           >
             Join the club
           </div>
@@ -69,12 +67,12 @@ export default function Index() {
       <div className="my-8 px-6">
         <hr className="border border-[#E19500] bg-[#E19500]" />
       </div>
-      <div className="px-6">
-        <h2 className="font-[GilroyBlack] text-primary pl-6 font-bold italic text-2xl mb-9">
+      <div className="px-6 pb-6">
+        <h2 className="font-[GilroyBlack] text-primary pl-6 italic text-2xl mb-9">
           Latest News
         </h2>
-        <div className="grid gap-4 grid-rows-4 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
-          {posts.map((item, index) => (
+        <div className="grid gap-4 sm:grid-rows-6 sm:grid-cols-1 md:grid-rows-4  md:grid-cols-2 lg:grid-rows-2 lg:grid-cols-3">
+          {posts.slice(0, 6).map((item, index) => (
             <NewsItem
               key={index}
               type={item.category}
@@ -86,7 +84,7 @@ export default function Index() {
           ))}
         </div>
         <div className="mt-4 text-center">
-          <a href="/news" className="text-primary font-bold text-base">
+          <a href="/news" className="text-primary font-[GilroyBold] text-base">
             Check for more
             <img
               className="inline ml-1"

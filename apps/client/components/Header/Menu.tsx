@@ -43,7 +43,7 @@ const Menu: React.FC<Props> = ({ isOpen, onClose }) => {
           <button onClick={onClose} className="text-4xl">
             <Cross2Icon height={24} width={24} />
           </button>
-          <nav className="mt-9 text-xl pl-7">
+          <nav className="mt-9 text-xl pl-7 font-[GilroyRegular]">
             <ul>
               {mainItems.map((item, index) => {
                 const [title, link] = item;

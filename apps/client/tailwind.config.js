@@ -7,9 +7,11 @@ module.exports = {
     theme: {
       extend: {
         fontFamily: {
-          'gilroy': ['Gilroy', 'sans-serif'],
+          'gilroy-regular': ['GilroyRegular', 'sans-serif'],
+          'gilroy-medium': ['GilroyMedium', 'sans-serif'],
           'gilroy-bold': ['GilroyBold', 'sans-serif'],
-          'gilroy-black': ['GilroyBlack', 'sans-serif']
+          'gilroy-black': ['GilroyBlack', 'sans-serif'],
+          'gilroy-heavy': ['GilroyHeavy', 'sans-serif'],
         },
         colors: {
           primary: {
