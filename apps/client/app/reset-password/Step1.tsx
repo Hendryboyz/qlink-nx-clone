@@ -65,14 +65,14 @@ const Step1 = (props: Props) => {
           setFieldValue,
         }) => (
           <Fragment>
-            <div className="mt-auto">
+            <div className="mt-auto font-gilroy-medium">
               <form>
-                <h4 className="text-[#FFF0D3] text-xl mb-6">
+                <h4 className="text-[#FFF0D3] text-xl mb-9">
                   Mobile Verification
                 </h4>
                 <label htmlFor="phone" className="block">
                   <div className="flex items-center bg-white border-white p-4 rounded-xl border-2 w-full">
-                    <img src="assets/phone.svg" alt="phone" />
+                    <img src="assets/phone2.svg" alt="phone" />
                     <Field
                       id="phone"
                       name="phone"
@@ -84,10 +84,10 @@ const Step1 = (props: Props) => {
                 </label>
                 <ErrorMessage
                   name="phone"
-                  className="text-red-500"
+                  className="text-[#E19500] absolute"
                   component="span"
                 />
-                <div className="mt-6">
+                <div className="mt-9">
                   <Recaptcha
                     recaptchaToken={values.recaptchaToken}
                     recaptchaError={errors.recaptchaToken}

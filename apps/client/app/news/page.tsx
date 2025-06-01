@@ -24,7 +24,7 @@ const News = () => {
                 key={index}
                 type={item.category}
                 title={item.title}
-                date={new Date(item.publishStartDate)}
+                date={new Date(item.createdAt)}
                 imgUrl={item.coverImage}
                 id={item.id} />
             </div>

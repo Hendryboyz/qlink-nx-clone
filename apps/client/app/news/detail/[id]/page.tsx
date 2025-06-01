@@ -45,7 +45,7 @@ const Detail: NextPage<Props> = ({ params }) => {
             <h1 className="font-bold text-2xl p-6">{post.title}</h1>
           </div>
           <div className="p-6">
-            <div className="my-5">{fromDate(new Date(post.publishStartDate))}</div>
+            <div className="my-5">{fromDate(new Date(post.createdAt))}</div>
             <div dangerouslySetInnerHTML={{ __html: post.content }} />
           </div>
         </div>

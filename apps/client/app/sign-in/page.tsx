@@ -1,6 +1,6 @@
 'use client';
 
-import { Fragment } from 'react';
+import React, { Fragment, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { Formik, FormikErrors, Field, ErrorMessage } from 'formik';
@@ -10,6 +10,7 @@ import API from '$/utils/fetch';
 import SubmitButton from '$/components/Button/SubmitButton';
 import { NOOP } from '$/utils';
 import { usePopup } from '$/hooks/PopupProvider';
+import { Cross2Icon } from '@radix-ui/react-icons';
 
 interface FormData {
   phone: string;
@@ -19,11 +20,25 @@ interface FormData {
 
 export default function SignIn() {
   const initValue: FormData = { phone: '', password: '', rememberMe: false };
+  const [showPassword, setShowPassword] = useState(false);
   const router = useRouter();
   const { showPopup } = usePopup();
+
+  function onClose() {
+    router.push('/');
+  }
+
   return (
     <ColorBackground color="#D70127">
       <div className="w-full py-16 pb-10 px-12 flex flex-col h-full flex-1 ">
+        <div onClick={onClose}>
+          <Cross2Icon
+            height={24}
+            width={24}
+            color="white"
+            className="justify-self-end cursor-pointer"
+          />
+        </div>
         <Banner className="self-center" />
         <Formik
           initialValues={initValue}
@@ -48,7 +63,7 @@ export default function SignIn() {
               })
               .catch((err) => {
                 console.log(err);
-                showPopup({ title: 'Incorrect Credentials'});
+                showPopup({ title: 'Incorrect Credentials' });
               })
               .finally(() => setSubmitting(false));
           }}
@@ -65,62 +80,75 @@ export default function SignIn() {
             isValid,
           }) => (
             <Fragment>
-              <div className="space-y-8 p-2">
-                <label htmlFor="phone" className="block">
-                  <div className="flex items-center bg-white border-white p-4 rounded-xl border-2 w-full">
-                    <img src="assets/user.svg" alt="phone" />
-                    <Field
-                      id="phone"
-                      name="phone"
-                      placeholder="Mobile Number"
-                      type="number"
-                      className="flex-grow ml-2 text-lg"
-                      autoComplete="on"
-                    />
-                  </div>
-                </label>
-                <ErrorMessage
-                  name="phone"
-                  className="text-red-200"
-                  component="span"
-                />
+              <div className="space-y-6 p-2">
+                <div>
+                  <label htmlFor="phone" className="block">
+                    <div className="flex items-center bg-white border-white p-4 rounded-xl border-2 w-full">
+                      <img src="assets/user2.svg" alt="phone" />
+                      <Field
+                        id="phone"
+                        name="phone"
+                        placeholder="Mobile Number"
+                        type="text"
+                        className="flex-grow ml-2 text-sm font-gilroy-medium"
+                        autoComplete="on"
+                      />
+                    </div>
+                  </label>
+                  <ErrorMessage
+                    name="phone"
+                    className="text-[#E19500] absolute"
+                    component="span"
+                  />
+                </div>
                 <div>
                   <label htmlFor="password" className="block">
                     <div className="flex items-center bg-white border-white p-4 rounded-xl border-2 w-full">
-                      <img src="assets/lock.svg" alt="password" />
+                      <img src="assets/lock2.svg" alt="password" />
                       <Field
                         id="password"
                         name="password"
                         placeholder="Password"
-                        type="password"
-                        className="flex-grow ml-2 text-lg"
+                        type={showPassword ? 'text' : 'password'}
+                        className="flex-grow ml-2 text-sm font-gilroy-medium"
+                      />
+                      <img
+                        src="assets/eye.svg"
+                        alt="phone"
+                        onClick={() =>
+                          setShowPassword((prevState) => !prevState)
+                        }
                       />
                     </div>
                   </label>
                   <ErrorMessage
                     name="password"
-                    className="text-red-200"
+                    className="text-[#E19500] absolute"
                     component="span"
                   />
-                  <div className="flex mt-5 justify-between items-center text-xs">
-                    <label htmlFor="rememberMe" className='flex items-center pl-1'>
-                      <Field
-                        id="rememberMe"
-                        name="rememberMe"
-                        type="checkbox"
-                        className=""
-                        onChange={() => {
-                          setFieldValue('rememberMe', !values.rememberMe);
-                        }}
-                      />
-                      <span className='ml-2 mt-0.5 text-white'>Keep me signed in</span>
-                    </label>
-                    <Link href="/reset-password">
-                      <h4 className="text-red-300 text-right">
-                        Forgot password?
-                      </h4>
-                    </Link>
-                  </div>
+                </div>
+                <div className="flex mt-5 justify-between items-center text-xs font-gilroy-medium">
+                  <label
+                    htmlFor="rememberMe"
+                    className="flex items-center pl-1"
+                  >
+                    <Field
+                      id="rememberMe"
+                      name="rememberMe"
+                      type="checkbox"
+                      onChange={() => {
+                        setFieldValue('rememberMe', !values.rememberMe);
+                      }}
+                    />
+                    <span className="ml-2 mt-0.5 text-white">
+                      Remember Me
+                    </span>
+                  </label>
+                  <Link href="/reset-password">
+                    <h4 className="text-red-300 text-right">
+                      Forgot password?
+                    </h4>
+                  </Link>
                 </div>
               </div>
               <div className="flex justify-end items-center mt-auto">

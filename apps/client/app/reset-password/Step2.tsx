@@ -86,7 +86,7 @@ const Step2 = (props: Props) => {
             />
           ))}
         </div>
-        <h4 className="text-center text-[#FF7D7D] mt-6">
+        <h4 className="text-center text-[#FF7D7D] mt-5">
           Didn&apos;t receive code?
           <br />
           Resend in 60s

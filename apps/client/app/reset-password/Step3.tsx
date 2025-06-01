@@ -1,6 +1,6 @@
 'use client';
 
-import { Formik, FormikErrors, Field, ErrorMessage } from 'formik';
+import { Formik, Field, ErrorMessage } from 'formik';
 import Container from './Container';
 import Button from '../../components/Button';
 import * as Yup from 'yup';
@@ -72,9 +72,9 @@ const Step3 = () => {
         }) => (
           <Fragment>
             <div className="mt-auto">
-              <form>
+              <form className="space-y-6">
                 <label htmlFor="password">
-                  <div className={`${DEFAULT_INPUT_STYLES} mb-6 relative`}>
+                  <div className={`${DEFAULT_INPUT_STYLES} relative`}>
                     <Field
                       id="password"
                       name="password"
@@ -86,12 +86,12 @@ const Step3 = () => {
                       alt="hidden"
                       onClick={() => togglePassword((pre) => !pre)}
                     />
-                    <ErrorMessage
-                      name="password"
-                      className="text-red-500 absolute top-full w-full left-0"
-                      component="span"
-                    />
                   </div>
+                  <ErrorMessage
+                    name="password"
+                    className="text-[#E19500] absolute top-full w-full left-0"
+                    component="span"
+                  />
                 </label>
                 <label htmlFor="rePassword">
                   <div className={`${DEFAULT_INPUT_STYLES}`}>
@@ -107,12 +107,12 @@ const Step3 = () => {
                       onClick={() => toggleRePassword((pre) => !pre)}
                     />
                   </div>
+                  <ErrorMessage
+                    name="rePassword"
+                    className="text-[#E19500] absolute"
+                    component="span"
+                  />
                 </label>
-                <ErrorMessage
-                  name="rePassword"
-                  className="text-red-500"
-                  component="span"
-                />
               </form>
             </div>
             <div className="flex justify-end items-center mt-auto">
