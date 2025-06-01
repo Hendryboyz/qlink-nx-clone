@@ -70,31 +70,31 @@ const Step1 = (props: Props) => {
           setFieldValue,
         }) => (
           <Fragment>
-            <div>
+            <div className="font-gilroy-medium">
               <h4 className="text-primary text-xl mt-20">
                 Mobile Verification
               </h4>
               <Form id="signupForm">
-                <div className="mt-6">
+                <div className="mt-9">
                   <label htmlFor="phone">
-                    <div className="flex items-center bg-white border-white p-4 rounded-xl border-2 w-full">
-                      <img src="assets/phone.svg" alt="phone" />
+                    <div className="flex items-center bg-white border-[#FFCFA3] p-2 rounded-xl border-2 w-full">
+                      <img src="assets/phone2.svg" alt="phone" />
                       <Field
                         id="phone"
                         name="phone"
                         placeholder="Mobile Number"
                         type="tel"
-                        className="flex-grow ml-2 text-lg"
-                      />
+                        className="flex-grow ml-2 text-sm"
+                      />｀
                     </div>
                   </label>
                   <ErrorMessage
                     name="phone"
-                    className="text-red-500"
+                    className="text-red-500 absolute"
                     component="span"
                   />
                 </div>
-                <div className="mt-6">
+                <div className="mt-9">
                   <Recaptcha
                     recaptchaToken={values.recaptchaToken}
                     recaptchaError={errors.recaptchaToken}
@@ -103,7 +103,7 @@ const Step1 = (props: Props) => {
                 </div>
               </Form>
             </div>
-            <div className="mt-auto">
+            <div className="mt-auto font-gilroy-medium">
               <div className="flex justify-end text-red-500 items-center mt-12">
                 <SubmitButton
                   text="Next"
