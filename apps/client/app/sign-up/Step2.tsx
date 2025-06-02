@@ -110,7 +110,7 @@ const Step2 = (props: Props) => {
               className="flex items-center justify-center
               text-center
             w-14 h-14 rounded-xl
-           bg-white border-white border-2 font-bold text-xl"
+           bg-white border-[#FFCFA3] border-2 font-bold text-xl"
               type="number"
               name="otp"
               maxLength={1}
