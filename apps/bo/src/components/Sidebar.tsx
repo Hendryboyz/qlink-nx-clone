@@ -100,8 +100,14 @@ const Sidebar: React.FC<SidebarProps> = ({ collapsed, setCollapsed }) => {
     setSelectedKeys([key.toString()]);
   }, [location]);
 
+  const availableMenuItems = menuItems.filter((item: ItemProps) =>
+    !item.hidden &&
+    (!item.adminOnly
+      || (user && user.role === 'admin'))
+  );
+
   const getKeysFromPath = (path: string): number => {
-    const selectedKey = menuItems.findIndex(item => item.link === path);
+    const selectedKey = availableMenuItems.findIndex(item => item.link === path);
     if (selectedKey === -1) return 1;
     return selectedKey;
   };
@@ -120,13 +126,7 @@ const Sidebar: React.FC<SidebarProps> = ({ collapsed, setCollapsed }) => {
     >
       <div className="logo" />
       <Menu theme="dark" mode="inline" selectedKeys={selectedKeys}>
-        { menuItems
-          .filter((item: ItemProps) =>
-            !item.hidden &&
-            (!item.adminOnly
-            || (user && user.role === 'admin'))
-          )
-          .map((item: ItemProps, index: number) => (
+        { availableMenuItems.map((item: ItemProps, index: number) => (
             <Menu.Item
               key={index}
               icon={item.icon}
