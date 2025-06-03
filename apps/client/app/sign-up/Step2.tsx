@@ -122,7 +122,7 @@ const Step2 = (props: Props) => {
           ))}
         </div>
         {isActive ? (
-          <h4 className="text-center text-gray-500 mt-6">
+          <h4 className="text-center text-[#DF6B00] mt-6">
             Didn&apos;t receive code?
             <br />
             Resend in {formatTime(countdown)}
