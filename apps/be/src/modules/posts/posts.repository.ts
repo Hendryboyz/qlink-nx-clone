@@ -41,6 +41,7 @@ export class PostRepository {
     try {
       const data = await this.knex('posts')
         .select('*')
+        .orderBy([{ column: 'created_at', order: 'desc' }])
         .offset(offset)
         .limit(limit);
       const [{ count }] = await this.knex('posts').count('id as count');
@@ -54,8 +55,6 @@ export class PostRepository {
     const query = `
       SELECT * FROM posts
       WHERE is_active = true
-      AND publish_start_date < NOW()
-      AND publish_end_date > NOW()
       ${category != undefined ? `category = ${category}` : ''}
       LIMIT ${limit}
     `

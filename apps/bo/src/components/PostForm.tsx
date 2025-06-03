@@ -5,7 +5,6 @@ import {
   Select,
   Upload,
   Switch,
-  DatePicker,
   Button,
   message,
   Row,
@@ -19,7 +18,7 @@ import '../quill-image-resize.css';
 import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
 import API from '../utils/fetch';
-import { FormValues } from '../types/post';
+import { FormValues } from '$/types';
 import { PostEntity } from '@org/types';
 import { quillFormats, createQuillModules } from '$/config/quillConfig';
 import { UploadChangeParam } from 'antd/lib/upload';
@@ -29,7 +28,6 @@ import { CODE_SUCCESS } from '@org/common';
 dayjs.extend(utc);
 
 const { Option } = Select;
-const { RangePicker } = DatePicker;
 
 interface PostFormProps {
   onSubmit: (values: FormValues) => void;
@@ -52,10 +50,6 @@ const PostForm: React.FC<PostFormProps> = ({
     if (initialValues) {
       form.setFieldsValue({
         ...initialValues,
-        publishDateRange: [
-          dayjs.utc(initialValues.publishStartDate),
-          dayjs.utc(initialValues.publishEndDate),
-        ],
       });
       console.log('🚀 ~ useEffect ~ initialValues:', initialValues.content);
       setContent(initialValues.content);
@@ -161,7 +155,6 @@ const PostForm: React.FC<PostFormProps> = ({
   );
 
   const handleSubmit = (values: FormValues) => {
-    const [publishStartDate, publishEndDate] = values.publishDateRange;
     const contentHtml = quillRef.current?.getEditor().root.innerHTML;
     console.log('🚀 ~ handleSubmit ~ contentHtml:', contentHtml);
 
@@ -169,11 +162,7 @@ const PostForm: React.FC<PostFormProps> = ({
       ...values,
       content: contentHtml,
       coverImage: coverImageUrl,
-      publishStartDate: publishStartDate.utc().toDate(),
-      publishEndDate: publishEndDate.utc().toDate(),
     };
-    delete postData.publishDateRange;
-
     onSubmit(postData);
   };
 
@@ -253,26 +242,13 @@ const PostForm: React.FC<PostFormProps> = ({
 
         <Row gutter={16}>
           <Col span={12}>
-            <Form.Item name="isActive" label="Status" valuePropName="checked">
+            <Form.Item name="isActive" label="Active" valuePropName="checked">
               <Switch />
             </Form.Item>
           </Col>
           <Col span={12}>
-            <Form.Item
-              name="publishDateRange"
-              label="Publish Date Range"
-              rules={[
-                {
-                  required: true,
-                  message: 'Please select the publish date range!',
-                },
-              ]}
-            >
-              <RangePicker
-                showTime
-                format="YYYY-MM-DD HH A"
-                allowClear={false}
-              />
+            <Form.Item name="isHighlight" label="Highlight" valuePropName="checked">
+              <Switch />
             </Form.Item>
           </Col>
         </Row>

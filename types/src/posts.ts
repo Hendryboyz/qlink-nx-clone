@@ -11,8 +11,7 @@ export interface PostEntity {
   content: string;
   coverImage?: string;
   isActive: boolean;
-  publishStartDate: Date;
-  publishEndDate: Date;
+  isHighlight: boolean;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -24,7 +23,6 @@ export interface ICreatePost {
   content: string;
   coverImage?: string;
   isActive: boolean;
-  publishStartDate: Date;
-  publishEndDate: Date;
+  isHighlight: boolean;
 }
 export interface IUpdatePost extends ICreatePost {}

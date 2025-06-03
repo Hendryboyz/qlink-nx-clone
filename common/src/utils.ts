@@ -8,6 +8,18 @@ export const fromDate = (date: Date): string => {
     '0'
   )}-${String(date.getDate()).padStart(2, '0')}`;
 };
+
+export const formatDate = (rawDate: string) => {
+  const options: Intl.DateTimeFormatOptions = {
+    // weekday: "short",
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+    // dateStyle: "full",
+  };
+  return new Intl.DateTimeFormat("en-US", options).format(new Date(rawDate))
+}
+
 export const fromDateWithSlash = (date: Date): string => {
   return `${date.getUTCFullYear()}/${String(date.getUTCMonth() + 1).padStart(
     2,

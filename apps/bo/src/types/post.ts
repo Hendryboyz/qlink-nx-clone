@@ -1,9 +1,6 @@
-import { PostEntity } from '@org/types';
-import { Moment } from 'moment';
+import { PostEntity, UserVO } from '@org/types';
 
-export type FormValues = Pick<PostEntity, 'title' | 'category' | 'isActive'> & {
-  publishDateRange: [Moment, Moment];
-}
+export type FormValues = Pick<PostEntity, 'title' | 'category' | 'isActive' | 'isHighlight'>;
 
 export interface UploadImageResponse {
   s3Uri: string;
@@ -12,5 +9,10 @@ export interface UploadImageResponse {
 
 export interface GetPostsResponse {
   data: PostEntity[];
+  total: number;
+}
+
+export interface GetUsersResponse {
+  data: UserVO[];
   total: number;
 }

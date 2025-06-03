@@ -4,6 +4,7 @@ import { EditOutlined } from '@ant-design/icons';
 import dayjs from 'dayjs';
 import { TableRowSelection } from 'antd/es/table/interface';
 import { PostEntity } from '@org/types'
+import { formatDate } from '@org/common';
 
 interface PostTableProps {
   posts: PostEntity[];
@@ -39,6 +40,7 @@ const PostTable: React.FC<PostTableProps> = ({
   onEdit,
   rowSelection,
 }) => {
+  console.log(posts);
   const columns = [
     { title: 'Title', dataIndex: 'title', key: 'title' },
     {
@@ -61,12 +63,22 @@ const PostTable: React.FC<PostTableProps> = ({
       render: (isActive: boolean) => (isActive ? 'Active' : 'Inactive'),
     },
     {
-      title: 'Publish Date Range',
-      key: 'publishDateRange',
-      render: (_: unknown, record: PostEntity) =>
-        `${dayjs(record.publishStartDate).format('YYYY-MM-DD')} - ${dayjs(
-          record.publishEndDate
-        ).format('YYYY-MM-DD')}`,
+      title: 'Highlight',
+      dataIndex: 'isHighlight',
+      key: 'isHighlight',
+      render: (isHighlight: boolean) => (isHighlight ? 'Yes' : 'No'),
+    },
+    {
+      title: 'Created At',
+      dataIndex: 'createdAt',
+      key: 'createdAt',
+      render: (createdAt: string) => formatDate(createdAt),
+    },
+    {
+      title: 'Updated At',
+      dataIndex: 'updatedAt',
+      key: 'updatedAt',
+      render: (updatedAt: string) => formatDate(updatedAt),
     },
     {
       title: 'Actions',

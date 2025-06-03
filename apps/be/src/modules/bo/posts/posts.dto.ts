@@ -2,7 +2,6 @@ import {
     IsString,
     IsBoolean,
     IsEnum,
-    IsDate,
     IsOptional,
   } from 'class-validator';
 import { PartialType } from '@nestjs/mapped-types';
@@ -25,11 +24,8 @@ import { PostCategoryEnum, ICreatePost } from '@org/types'
     @IsBoolean()
     isActive: boolean;
 
-    @IsDate()
-    publishStartDate: Date;
-
-    @IsDate()
-    publishEndDate: Date;
+    @IsBoolean()
+    isHighlight: boolean;
   }
 
   export class UpdatePostDto extends PartialType(CreatePostDto) {
@@ -40,4 +36,8 @@ import { PostCategoryEnum, ICreatePost } from '@org/types'
     @IsBoolean()
     @IsOptional()
     isActive?: boolean;
+
+    @IsBoolean()
+    @IsOptional()
+    isHighlight?: boolean;
   }
