@@ -11,6 +11,11 @@ export class PostsController {
   getActiveList() {
     return this.postsService.getActivePosts();
   }
+
+  @Get('/highlight')
+  getHighlightList() {
+    return this.postsService.getHighlightPosts();
+  }
   @Get('/detail/:id')
   getPostDetail(@Param('id') id: string) {
       return this.postsService.findOne(id);

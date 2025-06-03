@@ -47,9 +47,22 @@ export class PostsService {
   async findAll(
     page: number = 1,
     limit: number = 10
-  ): Promise<{ data: PostEntity[]; total: number; page: number; limit: number }> {
+  ): Promise<{
+    data: PostEntity[];
+    total: number;
+    page: number;
+    limit: number;
+    highlightCount: number;
+  }> {
     const { data, total } = await this.postRepository.findAll(page, limit);
-    return { data, total, page, limit };
+    const highlightCount = await this.postRepository.countHighlightPosts();
+    return {
+      data,
+      total,
+      page,
+      limit,
+      highlightCount,
+    };
   }
 
   async findOne(id: string): Promise<PostEntity> {
@@ -62,6 +75,10 @@ export class PostsService {
 
   async getActivePosts(): Promise<PostEntity[]> {
     return this.postRepository.getActiveList()
+  }
+
+  public async getHighlightPosts(): Promise<PostEntity[]> {
+    return this.postRepository.getHighlightPosts();
   }
 
   async update(id: string, updatePostDto: UpdatePostDto): Promise<PostEntity> {
@@ -78,4 +95,5 @@ export class PostsService {
       throw new NotFoundException(`Post with ID "${id}" not found`);
     }
   }
+
 }

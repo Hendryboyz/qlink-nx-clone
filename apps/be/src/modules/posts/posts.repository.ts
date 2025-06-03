@@ -51,20 +51,53 @@ export class PostRepository {
       throw error;
     }
   }
-  async getActiveList(limit: number = 10, category?: PostCategoryEnum): Promise<PostEntity[]> {
+
+  async getActiveList(
+    limit: number = 10,
+    category?: PostCategoryEnum
+  ): Promise<PostEntity[]> {
     const query = `
-      SELECT * FROM posts
+      SELECT *
+      FROM posts
       WHERE is_active = true
       ${category != undefined ? `category = ${category}` : ''}
       LIMIT ${limit}
-    `
+    `;
+    return await this.queryPosts(query);
+  }
+
+  private async queryPosts(query: string): Promise<PostEntity[]> {
     try {
-      const result:QueryResult<PostEntity> = await this.pool.query(query)
+      const result: QueryResult<PostEntity> = await this.pool.query(query);
       return result.rows;
-    } catch(error) {
-      this.logger.error(`Get active posts failed: ${error.message}`, error.stack);
+    } catch (error) {
+      this.logger.error(
+        `Get active posts failed: ${error.message}`,
+        error.stack
+      );
       throw error;
     }
+  }
+
+  public async getHighlightPosts(): Promise<PostEntity[]> {
+    return this.knex('posts')
+      .where({
+        is_active: true,
+        is_highlight: true,
+      })
+      .select('*')
+      .limit(6);
+  }
+
+  async countHighlightPosts(): Promise<number> {
+    const [{ count }] = await this
+      .knex('posts')
+      .where({
+        is_active: true,
+        is_highlight: true,
+      })
+      .count('id as count');
+    return +count;
   }
 
   async create(createPostDto: CreatePostDto): Promise<PostEntity> {
