@@ -1,4 +1,4 @@
-import React, { useCallback, useRef, useState, useEffect } from 'react';
+import React, { useCallback, useRef, useState, useEffect, useMemo } from 'react';
 import {
   Form,
   Input,
@@ -10,6 +10,8 @@ import {
   Row,
   Col,
   Card,
+  Tooltip,
+  Space
 } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
 import ReactQuill, { Quill } from 'react-quill';
@@ -33,12 +35,16 @@ interface PostFormProps {
   onSubmit: (values: FormValues) => void;
   onCancel: () => void;
   initialValues?: PostEntity;
+  highlightCount: number
 }
+
+const HIGHLIGHT_POSTS_LIMIT: number = +import.meta.env.VITE_BO_HIGHLIGHT_POSTS_LIMIT || 6;
 
 const PostForm: React.FC<PostFormProps> = ({
   onSubmit,
   onCancel,
   initialValues,
+  highlightCount,
 }) => {
   const [form] = Form.useForm<FormValues>();
   const [previewImage, setPreviewImage] = useState<string>(initialValues?.coverImage || null);
@@ -171,6 +177,10 @@ const PostForm: React.FC<PostFormProps> = ({
     [handleImageUpload]
   );
 
+  const isHighlightDisabled = useMemo(() => {
+    return highlightCount >= HIGHLIGHT_POSTS_LIMIT && (!initialValues || initialValues?.isHighlight === false)
+  }, [initialValues, highlightCount]);
+
   return (
     <Card style={{ marginBottom: '16px' }}>
       <Form form={form} onFinish={handleSubmit} layout="vertical">
@@ -247,9 +257,19 @@ const PostForm: React.FC<PostFormProps> = ({
             </Form.Item>
           </Col>
           <Col span={12}>
-            <Form.Item name="isHighlight" label="Highlight" valuePropName="checked">
-              <Switch />
-            </Form.Item>
+            <Space>
+              <Tooltip
+                title={isHighlightDisabled ?
+                  `ONLY allow to highlight at most ${HIGHLIGHT_POSTS_LIMIT} posts` :
+                  ""}
+                placement="bottom"
+                arrow={false}
+              >
+                <Form.Item name="isHighlight" label="Highlight" valuePropName="checked">
+                  <Switch disabled={isHighlightDisabled} />
+                </Form.Item>
+              </Tooltip>
+            </Space>
           </Col>
         </Row>
 

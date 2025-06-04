@@ -19,7 +19,7 @@ export default function Index() {
   const router = useRouter()
   const [posts, setPosts] = useState<PostEntity[]>([])
   useEffect(() => {
-    API.get<PostEntity[]>('/posts')
+    API.get<PostEntity[]>('/posts/highlight')
     .then(res => {
         setPosts(res)
     })

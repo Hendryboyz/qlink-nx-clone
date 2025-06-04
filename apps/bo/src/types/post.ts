@@ -10,6 +10,7 @@ export interface UploadImageResponse {
 export interface GetPostsResponse {
   data: PostEntity[];
   total: number;
+  highlightCount: number;
 }
 
 export interface GetUsersResponse {

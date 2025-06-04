@@ -10,6 +10,7 @@ import { Knex } from 'knex';
 import { isEmpty } from 'lodash';
 import { CreatePostDto, UpdatePostDto } from '$/modules/bo/posts/posts.dto';
 import { PostCategoryEnum, PostEntity } from '@org/types';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class PostRepository {
@@ -17,7 +18,8 @@ export class PostRepository {
 
   constructor(
     private readonly pool: Pool,
-    @Inject(KNEX_CONNECTION) private readonly knex: Knex
+    @Inject(KNEX_CONNECTION) private readonly knex: Knex,
+    private readonly configService: ConfigService,
   ) {}
 
   async findById(id: string): Promise<PostEntity | null> {
@@ -80,13 +82,14 @@ export class PostRepository {
   }
 
   public async getHighlightPosts(): Promise<PostEntity[]> {
+    const highlightLimit = +this.configService.get<number>('HIGHLIGHT_POSTS_LIMIT', 6);
     return this.knex('posts')
       .where({
         is_active: true,
         is_highlight: true,
       })
       .select('*')
-      .limit(6);
+      .limit(highlightLimit);
   }
 
   async countHighlightPosts(): Promise<number> {

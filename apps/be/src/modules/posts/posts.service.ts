@@ -95,5 +95,4 @@ export class PostsService {
       throw new NotFoundException(`Post with ID "${id}" not found`);
     }
   }
-
 }

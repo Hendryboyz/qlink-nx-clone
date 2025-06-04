@@ -6,11 +6,12 @@ import API from '../utils/fetch';
 import DeleteConfirmModal from '../components/DeleteConfirmModal';
 import PostForm from '../components/PostForm';
 import PostTable from '../components/PostTable';
-import { FormValues } from '../types/post';
+import { FormValues } from '$/types';
 import { PostEntity } from '@org/types'
 
 const PostManagement: React.FC = () => {
   const [posts, setPosts] = useState<PostEntity[]>([]);
+  const [highlightCount, setHighlightCount] = useState(0);
   const [selectedPosts, setSelectedPosts] = useState<React.Key[]>([]);
   const [isFormVisible, setIsFormVisible] = useState(false);
   const [editingPost, setEditingPost] = useState<PostEntity | null>(null);
@@ -29,6 +30,7 @@ const PostManagement: React.FC = () => {
     try {
       const response = await API.getPosts(currentPage, pageSize);
       setPosts(response.data);
+      setHighlightCount(response.highlightCount);
       setTotalPosts(response.total);
     } catch (error) {
       console.error('Error fetching posts:', error);
@@ -133,6 +135,7 @@ const PostManagement: React.FC = () => {
             setEditingPost(null);
           }}
           initialValues={editingPost || undefined}
+          highlightCount={highlightCount}
         />
       )}
 
