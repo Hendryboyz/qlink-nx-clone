@@ -1,6 +1,6 @@
-export const phoneRegex: RegExp = /^(070|080|081|090|091)\d{7}$/;
+export const phoneRegex: RegExp = /^(070|080|081|090|091)\d{8}$/;
 
-export const clientPhoneRegex: RegExp = /^(070|080|081|090|091)\d{7}$/;
+export const clientPhoneRegex: RegExp = /^(070|080|081|090|091)\d{8}$/;
 
 export const alphaMax50Regex: RegExp = /^[a-zA-Z]{1,50}$/;
 

@@ -11,6 +11,7 @@ import SubmitButton from '$/components/Button/SubmitButton';
 import { NOOP } from '$/utils';
 import { usePopup } from '$/hooks/PopupProvider';
 import { Cross2Icon } from '@radix-ui/react-icons';
+import { phoneRegex } from '@org/common';
 
 interface FormData {
   phone: string;
@@ -44,9 +45,10 @@ export default function SignIn() {
           initialValues={initValue}
           validate={(values) => {
             const errors: FormikErrors<FormData> = {};
+            console.log(values.phone);
             if (!values.phone) {
               errors.phone = 'Required';
-            } else if (!/^[0-9]{12}$/.test(values.phone)) {
+            } else if (!phoneRegex.test(values.phone)) {
               errors.phone = 'Invalid phone number';
             }
             return errors;
