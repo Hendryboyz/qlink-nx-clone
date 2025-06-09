@@ -20,6 +20,7 @@ const Recaptcha = (props: RecaptchaProps) => {
       />
       <ReCAPTCHA
         sitekey={recaptchaSitekey}
+        className="w-full"
         onChange={async (token) => {
           await props.setFieldValue("recaptchaToken", token, true);
         }}

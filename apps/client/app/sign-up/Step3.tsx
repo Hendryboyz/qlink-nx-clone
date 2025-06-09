@@ -1,4 +1,4 @@
-import React, { Fragment, useState } from 'react';
+import React, { Fragment, ReactNode, useState } from 'react';
 import Container from './Container';
 import { Formik, Field, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
@@ -21,7 +21,7 @@ import DatePickerClassNames from 'react-day-picker/style.module.css';
 import DropdownField from '$/components/Dropdown';
 import { usePopup } from '$/hooks/PopupProvider';
 import { DEFAULT_ERROR_MSG } from 'common/src';
-import TogglePasswordField from '$/components/Fields/TogglePasswordField';
+import InputField from '$/components/Fields/InputField';
 
 const SignupSchema = Yup.object().shape({
   firstName: Yup.string()
@@ -103,20 +103,19 @@ const defaultValue: FormData = {
 };
 
 const DEFAULT_INPUT_STYLES =
-  'block items-center justify-center rounded-xl py-5 pl-8 pr-6 w-full bg-white border-[#FFCFA3] border-2 font-bold text-lg';
+  'block rounded-xl py-2 pl-6 pr-6 w-full bg-white border-[#FFCFA3] border-2 text-sm font-gilroy-medium';
 
-const DEFAULT_ERROR_MSG_CLASS = 'text-red-500 absolute';
+const DEFAULT_ERROR_MSG_CLASS = 'text-red-500';
 
 type Props = {
   onSuccess: () => void;
   goBack: () => void;
 };
-
 const Step3 = (props: Props) => {
   const initValue: FormData = defaultValue;
   const [showDatePicker, toggleDatePicker] = useState(false);
   const {phone, token} = usePayload();
-  const {showPopup} = usePopup()
+  const {showPopup} = usePopup();
   const sourceOptions = typedObjectEntries(UserSourceType)
     .filter(([k, v]) => {
       return isNaN(Number(k)) && v !== UserSourceType.NONE
@@ -177,80 +176,80 @@ const Step3 = (props: Props) => {
           isSubmitting,
         }) => (
           <Fragment>
-            <h4 className="text-primary text-xl mt-20">Enter Account Detail</h4>
-            <div className="flex-1 overflow-auto mt-6 -mx-3">
+            <h4 className="text-primary text-xl">Enter Account Detail</h4>
+            <div className="flex-1 overflow-auto -mt-6 -mx-3">
               <form onSubmit={handleSubmit} className="h-full overflow-auto">
-                <div className="space-y-7 ml-2 mr-4">
+                <div className="ml-2 mr-4">
                   <label id="phone">
-                    <div className={`${DEFAULT_INPUT_STYLES}`}>
-                      <p className="text-gray-300">{phone}</p>
+                    <div className={`${DEFAULT_INPUT_STYLES} mb-7 h-12`}>
+                      <p className="text-gray-300 content-center h-full">{phone || "12345678"}</p>
                     </div>
                   </label>
-                  <label htmlFor="password">
-                    <TogglePasswordField
-                      id="password"
+                  <div>
+                    <InputField
                       name="password"
+                      type="password"
                       placeholder="Password"
-                      className={`${DEFAULT_INPUT_STYLES} pr-12`}
+                      customClassName="border-[#FFCFA3] pr-3"
                     />
-                    <ErrorMessage
-                      name="password"
-                      className={DEFAULT_ERROR_MSG_CLASS}
-                      component="span"
-                    />
-                  </label>
-                  <label htmlFor="rePassword">
-                    <TogglePasswordField
-                      id="rePassword"
+                    <div className="min-h-7">
+                      <ErrorMessage name="password">
+                        {(msg) => <span className="text-red-500">{msg}</span>}
+                      </ErrorMessage>
+                    </div>
+                  </div>
+                  <div>
+                    <InputField
                       name="rePassword"
+                      type="password"
                       placeholder="Re-enter Password"
-                      className={`${DEFAULT_INPUT_STYLES} pr-12`}
+                      customClassName="border-[#FFCFA3] pr-3"
                     />
-                    <ErrorMessage
-                      name="rePassword"
-                      className={DEFAULT_ERROR_MSG_CLASS}
-                      component="span"
-                    />
-                  </label>
-                  <label htmlFor="firstName">
-                    <Field
-                      id="firstName"
+                    <div className="min-h-7">
+                      <ErrorMessage name="rePassword">
+                        {(msg) => <span className="text-red-500">{msg}</span>}
+                      </ErrorMessage>
+                    </div>
+                  </div>
+                  <div>
+                    <InputField
                       name="firstName"
+                      type="text"
                       placeholder="First Name"
-                      className={DEFAULT_INPUT_STYLES}
+                      customClassName="border-[#FFCFA3] pr-3"
                     />
-                    <ErrorMessage
-                      name="firstName"
-                      className={DEFAULT_ERROR_MSG_CLASS}
-                      component="span"
-                    />
-                  </label>
-                  <label htmlFor="midName">
-                    <Field
-                      id="midName"
+                    <div className="min-h-7">
+                      <ErrorMessage name="firstName">
+                        {(msg) => <span className="text-red-500">{msg}</span>}
+                      </ErrorMessage>
+                    </div>
+                  </div>
+                  <div>
+                    <InputField
                       name="midName"
+                      type="text"
                       placeholder="Mid Name"
-                      className={DEFAULT_INPUT_STYLES}
+                      customClassName="border-[#FFCFA3] pr-3"
                     />
-                    <ErrorMessage
-                      name="midName"
-                      className={DEFAULT_ERROR_MSG_CLASS}
-                      component="span"
-                    />
-                  </label>
-                  <label htmlFor="lastName">
-                    <Field
-                      id="lastName"
+                    <div className="min-h-7">
+                      <ErrorMessage name="midName">
+                        {(msg) => <span className="text-red-500">{msg}</span>}
+                      </ErrorMessage>
+                    </div>
+                  </div>
+                  <div>
+                    <InputField
                       name="lastName"
+                      type="text"
                       placeholder="Last Name"
-                      className={DEFAULT_INPUT_STYLES}
+                      customClassName="border-[#FFCFA3] pr-3"
                     />
-                    <ErrorMessage
-                      name="lastName"
-                      className={DEFAULT_ERROR_MSG_CLASS}
-                      component="span"
-                    />
-                  </label>
+                    <div className="min-h-7">
+                      <ErrorMessage name="lastName">
+                        {(msg) => <span className="text-red-500">{msg}</span>}
+                      </ErrorMessage>
+                    </div>
+                  </div>
                   <DropdownField
                     label="addressState"
                     id="addressState"
@@ -265,19 +264,19 @@ const Step3 = (props: Props) => {
                       component="span"
                     />
                   </DropdownField>
-                  <label htmlFor="addressCity">
-                    <Field
-                      id="addressCity"
+                  <div>
+                    <InputField
+                      type="text"
                       name="addressCity"
                       placeholder="City"
-                      className={DEFAULT_INPUT_STYLES}
+                      customClassName="border-[#FFCFA3]"
                     />
-                    <ErrorMessage
-                      name="addressCity"
-                      className={DEFAULT_ERROR_MSG_CLASS}
-                      component="span"
-                    />
-                  </label>
+                    <div className="min-h-7">
+                      <ErrorMessage name="addressCity">
+                        {(msg) => <span className="text-red-500">{msg}</span>}
+                      </ErrorMessage>
+                    </div>
+                  </div>
                   <label htmlFor="birthday">
                     <Field
                       type="date"
@@ -286,27 +285,24 @@ const Step3 = (props: Props) => {
                       placeholder="Birthday(YYYY-MM-DD)"
                       className={DEFAULT_INPUT_STYLES}
                       onChange={(e: any) => {
-                        console.log(e.target.value);
+                        // console.log(e.target.value);
                         setFieldValue('birthday', e.target.value);
                       }}
                       // onClick={() => toggleDatePicker((p) => !p)}
                     />
-                    <ErrorMessage
-                      name="birthday"
-                      className={DEFAULT_ERROR_MSG_CLASS}
-                      component="span"
-                    />
+                    <div className="min-h-7">
+                      <ErrorMessage
+                        name="birthday"
+                        className={DEFAULT_ERROR_MSG_CLASS}
+                        component="span"
+                      />
+                    </div>
                     <div className="absolute z-10 bg-white shadow-lg">
                       {showDatePicker && (
                         <DayPicker
                           mode="single"
                           selected={new Date(values.birthday)}
                           classNames={DatePickerClassNames}
-                          // styles={{
-                          //   root: {
-                          //     borderRadius: '50%'
-                          //   }
-                          // }}
                           onSelect={(d) =>
                             setFieldValue('birthday', fromDate(d || new Date()))
                           }
@@ -329,46 +325,43 @@ const Step3 = (props: Props) => {
                       component="span"
                     />
                   </DropdownField>
-                  <label htmlFor="email">
-                    <Field
-                      id="email"
-                      name="email"
+                  <div>
+                    <InputField
                       type="email"
-                      placeholder="Email"
-                      className={DEFAULT_INPUT_STYLES}
-                    />
-                    <ErrorMessage
                       name="email"
-                      className={DEFAULT_ERROR_MSG_CLASS}
-                      component="span"
+                      placeholder="Email"
+                      customClassName="border-[#FFCFA3]"
                     />
-                  </label>
-                  <label htmlFor="whatsapp">
-                    <Field
-                      id="whatsapp"
+                    <div className="min-h-7">
+                      <ErrorMessage name="email">
+                        {(msg) => <span className="text-red-500">{msg}</span>}
+                      </ErrorMessage>
+                    </div>
+                  </div>
+                  <div>
+                    <InputField
                       name="whatsapp"
                       placeholder="Whatsapp ID"
-                      className={DEFAULT_INPUT_STYLES}
+                      customClassName="border-[#FFCFA3]"
                     />
-                    <ErrorMessage
-                      name="whatsapp"
-                      className={DEFAULT_ERROR_MSG_CLASS}
-                      component="span"
-                    />
-                  </label>
-                  <label htmlFor="facebook">
-                    <Field
-                      id="facebook"
+                    <div className="min-h-7">
+                      <ErrorMessage name="whatsapp">
+                        {(msg) => <span className="text-red-500">{msg}</span>}
+                      </ErrorMessage>
+                    </div>
+                  </div>
+                  <div>
+                    <InputField
                       name="facebook"
                       placeholder="Facebook ID"
-                      className={DEFAULT_INPUT_STYLES}
+                      customClassName="border-[#FFCFA3]"
                     />
-                    <ErrorMessage
-                      name="facebook"
-                      className={DEFAULT_ERROR_MSG_CLASS}
-                      component="span"
-                    />
-                  </label>
+                    <div className="min-h-7">
+                      <ErrorMessage name="whatsapp">
+                        {(msg) => <span className="text-red-500">{msg}</span>}
+                      </ErrorMessage>
+                    </div>
+                  </div>
                   <div className="flex justify-between items-center mt-8">
                     <span
                       className="text-xl text-red-600 hover:underline hover:cursor-pointer"

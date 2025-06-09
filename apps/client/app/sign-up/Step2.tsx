@@ -103,13 +103,13 @@ const Step2 = (props: Props) => {
   return (
     <Container title="Create an account" step={2}>
       <div>
-        <h4 className="text-primary text-xl mt-20">Enter OTP</h4>
+        <h4 className="text-primary text-xl">Enter OTP</h4>
         <div className="flex justify-between items-center mt-6">
           {otp.map((data, index) => (
             <input
               className="flex items-center justify-center
               text-center
-            w-14 h-14 rounded-xl
+            w-12 h-12 rounded-xl
            bg-white border-[#FFCFA3] border-2 font-bold text-xl"
               type="number"
               name="otp"

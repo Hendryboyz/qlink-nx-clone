@@ -12,6 +12,7 @@ import { NOOP } from '$/utils';
 import { usePopup } from '$/hooks/PopupProvider';
 import { Cross2Icon } from '@radix-ui/react-icons';
 import { phoneRegex } from '@org/common';
+import InputField from '$/components/Fields/InputField';
 
 interface FormData {
   phone: string;
@@ -84,19 +85,14 @@ export default function SignIn() {
             <Fragment>
               <div className="space-y-6 p-2">
                 <div>
-                  <label htmlFor="phone" className="block">
-                    <div className="flex items-center bg-white border-white p-4 rounded-xl border-2 w-full">
-                      <img src="assets/user2.svg" alt="phone" />
-                      <Field
-                        id="phone"
-                        name="phone"
-                        placeholder="Mobile Number"
-                        type="text"
-                        className="flex-grow ml-2 text-sm font-gilroy-medium"
-                        autoComplete="on"
-                      />
-                    </div>
-                  </label>
+                  <InputField
+                    type="text"
+                    name="phone"
+                    placeholder="Mobile Number"
+                    headIconSource="assets/user2.svg"
+                    autoComplete={true}
+                    customClassName="border-white"
+                  />
                   <ErrorMessage
                     name="phone"
                     className="text-[#E19500] absolute"
@@ -104,25 +100,13 @@ export default function SignIn() {
                   />
                 </div>
                 <div>
-                  <label htmlFor="password" className="block">
-                    <div className="flex items-center bg-white border-white p-4 rounded-xl border-2 w-full">
-                      <img src="assets/lock2.svg" alt="password" />
-                      <Field
-                        id="password"
-                        name="password"
-                        placeholder="Password"
-                        type={showPassword ? 'text' : 'password'}
-                        className="flex-grow ml-2 text-sm font-gilroy-medium"
-                      />
-                      <img
-                        src="assets/eye.svg"
-                        alt="phone"
-                        onClick={() =>
-                          setShowPassword((prevState) => !prevState)
-                        }
-                      />
-                    </div>
-                  </label>
+                  <InputField
+                    name="password"
+                    type="password"
+                    placeholder="Password"
+                    headIconSource="assets/lock2.svg"
+                    customClassName="border-white"
+                  />
                   <ErrorMessage
                     name="password"
                     className="text-[#E19500] absolute"

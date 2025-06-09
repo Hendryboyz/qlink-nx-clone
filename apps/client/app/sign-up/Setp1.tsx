@@ -8,6 +8,7 @@ import { clientPhoneRegex, CODE_SUCCESS } from 'common/src';
 import { usePayload } from './PayloadContext';
 import SubmitButton from '$/components/Button/SubmitButton';
 import Recaptcha from '$/components/Fields/Recaptcha';
+import InputField from '$/components/Fields/InputField';
 
 interface FormData {
   phone: string;
@@ -71,23 +72,18 @@ const Step1 = (props: Props) => {
         }) => (
           <Fragment>
             <div className="font-gilroy-medium">
-              <h4 className="text-primary text-xl mt-20">
+              <h4 className="text-primary text-xl">
                 Mobile Verification
               </h4>
               <Form id="signupForm">
                 <div className="mt-9">
-                  <label htmlFor="phone">
-                    <div className="flex items-center bg-white border-[#FFCFA3] p-2 rounded-xl border-2 w-full">
-                      <img src="assets/phone2.svg" alt="phone" />
-                      <Field
-                        id="phone"
-                        name="phone"
-                        placeholder="Mobile Number"
-                        type="tel"
-                        className="flex-grow ml-2 text-sm"
-                      />｀
-                    </div>
-                  </label>
+                  <InputField
+                    type="tel"
+                    name="phone"
+                    placeholder="Mobile Number"
+                    headIconSource="assets/phone2.svg"
+                    customClassName="border-[#FFCFA3]"
+                  />
                   <ErrorMessage
                     name="phone"
                     className="text-red-500 absolute"
