@@ -85,6 +85,7 @@ export class AuthController {
       data: true
     };
   }
+
   @Post('otp/send')
   async sendOtp(@Body() body: SendOtpDto) {
     const { phone, type, recaptchaToken } = body;
@@ -109,6 +110,12 @@ export class AuthController {
       if (registerBefore) return {
         bizCode: INVALID,
         message: 'Invalid phone number'
+      }
+    } else {
+      const registerBefore = await this.authService.isPhoneExist(phone)
+      if (!registerBefore) return {
+        bizCode: INVALID,
+        message: 'Phone number not found'
       }
     }
 

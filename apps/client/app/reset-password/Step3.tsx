@@ -4,13 +4,14 @@ import { Formik, Field, ErrorMessage } from 'formik';
 import Container from './Container';
 import Button from '../../components/Button';
 import * as Yup from 'yup';
-import { Fragment, useState } from 'react';
+import React, { Fragment, useState } from 'react';
 import API from '$/utils/fetch';
 import { ResetPasswordDto } from '@org/types';
 import { CODE_SUCCESS, HEADER_PRE_TOKEN } from '@org/common';
 import { useRouter } from 'next/navigation';
 import { usePayload } from './PayloadContext';
 import { NOOP } from '$/utils';
+import InputField from '$/components/Fields/InputField';
 
 const FormSchema = Yup.object().shape({
   password: Yup.string().max(50, 'Too Long').required('Required'),
@@ -21,15 +22,10 @@ interface FormData {
   password: string;
   rePassword: string;
 }
-const DEFAULT_INPUT_STYLES =
-  'flex items-center justify-between bg-white border-white p-4 rounded-xl border-2 w-full text-lg';
-
 const Step3 = () => {
   const initValue: FormData = { password: '', rePassword: '' };
   const router = useRouter();
   const { token } = usePayload();
-  const [showPassword, togglePassword] = useState(false);
-  const [showRePassword, toggleRePassword] = useState(false);
 
   return (
     <Container title="Set new password">
@@ -42,12 +38,11 @@ const Step3 = () => {
             rePassword: values.rePassword,
           };
           setSubmitting(true);
-          API
-            .post('/auth/reset-password', payload, {
-              headers: {
-                [HEADER_PRE_TOKEN]: token,
-              },
-            })
+          API.post('/auth/reset-password', payload, {
+            headers: {
+              [HEADER_PRE_TOKEN]: token,
+            },
+          })
             .then((res) => {
               if (res.bizCode == CODE_SUCCESS) {
                 // show success
@@ -68,60 +63,46 @@ const Step3 = () => {
           handleBlur,
           handleSubmit,
           isSubmitting,
-          isValid
+          isValid,
         }) => (
           <Fragment>
             <div className="mt-auto">
-              <form className="space-y-6">
-                <label htmlFor="password">
-                  <div className={`${DEFAULT_INPUT_STYLES} relative`}>
-                    <Field
-                      id="password"
-                      name="password"
-                      type={showPassword ? 'text' : 'password'}
-                      placeholder="Password"
-                    />
-                    <img
-                      src="assets/eye.svg"
-                      alt="hidden"
-                      onClick={() => togglePassword((pre) => !pre)}
-                    />
-                  </div>
-                  <ErrorMessage
+              <form>
+                <div>
+                  <InputField
                     name="password"
-                    className="text-[#E19500] absolute top-full w-full left-0"
-                    component="span"
+                    type="password"
+                    placeholder="Password"
+                    customClassName="border-white pr-3"
                   />
-                </label>
-                <label htmlFor="rePassword">
-                  <div className={`${DEFAULT_INPUT_STYLES}`}>
-                    <Field
-                      id="rePassword"
-                      name="rePassword"
-                      type={showRePassword ? 'text' : 'password'}
-                      placeholder="Confirm new password"
-                    />
-                    <img
-                      src="assets/eye.svg"
-                      alt="hidden"
-                      onClick={() => toggleRePassword((pre) => !pre)}
-                    />
+                  <div className="min-h-8">
+                    <ErrorMessage name="password">
+                      {(msg) => <span className="text-[#E19500]">{msg}</span>}
+                    </ErrorMessage>
                   </div>
-                  <ErrorMessage
+                </div>
+                <div>
+                  <InputField
                     name="rePassword"
-                    className="text-[#E19500] absolute"
-                    component="span"
+                    type="password"
+                    placeholder="Confirm new password"
+                    customClassName="border-white pr-3"
                   />
-                </label>
+                  <div className="min-h-8">
+                    <ErrorMessage name="rePassword">
+                      {(msg) => <span className="text-[#E19500]">{msg}</span>}
+                    </ErrorMessage>
+                  </div>
+                </div>
               </form>
             </div>
             <div className="flex justify-end items-center mt-auto">
               <Button
                 theme="light"
-                className="uppercase"
+                className="uppercase font-gilroy-medium"
                 style={{ width: '85px' }}
                 isLoading={isSubmitting}
-                onClick={() => isValid ? handleSubmit() : NOOP()}
+                onClick={() => (isValid ? handleSubmit() : NOOP())}
               >
                 Save
               </Button>

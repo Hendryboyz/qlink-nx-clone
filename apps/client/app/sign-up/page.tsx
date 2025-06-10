@@ -9,7 +9,7 @@ import Success from './Success';
 import { PayloadProvider } from './PayloadContext';
 
 const SignUp = () => {
-  const [step, handleChangeStep] = useState(3);
+  const [step, handleChangeStep] = useState(1);
   const goNextStep = useCallback(() => {
     handleChangeStep(pre => pre+1)
   }, [handleChangeStep]);

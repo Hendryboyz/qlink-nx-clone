@@ -10,6 +10,7 @@ import { Fragment } from 'react';
 import SubmitButton from '$/components/Button/SubmitButton';
 import { NOOP } from '$/utils';
 import Recaptcha from '$/components/Fields/Recaptcha';
+import InputField from '$/components/Fields/InputField';
 interface FormData {
   phone: string;
   recaptchaToken: string;
@@ -47,7 +48,7 @@ const Step1 = (props: Props) => {
                 setPhone(phone);
                 props.onSuccess();
               } else {
-                setFieldError('phone', res.data?.error?.message);
+                setFieldError('phone', res.message);
               }
             })
             .finally(() => setSubmitting(false));
@@ -67,26 +68,23 @@ const Step1 = (props: Props) => {
           <Fragment>
             <div className="mt-auto font-gilroy-medium">
               <form>
-                <h4 className="text-[#FFF0D3] text-xl mb-9">
+                <h4 className="text-[#FFF0D3] text-xl">
                   Mobile Verification
                 </h4>
-                <label htmlFor="phone" className="block">
-                  <div className="flex items-center bg-white border-white p-4 rounded-xl border-2 w-full">
-                    <img src="assets/phone2.svg" alt="phone" />
-                    <Field
-                      id="phone"
-                      name="phone"
-                      placeholder="Mobile Number"
-                      type="number"
-                      className="flex-grow ml-2 text-lg"
-                    />
-                  </div>
-                </label>
-                <ErrorMessage
-                  name="phone"
-                  className="text-[#E19500] absolute"
-                  component="span"
-                />
+                <div className="mt-9">
+                  <InputField
+                    type="tel"
+                    name="phone"
+                    placeholder="Mobile Number"
+                    headIconSource="assets/phone2.svg"
+                    customClassName="border-white"
+                  />
+                  <ErrorMessage
+                    name="phone"
+                    className="text-[#E19500] absolute"
+                    component="span"
+                  />
+                </div>
                 <div className="mt-9">
                   <Recaptcha
                     recaptchaToken={values.recaptchaToken}

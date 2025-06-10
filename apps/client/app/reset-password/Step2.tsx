@@ -65,7 +65,7 @@ const Step2 = (props: Props) => {
       }
     >
       <div className="mt-auto">
-        <h4 className="text-[#FFF0D3] text-sm mb-6 text-center">
+        <h4 className="text-[#FFF0D3] text-sm mb-9 text-center">
           Please enter the 4-digit OTP (One-Time Password) sent to your
           registered mobile number.
         </h4>
@@ -74,7 +74,7 @@ const Step2 = (props: Props) => {
             <input
               className="flex items-center justify-center
               text-center
-            w-14 h-14 rounded-xl
+            w-12 h-12 rounded-xl
            bg-white border-white border-2 font-bold text-xl"
               type="number"
               name="otp"
@@ -86,7 +86,7 @@ const Step2 = (props: Props) => {
             />
           ))}
         </div>
-        <h4 className="text-center text-[#FF7D7D] mt-5">
+        <h4 className="text-center text-[#FF7D7D] mt-5 text-[13px]">
           Didn&apos;t receive code?
           <br />
           Resend in 60s
