@@ -10,7 +10,15 @@ interface Props extends FieldAttributes<any> {
   children?: React.ReactNode;
 }
 
-const DropdownField: React.FC<Props> = ({name, label, options, placeholder, children, className, ...rest}) => {
+const DropdownField: React.FC<Props> = ({
+  name,
+  label,
+  options,
+  placeholder,
+  children,
+  className,
+  ...rest
+}) => {
   // console.log(options);
   return (
     <div>
@@ -35,11 +43,9 @@ const DropdownField: React.FC<Props> = ({name, label, options, placeholder, chil
         </Field>
         <img src="/assets/chevron_down.svg" />
       </label>
-      <div className="min-h-7">
-        {children}
-      </div>
+      {children && <div className="min-h-7">{children}</div>}
     </div>
-      );
-      };
+  );
+};
 
-      export default DropdownField;
+export default DropdownField;

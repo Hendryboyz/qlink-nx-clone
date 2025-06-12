@@ -35,6 +35,14 @@
 }
 
 @font-face {
+  font-family: 'GilroySemiBold';
+  src: url('/fonts/Gilroy-SemiBold.ttf') format('truetype');
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
   font-family: 'GilroyHeavy';
   src: url('/fonts/Gilroy-Heavy.ttf') format('truetype');
   font-weight: 400;

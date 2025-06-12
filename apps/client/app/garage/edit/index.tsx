@@ -216,11 +216,11 @@ export default function GarageEdit({ data, onCancel, onRemove }: Props) {
                     valueBeforeEditRef.current !== editValue;
                   return (
                     <div
-                      className="flex items-center py-3 pr-6 pl-12 border-b-2 border-gray-100"
+                      className="flex items-center py-3 mx-6 border-b-2 border-gray-100"
                       key={key}
                     >
                       <div className="flex flex-col w-full text-gray-400 relative ">
-                        <span className="text-xs mb-1">{formData.title}</span>
+                        <span className="text-xs mb-1 text-[#D70127]">{formData.title}</span>
                         {formData.type == 'select' && formData.editable ? (
                           <DropdownField
                             id={key}

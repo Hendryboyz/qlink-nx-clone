@@ -8,6 +8,7 @@ import { useRouter } from 'next/navigation';
 import API from '$/utils/fetch';
 import GarageEdit from './edit';
 import defaultMotorImage from '$/public/assets/sym125.png';
+import { DEFAULT_MODELS } from '$/utils';
 
 export default function Garage() {
   const router = useRouter();
@@ -53,33 +54,36 @@ export default function Garage() {
       <Header title="My Garage" />
       <div className="px-6 py-4">
         <div className="container mx-auto">
-          <div className="grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10 justify-items-center">
-            {products.map((product) => (
-              <div
-                key={product.id}
-                className="flex flex-col max-w-[312px] w-full rounded-2xl overflow-hidden shadow-lg"
-                onClick={() => {
-                  setCurrentProduct(product);
-                  setIsModalOpen(true);
-                }}
-              >
-                {/*<div className="h-24 bg-gray-300" />*/}
+          <div className="grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 justify-items-center">
+            {products.map((product) => {
+              const modelTitle = DEFAULT_MODELS.find(m => m.id.toString() === product.model)?.title;
+              return (
                 <div
-                  style={{
-                    height: '6rem',
-                    backgroundImage: `url(${defaultMotorImage.src})`,
-                    backgroundSize: 'cover',
-                    backgroundPosition: 'center center',
-                    // backgroundColor: ' rgb(217 217 217)'
+                  key={product.id}
+                  className="flex flex-col max-w-[320px] w-full rounded-2xl overflow-hidden shadow-lg"
+                  onClick={() => {
+                    setCurrentProduct(product);
+                    setIsModalOpen(true);
                   }}
-                />
-                {/* Placeholder for image */}
-                <div className="px-4 py-3 bg-gray-500 flex justify-between text-white">
-                  <div className="font-bold text-sm mb-2">{product.model}</div>
-                  <p className="text-base">{product.vin}</p>
+                >
+                  {/*<div className="h-24 bg-gray-300" />*/}
+                  <div
+                    style={{
+                      height: '6rem',
+                      backgroundImage: `url(${defaultMotorImage.src})`,
+                      backgroundSize: 'cover',
+                      backgroundPosition: 'center center',
+                      backgroundColor: '#DFDFDF'
+                    }}
+                  />
+                  {/* Placeholder for image */}
+                  <div className="px-4 py-[6px] bg-gray-500 flex justify-between text-white">
+                    <div className="font-gilroy-bold text-[13px]">{modelTitle || product.model}</div>
+                    <p className="text-xs font-gilroy-regular">{product.vin}</p>
+                  </div>
                 </div>
-              </div>
-            ))}
+              )
+            })}
           </div>
           <div className="mt-6 flex justify-center">
             <img

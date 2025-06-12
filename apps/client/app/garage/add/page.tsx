@@ -85,7 +85,7 @@ const ATTRS: Columns = {
 };
 export default function GarageAdd() {
   const DEFAULT_ERROR_MSG_CLASS = 'text-red-500 absolute top-0 right-0 text-xs text-right';
-  const POPUP_BUTTON_STYLE = 'py-2 px-3 text-sm w-36 rounded-lg h-8';
+  const POPUP_BUTTON_STYLE = 'py-2 px-3 text-sm w-36 rounded-lg h-8 font-gilroy-bold';
   const [models, setModels] = useState<ModelVO[]>([]);
   const initValue: FormData = defaultValue;
   const router = useRouter();
@@ -162,11 +162,11 @@ export default function GarageAdd() {
                 ([key, data]) => {
                   return (
                     <div
-                      className="flex items-center py-3 pr-6 pl-12 border-b-2 border-gray-100"
+                      className="flex items-center py-3 mx-6 border-b-2 border-gray-100"
                       key={key}
                     >
-                      <div className="flex flex-col w-full text-gray-400 relative ">
-                        <span className="text-xs mb-1">{data.title}</span>
+                      <div className="flex flex-col w-full text-gray-400 relative">
+                        <span className="text-xs mb-1 text-[#D70127]">{data.title}</span>
                         {data.type == 'select' ? (
                           <DropdownField
                             id={key}
@@ -183,7 +183,7 @@ export default function GarageAdd() {
                             id={key}
                             name={key}
                             type={data.type || 'text'}
-                            className="text-lg"
+                            className="text-base"
                             placeholder=""
                           />
                         }

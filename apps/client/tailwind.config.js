@@ -10,6 +10,7 @@ module.exports = {
           'gilroy-regular': ['GilroyRegular', 'sans-serif'],
           'gilroy-medium': ['GilroyMedium', 'sans-serif'],
           'gilroy-bold': ['GilroyBold', 'sans-serif'],
+          'gilroy-semibold': ['GilroySemiBold', 'sans-serif'],
           'gilroy-black': ['GilroyBlack', 'sans-serif'],
           'gilroy-heavy': ['GilroyHeavy', 'sans-serif'],
         },

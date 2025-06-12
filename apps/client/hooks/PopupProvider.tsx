@@ -28,8 +28,8 @@ const Popup: React.FC<{ content: PopupContent; onClose: () => void }> = ({
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
       <div className="bg-white rounded-lg p-6 max-w-md min-w-96 m-4 text-center">
-        <div className="mb-4">
-          <h2 className="text-sm font-bold">{content.title}</h2>
+        <div className="px-6 py-6">
+          <h2 className="text-sm font-gilroy-medium">{content.title}</h2>
         </div>
         {content.content && content.content}
         {(content.useDefault === undefined || content.useDefault) && <div className='flex justify-center'>
