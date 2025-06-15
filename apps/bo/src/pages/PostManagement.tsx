@@ -110,7 +110,7 @@ const PostManagement: React.FC = () => {
   };
 
   return (
-    <div style={{ padding: '24px' }}>
+    <div>
       <h1>Post Management</h1>
 
       <Button

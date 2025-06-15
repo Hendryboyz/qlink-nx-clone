@@ -49,6 +49,7 @@ export interface UserUpdateDto {
 export enum UserType {
   CLIENT = 'client',
 }
+
 export enum UserSourceType {
   NONE = 0,
   FriendsOrFamilyReferrals = 1,

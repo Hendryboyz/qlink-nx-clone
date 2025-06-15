@@ -81,10 +81,15 @@ export class UserRepository {
           'first_name',
           'mid_name',
           'last_name',
+          'birthday',
+          'email',
           'phone',
-          'address_state',
           'address_city',
-          'type',
+          'address_state',
+          'whatsapp',
+          'facebook',
+          'created_at',
+          'source',
         ])
         .where({
           is_delete: false,
