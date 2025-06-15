@@ -1,23 +1,16 @@
-import { Controller, Delete, Get, Param, Query, UseGuards } from '@nestjs/common';
-import { UserService } from '$/modules/user/user.service';
-import { JwtAuthGuard } from '$/modules/bo/auth/jwt-auth.guard';
-import { RolesGuard } from '$/modules/bo/auth/roles.guard';
+import { Controller, Get, Logger, Query } from '@nestjs/common';
 import { Roles } from '$/modules/bo/auth/roles.decorator';
-import { BoRole } from '@org/types';
+import { BoRole, BOUserDTO } from '@org/types';
 
-@UseGuards(JwtAuthGuard, RolesGuard)
-@Controller()
+@Controller('')
 export class BoUserController {
-  constructor(private readonly userService: UserService) {}
+  private logger = new Logger(this.constructor.name);
   @Roles(BoRole.ADMIN)
   @Get()
-  findAll(@Query('page') page: number = 1, @Query('limit') limit: number = 10) {
-    return this.userService.findByPage(page, limit);
-  }
-
-  @Roles(BoRole.ADMIN)
-  @Delete(':id')
-  delete(@Param('id') id: string) {
-    return this.userService.delete(id);
+  listByPaging(
+    @Query('page') page: number = 1,
+    @Query('limit') limit: number = 10
+  ): Promise<BOUserDTO[]> {
+    return null;
   }
 }

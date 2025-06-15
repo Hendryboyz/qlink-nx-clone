@@ -12,12 +12,3 @@ export interface GetPostsResponse {
   total: number;
   highlightCount: number;
 }
-
-export interface GetUsersResponse {
-  data: UserVO[];
-  total: number;
-}
-
-export interface MutateUserResponse {
-  affectedRows: number;
-}

@@ -246,11 +246,15 @@ class Api {
   }
 
   async getClientUsers(page = 1, limit = 10): Promise<GetUsersResponse> {
-    return this.get(`/users?page=${page}&limit=${limit}`);
+    return this.get(`/users/clients?page=${page}&limit=${limit}`);
   }
 
   async deleteClientUser(id: string): Promise<MutateUserResponse> {
-    return this.delete(`/users/${id}`);
+    return this.delete(`/users/client/${id}`);
+  }
+
+  async listBoUsers(page = 1, limit = 10): Promise<GetUsersResponse> {
+    return this.get(`/users?page=${page}&limit=${limit}`);
   }
 }
 
