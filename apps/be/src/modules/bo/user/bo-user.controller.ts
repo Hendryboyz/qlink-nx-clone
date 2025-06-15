@@ -1,4 +1,4 @@
-import { Controller, Get, Query, UseGuards } from '@nestjs/common';
+import { Controller, Delete, Get, Param, Query, UseGuards } from '@nestjs/common';
 import { UserService } from '$/modules/user/user.service';
 import { JwtAuthGuard } from '$/modules/bo/auth/jwt-auth.guard';
 import { RolesGuard } from '$/modules/bo/auth/roles.guard';
@@ -13,5 +13,11 @@ export class BoUserController {
   @Get()
   findAll(@Query('page') page: number = 1, @Query('limit') limit: number = 10) {
     return this.userService.findByPage(page, limit);
+  }
+
+  @Roles(BoRole.ADMIN)
+  @Delete(':id')
+  delete(@Param('id') id: string) {
+    return this.userService.delete(id);
   }
 }

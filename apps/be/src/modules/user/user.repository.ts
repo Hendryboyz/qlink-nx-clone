@@ -103,4 +103,8 @@ export class UserRepository {
       throw error;
     }
   }
+
+  public delete(id: string): Promise<number> {
+    return this.knex('users').where({ id }).delete();
+  }
 }

@@ -17,3 +17,7 @@ export interface GetUsersResponse {
   data: UserVO[];
   total: number;
 }
+
+export interface MutateUserResponse {
+  affectedRows: number;
+}

@@ -93,4 +93,8 @@ export class UserService {
     const {data, total} = await this.userRepository.findByPage(page, limit);
     return {data, total, page, limit };
   }
+
+  public delete(id: string): Promise<number> {
+    return this.userRepository.delete(id);
+  }
 }

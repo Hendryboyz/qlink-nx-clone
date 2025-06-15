@@ -7,7 +7,7 @@ import {
   CreateBoUserDto,
   PostEntity, UserVO
 } from '@org/types';
-import { GetPostsResponse, GetUsersResponse, UploadImageResponse } from '$/types';
+import { GetPostsResponse, GetUsersResponse, MutateUserResponse, UploadImageResponse } from '$/types';
 class Api {
   private instance: AxiosInstance;
   private isRefreshing = false;
@@ -247,6 +247,10 @@ class Api {
 
   async getClientUsers(page = 1, limit = 10): Promise<GetUsersResponse> {
     return this.get(`/users?page=${page}&limit=${limit}`);
+  }
+
+  async deleteClientUser(id: string): Promise<MutateUserResponse> {
+    return this.delete(`/users/${id}`);
   }
 }
 

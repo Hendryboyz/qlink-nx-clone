@@ -4,12 +4,14 @@ import { ProTable } from '@ant-design/pro-components';
 import API from '$/utils/fetch';
 import { UserSourceType, UserVO } from '@org/types';
 
+const INITIAL_PAGING_VALUES = {
+  pageSize: 10,
+  page: 1,
+};
+
 const MemberManagement: React.FC = () => {
   const [total, setTotal] = useState(0);
-  const [paging, setPaging] = useState({
-    pageSize: 10,
-    page: 1,
-  })
+  const [paging, setPaging] = useState(INITIAL_PAGING_VALUES)
   const [clientUsers, setClientUsers] = useState<UserVO[]>([]);
 
   const onDeleting = (clientId: string) => {
@@ -20,7 +22,10 @@ const MemberManagement: React.FC = () => {
       okText: 'Delete',
       okType: 'danger',
       cancelText: 'Cancel',
-      onOk: () => {},
+      onOk: async () => {
+        await API.deleteClientUser(clientId);
+        setClientUsers(prevUsers => prevUsers.filter(c => c.id !== clientId));
+      },
     });
   };
 
@@ -123,7 +128,6 @@ const MemberManagement: React.FC = () => {
       const { data, total } = await API.getClientUsers(paging.page, paging.pageSize);
       setClientUsers(data);
       setTotal(total);
-      console.log(data, total);
     }
     fetchClientUsers();
   }, [paging]);
