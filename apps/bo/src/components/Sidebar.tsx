@@ -1,4 +1,5 @@
-import React, { useEffect, useState } from 'react';
+import React, { ReactElement, useEffect, useState } from 'react';
+import { MenuProps } from 'antd';
 import { Layout, Menu } from 'antd';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import {
@@ -22,10 +23,22 @@ interface SidebarProps {
 type ItemProps = {
   label: string;
   link?: string;
-  icon: JSX.Element;
+  icon: ReactElement;
   adminOnly?: boolean;
   clickHandler?: () => void;
   hidden: boolean;
+};
+
+type MenuItem = Required<MenuProps>['items'][number];
+
+const renderLabel = (item: ItemProps) => {
+  if (item.link) {
+    return <Link to={item.link}>{item.label}</Link>;
+  } else {
+    return (
+      <span onClick={item.clickHandler}>{item.label}</span>
+    );
+  }
 };
 
 const Sidebar: React.FC<SidebarProps> = ({ collapsed, setCollapsed }) => {
@@ -50,6 +63,13 @@ const Sidebar: React.FC<SidebarProps> = ({ collapsed, setCollapsed }) => {
     {
       label: 'Member Management',
       link: '/members',
+      icon: <UserOutlined />,
+      adminOnly: true,
+      hidden: false,
+    },
+    {
+      label: 'User & Role',
+      link: '/users',
       icon: <UserOutlined />,
       adminOnly: true,
       hidden: false,
@@ -100,17 +120,27 @@ const Sidebar: React.FC<SidebarProps> = ({ collapsed, setCollapsed }) => {
     setSelectedKeys([key.toString()]);
   }, [location]);
 
-  const availableMenuItems = menuItems.filter((item: ItemProps) =>
-    !item.hidden &&
-    (!item.adminOnly
-      || (user && user.role === 'admin'))
+  const availableMenuItems = menuItems.filter(
+    (item: ItemProps) =>
+      !item.hidden && (!item.adminOnly || (user && user.role === 'admin'))
   );
 
   const getKeysFromPath = (path: string): number => {
-    const selectedKey = availableMenuItems.findIndex(item => item.link === path);
+    const selectedKey = availableMenuItems.findIndex(
+      (item) => item.link === path
+    );
     if (selectedKey === -1) return 1;
     return selectedKey;
   };
+
+  const itemElements: MenuItem[] = availableMenuItems.map(
+    (item: ItemProps, index: number) => ({
+      title: item.label,
+      key: index,
+      icon: item.icon,
+      label: renderLabel(item),
+    })
+  );
 
   return (
     <Sider
@@ -125,17 +155,12 @@ const Sidebar: React.FC<SidebarProps> = ({ collapsed, setCollapsed }) => {
       }}
     >
       <div className="logo" />
-      <Menu theme="dark" mode="inline" selectedKeys={selectedKeys}>
-        { availableMenuItems.map((item: ItemProps, index: number) => (
-            <Menu.Item
-              key={index}
-              icon={item.icon}
-              onClick={item.clickHandler}>
-              { item.link ? <Link to={item.link}>{item.label}</Link> : item.label }
-            </Menu.Item>
-          ))
-        }
-      </Menu>
+      <Menu
+        theme="dark"
+        mode="inline"
+        selectedKeys={selectedKeys}
+        items={itemElements}
+      />
     </Sider>
   );
 };
