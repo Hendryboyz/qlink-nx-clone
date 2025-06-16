@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Form, Input, Button, Select, message } from 'antd';
 import { useNavigate } from 'react-router-dom';
 import { CreateBoUserDto, BoRole } from '@org/types';
-import API from '../utils/fetch';
+import API from '$/utils/fetch';
 
 const { Option } = Select;
 
@@ -51,7 +51,7 @@ const CreateUser: React.FC = () => {
         >
           <Select>
             <Option value={BoRole.ADMIN}>Admin</Option>
-            <Option value={BoRole.AGENT}>Agent</Option>
+            <Option value={BoRole.VIEWER}>Agent</Option>
           </Select>
         </Form.Item>
 

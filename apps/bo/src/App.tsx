@@ -20,7 +20,8 @@ import CouponManagement from './pages/CouponManagement';
 import ReportData from './pages/ReportData';
 import PostManagement from './pages/PostManagement';
 import { BoRole } from '@org/types';
-import CreateUser from './pages/CreateUser';
+import CreateUser from './pages/UsersManagement/CreateUser';
+import UsersManagement from '$/pages/UsersManagement';
 
 const { Content } = Layout;
 
@@ -60,7 +61,7 @@ function App() {
             <Route
               path="dashboard"
               element={
-                <PrivateRoute allowedRoles={[BoRole.ADMIN, BoRole.AGENT]}>
+                <PrivateRoute allowedRoles={[BoRole.ADMIN, BoRole.VIEWER]}>
                   <Dashboard />
                 </PrivateRoute>
               }
@@ -70,6 +71,14 @@ function App() {
               element={
                 <PrivateRoute allowedRoles={[BoRole.ADMIN]}>
                   <MemberManagement />
+                </PrivateRoute>
+              }
+            />
+            <Route
+              path="users"
+              element={
+                <PrivateRoute allowedRoles={[BoRole.ADMIN]}>
+                  <UsersManagement />
                 </PrivateRoute>
               }
             />
@@ -84,7 +93,7 @@ function App() {
             <Route
               path="advertisements"
               element={
-                <PrivateRoute allowedRoles={[BoRole.ADMIN, BoRole.AGENT]}>
+                <PrivateRoute allowedRoles={[BoRole.ADMIN, BoRole.VIEWER]}>
                   <AdvertisementManagement />
                 </PrivateRoute>
               }
@@ -92,7 +101,7 @@ function App() {
             <Route
               path="coupons"
               element={
-                <PrivateRoute allowedRoles={[BoRole.ADMIN, BoRole.AGENT]}>
+                <PrivateRoute allowedRoles={[BoRole.ADMIN, BoRole.VIEWER]}>
                   <CouponManagement />
                 </PrivateRoute>
               }
@@ -108,7 +117,7 @@ function App() {
             <Route
               path="post-management"
               element={
-                <PrivateRoute allowedRoles={[BoRole.ADMIN, BoRole.AGENT]}>
+                <PrivateRoute allowedRoles={[BoRole.ADMIN, BoRole.VIEWER]}>
                   <PostManagement />
                 </PrivateRoute>
               }

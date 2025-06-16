@@ -1,8 +1,5 @@
-import { UserEntity } from '../user';
-
 export enum BoRole {
   ADMIN = 'admin',
-  AGENT = 'agent',
   VIEWER = 'viewer',
 }
 
@@ -18,6 +15,11 @@ export interface BoUserEntity {
 export type BoUser = Omit<BoUserEntity, 'createdAt' | 'updatedAt'>;
 
 export type BOUserDTO = Omit<BoUserEntity, 'password' | 'updatedAt'>
+
+export type ListBoUserDTO = {
+  data: BOUserDTO[];
+  total: number;
+}
 
 export interface BoLoginDto {
   username: string;
