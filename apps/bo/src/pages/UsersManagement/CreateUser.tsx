@@ -1,12 +1,14 @@
-import React, { useState } from 'react';
-import { Form, Input, Button, Select, message } from 'antd';
+import React, { useContext, useState } from 'react';
+import { Form, Input, Button, Select, message, Space } from 'antd';
 import { useNavigate } from 'react-router-dom';
 import { CreateBoUserDto, BoRole } from '@org/types';
 import API from '$/utils/fetch';
+import { UserContext } from '$/pages/UsersManagement/UsersContext';
 
 const { Option } = Select;
 
 const CreateUser: React.FC = () => {
+  const {setEditingUserId} = useContext(UserContext);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
@@ -25,9 +27,21 @@ const CreateUser: React.FC = () => {
   };
 
   return (
-    <div style={{ maxWidth: 400, margin: '40px auto' }}>
-      <h1>Create New User</h1>
-      <Form name="createUser" onFinish={onFinish} layout="vertical">
+    <div style={{
+      width: '100%',
+      backgroundColor: 'white',
+      padding: '20px 20px',
+      marginBottom: '20px',
+      borderRadius: '8px',
+    }}>
+      <Form
+        style={{
+          maxWidth: 400,
+          margin: '40px auto',
+        }}
+        name="createUser"
+        onFinish={onFinish}
+        layout="vertical">
         <Form.Item
           name="username"
           label="Username"
@@ -45,20 +59,36 @@ const CreateUser: React.FC = () => {
         </Form.Item>
 
         <Form.Item
+          name="confirmPassword"
+          label="Confirm Password"
+          rules={[{ required: true, message: 'Please input the password!' }]}
+        >
+          <Input.Password />
+        </Form.Item>
+
+        <Form.Item
           name="role"
           label="Role"
           rules={[{ required: true, message: 'Please select a role!' }]}
         >
           <Select>
             <Option value={BoRole.ADMIN}>Admin</Option>
-            <Option value={BoRole.VIEWER}>Agent</Option>
+            <Option value={BoRole.VIEWER}>Viewer</Option>
           </Select>
         </Form.Item>
 
         <Form.Item>
-          <Button type="primary" htmlType="submit" loading={loading} block>
-            Create User
-          </Button>
+          <Space>
+            <Button
+              htmlType="button"
+              onClick={() => setEditingUserId(undefined)}
+            >
+              Cancel
+            </Button>
+            <Button type="primary" htmlType="submit" loading={loading} block>
+              Create User
+            </Button>
+          </Space>
         </Form.Item>
       </Form>
     </div>

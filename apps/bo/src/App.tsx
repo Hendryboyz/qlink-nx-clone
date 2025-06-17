@@ -13,7 +13,7 @@ import PrivateRoute from './components/PrivateRoute';
 import Login from './pages/Login';
 import Unauthorized from './pages/Unauthorized';
 import Dashboard from './pages/Dashboard';
-import MemberManagement from './pages/MemberManagement';
+import MemberManagement from './pages/MemberMangement';
 import DealerManagement from './pages/DealerManagement';
 import AdvertisementManagement from './pages/AdvertisementManagement';
 import CouponManagement from './pages/CouponManagement';
@@ -22,6 +22,7 @@ import PostManagement from './pages/PostManagement';
 import { BoRole } from '@org/types';
 import CreateUser from './pages/UsersManagement/CreateUser';
 import UsersManagement from '$/pages/UsersManagement';
+import UserContextProvider from '$/pages/UsersManagement/UsersContext';
 
 const { Content } = Layout;
 
@@ -78,7 +79,9 @@ function App() {
               path="users"
               element={
                 <PrivateRoute allowedRoles={[BoRole.ADMIN]}>
-                  <UsersManagement />
+                  <UserContextProvider>
+                    <UsersManagement />
+                  </UserContextProvider>
                 </PrivateRoute>
               }
             />
