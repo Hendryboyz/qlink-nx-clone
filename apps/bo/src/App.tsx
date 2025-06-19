@@ -23,6 +23,7 @@ import { BoRole } from '@org/types';
 import CreateUser from './pages/UsersManagement/CreateUser';
 import UsersManagement from '$/pages/UsersManagement';
 import UserContextProvider from '$/pages/UsersManagement/UsersContext';
+import MemberContextProvider from '$/pages/MemberMangement/MemberContext';
 
 const { Content } = Layout;
 
@@ -71,7 +72,9 @@ function App() {
               path="members"
               element={
                 <PrivateRoute allowedRoles={[BoRole.ADMIN]}>
-                  <MemberManagement />
+                  <MemberContextProvider>
+                    <MemberManagement />
+                  </MemberContextProvider>
                 </PrivateRoute>
               }
             />
