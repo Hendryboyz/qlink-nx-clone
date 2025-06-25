@@ -1,11 +1,11 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { Pool, QueryResult } from 'pg';
 import { OtpCreateDto, OtpEntity, OtpTypeEnum } from '@org/types';
-import { KNEX_CONNECTION } from '../../database.module';
+import { KNEX_CONNECTION } from '$/database.module';
 import { Knex } from 'knex';
 
 @Injectable()
-export class OtpRepository {
+export class PhoneOtpRepository {
   constructor(
     private readonly pool: Pool,
     @Inject(KNEX_CONNECTION) private readonly knex: Knex

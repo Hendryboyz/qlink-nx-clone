@@ -1,4 +1,5 @@
 import { UserSourceType, UserType } from './user';
+import { IdentifierType } from './otp-v2';
 
 export interface RegisterDto {
   phone: string;
@@ -23,11 +24,19 @@ export interface LoginDto {
   password: string;
   remember_me?: boolean;
 }
+
 export interface SendOtpDto {
   phone: string;
   type: OtpTypeEnum;
   recaptchaToken?: string;
   resend?: boolean;
+}
+
+export interface StartOtpReqDto {
+  identifier: string;
+  identifierType: IdentifierType;
+  type: OtpTypeEnum;
+  recaptchaToken?: string;
 }
 
 export interface VerifyOtpDto {
@@ -39,6 +48,7 @@ export interface ResetPasswordDto {
   password: string;
   rePassword: string;
 }
+
 export enum OtpTypeEnum {
   REGISTER = 'register',
   RESET_PASSWORD = 'reset-password',
@@ -54,4 +64,4 @@ export type OtpEntity = {
   updated_at: Date;
 }
 
-export type OtpCreateDto = VerifyOtpDto
+export type OtpCreateDto = VerifyOtpDto;

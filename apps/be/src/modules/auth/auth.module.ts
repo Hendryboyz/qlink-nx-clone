@@ -7,7 +7,8 @@ import { UserModule } from '../user/user.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { JwtStrategy } from './jwt.strategy';
 import { OtpService } from './otp.service';
-import { OtpRepository } from './otp.repository';
+import { PhoneOtpRepository } from './phone-otp.repository';
+import { GeneralOtpRepository } from '$/modules/auth/general-otp.repository';
 
 @Module({
   imports: [
@@ -22,7 +23,13 @@ import { OtpRepository } from './otp.repository';
       inject: [ConfigService],
     }),
   ],
-  providers: [AuthService, JwtStrategy, OtpService, OtpRepository],
+  providers: [
+    AuthService,
+    JwtStrategy,
+    OtpService,
+    PhoneOtpRepository,
+    GeneralOtpRepository,
+  ],
   controllers: [AuthController],
 })
 export class AuthModule {}

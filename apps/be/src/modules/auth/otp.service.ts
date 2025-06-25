@@ -1,41 +1,98 @@
-import { BadRequestException, Injectable, InternalServerErrorException, Logger } from '@nestjs/common';
+import {
+  BadRequestException,
+  ConflictException,
+  Injectable,
+  Logger,
+  NotFoundException,
+} from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { OtpTypeEnum } from '@org/types';
-import { OtpRepository } from './otp.repository';
+import { IdentifierType, OtpTypeEnum } from '@org/types';
+import { PhoneOtpRepository } from './phone-otp.repository';
 import * as _ from 'lodash';
 import { UserService } from '../user/user.service';
 import * as process from 'node:process';
+import { GeneralOtpRepository } from '$/modules/auth/general-otp.repository';
 
 const OTP_TTL: Record<OtpTypeEnum, string> = {
   [OtpTypeEnum.REGISTER]: '30m',
   [OtpTypeEnum.RESET_PASSWORD]: '8m',
 };
+
 export type OtpJwtPayload = {
   phone: string;
   verified: boolean;
   type: OtpTypeEnum
 }
 
+const OTP_DIGIT: number = 4;
+
 @Injectable()
 export class OtpService {
   private logger = new Logger(this.constructor.name);
   constructor(
     private jwtService: JwtService,
-    private readonly otpRepository: OtpRepository,
+    private readonly otpRepository: PhoneOtpRepository,
+    private readonly generalOtpRepository: GeneralOtpRepository,
     private readonly userService: UserService
   ) {}
 
   async generateOtp(phone: string, type: OtpTypeEnum): Promise<string> {
     // !check rate-limit
-    if (_.isEmpty(phone)) throw new InternalServerErrorException('Invalid phone');
-    if (OtpTypeEnum.RESET_PASSWORD == type) {
-        const user = await this.userService.findOne(phone);
-        if (_.isEmpty(user)) throw new InternalServerErrorException('Invalid phone');
-    }
-    const code = Math.floor(1000 + Math.random() * 9000).toString();
-    await this.otpRepository.create({ phone, type, code })
-    this.sendOTP(phone, code);
+    await this.validateIdentifier(phone, IdentifierType.PHONE, type);
+
+    const code = this.generateNDigitOtp(OTP_DIGIT);
+    await this.otpRepository.create({ phone, type, code });
+
+    this.sendOTP(phone, IdentifierType.PHONE, code);
     return code;
+  }
+
+  private generateNDigitOtp(digit: number): string {
+    const a = 10 ** (digit - 1);
+    const b = 10 ** digit - a;
+    return Math.floor(a + Math.random() * b).toString();
+  }
+
+  async generateOtpV2(
+    identifier: string,
+    identifierType: IdentifierType,
+    type: OtpTypeEnum
+  ) {
+    await this.validateIdentifier(identifier, identifierType, type);
+    const code = this.generateNDigitOtp(OTP_DIGIT);
+    await this.generalOtpRepository.create({
+      identifier,
+      identifierType,
+      type,
+      code,
+    });
+
+    this.sendOTP(identifier, IdentifierType.PHONE, code);
+    return code;
+  }
+
+  private async validateIdentifier(
+    identifier: string,
+    identifierType: IdentifierType,
+    type: OtpTypeEnum
+  ) {
+    if (_.isEmpty(identifier)) {
+      throw new BadRequestException(`invalid ${identifierType}`);
+    }
+
+    const user = await this.userService.findOneWithType(
+      identifier,
+      identifierType
+    );
+    if (OtpTypeEnum.RESET_PASSWORD == type) {
+      if (_.isEmpty(user)) {
+        throw new NotFoundException(`${identifierType} not found`);
+      }
+    } else {
+      if (user) {
+        throw new ConflictException(`conflict ${identifierType}`);
+      }
+    }
   }
 
   async allowResend(phone: string, type: OtpTypeEnum): Promise<boolean> {
@@ -46,7 +103,8 @@ export class OtpService {
       return false;
     }
     const timeToResend = new Date();
-    const elapsedTime = timeToResend.getTime() - previousOTP.created_at.getTime();
+    const elapsedTime =
+      timeToResend.getTime() - previousOTP.created_at.getTime();
     const tenMinutes = 10 * 60;
     return elapsedTime <= tenMinutes;
   }
@@ -64,9 +122,9 @@ export class OtpService {
     }
     const otpEntity = await this.otpRepository.findOne(phone, code, type);
     if (_.isEmpty(otpEntity)) {
-      throw new BadRequestException("Invalid code")
+      throw new BadRequestException('Invalid code');
     }
-    await this.otpRepository.verify(otpEntity.id)
+    await this.otpRepository.verify(otpEntity.id);
 
     return this.jwtService.sign(
       { phone, verified: true, type },
@@ -74,10 +132,7 @@ export class OtpService {
     );
   }
 
-  async verifyToken(
-    token: string,
-    type: OtpTypeEnum
-  ): Promise<boolean> {
+  async verifyToken(token: string, type: OtpTypeEnum): Promise<boolean> {
     try {
       const payload: OtpJwtPayload = this.jwtService.verify(token);
       if (payload.verified && payload.type == type) {
@@ -89,8 +144,7 @@ export class OtpService {
     return false;
   }
 
-  private sendOTP(phone: string, code: string) {
-    this.logger.log(`Send OTP(${code}) to ${phone}`);
+  private sendOTP(identifier: string, identifierType: IdentifierType, code: string) {
+    this.logger.log(`Send OTP(${code}) to ${identifierType}: ${identifier}`);
   }
-
 }

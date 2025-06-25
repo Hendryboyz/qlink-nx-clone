@@ -10,6 +10,7 @@ export interface BoUserEntity {
   role: BoRole;
   createdAt: Date;
   updatedAt: Date;
+  lastLoginAt: Date;
 }
 
 export type BoUser = Omit<BoUserEntity, 'createdAt' | 'updatedAt'>;

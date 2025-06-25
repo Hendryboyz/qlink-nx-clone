@@ -14,10 +14,19 @@ import {
 import { ACCESS_TOKEN, CODE_SUCCESS, HEADER_PRE_TOKEN, HEADER_USER_ID, INVALID, phoneRegex } from '@org/common';
 import { AuthService } from './auth.service';
 import { CookieOptions, Response } from 'express';
-import { LoginDto, OtpTypeEnum, RegisterDto, ResetPasswordDto, SendOtpDto, VerifyOtpDto } from '@org/types';
+import {
+  IdentifierType,
+  LoginDto,
+  OtpTypeEnum,
+  RegisterDto,
+  ResetPasswordDto,
+  SendOtpDto,
+  StartOtpReqDto,
+  VerifyOtpDto
+} from '@org/types';
 import { OtpService } from './otp.service';
 import { AuthGuard } from '@nestjs/passport';
-import { RequestWithUser } from '../../types';
+import { RequestWithUser } from '$/types';
 import process from 'node:process';
 
 const oneMonth = 30 * 24 * 60 * 60 * 1000;
@@ -136,6 +145,57 @@ export class AuthController {
       this.logger.error(e)
       throw new InternalServerErrorException()
     }
+  }
+
+  @Post('otp')
+  async startOTP(@Body() body: StartOtpReqDto) {
+    const isHuman = await this.authService.verifyRecaptcha(body.recaptchaToken);
+    if (!isHuman) {
+      throw new UnauthorizedException('Fail to verify recaptcha token');
+    }
+
+    const {type, identifier, identifierType} = body;
+    const errMessage = this.isAllowedSendOTP(type, identifier, identifierType);
+    if (errMessage) {
+      return {
+        bizCode: INVALID,
+        message: errMessage,
+      }
+    }
+    if (process.env.IS_OTP_ENABLED === 'false') {
+      return {
+        bizCode: CODE_SUCCESS,
+        data: true
+      };
+    }
+
+    try {
+      await this.otpService.generateOtpV2(identifier, identifierType, type);
+      return {
+        bizCode: CODE_SUCCESS,
+        data: true
+      }
+    } catch (e) {
+      this.logger.error(e)
+      throw new InternalServerErrorException()
+    }
+
+  }
+
+  private isAllowedSendOTP(type: OtpTypeEnum, identifier: string, identifierType: IdentifierType) {
+    if (type === OtpTypeEnum.REGISTER) {
+      const isDuplicateSignup = this.authService.isExistingIdentifier(identifier, identifierType);
+      if (isDuplicateSignup) {
+        return `invalid ${identifierType}: ${identifier}`;
+      }
+    } else {
+      // reset password
+      const identifierNotFound = !this.authService.isExistingIdentifier(identifier, identifierType);
+      if (identifierNotFound) {
+        return `${identifierType} not found: ${identifier}`;
+      }
+    }
+    return '';
   }
 
   @Post('otp/verify')

@@ -1,5 +1,5 @@
 import { Injectable, Inject } from '@nestjs/common';
-import { KNEX_CONNECTION } from '../../../database.module';
+import { KNEX_CONNECTION } from '$/database.module';
 import { Knex } from 'knex';
 import { BoUser, CreateBoUserDto } from '@org/types';
 
@@ -43,5 +43,11 @@ export class BoAuthRepository {
 
   async deleteRefreshToken(userId: string): Promise<void> {
     await this.knex('bo_refresh_tokens').where({ user_id: userId }).delete();
+  }
+
+  async updateLastLoginTime(userId: string): Promise<void> {
+    await this.knex('bo_users')
+      .where({ id: userId })
+      .update({ last_login_at: this.knex.fn.now() });
   }
 }

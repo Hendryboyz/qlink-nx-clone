@@ -127,7 +127,7 @@ export default function MemberTable() {
           </Button>
         </Space>
       ),
-      fixed: 'right',
+      // fixed: 'right',
     },
   ];
 

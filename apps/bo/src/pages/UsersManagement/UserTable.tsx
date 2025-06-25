@@ -34,7 +34,7 @@ export default function UserTable(): ReactElement {
     },
     {
       title: 'Last Login',
-      dataIndex: 'createdAt',
+      dataIndex: 'lastLoginAt',
       key: 'lastLogin',
       render: (data, _) => {
         const date = dateTimeFormatter.format(new Date(data as string))

@@ -47,6 +47,7 @@ export class BoAuthService {
     const refreshToken = this.jwtService.sign(payload, { expiresIn: '7d' });
 
     await this.boAuthRepository.saveRefreshToken(user.id, refreshToken);
+    await this.boAuthRepository.updateLastLoginTime(user.id);
 
     return {
       accessToken,

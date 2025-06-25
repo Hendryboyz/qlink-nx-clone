@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 export * from './auth';
+export * from './otp-v2';
 export * from './user';
 export * from './posts'
 export * from './product'

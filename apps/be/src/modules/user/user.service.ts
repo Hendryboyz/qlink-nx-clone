@@ -1,5 +1,5 @@
 import { BadRequestException, Injectable, Logger } from '@nestjs/common';
-import { RegisterDto, UserEntity, UserUpdateDto, UserVO } from '@org/types';
+import { IdentifierType, RegisterDto, UserEntity, UserUpdateDto, UserVO } from '@org/types';
 import { UserRepository } from './user.repository';
 import { omit } from 'lodash';
 
@@ -14,6 +14,10 @@ export class UserService {
 
   async findOne(phone: string): Promise<UserEntity> {
       return await this.userRepository.findByPhone(phone)
+  }
+
+  async findOneWithType(identifier: string, type: IdentifierType): Promise<UserEntity> {
+    return await this.userRepository.findWithType(identifier, type)
   }
 
   async getUserInfo(userId: string): Promise<UserVO | undefined> {

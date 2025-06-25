@@ -6,13 +6,14 @@ import {
 import { JwtService } from '@nestjs/jwt';
 import { UserService } from '../user/user.service';
 import {
+  IdentifierType,
   OtpTypeEnum,
   RegisterDto,
   ResetPasswordDto,
   User,
   UserSourceType,
   UserType,
-  UserVO,
+  UserVO
 } from '@org/types';
 
 import * as bcrypt from 'bcrypt';
@@ -215,5 +216,9 @@ export class AuthService {
   private async hashedPassword(password: string): Promise<string> {
     const PasswordSalt = 10;
     return await bcrypt.hash(password, PasswordSalt);
+  }
+
+  public async isExistingIdentifier(identifier: string, identifierType: IdentifierType): Promise<boolean> {
+    return true;
   }
 }
