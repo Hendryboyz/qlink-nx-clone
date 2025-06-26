@@ -35,4 +35,12 @@ export class GeneralOtpRepository {
     const result: QueryResult<GeneralOtpEntity> = await this.pool.query(query);
     return result.rows[0] || null;
   }
+
+  async verify(id: number) {
+    const effected = await this.knex('general_otp')
+      .where({ id })
+      .update({ is_verified: true });
+
+    return effected > 0;
+  }
 }

@@ -6,7 +6,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { IdentifierType, OtpTypeEnum } from '@org/types';
+import { GeneralOtpEntity, IdentifierType, OtpTypeEnum } from '@org/types';
 import { PhoneOtpRepository } from './phone-otp.repository';
 import * as _ from 'lodash';
 import { UserService } from '../user/user.service';
@@ -110,10 +110,7 @@ export class OtpService {
   ): Promise<string> {
     const otp = await this.generalOtpRepository.findFirst(identifier, identifierType, type)
     if (otp) {
-      const expiredAt = addTime(otp.createdAt, OTP_TTL[type]);
-      const current = new Date();
-      const isExpired = current > expiredAt;
-      if (!isExpired) {
+      if (!this.isOTPExpired(otp, type)) {
         this.logger.debug(`${identifier}[${identifierType}] use the existing code: ${otp.code}`);
         return otp.code;
       }
@@ -127,6 +124,12 @@ export class OtpService {
     });
     this.logger.debug(`${identifier}[${identifierType}] generate the new code: ${code}`);
     return code;
+  }
+
+  private isOTPExpired(otp: GeneralOtpEntity, type: OtpTypeEnum): boolean {
+    const expiredAt = addTime(otp.createdAt, OTP_TTL[type]);
+    const current = new Date();
+    return current > expiredAt;
   }
 
   private async sendOTP(
@@ -208,11 +211,10 @@ export class OtpService {
 
     const otp =
       await this.generalOtpRepository.findFirst(identifier, identifierType, type);
-    if (_.isEmpty(otp) || code !== otp.code) {
+    if (!otp || _.isEmpty(otp) || code !== otp.code || this.isOTPExpired(otp, type)) {
       throw new BadRequestException('Invalid code');
     }
-    // await this.generalOtpRepository.verify(otp.id);
-
+    await this.generalOtpRepository.verify(otp.id); // seems not important
     return this.generateJWT(type, payload);
   }
 

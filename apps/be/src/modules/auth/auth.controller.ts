@@ -43,9 +43,7 @@ import { UserService } from '$/modules/user/user.service';
 
 const oneMonth = 30 * 24 * 60 * 60 * 1000;
 let isProd = false;
-@Controller({
-  path: 'auth',
-})
+@Controller('auth')
 export class AuthController {
   private logger = new Logger(this.constructor.name);
   constructor(
@@ -234,7 +232,17 @@ export class AuthController {
   @Post('otp/verification')
   @UsePipes(new ValidationPipe())
   async verifyOtpCodeV2(@Body() body: OtpVerificationRequestDto) {
-
+    const { identifier, identifierType, code, type } = body;
+    try {
+      const token = await this.otpService.verifyOtpV2(code, identifier, identifierType, type);
+      return { bizCode: CODE_SUCCESS, data: token }
+    } catch (e) {
+      this.logger.error(e);
+      return {
+        bizCode: INVALID,
+        message: 'Invalid code'
+      }
+    }
   }
 
   @UseGuards(AuthGuard('jwt'))
