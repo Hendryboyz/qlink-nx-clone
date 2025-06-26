@@ -14,11 +14,7 @@ import * as process from 'node:process';
 import { GeneralOtpRepository } from '$/modules/auth/general-otp.repository';
 import { NotificationService } from '$/notification/notification.service';
 import { MSG_TEMPLATE } from '$/notification/notification.types';
-
-const OTP_TTL: Record<OtpTypeEnum, string> = {
-  [OtpTypeEnum.REGISTER]: '30m',
-  [OtpTypeEnum.RESET_PASSWORD]: '8m',
-};
+import { addTime, OTP_TTL } from '$/modules/auth/utils';
 
 export type OtpJwtPayload = {
   phone: string;
@@ -58,20 +54,27 @@ export class OtpService {
     ).toString();
   }
 
+  async allowResend(phone: string, type: OtpTypeEnum): Promise<boolean> {
+    if (process.env.IS_OTP_ENABLED === 'false') return true;
+
+    const previousOTP = await this.otpRepository.findPreviousOne(phone, type);
+    if (!previousOTP) {
+      return false;
+    }
+    const timeToResend = new Date();
+    const elapsedTime =
+      timeToResend.getTime() - previousOTP.created_at.getTime();
+    const tenMinutes = 10 * 60;
+    return elapsedTime <= tenMinutes;
+  }
+
   async generateOtpV2(
     identifier: string,
     identifierType: IdentifierType,
     type: OtpTypeEnum
   ) {
     await this.validateIdentifier(identifier, identifierType, type);
-    const code = this.generateNDigitOtp(OTP_DIGIT);
-    await this.generalOtpRepository.create({
-      identifier,
-      identifierType,
-      type,
-      code,
-    });
-
+    const code = await this.getOtpCode(identifier, identifierType, type);
     await this.sendOTP(type, identifier, IdentifierType.EMAIL, code);
     return code;
   }
@@ -100,53 +103,30 @@ export class OtpService {
     }
   }
 
-  async allowResend(phone: string, type: OtpTypeEnum): Promise<boolean> {
-    if (process.env.IS_OTP_ENABLED === 'false') return true;
-
-    const previousOTP = await this.otpRepository.findPreviousOne(phone, type);
-    if (!previousOTP) {
-      return false;
-    }
-    const timeToResend = new Date();
-    const elapsedTime =
-      timeToResend.getTime() - previousOTP.created_at.getTime();
-    const tenMinutes = 10 * 60;
-    return elapsedTime <= tenMinutes;
-  }
-
-  async verifyOtp(
-    phone: string,
-    code: string,
+  private async getOtpCode(
+    identifier: string,
+    identifierType: IdentifierType,
     type: OtpTypeEnum
   ): Promise<string> {
-    if (process.env.IS_OTP_ENABLED === 'false') {
-      return this.jwtService.sign(
-        { phone, verified: true, type },
-        { expiresIn: OTP_TTL[type] }
-      );
-    }
-    const otpEntity = await this.otpRepository.findOne(phone, code, type);
-    if (_.isEmpty(otpEntity)) {
-      throw new BadRequestException('Invalid code');
-    }
-    await this.otpRepository.verify(otpEntity.id);
-
-    return this.jwtService.sign(
-      { phone, verified: true, type },
-      { expiresIn: OTP_TTL[type] }
-    );
-  }
-
-  async verifyToken(token: string, type: OtpTypeEnum): Promise<boolean> {
-    try {
-      const payload: OtpJwtPayload = this.jwtService.verify(token);
-      if (payload.verified && payload.type == type) {
-        return true;
+    const otp = await this.generalOtpRepository.findFirst(identifier, identifierType, type)
+    if (otp) {
+      const expiredAt = addTime(otp.createdAt, OTP_TTL[type]);
+      const current = new Date();
+      const isExpired = current > expiredAt;
+      if (!isExpired) {
+        this.logger.debug(`${identifier}[${identifierType}] use the existing code: ${otp.code}`);
+        return otp.code;
       }
-    } catch (error) {
-      throw new BadRequestException('Invalid token');
     }
-    return false;
+    const code = this.generateNDigitOtp(OTP_DIGIT);
+    await this.generalOtpRepository.create({
+      identifier,
+      identifierType,
+      type,
+      code,
+    });
+    this.logger.debug(`${identifier}[${identifierType}] generate the new code: ${code}`);
+    return code;
   }
 
   private async sendOTP(
@@ -184,5 +164,67 @@ export class OtpService {
       };
       return {messageTemplate, payload};
     }
+  }
+
+  async verifyOtp(
+    phone: string,
+    code: string,
+    type: OtpTypeEnum
+  ): Promise<string> {
+    if (process.env.IS_OTP_ENABLED === 'false') {
+      return this.generateJWT(type, { phone, verified: true, type });
+    }
+    const otpEntity = await this.otpRepository.findOne(phone, code, type);
+    if (_.isEmpty(otpEntity)) {
+      throw new BadRequestException('Invalid code');
+    }
+    await this.otpRepository.verify(otpEntity.id);
+
+    return this.generateJWT(type, { phone, verified: true, type });
+  }
+
+  private generateJWT(type: OtpTypeEnum, payload: Buffer | object) {
+    return this.jwtService.sign(
+      payload,
+      { expiresIn: OTP_TTL[type] }
+    );
+  }
+
+  async verifyOtpV2(
+    code: string,
+    identifier: string,
+    identifierType: IdentifierType,
+    type: OtpTypeEnum
+  ): Promise<string> {
+    const payload = {
+      identifier,
+      identifierType,
+      verified: true,
+      type,
+    };
+    if (process.env.IS_OTP_ENABLED === 'false') {
+      return this.generateJWT(type, payload);
+    }
+
+    const otp =
+      await this.generalOtpRepository.findFirst(identifier, identifierType, type);
+    if (_.isEmpty(otp) || code !== otp.code) {
+      throw new BadRequestException('Invalid code');
+    }
+    // await this.generalOtpRepository.verify(otp.id);
+
+    return this.generateJWT(type, payload);
+  }
+
+  async verifyToken(token: string, type: OtpTypeEnum): Promise<boolean> {
+    try {
+      const payload: OtpJwtPayload = this.jwtService.verify(token);
+      if (payload.verified && payload.type == type) {
+        return true;
+      }
+    } catch (error) {
+      throw new BadRequestException('Invalid token');
+    }
+    return false;
   }
 }

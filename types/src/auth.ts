@@ -1,5 +1,4 @@
 import { UserSourceType, UserType } from './user';
-import { IdentifierType } from './otp-v2';
 
 export interface RegisterDto {
   phone: string;
@@ -30,13 +29,6 @@ export interface SendOtpDto {
   type: OtpTypeEnum;
   recaptchaToken?: string;
   resend?: boolean;
-}
-
-export interface StartOtpReqDto {
-  identifier: string;
-  identifierType: IdentifierType;
-  type: OtpTypeEnum;
-  recaptchaToken?: string;
 }
 
 export interface VerifyOtpDto {

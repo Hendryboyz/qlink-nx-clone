@@ -1,4 +1,4 @@
-import { Logger } from '@nestjs/common';
+import { Logger, VersioningType } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { join } from 'path';
@@ -13,6 +13,10 @@ async function bootstrap() {
   app.use((req, res, next) => {
     Logger.log(`${req.method} ${req.url}`, 'Global Middleware');
     next();
+  });
+
+  app.enableVersioning({
+    type: VersioningType.URI,
   });
 
   app.enableCors({

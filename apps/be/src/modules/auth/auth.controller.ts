@@ -9,15 +9,26 @@ import {
   Req,
   Res,
   UnauthorizedException,
-  UseGuards
+  UseGuards,
+  UsePipes,
+  ValidationPipe,
+  Version,
 } from '@nestjs/common';
-import { ACCESS_TOKEN, CODE_SUCCESS, HEADER_PRE_TOKEN, HEADER_USER_ID, INVALID, phoneRegex } from '@org/common';
+import {
+  ACCESS_TOKEN,
+  CODE_SUCCESS,
+  HEADER_PRE_TOKEN,
+  HEADER_USER_ID,
+  INVALID,
+  phoneRegex,
+} from '@org/common';
 import { AuthService } from './auth.service';
 import { CookieOptions, Response } from 'express';
 import {
   IdentifierType,
   LoginDto,
   OtpTypeEnum,
+  OtpVerificationRequestDto,
   RegisterDto,
   ResetPasswordDto,
   SendOtpDto,
@@ -32,7 +43,9 @@ import { UserService } from '$/modules/user/user.service';
 
 const oneMonth = 30 * 24 * 60 * 60 * 1000;
 let isProd = false;
-@Controller('auth')
+@Controller({
+  path: 'auth',
+})
 export class AuthController {
   private logger = new Logger(this.constructor.name);
   constructor(
@@ -149,8 +162,10 @@ export class AuthController {
     }
   }
 
+  @Version('2')
   @Post('otp')
-  async startOTP(@Body() body: StartOtpReqDto) {
+  @UsePipes(new ValidationPipe())
+  async startOTPV2(@Body() body: StartOtpReqDto) {
     const isHuman = await this.authService.verifyRecaptcha(body.recaptchaToken);
     if (!isHuman) {
       throw new UnauthorizedException('Fail to verify recaptcha token');
@@ -213,6 +228,13 @@ export class AuthController {
           message: 'Invalid code'
         }
       });
+  }
+
+  @Version('2')
+  @Post('otp/verification')
+  @UsePipes(new ValidationPipe())
+  async verifyOtpCodeV2(@Body() body: OtpVerificationRequestDto) {
+
   }
 
   @UseGuards(AuthGuard('jwt'))
