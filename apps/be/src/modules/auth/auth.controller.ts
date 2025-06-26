@@ -28,6 +28,7 @@ import { OtpService } from './otp.service';
 import { AuthGuard } from '@nestjs/passport';
 import { RequestWithUser } from '$/types';
 import process from 'node:process';
+import { UserService } from '$/modules/user/user.service';
 
 const oneMonth = 30 * 24 * 60 * 60 * 1000;
 let isProd = false;
@@ -36,6 +37,7 @@ export class AuthController {
   private logger = new Logger(this.constructor.name);
   constructor(
     private authService: AuthService,
+    private userService: UserService,
     private otpService: OtpService
   ) {
     isProd = process.env.NODE_ENV !== 'development';
@@ -155,7 +157,7 @@ export class AuthController {
     }
 
     const {type, identifier, identifierType} = body;
-    const errMessage = this.isAllowedSendOTP(type, identifier, identifierType);
+    const errMessage = await this.isAllowedSendOTP(type, identifier, identifierType);
     if (errMessage) {
       return {
         bizCode: INVALID,
@@ -182,20 +184,20 @@ export class AuthController {
 
   }
 
-  private isAllowedSendOTP(type: OtpTypeEnum, identifier: string, identifierType: IdentifierType) {
+  private async isAllowedSendOTP(type: OtpTypeEnum, identifier: string, identifierType: IdentifierType): Promise<string | null> {
     if (type === OtpTypeEnum.REGISTER) {
-      const isDuplicateSignup = this.authService.isExistingIdentifier(identifier, identifierType);
+      const isDuplicateSignup = await this.userService.isExistingIdentifier(identifier, identifierType);
       if (isDuplicateSignup) {
         return `invalid ${identifierType}: ${identifier}`;
       }
     } else {
       // reset password
-      const identifierNotFound = !this.authService.isExistingIdentifier(identifier, identifierType);
+      const identifierNotFound = !(await this.userService.isExistingIdentifier(identifier, identifierType));
       if (identifierNotFound) {
         return `${identifierType} not found: ${identifier}`;
       }
     }
-    return '';
+    return null;
   }
 
   @Post('otp/verify')

@@ -12,6 +12,8 @@ import * as _ from 'lodash';
 import { UserService } from '../user/user.service';
 import * as process from 'node:process';
 import { GeneralOtpRepository } from '$/modules/auth/general-otp.repository';
+import { NotificationService } from '$/notification/notification.service';
+import { MSG_TEMPLATE } from '$/notification/notification.types';
 
 const OTP_TTL: Record<OtpTypeEnum, string> = {
   [OtpTypeEnum.REGISTER]: '30m',
@@ -33,7 +35,8 @@ export class OtpService {
     private jwtService: JwtService,
     private readonly otpRepository: PhoneOtpRepository,
     private readonly generalOtpRepository: GeneralOtpRepository,
-    private readonly userService: UserService
+    private readonly userService: UserService,
+    private readonly notificationService: NotificationService
   ) {}
 
   async generateOtp(phone: string, type: OtpTypeEnum): Promise<string> {
@@ -43,14 +46,16 @@ export class OtpService {
     const code = this.generateNDigitOtp(OTP_DIGIT);
     await this.otpRepository.create({ phone, type, code });
 
-    this.sendOTP(phone, IdentifierType.PHONE, code);
+    await this.sendOTP(type, phone, IdentifierType.PHONE, code);
     return code;
   }
 
   private generateNDigitOtp(digit: number): string {
-    const a = 10 ** (digit - 1);
-    const b = 10 ** digit - a;
-    return Math.floor(a + Math.random() * b).toString();
+    const firstDigitPadding = 10 ** (digit - 1);
+    const nDigitExtract = 10 ** digit - firstDigitPadding;
+    return Math.floor(
+      firstDigitPadding + Math.random() * nDigitExtract
+    ).toString();
   }
 
   async generateOtpV2(
@@ -67,7 +72,7 @@ export class OtpService {
       code,
     });
 
-    this.sendOTP(identifier, IdentifierType.PHONE, code);
+    await this.sendOTP(type, identifier, IdentifierType.EMAIL, code);
     return code;
   }
 
@@ -144,7 +149,40 @@ export class OtpService {
     return false;
   }
 
-  private sendOTP(identifier: string, identifierType: IdentifierType, code: string) {
+  private async sendOTP(
+    type: OtpTypeEnum,
+    identifier: string,
+    identifierType: IdentifierType,
+    code: string,
+  ) {
     this.logger.log(`Send OTP(${code}) to ${identifierType}: ${identifier}`);
+    const {messageTemplate, payload} = this.checkMailContent(type, identifier, code);
+    if (identifierType === IdentifierType.EMAIL) {
+      await this.notificationService.sendMail(identifier, messageTemplate, payload);
+    } else {
+      this.notificationService.sendSMS(identifier, messageTemplate);
+    }
+  }
+
+  private checkMailContent(
+    type: OtpTypeEnum,
+    identifier: string,
+    code: string,
+  ) {
+    if (type === OtpTypeEnum.REGISTER) {
+      const messageTemplate = MSG_TEMPLATE.SIGNUP_OTP;
+      const payload = {
+        receiver: identifier,
+        code,
+      }
+      return {messageTemplate, payload};
+    } else if (type === OtpTypeEnum.RESET_PASSWORD) {
+      const messageTemplate = MSG_TEMPLATE.RESET_PASSWORD_OTP;
+      const payload = {
+        username: identifier,
+        code,
+      };
+      return {messageTemplate, payload};
+    }
   }
 }

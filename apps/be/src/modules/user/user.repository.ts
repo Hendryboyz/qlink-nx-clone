@@ -4,7 +4,7 @@ import {
   Injectable,
   Logger,
 } from '@nestjs/common';
-import { Pool, QueryResult } from 'pg';
+import { Pool } from 'pg';
 import { IdentifierType, UserDto, UserEntity, UserUpdateDto } from '@org/types';
 import { KNEX_CONNECTION } from '$/database.module';
 import { Knex } from 'knex';
@@ -31,7 +31,7 @@ export class UserRepository {
     return this.findByFilter('id', id);
   }
 
-  async findByFilter(filterField: string, val: any): Promise<UserEntity | null> {
+  private async findByFilter(filterField: string, val: any): Promise<UserEntity | null> {
     const query = {
       text: `SELECT * FROM users WHERE ${filterField} = $1 AND is_delete = false LIMIT 1`,
       values: [val],
@@ -47,18 +47,8 @@ export class UserRepository {
   }
 
 
-  async isEmailExist(email: string): Promise<boolean | null> {
-    const query =
-      'SELECT COUNT(*) FROM users WHERE email = $1 AND is_delete = false';
-    const values = [email];
-
-    try {
-      const { rows } = await this.pool.query(query, values);
-      return rows[0]['count'] > 0;
-    } catch (error) {
-      console.error('Error count user by email:', error);
-      throw error;
-    }
+  async isEmailExist(email: string): Promise<boolean> {
+    return this.isIdentifierExist(email, IdentifierType.EMAIL);
   }
 
   async create(userDto: UserDto): Promise<UserEntity> {
@@ -123,5 +113,20 @@ export class UserRepository {
 
   public delete(id: string): Promise<number> {
     return this.knex('users').where({ id }).delete();
+  }
+
+  async isIdentifierExist(identifier: string, identifierType: IdentifierType): Promise<boolean> {
+    const filterField = identifierType.toString().toLowerCase();
+    const query =
+      `SELECT COUNT(*) FROM users WHERE ${filterField} = $1 AND is_delete = false`;
+    const values = [identifier];
+
+    try {
+      const { rows } = await this.pool.query(query, values);
+      return rows[0]['count'] > 0;
+    } catch (error) {
+      this.logger.error(`Error count user by ${filterField}:`, error);
+      throw error;
+    }
   }
 }

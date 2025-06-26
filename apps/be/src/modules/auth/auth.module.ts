@@ -9,6 +9,7 @@ import { JwtStrategy } from './jwt.strategy';
 import { OtpService } from './otp.service';
 import { PhoneOtpRepository } from './phone-otp.repository';
 import { GeneralOtpRepository } from '$/modules/auth/general-otp.repository';
+import { NotificationModule } from '$/notification/notification.module';
 
 @Module({
   imports: [
@@ -22,6 +23,7 @@ import { GeneralOtpRepository } from '$/modules/auth/general-otp.repository';
       }),
       inject: [ConfigService],
     }),
+    NotificationModule,
   ],
   providers: [
     AuthService,

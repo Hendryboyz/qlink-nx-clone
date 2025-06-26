@@ -44,6 +44,7 @@ export interface VerifyOtpDto {
   code: string;
   type: OtpTypeEnum;
 }
+
 export interface ResetPasswordDto {
   password: string;
   rePassword: string;

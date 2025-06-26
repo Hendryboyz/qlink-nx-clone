@@ -16,7 +16,7 @@ export class UserService {
       return await this.userRepository.findByPhone(phone)
   }
 
-  async findOneWithType(identifier: string, type: IdentifierType): Promise<UserEntity> {
+  async findOneWithType(identifier: string, type: IdentifierType): Promise<UserEntity | null> {
     return await this.userRepository.findWithType(identifier, type)
   }
 
@@ -30,10 +30,6 @@ export class UserService {
       ...omit(user, ['isDelete', 'createdAt', 'updatedAt', 'password', ...additionOmitFields]),
     }
   }
-
-  // async findById(id: string): Promise<User | undefined> {
-  //   return this.userRepository.findOne({ where: { id } });
-  // }
 
   async isEmailExist(email: string): Promise<boolean> {
     return await this.userRepository.isEmailExist(email);
@@ -53,19 +49,6 @@ export class UserService {
       ]),
     };
   }
-
-//   async setOtp(userId: number, otp: string): Promise<void> {
-//     await this.userRepository.update(userId, { otp });
-//   }
-
-//   async verifyOtp(userId: number, otp: string): Promise<boolean> {
-//     const user = await this.findById(userId);
-//     if (user && user.otp === otp) {
-//       await this.userRepository.update(userId, { isVerified: true, otp: null });
-//       return true;
-//     }
-//     return false;
-//   }
 
   async updatePassword(userId: string, password: string): Promise<UserVO> {
     const userEntity = await this.userRepository.update(userId, { password });
@@ -100,5 +83,9 @@ export class UserService {
 
   public delete(id: string): Promise<number> {
     return this.userRepository.delete(id);
+  }
+
+  public isExistingIdentifier(identifier: string, identifierType: IdentifierType): Promise<boolean> {
+    return this.userRepository.isIdentifierExist(identifier, identifierType);
   }
 }

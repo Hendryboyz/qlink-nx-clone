@@ -12,6 +12,7 @@ export class GeneralOtpRepository {
   ) {}
 
   async create(dto: CreateGeneralOtpDto) {
-
+    await this.knex('general_otp').insert(dto);
+    return true;
   }
 }
