@@ -6,7 +6,7 @@ type ResetPasswordOtpPayload = {
 }
 
 export class ResetPasswordOtpStrategy implements GenerateMessagesStrategy {
-  constructor(payload: ResetPasswordOtpPayload) {
+  constructor(private readonly payload: ResetPasswordOtpPayload) {
   }
 
   generateSubject(): string {
@@ -14,6 +14,7 @@ export class ResetPasswordOtpStrategy implements GenerateMessagesStrategy {
   }
 
   generateContent(): string {
-    throw new Error('Method not implemented.');
+    const {username, code} = this.payload;
+    return `Hello ${username}, this is your OTP code: ${code}`;
   }
 }
