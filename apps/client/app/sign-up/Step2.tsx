@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import Container from './Container';
 import API from '$/utils/fetch';
-import { OtpTypeEnum } from 'types/src';
+import { IdentifierType, OtpTypeEnum } from 'types/src';
 import { usePayload } from './PayloadContext';
 import { CODE_SUCCESS, DEFAULT_ERROR_MSG } from 'common/src';
 import SubmitButton from '$/components/Button/SubmitButton';
@@ -20,7 +20,7 @@ const Step2 = (props: Props) => {
   const [isActive, setIsActive] = useState(true);
   const [isLoading, setLoading] = useState<boolean>(false);
   const [isSending, setSending] = useState<boolean>(false);
-  const { phone, setToken } = usePayload();
+  const { email, setToken } = usePayload();
   const { showPopup } = usePopup()
 
   useEffect(() => {
@@ -47,8 +47,9 @@ const Step2 = (props: Props) => {
   }, []);
 
   const handleResendOTP = useCallback(() => {
-    API.post('/auth/otp/send', {
-      phone,
+    API.post('/v2/auth/otp', {
+      identifier: email || 'None',
+      identifierType: IdentifierType.EMAIL,
       type: OtpTypeEnum.REGISTER,
       resend: true,
     })
@@ -61,7 +62,7 @@ const Step2 = (props: Props) => {
         }
       })
       .finally(() => setSending(false));
-  }, [phone, showPopup]);
+  }, [email, showPopup]);
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement>,
@@ -81,8 +82,9 @@ const Step2 = (props: Props) => {
 
   const handleSubmit = () => {
     setLoading(true);
-    API.post('/auth/otp/verify', {
-      phone,
+    API.post('/v2/auth/otp/verification', {
+      identifier: email || 'None',
+      identifierType: IdentifierType.EMAIL,
       code: otp.join(''),
       type: OtpTypeEnum.REGISTER,
     })

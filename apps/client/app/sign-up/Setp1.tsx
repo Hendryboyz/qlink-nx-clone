@@ -1,17 +1,17 @@
 import { Fragment } from 'react';
 import Container from './Container';
-import { Formik, FormikErrors, Field, ErrorMessage, Form } from 'formik';
+import { Formik, FormikErrors, ErrorMessage, Form } from 'formik';
 import Link from 'next/link';
 import API from '$/utils/fetch';
-import { OtpTypeEnum } from 'types/src';
-import { clientPhoneRegex, CODE_SUCCESS } from 'common/src';
+import { IdentifierType, OtpTypeEnum } from 'types/src';
+import { CODE_SUCCESS, emailRegex } from 'common/src';
 import { usePayload } from './PayloadContext';
 import SubmitButton from '$/components/Button/SubmitButton';
 import Recaptcha from '$/components/Fields/Recaptcha';
 import InputField from '$/components/Fields/InputField';
 
 interface FormData {
-  phone: string;
+  email: string;
   recaptchaToken: string;
 }
 type Props = {
@@ -19,23 +19,23 @@ type Props = {
 };
 
 const Step1 = (props: Props) => {
-  const { setPhone } = usePayload()
-  const initValue: FormData = { phone: '', recaptchaToken: '' };
+  const { setEmail } = usePayload()
+  const initValue: FormData = { email: '', recaptchaToken: '' };
   return (
     <Container title="Create an account" step={1}>
       <Formik
         initialValues={initValue}
         validate={(values) => {
           const errors: FormikErrors<FormData> = {};
-          if (!values.phone) {
-            errors.phone = 'Required';
-          } else if (!clientPhoneRegex.test(values.phone)) {
-            errors.phone = 'Invalid phone number';
+          if (!values.email) {
+            errors.email = 'Required';
+          } else if (!emailRegex.test(values.email)) {
+            errors.email = 'Invalid phone number';
           }
           return errors;
         }}
         onSubmit={(values, { setSubmitting, setFieldError }) => {
-          const phone = String(values.phone);
+          const email = String(values.email);
           const recaptchaToken = String(values.recaptchaToken);
           if (!recaptchaToken) {
             setSubmitting(false);
@@ -43,17 +43,18 @@ const Step1 = (props: Props) => {
             return;
           }
           setSubmitting(true);
-          API.post('/auth/otp/send', {
-            phone,
+          API.post('/v2/auth/otp', {
+            identifier: email,
+            identifierType: IdentifierType.EMAIL,
             recaptchaToken,
             type: OtpTypeEnum.REGISTER,
           })
             .then((res) => {
               if (res.bizCode == CODE_SUCCESS) {
-                setPhone(phone);
+                setEmail(email);
                 props.onSuccess();
               } else {
-                setFieldError('phone', res.message);
+                setFieldError('email', res.message);
               }
             })
             .finally(() => setSubmitting(false));
@@ -79,13 +80,13 @@ const Step1 = (props: Props) => {
                 <div className="mt-9">
                   <InputField
                     type="tel"
-                    name="phone"
-                    placeholder="Mobile Number"
-                    headIconSource="assets/phone2.svg"
+                    name="email"
+                    placeholder="Email"
+                    headIconSource="assets/mail.svg"
                     customClassName="border-[#FFCFA3]"
                   />
                   <ErrorMessage
-                    name="phone"
+                    name="email"
                     className="text-red-500 absolute"
                     component="span"
                   />

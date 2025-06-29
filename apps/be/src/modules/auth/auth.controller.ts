@@ -249,7 +249,7 @@ export class AuthController {
   @Post('verify')
   async verifyToken(@Req() req: RequestWithUser, @Res({ passthrough: true }) res: Response) {
     const { userId, phone } = req.user
-    const token = this.authService.refreshToken(userId, phone)
+    const token = this.authService.refreshToken(userId, phone);
     this.setToken(res, token, userId, true)
     return true;
   }

@@ -1,12 +1,11 @@
 import React, { useState } from 'react';
 import Container from './Container';
 import API from '$/utils/fetch';
-import { OtpTypeEnum, VerifyOtpDto } from 'types/src';
+import { IdentifierType, OtpTypeEnum, OtpVerificationRequestDto } from 'types/src';
 import { usePayload } from './PayloadContext';
-import { CODE_SUCCESS } from 'common/src';
+import { CODE_SUCCESS, DEFAULT_ERROR_MSG } from 'common/src';
 import SubmitButton from '$/components/Button/SubmitButton';
 import { usePopup } from '$/hooks/PopupProvider';
-import { DEFAULT_ERROR_MSG } from 'common/src';
 
 type Props = {
   onSuccess: () => void;
@@ -15,7 +14,7 @@ type Props = {
 const Step2 = (props: Props) => {
   const [otp, setOtp] = useState<string[]>(new Array(4).fill(''));
   const [isLoading, setLoading] = useState<boolean>(false);
-  const { phone, setToken } = usePayload();
+  const { email, setToken } = usePayload();
   const { showPopup } = usePopup();
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement>,
@@ -36,13 +35,14 @@ const Step2 = (props: Props) => {
   // TODO: handle resend OTP
 
   const handleSubmit = () => {
-    const payload: VerifyOtpDto = {
-      phone: phone || 'None',
+    const payload: OtpVerificationRequestDto = {
+      identifier: email || 'None',
+      identifierType: IdentifierType.EMAIL,
       code: otp.join(''),
       type: OtpTypeEnum.RESET_PASSWORD,
     };
     setLoading(true);
-    API.post('/auth/otp/verify', payload)
+    API.post('/v2/auth/otp/verification', payload)
       .then((res) => {
         if (res.bizCode == CODE_SUCCESS) {
           setToken(res.data);

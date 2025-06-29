@@ -1,6 +1,7 @@
 import {
   BadRequestException,
-  Injectable, Logger,
+  Injectable,
+  Logger, NotFoundException,
   UnauthorizedException
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
@@ -13,7 +14,7 @@ import {
   User,
   UserSourceType,
   UserType,
-  UserVO
+  UserVO,
 } from '@org/types';
 
 import * as bcrypt from 'bcrypt';
@@ -21,11 +22,11 @@ import { isNull, omit } from 'lodash';
 import axios from 'axios';
 import { OtpJwtPayload } from './otp.service';
 import {
-  CODE_SUCCESS,
-  INVALID_PAYLOAD,
   alphaMax50Regex,
   birthdayRegex,
+  CODE_SUCCESS,
   emailRegex,
+  INVALID_PAYLOAD,
   passwordRegex,
   phoneRegex,
 } from '@org/common';
@@ -52,7 +53,7 @@ export class AuthService {
     }
 
     return {
-      access_token: this.signToken(phone, user.id),
+      access_token: this.signToken(phone, IdentifierType.PHONE, user.id),
       user_id: user.id,
     };
   }
@@ -62,14 +63,14 @@ export class AuthService {
     token: string
   ): Promise<AuthSuccessBO & { user: UserVO }> {
     // 1. verify token
-    const { type, verified, phone }: OtpJwtPayload =
-      this.jwtService.verify(token);
+    const verifiedPayload: OtpJwtPayload = this.jwtService.verify(token);
+    this.logger.debug(verifiedPayload);
     if (
-      type != OtpTypeEnum.REGISTER ||
-      verified != true ||
-      phone != payload.phone
-    )
-      throw new UnauthorizedException();
+      verifiedPayload.type !== OtpTypeEnum.REGISTER ||
+      ! this.isValidEmailIdentifier(verifiedPayload, payload.email)
+    ) {
+      throw new BadRequestException(`${verifiedPayload.identifier} is not matched.`);
+    }
 
     this.validateRegisterPayload(payload);
 
@@ -81,10 +82,18 @@ export class AuthService {
     const userVO = await this.userService.create(payload, hashedPassword);
     // 在實際應用中,您需要發送OTP給用戶(例如通過電子郵件或短信)
     return {
-      access_token: this.signToken(userVO.phone, userVO.id),
+      access_token: this.signToken(userVO.email, verifiedPayload.identifierType, userVO.id),
       user_id: userVO.id,
       user: userVO,
     };
+  }
+
+  private isValidEmailIdentifier = (jwtPayload: OtpJwtPayload, email: string) => {
+    const { verified, identifier, identifierType } = jwtPayload;
+    return verified === true
+      && identifier === email
+      && identifierType === IdentifierType.EMAIL
+      && emailRegex.test(identifier);
   }
 
   private generateBadRequest =
@@ -97,28 +106,35 @@ export class AuthService {
   }
 
   refreshToken(userId: string, phone: string) {
-    return this.signToken(phone, userId)
+    return this.signToken(phone, IdentifierType.PHONE, userId)
   }
 
   async resetPassword(payload: ResetPasswordDto, token: string) {
-    const { type, verified, phone }: OtpJwtPayload =
-      this.jwtService.verify(token);
+    const verifiedPayload: OtpJwtPayload = this.jwtService.verify(token);
 
     if (
-      type != OtpTypeEnum.RESET_PASSWORD ||
-      verified != true ||
-      !phoneRegex.test(phone)
+      verifiedPayload.type !== OtpTypeEnum.RESET_PASSWORD
+      || !this.isValidEmailIdentifier(verifiedPayload, verifiedPayload.identifier)
     )
       throw new UnauthorizedException();
 
     const { password, rePassword: re_password } = payload;
     if (password != re_password || !passwordRegex.test(password)) {
-      return { bizCode: INVALID_PAYLOAD, data: { error: { type: 'password', message: 'Invalid Password'} }}
+      return {
+        bizCode: INVALID_PAYLOAD,
+        data: {
+          error: {
+            type: 'password',
+            message: 'Invalid Password',
+          },
+        },
+      };
     }
 
     const hashedPassword = await this.hashedPassword(payload.password);
-    const userEntity = await this.userService.findOne(phone);
-    if (isNull(userEntity)) throw new BadRequestException('Not found user');
+    const {identifier, identifierType} = verifiedPayload;
+    const userEntity = await this.userService.findOneWithType(identifier, identifierType);
+    if (isNull(userEntity)) throw new NotFoundException('Not found user');
     await this.userService.updatePassword(userEntity.id, hashedPassword);
     return {
       bizCode: CODE_SUCCESS,
@@ -210,8 +226,9 @@ export class AuthService {
     // whatsapp
     // facebook
   }
-  private signToken(phone: string, id: string): string {
-    const payload = { phone: phone, sub: id };
+
+  private signToken(identifier: string, identifierType: IdentifierType, id: string): string {
+    const payload = { sub: id, identifier, identifierType };
     return this.jwtService.sign(payload);
   }
   private async hashedPassword(password: string): Promise<string> {

@@ -2,6 +2,7 @@ import { UserSourceType, UserType } from './user';
 
 export interface RegisterDto {
   phone: string;
+  email: string;
   type: UserType;
   password: string;
   rePassword: string;
@@ -13,7 +14,6 @@ export interface RegisterDto {
   addressDetail?: string;
   birthday?: string;
   source?: UserSourceType;
-  email?: string;
   whatsapp?: string;
   facebook?: string;
 }

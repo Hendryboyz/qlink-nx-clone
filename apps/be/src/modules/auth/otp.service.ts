@@ -17,7 +17,8 @@ import { MSG_TEMPLATE } from '$/notification/notification.types';
 import { addTime, OTP_TTL } from '$/modules/auth/utils';
 
 export type OtpJwtPayload = {
-  phone: string;
+  identifier: string;
+  identifierType: IdentifierType;
   verified: boolean;
   type: OtpTypeEnum
 }

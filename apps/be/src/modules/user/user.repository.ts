@@ -24,14 +24,14 @@ export class UserRepository {
 
   async findWithType(identifier: string, type: IdentifierType): Promise<UserEntity | null> {
     const filterField = type.toString().toLowerCase();
-    return this.findByFilter(filterField, identifier);
+    return this.findOneByFilter(filterField, identifier);
   }
 
   async findById(id: string): Promise<UserEntity | null> {
-    return this.findByFilter('id', id);
+    return this.findOneByFilter('id', id);
   }
 
-  private async findByFilter(filterField: string, val: any): Promise<UserEntity | null> {
+  private async findOneByFilter(filterField: string, val: any): Promise<UserEntity | null> {
     const query = {
       text: `SELECT * FROM users WHERE ${filterField} = $1 AND is_delete = false LIMIT 1`,
       values: [val],

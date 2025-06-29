@@ -1,4 +1,4 @@
-import React, { Fragment, ReactNode, useState } from 'react';
+import React, { Fragment, useState } from 'react';
 import Container from './Container';
 import { Formik, Field, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
@@ -6,14 +6,12 @@ import API from '$/utils/fetch';
 import { RegisterDto, UserSourceType, UserType } from 'types/src';
 import { usePayload } from './PayloadContext';
 import {
-  alphaWithSpacesMax50Regex,
+  alphaWithSpacesMax50Regex, clientPhoneRegex,
   CODE_SUCCESS,
-  fromDate,
+  fromDate, GENDER,
   HEADER_PRE_TOKEN,
   passwordRegex,
   STATES,
-  typedObjectEntries,
-  UserSourceDisplay
 } from '@org/common';
 import SubmitButton from '$/components/Button/SubmitButton';
 import { DayPicker } from 'react-day-picker';
@@ -35,12 +33,6 @@ const SignupSchema = Yup.object().shape({
     .max(50, 'At most 50 characters long.')
     .required('Required.'),
 
-  addressState: Yup.string().required('Required.'),
-
-  addressCity: Yup.string()
-    .matches(alphaWithSpacesMax50Regex, 'Only allow letter(a-z, A-Z and space)')
-    .required('Required.'),
-
   password: Yup.string()
     .min(6, 'Must be at least 6 characters long.')
     .matches(
@@ -57,11 +49,19 @@ const SignupSchema = Yup.object().shape({
     .matches(/^\d{4}-\d{2}-\d{2}$/, 'Must be in YYYY-MM-DD format.')
     .nullable(),
 
-  source: Yup.number().nullable(),
+  // source: Yup.number().nullable(),
 
-  email: Yup.string()
-    .email('Enter a valid email.')
-    .nullable(),
+  gender: Yup.string().required('Required.'),
+
+  phone: Yup.string()
+    .matches(clientPhoneRegex, 'Invalid phone format')
+    .required('Phone is required.'),
+
+  addressCity: Yup.string()
+    .matches(alphaWithSpacesMax50Regex, 'Only allow letter(a-z, A-Z and space)')
+    .required('Required.'),
+
+  addressState: Yup.string().required('Required.'),
 
   whatsapp: Yup.string().nullable(),
 
@@ -71,6 +71,7 @@ const SignupSchema = Yup.object().shape({
 });
 
 interface FormData {
+  phone: string;
   password: string;
   rePassword: string;
   firstName: string;
@@ -79,25 +80,26 @@ interface FormData {
   addressState: string;
   addressCity: string;
   birthday: string;
-  source: number;
-  email: string;
+  gender: string;
+  // source: number;
   whatsapp: string;
   facebook: string;
   addressDetail: string;
 }
 
 const defaultValue: FormData = {
+  phone: '',
   password: '',
   rePassword: '',
   firstName: '',
   midName: '',
   lastName: '',
-  email: '',
   addressState: '',
   addressCity: '',
   addressDetail: '',
   birthday: '',
-  source: 0,
+  gender: '',
+  // source: 0,
   whatsapp: '',
   facebook: '',
 };
@@ -114,13 +116,13 @@ type Props = {
 const Step3 = (props: Props) => {
   const initValue: FormData = defaultValue;
   const [showDatePicker, toggleDatePicker] = useState(false);
-  const {phone, token} = usePayload();
+  const {email, token} = usePayload();
   const {showPopup} = usePopup();
-  const sourceOptions = typedObjectEntries(UserSourceType)
-    .filter(([k, v]) => {
-      return isNaN(Number(k)) && v !== UserSourceType.NONE
-    })
-    .map(([_, v]) => ({value: v, label: UserSourceDisplay[v]}))
+  // const sourceOptions = typedObjectEntries(UserSourceType)
+  //   .filter(([k, v]) => {
+  //     return isNaN(Number(k)) && v !== UserSourceType.NONE
+  //   })
+  //   .map(([_, v]) => ({value: v, label: UserSourceDisplay[v]}))
 
   return (
     <Container title="Account detail" step={3}>
@@ -129,7 +131,7 @@ const Step3 = (props: Props) => {
         validationSchema={SignupSchema}
         onSubmit={(values, { setSubmitting, setFieldError }) => {
           const payload: RegisterDto = {
-            phone: phone || 'None',
+            email: email || 'None',
             type: UserType.CLIENT,
             password: values.password,
             rePassword: values.rePassword,
@@ -140,8 +142,8 @@ const Step3 = (props: Props) => {
             addressCity: values.addressCity,
             addressDetail: values.addressDetail,
             birthday: values.birthday,
-            source: Number(values.source),
-            email: values.email,
+            phone: values.phone,
+            // source: Number(values.source),
             whatsapp: values.whatsapp,
             facebook: values.facebook,
           };
@@ -180,9 +182,9 @@ const Step3 = (props: Props) => {
             <div className="flex-1 overflow-auto -mt-6 -mx-3">
               <form onSubmit={handleSubmit} className="h-full overflow-auto">
                 <div className="ml-2 mr-4">
-                  <label id="phone">
+                  <label id="email">
                     <div className={`${DEFAULT_INPUT_STYLES} mb-7 h-12`}>
-                      <p className="text-gray-300 content-center h-full">{phone || "12345678"}</p>
+                      <p className="text-gray-300 content-center h-full">{email || "user@example.com"}</p>
                     </div>
                   </label>
                   <div>
@@ -250,33 +252,6 @@ const Step3 = (props: Props) => {
                       </ErrorMessage>
                     </div>
                   </div>
-                  <DropdownField
-                    label="addressState"
-                    id="addressState"
-                    name="addressState"
-                    placeholder="State"
-                    className={DEFAULT_INPUT_STYLES}
-                    options={STATES.map((value) => ({ value }))}
-                  >
-                    <ErrorMessage
-                      name="addressState"
-                      className={DEFAULT_ERROR_MSG_CLASS}
-                      component="span"
-                    />
-                  </DropdownField>
-                  <div>
-                    <InputField
-                      type="text"
-                      name="addressCity"
-                      placeholder="City"
-                      customClassName="border-[#FFCFA3]"
-                    />
-                    <div className="min-h-7">
-                      <ErrorMessage name="addressCity">
-                        {(msg) => <span className="text-red-500">{msg}</span>}
-                      </ErrorMessage>
-                    </div>
-                  </div>
                   <label htmlFor="birthday">
                     <Field
                       type="date"
@@ -312,32 +287,72 @@ const Step3 = (props: Props) => {
                     </div>
                   </label>
                   <DropdownField
-                    label="source"
-                    id="source"
-                    name="source"
-                    placeholder="Source"
+                    label="gender"
+                    id="gender"
+                    name="gender"
+                    placeholder="Gender"
                     className={DEFAULT_INPUT_STYLES}
-                    options={sourceOptions}
+                    options={GENDER.map((value) => ({ value: value }))}
                   >
                     <ErrorMessage
-                      name="source"
+                      name="gender"
                       className={DEFAULT_ERROR_MSG_CLASS}
                       component="span"
                     />
                   </DropdownField>
                   <div>
                     <InputField
-                      type="email"
-                      name="email"
-                      placeholder="Email"
+                      name="phone"
+                      placeholder="Mobile"
                       customClassName="border-[#FFCFA3]"
                     />
                     <div className="min-h-7">
-                      <ErrorMessage name="email">
+                      <ErrorMessage name="phone">
                         {(msg) => <span className="text-red-500">{msg}</span>}
                       </ErrorMessage>
                     </div>
                   </div>
+                  {/*<DropdownField*/}
+                  {/*  label="source"*/}
+                  {/*  id="source"*/}
+                  {/*  name="source"*/}
+                  {/*  placeholder="Source"*/}
+                  {/*  className={DEFAULT_INPUT_STYLES}*/}
+                  {/*  options={sourceOptions}*/}
+                  {/*>*/}
+                  {/*  <ErrorMessage*/}
+                  {/*    name="source"*/}
+                  {/*    className={DEFAULT_ERROR_MSG_CLASS}*/}
+                  {/*    component="span"*/}
+                  {/*  />*/}
+                  {/*</DropdownField>*/}
+                  <div>
+                    <InputField
+                      type="text"
+                      name="addressCity"
+                      placeholder="City"
+                      customClassName="border-[#FFCFA3]"
+                    />
+                    <div className="min-h-7">
+                      <ErrorMessage name="addressCity">
+                        {(msg) => <span className="text-red-500">{msg}</span>}
+                      </ErrorMessage>
+                    </div>
+                  </div>
+                  <DropdownField
+                    label="addressState"
+                    id="addressState"
+                    name="addressState"
+                    placeholder="State"
+                    className={DEFAULT_INPUT_STYLES}
+                    options={STATES.map((value) => ({ value }))}
+                  >
+                    <ErrorMessage
+                      name="addressState"
+                      className={DEFAULT_ERROR_MSG_CLASS}
+                      component="span"
+                    />
+                  </DropdownField>
                   <div>
                     <InputField
                       name="whatsapp"

@@ -1,6 +1,6 @@
 'use client';
 
-import React, { Fragment, useState } from 'react';
+import React, { Fragment } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { Formik, FormikErrors, Field, ErrorMessage } from 'formik';
@@ -11,18 +11,17 @@ import SubmitButton from '$/components/Button/SubmitButton';
 import { NOOP } from '$/utils';
 import { usePopup } from '$/hooks/PopupProvider';
 import { Cross2Icon } from '@radix-ui/react-icons';
-import { phoneRegex } from '@org/common';
+import { emailRegex } from '@org/common';
 import InputField from '$/components/Fields/InputField';
 
 interface FormData {
-  phone: string;
+  email: string;
   password: string;
   rememberMe: boolean;
 }
 
 export default function SignIn() {
-  const initValue: FormData = { phone: '', password: '', rememberMe: false };
-  const [showPassword, setShowPassword] = useState(false);
+  const initValue: FormData = { email: '', password: '', rememberMe: false };
   const router = useRouter();
   const { showPopup } = usePopup();
 
@@ -46,18 +45,18 @@ export default function SignIn() {
           initialValues={initValue}
           validate={(values) => {
             const errors: FormikErrors<FormData> = {};
-            console.log(values.phone);
-            if (!values.phone) {
-              errors.phone = 'Required';
-            } else if (!phoneRegex.test(values.phone)) {
-              errors.phone = 'Invalid phone number';
+            console.log(values.email);
+            if (!values.email) {
+              errors.email = 'Required';
+            } else if (!emailRegex.test(values.email)) {
+              errors.email = 'Invalid email format';
             }
             return errors;
           }}
           onSubmit={(values, { setSubmitting }) => {
             setSubmitting(true);
             API.post('auth/login', {
-              phone: String(values.phone),
+              phone: String(values.email),
               password: values.password,
               remember_me: values.rememberMe,
             })
@@ -65,7 +64,7 @@ export default function SignIn() {
                 router.push('/');
               })
               .catch((err) => {
-                console.log(err);
+                console.error(err);
                 showPopup({ title: 'Incorrect Credentials' });
               })
               .finally(() => setSubmitting(false));
@@ -87,8 +86,8 @@ export default function SignIn() {
                 <div>
                   <InputField
                     type="text"
-                    name="phone"
-                    placeholder="Mobile Number"
+                    name="email"
+                    placeholder="Email"
                     headIconSource="assets/user2.svg"
                     autoComplete={true}
                     customClassName="border-white"
