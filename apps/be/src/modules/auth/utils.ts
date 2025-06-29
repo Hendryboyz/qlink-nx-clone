@@ -5,6 +5,8 @@ export const OTP_TTL: Record<OtpTypeEnum, string> = {
   [OtpTypeEnum.RESET_PASSWORD]: '8m',
 };
 
+export const RESEND_OTP_TIME_SPAN: string = '10m';
+
 export const addTime = (date: Date, addend: string): Date => {
   const match = addend.match(/^(\d+)([smhd])$/);
   if (!match) throw new Error('Invalid time format');

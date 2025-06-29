@@ -19,7 +19,7 @@ export class GeneralOtpRepository {
   async findFirst(
     identifier: string,
     identifierType: IdentifierType,
-    type: OtpTypeEnum,
+    type: OtpTypeEnum
   ): Promise<GeneralOtpEntity | null> {
     const query = {
       text: `SELECT * FROM general_otp WHERE identifier = $1 AND identifier_type = $2 AND type = $3 AND is_verified = false ORDER BY created_at DESC LIMIT 1`,
@@ -42,5 +42,18 @@ export class GeneralOtpRepository {
       .update({ is_verified: true });
 
     return effected > 0;
+  }
+
+  async findWithCode(
+    identifier: string,
+    identifierType: IdentifierType,
+    code: string,
+    type: OtpTypeEnum
+  ): Promise<GeneralOtpEntity | null> {
+    const query = {
+      text: `SELECT * FROM general_otp WHERE identifier = $1 AND identifier_type = $2 AND code = $3 AND type = $4 AND is_verified = false ORDER BY created_at DESC LIMIT 1`,
+      values: [identifier, identifierType.toString(), code, type],
+    };
+    return await this.queryOTP(query);
   }
 }

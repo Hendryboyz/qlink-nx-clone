@@ -17,12 +17,15 @@ export enum IdentifierType {
   EMAIL = 'email',
 }
 
-export interface StartOtpReqDto {
+export interface OtpReqDto {
   identifier: string;
   identifierType: IdentifierType;
   type: OtpTypeEnum;
-  recaptchaToken?: string;
 }
+
+export type StartOtpReqDto = OtpReqDto & { recaptchaToken?: string };
+
+export type ResendOtpReqDto = OtpReqDto;
 
 export class GeneralOtpDto {
   @IsNotEmpty()

@@ -14,7 +14,7 @@ import * as process from 'node:process';
 import { GeneralOtpRepository } from '$/modules/auth/general-otp.repository';
 import { NotificationService } from '$/notification/notification.service';
 import { MSG_TEMPLATE } from '$/notification/notification.types';
-import { addTime, OTP_TTL } from '$/modules/auth/utils';
+import { addTime, OTP_TTL, RESEND_OTP_TIME_SPAN } from '$/modules/auth/utils';
 
 export type OtpJwtPayload = {
   identifier: string;
@@ -62,11 +62,23 @@ export class OtpService {
     if (!previousOTP) {
       return false;
     }
+
+    const expiredAt = addTime(previousOTP.created_at, RESEND_OTP_TIME_SPAN);
     const timeToResend = new Date();
-    const elapsedTime =
-      timeToResend.getTime() - previousOTP.created_at.getTime();
-    const tenMinutes = 10 * 60;
-    return elapsedTime <= tenMinutes;
+    return timeToResend <= expiredAt;
+  }
+
+  async allowResendV2(identifier: string, identifierType: IdentifierType, type: OtpTypeEnum): Promise<boolean> {
+    if (process.env.IS_OTP_ENABLED === 'false') return true;
+
+    const previousOTP = await this.generalOtpRepository.findFirst(identifier, identifierType, type);
+    if (!previousOTP) {
+      return false;
+    }
+
+    const expiredAt = addTime(previousOTP.createdAt, RESEND_OTP_TIME_SPAN);
+    const timeToResend = new Date();
+    return timeToResend <= expiredAt;
   }
 
   async generateOtpV2(
@@ -211,8 +223,8 @@ export class OtpService {
     }
 
     const otp =
-      await this.generalOtpRepository.findFirst(identifier, identifierType, type);
-    if (!otp || _.isEmpty(otp) || code !== otp.code || this.isOTPExpired(otp, type)) {
+      await this.generalOtpRepository.findWithCode(identifier, identifierType, code, type);
+    if (!otp || _.isEmpty(otp) || this.isOTPExpired(otp, type)) {
       throw new BadRequestException('Invalid code');
     }
     await this.generalOtpRepository.verify(otp.id); // seems not important

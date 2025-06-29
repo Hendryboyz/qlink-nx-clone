@@ -1,7 +1,7 @@
 import {
   BadRequestException,
   Body,
-  Controller,
+  Controller, ForbiddenException,
   Headers,
   InternalServerErrorException,
   Logger,
@@ -12,7 +12,7 @@ import {
   UseGuards,
   UsePipes,
   ValidationPipe,
-  Version,
+  Version
 } from '@nestjs/common';
 import {
   ACCESS_TOKEN,
@@ -26,10 +26,10 @@ import { AuthService } from './auth.service';
 import { CookieOptions, Response } from 'express';
 import {
   IdentifierType,
-  LoginDto,
+  LoginDto, OtpReqDto,
   OtpTypeEnum,
   OtpVerificationRequestDto,
-  RegisterDto,
+  RegisterDto, ResendOtpReqDto,
   ResetPasswordDto,
   SendOtpDto,
   StartOtpReqDto,
@@ -167,10 +167,14 @@ export class AuthController {
   async startOTPV2(@Body() body: StartOtpReqDto) {
     const isHuman = await this.authService.verifyRecaptcha(body.recaptchaToken);
     if (!isHuman) {
-      throw new UnauthorizedException('Fail to verify recaptcha token');
+      throw new UnauthorizedException('fail to verify recaptcha token');
     }
 
-    const {type, identifier, identifierType} = body;
+    return await this.sendOtpV2(body);
+  }
+
+  private async sendOtpV2(dto: OtpReqDto) {
+    const {type, identifier, identifierType} = dto;
     const errMessage = await this.isAllowedSendOTP(type, identifier, identifierType);
     if (errMessage) {
       return {
@@ -178,6 +182,7 @@ export class AuthController {
         message: errMessage,
       }
     }
+
     if (process.env.IS_OTP_ENABLED === 'false') {
       return {
         bizCode: CODE_SUCCESS,
@@ -195,7 +200,6 @@ export class AuthController {
       this.logger.error(e)
       throw new InternalServerErrorException()
     }
-
   }
 
   private async isAllowedSendOTP(type: OtpTypeEnum, identifier: string, identifierType: IdentifierType): Promise<string | null> {
@@ -212,6 +216,18 @@ export class AuthController {
       }
     }
     return null;
+  }
+
+  @Version('2')
+  @Post('otp/resend')
+  @UsePipes(new ValidationPipe())
+  async resendOTPV2(@Body() body: ResendOtpReqDto) {
+    const {identifier, identifierType, type} = body;
+    const isResendAllowed = await this.otpService.allowResendV2(identifier, identifierType, type);
+    if (!isResendAllowed) {
+      throw new ForbiddenException(`not allow to resend ${type} OTP to ${identifierType}: ${identifier}`);
+    }
+    return await this.sendOtpV2(body);
   }
 
   @Post('otp/verify')
