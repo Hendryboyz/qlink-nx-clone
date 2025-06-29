@@ -1,8 +1,9 @@
 import {
   BadRequestException,
   Injectable,
-  Logger, NotFoundException,
-  UnauthorizedException
+  Logger,
+  NotFoundException,
+  UnauthorizedException,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { UserService } from '../user/user.service';
@@ -46,14 +47,15 @@ export class AuthService {
     private config: ConfigService,
   ) {}
 
-  async login(phone: string, password: string): Promise<AuthSuccessBO> {
-    const user = await this.validateUser(phone, password);
+  async login(email: string, password: string): Promise<AuthSuccessBO> {
+    const user = await this.validateUser(email, password);
+
     if (!user) {
-      throw new UnauthorizedException();
+      throw new UnauthorizedException(`wrong credentials`);
     }
 
     return {
-      access_token: this.signToken(phone, IdentifierType.PHONE, user.id),
+      access_token: this.signToken(email, IdentifierType.EMAIL, user.id),
       user_id: user.id,
     };
   }
@@ -143,6 +145,7 @@ export class AuthService {
   }
 
   async verifyRecaptcha(recaptchaToken: string): Promise<boolean> {
+    // need to remove
     return true;
     const secretKey = this.config.get<string>('RECAPTCHA_SECRET_KEY');
     const verifyUrl = 'https://www.google.com/recaptcha/api/siteverify';
@@ -163,11 +166,12 @@ export class AuthService {
   }
 
   private async validateUser(
-    phone: string,
+    email: string,
     password: string
   ): Promise<Partial<User> | undefined> {
-    const user = await this.userService.findOne(phone);
-    if (user && (await bcrypt.compare(password, user.password))) {
+    const user = await this.userService.findOneWithType(email, IdentifierType.EMAIL);
+    const isPasswordCorrect = await bcrypt.compare(password, user.password);
+    if (user && isPasswordCorrect) {
       return omit(user, 'password');
     }
     return null;

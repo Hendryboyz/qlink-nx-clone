@@ -60,9 +60,10 @@ export class AuthController {
     @Res({ passthrough: true }) res: Response
   ) {
     const { access_token, user_id } = await this.authService.login(
-      body.phone,
+      body.email,
       body.password
     );
+
     this.setToken(res, access_token, user_id, body.remember_me)
     return { access_token, user_id };
   }

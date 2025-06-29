@@ -56,7 +56,7 @@ export default function SignIn() {
           onSubmit={(values, { setSubmitting }) => {
             setSubmitting(true);
             API.post('auth/login', {
-              phone: String(values.email),
+              email: String(values.email),
               password: values.password,
               remember_me: values.rememberMe,
             })

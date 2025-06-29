@@ -19,7 +19,7 @@ export interface RegisterDto {
 }
 
 export interface LoginDto {
-  phone: string;
+  email: string;
   password: string;
   remember_me?: boolean;
 }
