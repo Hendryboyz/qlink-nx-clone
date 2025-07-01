@@ -129,4 +129,38 @@ export class UserRepository {
       throw error;
     }
   }
+
+  async countByTime(
+    filterYear: number | null = null,
+    filterMonth: number | null = null,
+  ) {
+    const dateClauses: string[] = [];
+    const values: number[] = [];
+    if (filterYear) {
+      dateClauses.push(`EXTRACT(YEAR FROM created_at)`);
+      values.push(filterYear);
+    }
+    if (filterMonth) {
+      dateClauses.push(`EXTRACT(MONTH FROM created_at)`);
+      values.push(filterMonth);
+    }
+    dateClauses.forEach((clause, index) => {
+      dateClauses[index] = `${clause} = $${index + 1}`;
+    })
+    let query =
+      `SELECT COUNT(*) FROM users WHERE is_delete = false`;
+
+    if (dateClauses.length > 0) {
+      query += ' AND ' + dateClauses.join(' AND ');
+    }
+
+    try {
+      const { rows } = await this.pool.query(query, values);
+      return rows[0]['count'] as number;
+    } catch (error) {
+      this.logger.error(`Error count user by time(year: ${filterYear}, month: ${filterMonth}):`, error);
+      throw error;
+    }
+
+  }
 }

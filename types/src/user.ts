@@ -4,6 +4,7 @@ export interface UserEntity {
   type: UserType;
   email?: string;
   password: string;
+  memberId: string;
   firstName: string;
   midName?: string;
   lastName: string;

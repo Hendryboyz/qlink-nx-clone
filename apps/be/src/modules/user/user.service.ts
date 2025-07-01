@@ -2,6 +2,7 @@ import { BadRequestException, Injectable, Logger } from '@nestjs/common';
 import { IdentifierType, RegisterDto, UserEntity, UserUpdateDto, UserVO } from '@org/types';
 import { UserRepository } from './user.repository';
 import { omit } from 'lodash';
+import { ENTITY_PREFIX, generateSalesForceId } from '$/modules/utils/id.util';
 
 type UserOmitFields = ('birthday' | 'whatsapp' | 'facebook');
 
@@ -39,6 +40,7 @@ export class UserService {
     const userEntity = await this.userRepository.create({
      ...omit(createUserDto, ['password', 'rePassword']),
       password: hashedPassword,
+      memberId: await this.generateMemberId(),
     });
     return {
       ...omit(userEntity, [
@@ -48,6 +50,13 @@ export class UserService {
         'password',
       ]),
     };
+  }
+
+  private async generateMemberId() {
+    const current = new Date();
+    const thisYear = current.getFullYear();
+    const userCountThisYear = await this.userRepository.countByTime(thisYear);
+    return generateSalesForceId(ENTITY_PREFIX.member, userCountThisYear);
   }
 
   async updatePassword(userId: string, password: string): Promise<UserVO> {
