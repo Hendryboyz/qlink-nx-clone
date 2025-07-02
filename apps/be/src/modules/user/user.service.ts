@@ -55,7 +55,7 @@ export class UserService {
   private async generateMemberId() {
     const current = new Date();
     const thisYear = current.getFullYear();
-    const userCountThisYear = await this.userRepository.countByTime(thisYear);
+    const userCountThisYear = await this.userRepository.countByTime(thisYear, null);
     return generateSalesForceId(ENTITY_PREFIX.member, userCountThisYear);
   }
 

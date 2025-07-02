@@ -156,7 +156,7 @@ export class UserRepository {
 
     try {
       const { rows } = await this.pool.query(query, values);
-      return rows[0]['count'] as number;
+      return +rows[0]['count'];
     } catch (error) {
       this.logger.error(`Error count user by time(year: ${filterYear}, month: ${filterMonth}):`, error);
       throw error;

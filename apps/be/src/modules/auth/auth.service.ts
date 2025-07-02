@@ -66,7 +66,6 @@ export class AuthService {
   ): Promise<AuthSuccessBO & { user: UserVO }> {
     // 1. verify token
     const verifiedPayload: OtpJwtPayload = this.jwtService.verify(token);
-    this.logger.debug(verifiedPayload);
     if (
       verifiedPayload.type !== OtpTypeEnum.REGISTER ||
       ! this.isValidEmailIdentifier(verifiedPayload, payload.email)
