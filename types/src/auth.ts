@@ -1,4 +1,4 @@
-import { UserSourceType, UserType } from './user';
+import { GenderType, UserSourceType, UserType } from './user';
 
 export interface RegisterDto {
   phone: string;
@@ -9,6 +9,7 @@ export interface RegisterDto {
   firstName: string;
   midName?: string;
   lastName: string;
+  gender: GenderType;
   addressState: string;
   addressCity: string;
   addressDetail?: string;

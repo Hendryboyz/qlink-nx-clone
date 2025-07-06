@@ -8,6 +8,7 @@ export interface UserEntity {
   firstName: string;
   midName?: string;
   lastName: string;
+  gender: GenderType;
   avatarS3Uri?: string;
   addressState: string;
   addressCity: string;
@@ -50,6 +51,8 @@ export interface UserUpdateDto {
 export enum UserType {
   CLIENT = 'client',
 }
+
+export type GenderType = 'Male' | 'Female' | 'Other';
 
 export enum UserSourceType {
   NONE = 0,

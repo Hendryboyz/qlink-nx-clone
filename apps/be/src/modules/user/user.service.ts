@@ -41,6 +41,7 @@ export class UserService {
      ...omit(createUserDto, ['password', 'rePassword']),
       password: hashedPassword,
       memberId: await this.generateMemberId(),
+      gender: createUserDto.gender,
     });
     return {
       ...omit(userEntity, [

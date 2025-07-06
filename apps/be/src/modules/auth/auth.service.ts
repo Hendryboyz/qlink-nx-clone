@@ -91,6 +91,7 @@ export class AuthService {
 
   private isValidEmailIdentifier = (jwtPayload: OtpJwtPayload, email: string) => {
     const { verified, identifier, identifierType } = jwtPayload;
+    this.logger.debug(jwtPayload);
     return verified === true
       && identifier === email
       && identifierType === IdentifierType.EMAIL

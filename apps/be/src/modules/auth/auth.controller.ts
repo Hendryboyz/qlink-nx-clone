@@ -81,6 +81,7 @@ export class AuthController {
     @Headers(HEADER_PRE_TOKEN) preRegisterToken: string,
     @Res({ passthrough: true }) res: Response
   ) {
+    this.logger.debug(body);
     const { access_token, user_id, user } = await this.authService.register(
       body,
       preRegisterToken

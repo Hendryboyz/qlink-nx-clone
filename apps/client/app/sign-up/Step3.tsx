@@ -3,7 +3,7 @@ import Container from './Container';
 import { Formik, Field, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
 import API from '$/utils/fetch';
-import { RegisterDto, UserSourceType, UserType } from 'types/src';
+import { GenderType, RegisterDto, UserSourceType, UserType } from 'types/src';
 import { usePayload } from './PayloadContext';
 import {
   alphaWithSpacesMax50Regex, clientPhoneRegex,
@@ -80,7 +80,7 @@ interface FormData {
   addressState: string;
   addressCity: string;
   birthday: string;
-  gender: string;
+  gender: GenderType;
   // source: number;
   whatsapp: string;
   facebook: string;
@@ -98,7 +98,7 @@ const defaultValue: FormData = {
   addressCity: '',
   addressDetail: '',
   birthday: '',
-  gender: '',
+  gender: 'Male',
   // source: 0,
   whatsapp: '',
   facebook: '',
@@ -138,6 +138,7 @@ const Step3 = (props: Props) => {
             firstName: values.firstName,
             midName: values.midName,
             lastName: values.lastName,
+            gender: values.gender,
             addressState: values.addressState,
             addressCity: values.addressCity,
             addressDetail: values.addressDetail,
@@ -162,6 +163,7 @@ const Step3 = (props: Props) => {
             })
             .catch((e) => {
               showPopup({ title: DEFAULT_ERROR_MSG });
+              console.error(e);
               const { type: field, message } = e.data.data.error;
               setFieldError(field, message);
             })
