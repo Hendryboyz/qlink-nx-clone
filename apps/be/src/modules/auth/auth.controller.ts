@@ -59,6 +59,7 @@ export class AuthController {
     @Body() body: LoginDto,
     @Res({ passthrough: true }) res: Response
   ) {
+    this.logger.debug(body);
     const { access_token, user_id } = await this.authService.login(
       body.email,
       body.password
@@ -81,7 +82,6 @@ export class AuthController {
     @Headers(HEADER_PRE_TOKEN) preRegisterToken: string,
     @Res({ passthrough: true }) res: Response
   ) {
-    this.logger.debug(body);
     const { access_token, user_id, user } = await this.authService.register(
       body,
       preRegisterToken
@@ -266,8 +266,8 @@ export class AuthController {
   @UseGuards(AuthGuard('jwt'))
   @Post('verify')
   async verifyToken(@Req() req: RequestWithUser, @Res({ passthrough: true }) res: Response) {
-    const { userId, phone } = req.user
-    const token = this.authService.refreshToken(userId, phone);
+    const { userId, email } = req.user;
+    const token = this.authService.refreshToken(userId, email);
     this.setToken(res, token, userId, true)
     return true;
   }

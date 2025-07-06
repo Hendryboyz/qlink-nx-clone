@@ -49,7 +49,6 @@ export class AuthService {
 
   async login(email: string, password: string): Promise<AuthSuccessBO> {
     const user = await this.validateUser(email, password);
-
     if (!user) {
       throw new UnauthorizedException(`wrong credentials`);
     }
@@ -107,8 +106,8 @@ export class AuthService {
     return !isNull(userEntity)
   }
 
-  refreshToken(userId: string, phone: string) {
-    return this.signToken(phone, IdentifierType.PHONE, userId)
+  refreshToken(userId: string, email: string) {
+    return this.signToken(email, IdentifierType.EMAIL, userId)
   }
 
   async resetPassword(payload: ResetPasswordDto, token: string) {

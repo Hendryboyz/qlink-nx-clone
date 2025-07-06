@@ -2,10 +2,12 @@ import { ExtractJwt, Strategy } from 'passport-jwt';
 import { PassportStrategy } from '@nestjs/passport';
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import { IdentifierType } from '@org/types';
 
 interface JwtPayload {
   sub: string;
-  phone: string;
+  identifier: string;
+  identifierType: IdentifierType;
   iat: number;
   exp: number;
 }
@@ -24,9 +26,12 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     // if (user.isBanned) {
     //   throw new UnauthorizedException('User is banned');
     // }
-    if (!payload.sub || !payload.phone) {
+    if (!payload.sub
+        || !payload.identifier
+        || payload.identifierType !== IdentifierType.EMAIL
+    ) {
       throw new UnauthorizedException();
     }
-    return { userId: payload.sub, phone: payload.phone };
+    return { userId: payload.sub, email: payload.identifier };
   }
 }

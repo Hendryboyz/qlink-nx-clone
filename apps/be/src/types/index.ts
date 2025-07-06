@@ -3,7 +3,7 @@ import { HttpException, HttpStatus } from '@nestjs/common';
 export interface RequestWithUser extends Request {
   user: {
     userId: string;
-    phone: string;
+    email: string;
   };
 }
 
