@@ -1,12 +1,13 @@
-import { BadRequestException, Inject, Injectable } from '@nestjs/common';
+import { BadRequestException, Inject, Injectable, Logger } from '@nestjs/common';
 import { Pool } from 'pg';
 import { ProductDto, ProductEntity, ProductUpdateDto } from '@org/types';
-import { KNEX_CONNECTION } from '../../database.module';
+import { KNEX_CONNECTION } from '$/database.module';
 import { Knex } from 'knex';
 import { isEmpty } from 'lodash';
 
 @Injectable()
 export class ProductRepository {
+  private logger = new Logger(this.constructor.name);
   constructor(
     private readonly pool: Pool,
     @Inject(KNEX_CONNECTION) private readonly knex: Knex
@@ -14,12 +15,12 @@ export class ProductRepository {
 
   async findByUser(userId: string): Promise<ProductEntity[] | null> {
     const query = `
-    SELECT 
-      id, user_id, vin, engine_number, model, 
+    SELECT
+      id, user_id, vin, engine_number, model,
       to_char(purchase_date, 'YYYY-MM-DD') as purchase_date,
       to_char(registration_date, 'YYYY-MM-DD') as registration_date,
       dealer_name, year, created_at, updated_at
-    FROM product 
+    FROM product
     WHERE user_id = $1
     ORDER BY purchase_date DESC
   `;
@@ -33,14 +34,15 @@ export class ProductRepository {
       throw error;
     }
   }
+
   async findById(id: string): Promise<ProductEntity | null> {
     const query = `
-    SELECT 
-      id, user_id, vin, engine_number, model, 
+    SELECT
+      id, user_id, vin, engine_number, model,
       to_char(purchase_date, 'YYYY-MM-DD') as purchase_date,
       to_char(registration_date, 'YYYY-MM-DD') as registration_date,
       dealer_name, year, created_at, updated_at
-    FROM product 
+    FROM product
     WHERE id = $1
   `;
     const values = [id];
@@ -50,6 +52,23 @@ export class ProductRepository {
       return rows[0] || null;
     } catch (error) {
       console.error(`Error fetching product by id: ${id}`, error);
+      throw error;
+    }
+  }
+
+  async countByYear(year: number): Promise<number> {
+    const dateClauses: string[] = ['EXTRACT(YEAR FROM created_at) = $1'];
+    const values: number[] = [year];
+    let query =
+      `SELECT COUNT(*) FROM product`;
+    if (dateClauses.length > 0) {
+      query += ' WHERE ' + dateClauses.join(' AND ');
+    }
+    try {
+      const { rows } = await this.pool.query(query, values);
+      return +rows[0]['count'];
+    } catch (error) {
+      this.logger.error(`Error count vehicle by year: ${year}:`, error);
       throw error;
     }
   }
@@ -71,6 +90,7 @@ export class ProductRepository {
 
     return await this.findById(obj.id);
   }
+
   async update(
     id: string,
     productUpdateDto: ProductUpdateDto['data']
@@ -90,6 +110,7 @@ export class ProductRepository {
 
     return await this.findById(obj.id);
   }
+
   async remove(userId: string, id: string): Promise<void> {
     const query = `
       DELETE FROM product
@@ -100,4 +121,5 @@ export class ProductRepository {
     // rowCount should be 1
 
   }
+
 }

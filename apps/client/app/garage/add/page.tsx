@@ -13,7 +13,6 @@ import DropdownField from '$/components/Dropdown';
 import Button from '$/components/Button';
 import { DEFAULT_MODELS } from '$/utils';
 const CreateSchema = Yup.object().shape({
-  id: Yup.string().required('Required'),
   model: Yup.string().required('Required'),
   year: Yup.number().required('Required').typeError("Required"),
   vin: Yup.string().required('Required'),
@@ -27,7 +26,6 @@ const CreateSchema = Yup.object().shape({
     .required('YYYY-MM-DD'),
 });
 interface FormData {
-  id: string;
   model: string;
   year: number;
   vin: string;
@@ -44,7 +42,6 @@ type Columns = {
   };
 };
 const defaultValue: FormData = {
-  id: '',
   model: '',
   year: NaN,
   vin: '',
@@ -54,9 +51,6 @@ const defaultValue: FormData = {
   registrationDate: '',
 };
 const ATTRS: Columns = {
-  id: {
-    title: 'Registration ID',
-  },
   model: {
     title: 'Model',
     type: 'select',
@@ -101,7 +95,6 @@ export default function GarageAdd() {
         validationSchema={CreateSchema}
         onSubmit={(values, { setSubmitting }) => {
           API.post('/product/save', {
-            id: values.id,
             vin: values.vin,
             engineNumber: values.engineNumber,
             purchaseDate: values.purchaseDate,

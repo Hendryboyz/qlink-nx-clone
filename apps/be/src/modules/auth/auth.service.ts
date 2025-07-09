@@ -144,8 +144,6 @@ export class AuthService {
   }
 
   async verifyRecaptcha(recaptchaToken: string): Promise<boolean> {
-    // need to remove
-    return true;
     const secretKey = this.config.get<string>('RECAPTCHA_SECRET_KEY');
     const verifyUrl = 'https://www.google.com/recaptcha/api/siteverify';
 

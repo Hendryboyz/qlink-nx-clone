@@ -125,7 +125,7 @@ export class UserRepository {
       const { rows } = await this.pool.query(query, values);
       return rows[0]['count'] > 0;
     } catch (error) {
-      this.logger.error(`Error count user by ${filterField}:`, error);
+      this.logger.error(`Error count user by ${filterField}: ${identifier}`, error);
       throw error;
     }
   }

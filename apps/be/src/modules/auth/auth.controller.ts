@@ -168,6 +168,7 @@ export class AuthController {
   async startOTPV2(@Body() body: StartOtpReqDto) {
     const isHuman = await this.authService.verifyRecaptcha(body.recaptchaToken);
     if (!isHuman) {
+      this.logger.error('fail to verify recaptcha token');
       throw new UnauthorizedException('fail to verify recaptcha token');
     }
 
@@ -178,6 +179,7 @@ export class AuthController {
     const {type, identifier, identifierType} = dto;
     const errMessage = await this.isAllowedSendOTP(type, identifier, identifierType);
     if (errMessage) {
+      this.logger.error(`is allowed send otp err: ${errMessage}`);
       return {
         bizCode: INVALID,
         message: errMessage,
@@ -185,6 +187,7 @@ export class AuthController {
     }
 
     if (process.env.IS_OTP_ENABLED === 'false') {
+      this.logger.log(`otp disabled, response directly`);
       return {
         bizCode: CODE_SUCCESS,
         data: true

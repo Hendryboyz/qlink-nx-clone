@@ -34,7 +34,7 @@ class CamelCasePool extends Pool {
     if (this.isSubmittable(queryTextOrConfig)) {
       return super.query(queryTextOrConfig);
     }
-    
+
     const result = await super.query<R>(queryTextOrConfig, values);
     result.rows = toCamelCase<R>(result.rows);
     return result;
