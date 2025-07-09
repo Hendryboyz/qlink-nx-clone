@@ -93,7 +93,7 @@ export default function SignIn() {
                     customClassName="border-white"
                   />
                   <ErrorMessage
-                    name="phone"
+                    name="email"
                     className="text-[#E19500] absolute"
                     component="span"
                   />

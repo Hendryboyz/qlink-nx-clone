@@ -30,7 +30,7 @@ const Step1 = (props: Props) => {
           if (!values.email) {
             errors.email = 'Required';
           } else if (!emailRegex.test(values.email)) {
-            errors.email = 'Invalid phone number';
+            errors.email = 'Invalid email format';
           }
           return errors;
         }}
@@ -79,7 +79,7 @@ const Step1 = (props: Props) => {
               <Form id="signupForm">
                 <div className="mt-9">
                   <InputField
-                    type="tel"
+                    type="email"
                     name="email"
                     placeholder="Email"
                     headIconSource="assets/mail.svg"
