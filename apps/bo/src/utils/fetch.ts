@@ -256,6 +256,10 @@ class Api {
   async listBoUsers(page = 1, limit = 10): Promise<GetUsersResponse> {
     return this.get(`/users?page=${page}&limit=${limit}`);
   }
+
+  async deleteBoUser(userId: string): Promise<MutateUserResponse> {
+    return this.delete(`/users/${userId}`);
+  }
 }
 
 const publicApiURL: string = import.meta.env.VITE_BO_PUBLIC_API_URL || '';

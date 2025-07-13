@@ -1,6 +1,7 @@
 import { BoUserRepository } from '$/modules/bo/user/bo-user.repository';
 import { Injectable, Logger } from '@nestjs/common';
 import { ListBoUserDTO } from '@org/types';
+import * as _ from 'lodash';
 
 @Injectable()
 export class BoUserService {
@@ -10,10 +11,12 @@ export class BoUserService {
   public async listByPage(page: number, limit: number): Promise<ListBoUserDTO> {
     try {
       const users = await this.repository.listByPage(page, limit);
+
+
       const total = await this.repository.countBoUsers();
 
       return {
-        data: users,
+        data: users.map(u => _.omit(u, 'password')),
         total
       }
     } catch (e) {

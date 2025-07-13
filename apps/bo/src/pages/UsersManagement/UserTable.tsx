@@ -1,9 +1,10 @@
 import { ProColumns } from '@ant-design/pro-table/es/typing';
 import { dateTimeFormatter } from '$/utils/formatter';
-import { Button, Space } from 'antd';
+import { Button, Modal, Space } from 'antd';
 import React, { ReactElement, useContext } from 'react';
 import { UserContext } from '$/pages/UsersManagement/UsersContext';
 import { ProTable } from '@ant-design/pro-components';
+import API from '$/utils/fetch';
 
 export default function UserTable(): ReactElement {
   const tableColumns: ProColumns[] = [
@@ -47,18 +48,42 @@ export default function UserTable(): ReactElement {
       render: (_: unknown, record: any) => (
         <Space size="middle">
           <Button
-            type="primary"
-            onClick={() => setEditingUserId(record.id)}
+            danger
+            onClick={() => onDeleteBoUser(record.id)}
           >
-            Edit
+            Delete
           </Button>
-          <Button danger>Delete</Button>
           <Button>Reset Password</Button>
         </Space>
       ),
     },
   ];
-  const {users, total, paging, setPaging, setEditingUserId} = useContext(UserContext);
+  const {
+    users,
+    total,
+    paging,
+    deleteUser,
+    setPaging,
+    setEditingUserId,
+  } = useContext(UserContext);
+  function onDeleteBoUser(boUserId: string) {
+    const deletingUser = users.find(u => u.id === boUserId);
+    Modal.confirm({
+      title: 'Confirm to delete user?',
+      content: `Do you want to delete ${deletingUser.username}[${deletingUser.role}] from Database?`,
+      okText: 'Delete',
+      okType: 'danger',
+      cancelText: 'Cancel',
+      onOk: async () => {
+        try {
+          await API.deleteBoUser(deletingUser.id);
+          deleteUser(deletingUser.id);
+        } catch (error) {
+          console.error(error);
+        }
+      },
+    });
+  }
   return (
     <ProTable
       columns={tableColumns}

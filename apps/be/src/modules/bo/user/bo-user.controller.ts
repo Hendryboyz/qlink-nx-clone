@@ -1,4 +1,4 @@
-import { Controller, Get, InternalServerErrorException, Logger, Query } from '@nestjs/common';
+import { Controller, Delete, Get, InternalServerErrorException, Logger, Param, Query } from '@nestjs/common';
 import { Roles } from '$/modules/bo/auth/roles.decorator';
 import { BoRole, ListBoUserDTO } from '@org/types';
 import { BoUserService } from '$/modules/bo/user/bo-user.service';
@@ -20,5 +20,11 @@ export class BoUserController {
       this.logger.error(error);
       throw new InternalServerErrorException(error);
     }
+  }
+
+  @Roles(BoRole.ADMIN)
+  @Delete(':id')
+  deleteBoUser(@Param('id') userId: string) {
+    console.log('bo try to delete user: ' + userId);
   }
 }

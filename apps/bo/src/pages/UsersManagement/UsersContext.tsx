@@ -12,6 +12,7 @@ interface UserContextType {
   total: number;
   paging: pagingType;
   editingUserId: string | undefined;
+  deleteUser: (deletedId) => void;
   setEditingUserId: (prevState) => void,
   setPaging: (prevState) => void;
 }
@@ -24,6 +25,7 @@ export const UserContext: Context<UserContextType> = createContext({
     page: 1,
   },
   editingUserId: undefined,
+  deleteUser: (deletedId) => {},
   setEditingUserId: (prevId) => {},
   setPaging: (prevState) => {},
 });
@@ -36,6 +38,7 @@ export default function UserContextProvider({ children }: { children: ReactNode 
     pageSize: 10,
     page: 1,
   })
+
   useEffect(() => {
     async function fetchUser(): Promise<void>  {
       const { data, total } = await API.listBoUsers(paging.page, paging.pageSize);
@@ -45,11 +48,16 @@ export default function UserContextProvider({ children }: { children: ReactNode 
     fetchUser();
   }, [paging]);
 
+  function deleteUser(deletedUserId: string): void {
+    setUsers((prevUsers) => prevUsers.filter(u => u.id !== deletedUserId));
+  }
+
   const ctxValue = {
     users,
     total,
     paging,
     editingUserId,
+    deleteUser,
     setPaging,
     setEditingUserId,
   }
