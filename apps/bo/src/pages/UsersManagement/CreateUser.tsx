@@ -1,6 +1,6 @@
 import React, { useContext, useState } from 'react';
 import { Form, Input, Button, Select, message, Space } from 'antd';
-import { useNavigate } from 'react-router-dom';
+// import { useNavigate } from 'react-router-dom';
 import { CreateBoUserDto, BoRole } from '@org/types';
 import API from '$/utils/fetch';
 import { UserContext } from '$/pages/UsersManagement/UsersContext';
@@ -10,14 +10,15 @@ const { Option } = Select;
 const CreateUser: React.FC = () => {
   const {setEditingUserId} = useContext(UserContext);
   const [loading, setLoading] = useState(false);
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
 
   const onFinish = async (values: CreateBoUserDto) => {
     setLoading(true);
     try {
       await API.createUser(values);
       message.success('User created successfully');
-      navigate('/dashboard'); // Assuming you have a users list page
+      // navigate('/users'); // Assuming you have a users list page
+      setEditingUserId(undefined);
     } catch (error) {
       message.error('Failed to create user');
       console.error('Create user error:', error);

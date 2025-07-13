@@ -45,8 +45,9 @@ export default function UserContextProvider({ children }: { children: ReactNode 
       setUsers(data);
       setTotal(total);
     }
+    if (editingUserId !== undefined) return;
     fetchUser();
-  }, [paging]);
+  }, [paging, editingUserId]);
 
   function deleteUser(deletedUserId: string): void {
     setUsers((prevUsers) => prevUsers.filter(u => u.id !== deletedUserId));
