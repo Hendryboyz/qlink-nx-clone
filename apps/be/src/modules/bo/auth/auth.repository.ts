@@ -1,24 +1,11 @@
 import { Injectable, Inject } from '@nestjs/common';
 import { KNEX_CONNECTION } from '$/database.module';
 import { Knex } from 'knex';
-import { BoUser, CreateBoUserDto } from '@org/types';
+import { BoUser } from '@org/types';
 
 @Injectable()
 export class BoAuthRepository {
   constructor(@Inject(KNEX_CONNECTION) private readonly knex: Knex) {}
-
-  async findUserByUsername(username: string): Promise<BoUser | null> {
-    return this.knex('bo_users').where({ username }).first();
-  }
-
-  async createUser(
-    createUserDto: CreateBoUserDto
-  ): Promise<Omit<BoUser, 'password'>> {
-    const [user] = await this.knex('bo_users')
-      .insert(createUserDto)
-      .returning(['id', 'username', 'role']);
-    return user;
-  }
 
   async saveRefreshToken(userId: string, refreshToken: string): Promise<void> {
     await this.knex('bo_refresh_tokens')

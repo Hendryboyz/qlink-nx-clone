@@ -11,6 +11,7 @@ import { PostsBoModule } from './modules/bo/posts/posts.module';
 import { StorageModule } from '$/modules/upload/storage.module';
 import { BoUserModule } from '$/modules/bo/user/bo-user.module';
 import { NotificationModule } from './notification/notification.module';
+import { VerificationModule } from './modules/bo/verification/verification.module';
 
 @Module({
   imports: [
@@ -46,6 +47,7 @@ import { NotificationModule } from './notification/notification.module';
       },
     ]),
     NotificationModule,
+    VerificationModule,
   ],
 })
 export class AppModule {}

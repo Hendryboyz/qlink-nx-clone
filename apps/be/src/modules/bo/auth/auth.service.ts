@@ -1,14 +1,14 @@
 import {
   Injectable,
   UnauthorizedException,
-  BadRequestException,
   Logger,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
-import { BoUser, BoAuthResponse, CreateBoUserDto } from '@org/types';
+import { BoUser, BoAuthResponse } from '@org/types';
 import { ConfigService } from '@nestjs/config';
 import { BoAuthRepository } from './auth.repository';
+import { BoUserService } from '$/modules/bo/user/bo-user.service';
 
 @Injectable()
 export class BoAuthService {
@@ -16,6 +16,7 @@ export class BoAuthService {
 
   constructor(
     private jwtService: JwtService,
+    private boUserService: BoUserService,
     private configService: ConfigService,
     private boAuthRepository: BoAuthRepository
   ) {}
@@ -26,7 +27,7 @@ export class BoAuthService {
   ): Promise<Omit<BoUser, 'password'> | null> {
     this.logger.log(`Validating user: ${username}`);
     try {
-      const user = await this.boAuthRepository.findUserByUsername(username);
+      const user = await this.boUserService.findByName(username);
       if (user && (await bcrypt.compare(password, user.password))) {
         this.logger.log(`User ${username} validated successfully`);
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -54,23 +55,6 @@ export class BoAuthService {
       refreshToken,
       user,
     };
-  }
-
-  async createUser(
-    createUserDto: CreateBoUserDto
-  ): Promise<Omit<BoUser, 'password'>> {
-    const existingUser = await this.boAuthRepository.findUserByUsername(
-      createUserDto.username
-    );
-    if (existingUser) {
-      throw new BadRequestException('Username already exists');
-    }
-
-    const hashedPassword = await bcrypt.hash(createUserDto.password, 10);
-    return this.boAuthRepository.createUser({
-      ...createUserDto,
-      password: hashedPassword,
-    });
   }
 
   async logout(userId: string): Promise<void> {

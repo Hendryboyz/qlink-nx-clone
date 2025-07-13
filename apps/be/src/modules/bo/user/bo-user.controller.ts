@@ -1,13 +1,34 @@
-import { Controller, Delete, Get, InternalServerErrorException, Logger, Param, Query } from '@nestjs/common';
-import { Roles } from '$/modules/bo/auth/roles.decorator';
-import { BoRole, ListBoUserDTO } from '@org/types';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  InternalServerErrorException,
+  Logger,
+  Param,
+  Post,
+  Query,
+  UseGuards
+} from '@nestjs/common';
+import { Roles } from '$/modules/bo/verification/roles.decorator';
+import { BoRole, CreateBoUserDto, ListBoUserDTO } from '@org/types';
 import { BoUserService } from '$/modules/bo/user/bo-user.service';
+import { JwtAuthGuard } from '$/modules/bo/verification/jwt-auth.guard';
+import { RolesGuard } from '$/modules/bo/verification/roles.guard';
 
 @Controller('')
 export class BoUserController {
   private logger = new Logger(this.constructor.name);
   constructor(private readonly service: BoUserService) {
   }
+
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(BoRole.ADMIN)
+  @Post('')
+  async createUser(@Body() createUserDto: CreateBoUserDto) {
+    return this.service.createUser(createUserDto);
+  }
+
   @Roles(BoRole.ADMIN)
   @Get()
   listByPaging(

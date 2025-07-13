@@ -13,12 +13,8 @@ import { BoAuthService } from './auth.service';
 import {
   BoLoginDto,
   BoAuthResponse,
-  CreateBoUserDto,
-  BoRole,
 } from '@org/types';
-import { JwtAuthGuard } from './jwt-auth.guard';
-import { RolesGuard } from './roles.guard';
-import { Roles } from './roles.decorator';
+import { JwtAuthGuard } from '../verification/jwt-auth.guard';
 import { Request } from 'express';
 
 @Controller()
@@ -51,13 +47,6 @@ export class BoAuthController {
       );
       throw error;
     }
-  }
-
-  @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(BoRole.ADMIN)
-  @Post('create-user')
-  async createUser(@Body() createUserDto: CreateBoUserDto) {
-    return this.boAuthService.createUser(createUserDto);
   }
 
   @UseGuards(JwtAuthGuard)
