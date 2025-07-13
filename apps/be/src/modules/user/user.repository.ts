@@ -85,6 +85,7 @@ export class UserRepository {
       const data = await this.knex('users')
         .select([
           'id',
+          'member_id',
           'first_name',
           'mid_name',
           'last_name',

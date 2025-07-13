@@ -40,6 +40,11 @@ export default function MemberTable() {
       hideInTable: true,
     },
     {
+      title: 'Member ID',
+      dataIndex: 'memberId',
+      key: 'memberId',
+    },
+    {
       title: 'First Name',
       dataIndex: 'firstName',
       key: 'firstName',
