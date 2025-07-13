@@ -9,33 +9,31 @@ export class BoUserService {
   private readonly logger = new Logger(this.constructor.name);
   constructor(private repository: BoUserRepository) {}
 
-  async createUser(
-    createUserDto: CreateBoUserDto
+  public async createUser(
+    dto: CreateBoUserDto
   ): Promise<Omit<BoUser, 'password'>> {
     const existingUser =
-      await this.findByName(createUserDto.username);
+      await this.findByName(dto.username);
     if (existingUser) {
       throw new BadRequestException('Username already exists');
     }
 
-    const hashedPassword = await bcrypt.hash(createUserDto.password, 10);
+    const hashedPassword = await bcrypt.hash(dto.password, 10);
+    dto = _.omit(dto, 'confirmPassword');
     return this.repository.createUser({
-      ...createUserDto,
+      ...dto,
       password: hashedPassword,
     });
   }
 
-  async findByName(username: string) {
+  public async findByName(username: string) {
     return this.repository.findUserByUsername(username);
   }
 
   public async listByPage(page: number, limit: number): Promise<ListBoUserDTO> {
     try {
       const users = await this.repository.listByPage(page, limit);
-
-
       const total = await this.repository.countBoUsers();
-
       return {
         data: users.map(u => _.omit(u, 'password')),
         total
@@ -45,4 +43,5 @@ export class BoUserService {
       throw e;
     }
   }
+
 }

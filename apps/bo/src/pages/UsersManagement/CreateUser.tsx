@@ -15,7 +15,7 @@ const CreateUser: React.FC = () => {
   const onFinish = async (values: CreateBoUserDto) => {
     setLoading(true);
     try {
-      await API.post('/auth/create-user', values);
+      await API.createUser(values);
       message.success('User created successfully');
       navigate('/dashboard'); // Assuming you have a users list page
     } catch (error) {
@@ -61,7 +61,17 @@ const CreateUser: React.FC = () => {
         <Form.Item
           name="confirmPassword"
           label="Confirm Password"
-          rules={[{ required: true, message: 'Please input the password!' }]}
+          rules={[
+            { required: true, message: 'Please input the password!' },
+            ({getFieldValue}) => ({
+              validator: (_, value) => {
+                if (!value || getFieldValue('password') === value) {
+                  return Promise.resolve();
+                }
+                return Promise.reject(new Error('The new password that you entered do not match!'));
+              }
+            })
+          ]}
         >
           <Input.Password />
         </Form.Item>
