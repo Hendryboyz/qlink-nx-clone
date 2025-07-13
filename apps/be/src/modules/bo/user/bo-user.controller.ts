@@ -46,6 +46,11 @@ export class BoUserController {
   @Roles(BoRole.ADMIN)
   @Delete(':id')
   deleteBoUser(@Param('id') userId: string) {
-    console.log('bo try to delete user: ' + userId);
+    try {
+      return this.service.deleteUser(userId);
+    } catch (error) {
+      this.logger.error(error);
+      throw new InternalServerErrorException(error);
+    }
   }
 }

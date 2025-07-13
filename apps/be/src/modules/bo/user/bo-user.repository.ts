@@ -1,6 +1,6 @@
 import { Inject, Injectable, Logger } from '@nestjs/common';
 import { KNEX_CONNECTION } from '$/database.module';
-import { Knex } from 'knex';
+import knex, { Knex } from 'knex';
 import { BoUser, BoUserEntity, CreateBoUserDto } from '@org/types';
 
 @Injectable()
@@ -17,8 +17,14 @@ export class BoUserRepository {
     return user;
   }
 
-  async findUserByUsername(username: string) {
+  async findByUsername(username: string) {
     return this.knex('bo_users').where({ username }).first();
+  }
+
+  async isExisting(userId: string): Promise<boolean> {
+    const [{ count }] = await
+      this.knex('bo_users').where({ 'id': userId }).count('id as count');
+    return +count > 0;
   }
 
   public async listByPage(page: number, limit: number): Promise<BoUserEntity[]> {
@@ -42,9 +48,11 @@ export class BoUserRepository {
   public async countBoUsers(): Promise<number> {
     const [{ count }] = await this.knexQueryBuilder()
       .count('id as count');
-    return parseInt(count as string, 10);
+    return +count;
   }
 
 
-
+  async delete(userId: string): Promise<number> {
+    return this.knex('bo_users').where({ 'id': userId }).del();
+  }
 }

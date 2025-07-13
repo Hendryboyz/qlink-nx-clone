@@ -1,5 +1,5 @@
 import { BoUserRepository } from '$/modules/bo/user/bo-user.repository';
-import { BadRequestException, Injectable, Logger } from '@nestjs/common';
+import { BadRequestException, Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { BoUser, CreateBoUserDto, ListBoUserDTO } from '@org/types';
 import * as _ from 'lodash';
 import * as bcrypt from 'bcrypt';
@@ -27,7 +27,7 @@ export class BoUserService {
   }
 
   public async findByName(username: string) {
-    return this.repository.findUserByUsername(username);
+    return this.repository.findByUsername(username);
   }
 
   public async listByPage(page: number, limit: number): Promise<ListBoUserDTO> {
@@ -44,4 +44,11 @@ export class BoUserService {
     }
   }
 
+  public async deleteUser(userId: string): Promise<number> {
+    const isExisting = await this.repository.isExisting(userId);
+    if (!isExisting) {
+      throw new NotFoundException('bo user not found');
+    }
+    return this.repository.delete(userId);
+  }
 }
