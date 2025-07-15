@@ -7,11 +7,12 @@ import {
   Logger,
   Param,
   Post,
+  Put,
   Query,
   UseGuards
 } from '@nestjs/common';
 import { Roles } from '$/modules/bo/verification/roles.decorator';
-import { BoRole, CreateBoUserDto, ListBoUserDTO } from '@org/types';
+import { BoRole, CreateBoUserDto, ListBoUserDTO, ResetBoUserPasswordDto } from '@org/types';
 import { BoUserService } from '$/modules/bo/user/bo-user.service';
 import { JwtAuthGuard } from '$/modules/bo/verification/jwt-auth.guard';
 import { RolesGuard } from '$/modules/bo/verification/roles.guard';
@@ -27,6 +28,19 @@ export class BoUserController {
   @Post('')
   async createUser(@Body() createUserDto: CreateBoUserDto) {
     return this.service.createUser(createUserDto);
+  }
+
+  @Roles(BoRole.ADMIN)
+  @Put(':id/password/reset')
+  async resetPassword(
+    @Param('id') userId: string,
+    @Body() body: ResetBoUserPasswordDto,
+  ) {
+    try {
+      return await this.service.resetPassword(userId, body.password);
+    } catch (error) {
+      throw new InternalServerErrorException(error);
+    }
   }
 
   @Roles(BoRole.ADMIN)

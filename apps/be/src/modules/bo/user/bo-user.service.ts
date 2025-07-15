@@ -18,12 +18,16 @@ export class BoUserService {
       throw new BadRequestException('Username already exists');
     }
 
-    const hashedPassword = await bcrypt.hash(dto.password, 10);
+    const hashedPassword = await this.hashPassword(dto.password);
     dto = _.omit(dto, 'confirmPassword');
     return this.repository.createUser({
       ...dto,
       password: hashedPassword,
     });
+  }
+
+  private hashPassword = async (password: string): Promise<string> => {
+    return bcrypt.hash(password, 10)
   }
 
   public async findByName(username: string) {
@@ -50,5 +54,14 @@ export class BoUserService {
       throw new NotFoundException('bo user not found');
     }
     return this.repository.delete(userId);
+  }
+
+  async resetPassword(userId: string, password: string) {
+    const isExising = await this.repository.isExisting(userId);
+    if (!isExising) {
+      throw new NotFoundException('bo user not found');
+    }
+    const hashedPassword = await this.hashPassword(password);
+    return await this.repository.updatePassword(userId, hashedPassword);
   }
 }

@@ -8,7 +8,7 @@ import { UserContext } from '$/pages/UsersManagement/UsersContext';
 const { Option } = Select;
 
 const CreateUser: React.FC = () => {
-  const {setEditingUserId} = useContext(UserContext);
+  const {setIsCreatingUser} = useContext(UserContext);
   const [loading, setLoading] = useState(false);
   // const navigate = useNavigate();
 
@@ -18,7 +18,7 @@ const CreateUser: React.FC = () => {
       await API.createUser(values);
       message.success('User created successfully');
       // navigate('/users'); // Assuming you have a users list page
-      setEditingUserId(undefined);
+      setIsCreatingUser(false);
     } catch (error) {
       message.error('Failed to create user');
       console.error('Create user error:', error);
@@ -92,7 +92,7 @@ const CreateUser: React.FC = () => {
           <Space>
             <Button
               htmlType="button"
-              onClick={() => setEditingUserId(undefined)}
+              onClick={() => setIsCreatingUser(false)}
             >
               Cancel
             </Button>

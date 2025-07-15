@@ -11,9 +11,9 @@ interface UserContextType {
   users: BOUserDTO[];
   total: number;
   paging: pagingType;
-  editingUserId: string | undefined;
+  isCreatingUser: boolean;
+  setIsCreatingUser: (prevState) => void;
   deleteUser: (deletedId) => void;
-  setEditingUserId: (prevState) => void,
   setPaging: (prevState) => void;
 }
 
@@ -24,15 +24,15 @@ export const UserContext: Context<UserContextType> = createContext({
     pageSize: 10,
     page: 1,
   },
-  editingUserId: undefined,
+  isCreatingUser: false,
   deleteUser: (deletedId) => {},
-  setEditingUserId: (prevId) => {},
+  setIsCreatingUser: (prevState) => {},
   setPaging: (prevState) => {},
 });
 
 export default function UserContextProvider({ children }: { children: ReactNode }) {
   const [users, setUsers] = useState([]);
-  const [editingUserId, setEditingUserId] = useState(undefined);
+  const [isCreating, setIsCreating] = useState(undefined);
   const [total, setTotal] = useState(0);
   const [paging, setPaging] = useState({
     pageSize: 10,
@@ -45,9 +45,8 @@ export default function UserContextProvider({ children }: { children: ReactNode 
       setUsers(data);
       setTotal(total);
     }
-    if (editingUserId !== undefined) return;
     fetchUser();
-  }, [paging, editingUserId]);
+  }, [paging, isCreating]);
 
   function deleteUser(deletedUserId: string): void {
     setUsers((prevUsers) => prevUsers.filter(u => u.id !== deletedUserId));
@@ -57,10 +56,10 @@ export default function UserContextProvider({ children }: { children: ReactNode 
     users,
     total,
     paging,
-    editingUserId,
     deleteUser,
+    isCreatingUser: isCreating,
+    setIsCreatingUser: setIsCreating,
     setPaging,
-    setEditingUserId,
   }
   return (
     <UserContext.Provider value={ctxValue}>

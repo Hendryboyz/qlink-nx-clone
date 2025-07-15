@@ -55,4 +55,10 @@ export class BoUserRepository {
   async delete(userId: string): Promise<number> {
     return this.knex('bo_users').where({ 'id': userId }).del();
   }
+
+  async updatePassword(userId: string, hashedPassword: string): Promise<number> {
+    return this.knex('bo_users').where({ 'id': userId}).update({
+      password: hashedPassword
+    })
+  }
 }

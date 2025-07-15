@@ -7,12 +7,12 @@ import CreateUser from '$/pages/UsersManagement/CreateUser';
 const {Content} = Layout;
 
 export default function Index(): ReactElement {
-  const {editingUserId} = useContext(UserContext);
+  const {isCreatingUser} = useContext(UserContext);
   return (<Layout>
     <h1>BO Users Management</h1>
     <Content>
-      {null === editingUserId && <CreateUser />}
-      {undefined === editingUserId && <UserTable />}
+      {isCreatingUser && <CreateUser />}
+      {!isCreatingUser && <UserTable />}
     </Content>
   </Layout>)
 

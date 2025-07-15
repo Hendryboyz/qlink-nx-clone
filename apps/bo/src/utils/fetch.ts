@@ -5,7 +5,8 @@ import {
   BoAuthResponse,
   BoUser,
   CreateBoUserDto,
-  PostEntity, UserVO
+  PostEntity,
+  ResetBoUserPasswordDto,
 } from '@org/types';
 import { GetPostsResponse, GetUsersResponse, MutateUserResponse, UploadImageResponse } from '$/types';
 class Api {
@@ -259,6 +260,10 @@ class Api {
 
   async deleteBoUser(userId: string): Promise<MutateUserResponse> {
     return this.delete(`/users/${userId}`);
+  }
+
+  async resetBoUserPassword(userId: string, payload: ResetBoUserPasswordDto) {
+    return this.put<number>(`/users/${userId}/password/reset`, payload);
   }
 }
 

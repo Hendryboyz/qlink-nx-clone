@@ -1,12 +1,23 @@
 import { ProColumns } from '@ant-design/pro-table/es/typing';
 import { dateTimeFormatter } from '$/utils/formatter';
-import { Button, Modal, Space } from 'antd';
-import React, { ReactElement, useContext } from 'react';
+import { Button, Form, Input, Modal, Space, message } from 'antd';
+import React, { ReactElement, useContext, useState } from 'react';
 import { UserContext } from '$/pages/UsersManagement/UsersContext';
 import { ProTable } from '@ant-design/pro-components';
 import API from '$/utils/fetch';
 
 export default function UserTable(): ReactElement {
+  const {
+    users,
+    total,
+    paging,
+    deleteUser,
+    setPaging,
+    setIsCreatingUser,
+  } = useContext(UserContext);
+
+  const [resetPasswordUser, setResetPasswordUser] = useState(undefined);
+
   const tableColumns: ProColumns[] = [
     {
       title: 'Id',
@@ -49,24 +60,21 @@ export default function UserTable(): ReactElement {
         <Space size="middle">
           <Button
             danger
-            onClick={() => onDeleteBoUser(record.id)}
+            onClick={() => handleDeleteBoUser(record.id)}
           >
             Delete
           </Button>
-          <Button>Reset Password</Button>
+          <Button
+            onClick={() => setResetPasswordUser(record)}
+          >
+            Reset Password
+          </Button>
         </Space>
       ),
     },
   ];
-  const {
-    users,
-    total,
-    paging,
-    deleteUser,
-    setPaging,
-    setEditingUserId,
-  } = useContext(UserContext);
-  function onDeleteBoUser(boUserId: string) {
+
+  function handleDeleteBoUser(boUserId: string) {
     const deletingUser = users.find(u => u.id === boUserId);
     Modal.confirm({
       title: 'Confirm to delete user?',
@@ -84,34 +92,102 @@ export default function UserTable(): ReactElement {
       },
     });
   }
+
+  const [form] = Form.useForm();
+  async function handleResetPassword() {
+    const values = await form.validateFields();
+    const payload = {
+      password: values.password,
+      rePassword: values.confirmPassword,
+    }
+    try {
+      const result = await API.resetBoUserPassword(resetPasswordUser.id, payload);
+      if (result !== 0) {
+        message.success(`Update password successfully!`);
+        form.resetFields();
+        setResetPasswordUser(undefined);
+      } else {
+        message.error('Failed to update password! Please try later.');
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  }
+  function cancelResetPassword() {
+    setResetPasswordUser(undefined);
+    form.resetFields();
+  }
+
   return (
-    <ProTable
-      columns={tableColumns}
-      dataSource={users}
-      rowKey="id"
-      search={{
-        labelWidth: 'auto',
-      }}
-      pagination={{
-        onChange: ((page, pageSize) => {
-          setPaging({page, pageSize});
-        }),
-        pageSize: paging.pageSize,
-        total: total,
-        showSizeChanger: true,
-        // showQuickJumper: true,
-      }}
-      scroll={{ x: 'max-content' }}
-      dateFormatter="string"
-      toolBarRender={() => [
-        <Button
-          key="button"
-          type="primary"
-          onClick={() => setEditingUserId(null)}
+    <>
+      <ProTable
+        columns={tableColumns}
+        dataSource={users}
+        rowKey="id"
+        search={{
+          labelWidth: 'auto',
+        }}
+        pagination={{
+          onChange: ((page, pageSize) => {
+            setPaging({page, pageSize});
+          }),
+          pageSize: paging.pageSize,
+          total: total,
+          showSizeChanger: true,
+          // showQuickJumper: true,
+        }}
+        scroll={{ x: 'max-content' }}
+        dateFormatter="string"
+        toolBarRender={() => [
+          <Button
+            key="button"
+            type="primary"
+            onClick={() => setIsCreatingUser(true)}
+          >
+            Add User
+          </Button>,
+        ]}
+      />
+      {resetPasswordUser && (
+        <Modal
+          open={true}
+          title={`Reset ${resetPasswordUser.username}'s password`}
+          okText="confirm"
+          onCancel={cancelResetPassword}
+          onOk={handleResetPassword}
         >
-          Add User
-        </Button>,
-      ]}
-    />
+          <Form
+            form={form}
+            layout="vertical"
+          >
+            <Form.Item
+              name="password"
+              label="Password"
+              rules={[{ required: true, message: 'Please input the password!' }]}
+            >
+              <Input.Password />
+            </Form.Item>
+
+            <Form.Item
+              name="confirmPassword"
+              label="Confirm Password"
+              rules={[
+                { required: true, message: 'Please input the password!' },
+                ({getFieldValue}) => ({
+                  validator: (_, value) => {
+                    if (!value || getFieldValue('password') === value) {
+                      return Promise.resolve();
+                    }
+                    return Promise.reject(new Error('The new password that you entered do not match!'));
+                  }
+                })
+              ]}
+            >
+              <Input.Password />
+            </Form.Item>
+          </Form>
+        </Modal>
+      )}
+    </>
   );
 }

@@ -38,3 +38,8 @@ export interface CreateBoUserDto {
   password: string;
   role: BoRole;
 }
+
+export type ResetBoUserPasswordDto = {
+  password: string;
+  rePassword: string;
+}
