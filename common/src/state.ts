@@ -1,6 +1,6 @@
 export const STATES = [
   'Abia',
-  'Abuja',
+  'Abuja (FCT)',
   'Adamawa',
   'Akwa Ibom',
   'Anambra',
