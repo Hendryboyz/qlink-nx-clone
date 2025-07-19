@@ -4,6 +4,8 @@ import React from 'react';
 import { ProductVO } from '@org/types';
 import { css } from '@emotion/css';
 import { DEFAULT_MODELS } from '$/utils';
+// TODO: Need to change to dynamically get pictures in future version
+import defaultMotorImage from '$/public/assets/sym125.png';
 
 const rowCss = css`
 & > div:not(:last-child)  {
@@ -39,7 +41,15 @@ const ProductCard = ({ data, handleEdit }: { data: ProductVO, handleEdit: (data:
   const modelDefined = DEFAULT_MODELS.find(m => m.id.toString() === model);
   return (
     <>
-      <div className="flex justify-between min-h-[164px] bg-[#C3C3C3]">
+      <div
+        className="flex justify-between min-h-[164px] bg-[#C3C3C3]"
+        style={{
+          backgroundImage: `url(${defaultMotorImage.src})`,
+          backgroundSize: 'cover',
+          backgroundPosition: 'center center',
+          backgroundRepeat: 'no-repeat'
+        }}
+      >
         <div className="ml-9 mb-2 self-end">
           <p className="text-xl font-light text-white font-gilroy-light">{data.year}</p>
           <h2 className="text-3xl font-gilroy-heavy text-primary-500 -mt-2">{modelDefined ? modelDefined.title : model}</h2>
