@@ -18,7 +18,7 @@ export default function RootLayout({
         <PopupProvider>
           <StyledJsxRegistry>
             <Theme>
-              <div className="h-screen">
+              <div className="min-h-screen">
                 <Wrapper>{children}</Wrapper>
               </div>
             </Theme>
@@ -30,5 +30,5 @@ export default function RootLayout({
 }
 
 const Wrapper = ({ children }: { children: React.ReactNode }) => {
-  return <div className="h-full flex justify-center bg-white">{children}</div>;
+  return <div className="min-h-full flex justify-center bg-white">{children}</div>;
 };

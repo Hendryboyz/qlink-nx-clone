@@ -1,9 +1,12 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import Link from 'next/link';
 import Button from '../../components/Button';
 import Title from '../../components/Title';
 
 const Success = () => {
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
 
   return (
     <div className="w-full pt-9 pb-12 px-12 flex flex-col h-full flex-1">

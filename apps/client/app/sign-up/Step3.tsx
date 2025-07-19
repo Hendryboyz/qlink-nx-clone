@@ -181,8 +181,8 @@ const Step3 = (props: Props) => {
         }) => (
           <Fragment>
             <h4 className="text-primary text-xl">Enter Account Detail</h4>
-            <div className="flex-1 overflow-auto -mt-6 -mx-3">
-              <form onSubmit={handleSubmit} className="h-full overflow-auto">
+            <div className="-mt-6 -mx-3">
+              <form onSubmit={handleSubmit}>
                 <div className="ml-2 mr-4">
                   <label id="email">
                     <div className={`${DEFAULT_INPUT_STYLES} mb-7 h-12`}>
