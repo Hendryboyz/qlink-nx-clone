@@ -40,9 +40,9 @@ const ProductCard = ({ data, handleEdit }: { data: ProductVO, handleEdit: (data:
   return (
     <>
       <div className="flex justify-between min-h-[164px] bg-[#C3C3C3]">
-        <div className="ml-9 mb-3 self-end">
-          <p className="text-xl font-light text-white">{data.year}</p>
-          <h2 className="text-3xl font-gilroy-heavy text-primary-500">{modelDefined ? modelDefined.title : model}</h2>
+        <div className="ml-9 mb-2 self-end">
+          <p className="text-xl font-light text-white font-gilroy-light">{data.year}</p>
+          <h2 className="text-3xl font-gilroy-heavy text-primary-500 -mt-2">{modelDefined ? modelDefined.title : model}</h2>
         </div>
         <img
           className="mr-8 mt-8 self-start"
