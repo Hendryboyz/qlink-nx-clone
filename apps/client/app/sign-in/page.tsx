@@ -115,7 +115,7 @@ export default function SignIn() {
                 <div className="flex mt-5 justify-between items-center text-xs font-gilroy-medium">
                   <label
                     htmlFor="rememberMe"
-                    className="flex items-center pl-1 cursor-pointer"
+                    className="flex items-center cursor-pointer"
                   >
                     <Field name="rememberMe">
                       {({ field }) => (
@@ -149,12 +149,12 @@ export default function SignIn() {
                         </div>
                       )}
                     </Field>
-                    <span className="ml-2 text-white leading-5">
+                    <span className="ml-1 text-white">
                       Remember Me
                     </span>
                   </label>
-                  <Link href="/reset-password" className="leading-5">
-                    <span className="text-red-300 text-right">
+                  <Link href="/reset-password">
+                    <span className="text-red-300">
                       Forgot password?
                     </span>
                   </Link>
