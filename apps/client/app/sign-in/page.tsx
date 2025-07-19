@@ -115,24 +115,48 @@ export default function SignIn() {
                 <div className="flex mt-5 justify-between items-center text-xs font-gilroy-medium">
                   <label
                     htmlFor="rememberMe"
-                    className="flex items-center pl-1"
+                    className="flex items-center pl-1 cursor-pointer"
                   >
-                    <Field
-                      id="rememberMe"
-                      name="rememberMe"
-                      type="checkbox"
-                      onChange={() => {
-                        setFieldValue('rememberMe', !values.rememberMe);
-                      }}
-                    />
-                    <span className="ml-2 mt-0.5 text-white">
+                    <Field name="rememberMe">
+                      {({ field }) => (
+                        <div className="relative">
+                          <input
+                            id="rememberMe"
+                            type="checkbox"
+                            checked={values.rememberMe}
+                            onChange={() => {
+                              setFieldValue('rememberMe', !values.rememberMe);
+                            }}
+                            className="sr-only"
+                          />
+                          <div
+                            className={`
+                              w-4 h-4 border-2 border-white rounded-sm flex items-center justify-center transition-all duration-200
+                              ${values.rememberMe
+                                ? 'bg-primary border-primary'
+                                : 'bg-transparent border-white'
+                              }
+                            `}
+                          >
+                            {values.rememberMe && (
+                              <img
+                                src="/assets/checked.svg"
+                                alt="checked"
+                                className="w-2.5 h-1.5"
+                              />
+                            )}
+                          </div>
+                        </div>
+                      )}
+                    </Field>
+                    <span className="ml-2 text-white leading-5">
                       Remember Me
                     </span>
                   </label>
-                  <Link href="/reset-password">
-                    <h4 className="text-red-300 text-right">
+                  <Link href="/reset-password" className="leading-5">
+                    <span className="text-red-300 text-right">
                       Forgot password?
-                    </h4>
+                    </span>
                   </Link>
                 </div>
               </div>
