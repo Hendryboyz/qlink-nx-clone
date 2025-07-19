@@ -1,9 +1,11 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 import { ProductVO } from '@org/types';
 import { css } from '@emotion/css';
 import { DEFAULT_MODELS } from '$/utils';
+import { usePopup } from '$/hooks/PopupProvider';
+import Button from '$/components/Button';
 // TODO: Need to change to dynamically get pictures in future version
 import defaultMotorImage from '$/public/assets/sym125.png';
 
@@ -29,6 +31,9 @@ const rowCss = css`
 `
 
 const ProductCard = ({ data, handleEdit }: { data: ProductVO, handleEdit: (data: ProductVO) => void }) => {
+  const { showPopup, hidePopup } = usePopup();
+  const [isGiftRedeemed, setIsGiftRedeemed] = useState(false);
+
   const {
     model,
     registrationDate,
@@ -88,7 +93,77 @@ const ProductCard = ({ data, handleEdit }: { data: ProductVO, handleEdit: (data:
           <p className="title">Dealer Name</p>
           <p className="font-semibold">{dealerName}</p>
         </div>
+        <div className="px-6 py-3 bg-gray-700 flex justify-center">
+          <button
+            className={`w-full mt-2 px-2 rounded-lg text-base text-center flex items-center justify-center leading-none border-none h-[27px] ${
+              isGiftRedeemed
+                ? 'text-white bg-gray-500 cursor-not-allowed opacity-60 max-w-[240px]'
+                : 'text-[#DF6B00] bg-[#FFD429] cursor-pointer hover:bg-[#E5C027] max-w-[191px]'
+            }`}
+            style={{
+              // todo: need check font source
+              fontFamily: 'GilroySemiBold',
+              letterSpacing: '0%'
+            }}
+            disabled={isGiftRedeemed}
+            onClick={(e) => {
+              e.stopPropagation();
+
+              if (isGiftRedeemed) return;
+
+              // Show confirmation popup
+              showPopup({
+                useDefault: false,
+                title: 'Redeem Welcome Gift?',
+                content: (
+                  <div className="px-4 py-4">
+                    <p className="text-[#D70127] text-sm mb-6 font-[GilroyRegular]">
+                      This will confirm that the welcome gift has been claimed. Please ask the authorized QLINK dealer to click this button for you.
+                    </p>
+                    <div className="flex items-center justify-between gap-4 w-full">
+                      <Button
+                        className="py-2 px-6 text-sm rounded-lg h-10 w-full bg-[#D70127] text-white font-bold"
+                        onClick={hidePopup}
+                      >
+                        Cancel
+                      </Button>
+                      <Button
+                        className="py-2 px-6 text-sm rounded-lg h-10 w-full bg-[#D70127] text-white font-bold font-[GilroySemiBold]"
+                        onClick={() => {
+                          hidePopup();
+                          // Show success popup
+                          showPopup({
+                            useDefault: false,
+                            title: 'Gift Redeemed',
+                            content: (
+                              <div className="flex justify-center py-4">
+                                <Button
+                                  className="py-2 px-6 text-xs leading-tight rounded-lg h-10 w-48 bg-[#D70127] text-white font-bold font-[GilroySemiBold]"
+                                  onClick={() => {
+                                    setIsGiftRedeemed(true);
+                                    hidePopup();
+                                  }}
+                                >
+                                  Enjoy!
+                                </Button>
+                              </div>
+                            )
+                          });
+                        }}
+                      >
+                        OK
+                      </Button>
+                    </div>
+                  </div>
+                )
+              });
+            }}
+          >
+            {isGiftRedeemed ? 'Welcome Gift Redeemed' : 'Redeem Welcome Gift'}
+          </button>
+        </div>
       </div>
+
     </>
   );
 };
