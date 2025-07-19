@@ -14,6 +14,10 @@ const rowCss = css`
   & .title {
     font-family: GilroyRegular;
     font-size: 12px;
+    margin-bottom: -8px;
+  }
+  &:nth-of-type(n+2) .title {
+    margin-top: 4px;
   }
   & p {
     font-size: 16px;
@@ -49,7 +53,7 @@ const ProductCard = ({ data, handleEdit }: { data: ProductVO, handleEdit: (data:
           }}
         />
       </div>
-      <div className={`space-y-2 py-4 px-6 bg-gray-700 text-white ${rowCss}`}>
+      <div className={`py-4 px-6 bg-gray-700 text-white ${rowCss}`}>
         <div>
           <p className="title">Registration ID</p>
           <p className="font-semibold">{id}</p>
