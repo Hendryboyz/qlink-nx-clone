@@ -17,6 +17,7 @@ import {
 import { usePopup } from '$/hooks/PopupProvider';
 import { DEFAULT_ERROR_MSG } from '@org/common';
 import DropdownField from '$/components/Dropdown';
+import DateField from '$/components/Fields/DateField';
 import Button from '$/components/Button';
 import { DEFAULT_MODELS } from '$/utils';
 
@@ -117,6 +118,16 @@ export default function GarageEdit({ data, onCancel, onRemove }: Props) {
     dealerName: data.dealerName,
   });
   const { showPopup, hidePopup } = usePopup();
+
+  // 加入函數來轉換 model id 為 title
+  const getDisplayValue = (key: KEY, value: any) => {
+    if (key === 'model' && value) {
+      const modelFound = DEFAULT_MODELS.find(m => m.id.toString() === value.toString());
+      return modelFound ? modelFound.title : value;
+    }
+    return value;
+  };
+
   useEffect(() => {
     //TODO: fetch model list
     setModels(DEFAULT_MODELS);
@@ -235,25 +246,39 @@ export default function GarageEdit({ data, onCancel, onRemove }: Props) {
                           />
                         ) : (
                           <div className="flex items-center justify-between">
-                            <Field
-                              innerRef={inputRefs.current[key]}
-                              id={key}
-                              name={key}
-                              type={formData.type || 'text'}
-                              placeholder=""
-                              className="bg-white text-lg"
-                              onBlur={(e: React.FocusEvent<HTMLInputElement>) => {
-                                setFieldValue(key, initValue[key]);
-                                setEditKey(null);
-                                setEditValue('');
-                              }}
-                              onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                                const value = e.target.value;
-                                setFieldValue(key, value);
-                                setEditValue(value);
-                              }}
-                              disabled={!formData.editable || editKey != key}
-                            />
+                                                                                                                   {formData.type === 'date' && editKey === key ? (
+                               <DateField
+                                 name={key}
+                                 defaultDisplayValue="0000-00-00"
+                                 className="text-lg"
+                                 autoOpen={true}
+                               />
+                             ) : formData.type === 'date' ? (
+                               <div className="bg-white text-lg" style={{ textAlign: 'left' }}>
+                                 {getDisplayValue(key, initValue[key])}
+                               </div>
+                             ) : (
+                               <Field
+                                 innerRef={inputRefs.current[key]}
+                                 id={key}
+                                 name={key}
+                                 type={formData.type || 'text'}
+                                 placeholder=""
+                                 className="bg-white text-lg"
+                                 value={editKey === key ? editValue : getDisplayValue(key, initValue[key])}
+                                 onBlur={(e: React.FocusEvent<HTMLInputElement>) => {
+                                   setFieldValue(key, initValue[key]);
+                                   setEditKey(null);
+                                   setEditValue('');
+                                 }}
+                                 onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                                   const value = e.target.value;
+                                   setFieldValue(key, value);
+                                   setEditValue(value);
+                                 }}
+                                 disabled={!formData.editable || editKey != key}
+                               />
+                             )}
                             {editKey === key && isValueChanged ? (
                               <div className="flex gap-1">
                                 <IconButton

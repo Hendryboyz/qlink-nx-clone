@@ -10,6 +10,7 @@ import { useRouter } from 'next/navigation';
 import { usePopup } from '$/hooks/PopupProvider';
 import { DEFAULT_ERROR_MSG } from '@org/common';
 import DropdownField from '$/components/Dropdown';
+import DateField from '$/components/Fields/DateField';
 import Button from '$/components/Button';
 import { DEFAULT_MODELS } from '$/utils';
 const CreateSchema = Yup.object().shape({
@@ -27,7 +28,7 @@ const CreateSchema = Yup.object().shape({
 });
 interface FormData {
   model: string;
-  year: number;
+  year: number | '0000';
   vin: string;
   dealerName: string;
   engineNumber: string;
@@ -43,12 +44,12 @@ type Columns = {
 };
 const defaultValue: FormData = {
   model: '',
-  year: NaN,
-  vin: '',
-  dealerName: '',
-  engineNumber: '',
-  purchaseDate: '',
-  registrationDate: '',
+  year: '0000',
+  vin: '0000',
+  dealerName: 'X',
+  engineNumber: '0000',
+  purchaseDate: '0000-00-00',
+  registrationDate: '0000-00-00',
 };
 const ATTRS: Columns = {
   model: {
@@ -170,6 +171,12 @@ export default function GarageAdd() {
                               label: vo.title,
                             }))}
                             label={data.title}
+                          />
+                        ) : data.type === 'date' ? (
+                          <DateField
+                            name={key}
+                            defaultDisplayValue="0000-00-00"
+                            className="text-base"
                           />
                         ) :
                           <Field
