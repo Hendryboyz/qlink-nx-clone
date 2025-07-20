@@ -164,7 +164,7 @@ export default function GarageAdd() {
                           <DropdownField
                             id={key}
                             name={key}
-                            placeholder=" "
+                            placeholder="X"
                             options={models.map((vo) => ({
                               value: vo.id,
                               label: vo.title,
