@@ -31,19 +31,23 @@ export type UserVO = Omit<User, 'password' | 'birthday'> & {
 export type UserDto = Omit<User, 'id' | 'createdAt' | 'updatedAt' | 'isDelete' | 'birthday'> & {
   birthday?: string;
 }
-export interface UserUpdateDto {
-  email?: string;
-  addressDetail?: string
-  birthday?: string;
-  password?: string;
-  whatsapp?: string;
-  facebook?: string;
-  type?: UserType;
+
+export interface ClientUserUpdateDto {
   firstName?: string;
   midName?: string;
   lastName?: string;
-  addressState?: string;
+  birthday?: string;
+  email?: string;
+  phone?: string;
   addressCity?: string;
+  addressState?: string;
+  facebook?: string;
+  whatsapp?: string;
+  source?: number;
+}
+export interface UserUpdateDto extends ClientUserUpdateDto {
+  addressDetail?: string
+  password?: string;
   isDelete?: boolean;
   avatarS3uri?: string;
 }

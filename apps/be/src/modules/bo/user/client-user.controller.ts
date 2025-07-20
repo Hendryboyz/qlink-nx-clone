@@ -1,18 +1,43 @@
-import { Controller, Delete, Get, Param, Query, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Logger,
+  Param,
+  Patch,
+  Query,
+  UseGuards
+} from '@nestjs/common';
 import { UserService } from '$/modules/user/user.service';
 import { JwtAuthGuard } from '$/modules/bo/verification/jwt-auth.guard';
 import { RolesGuard } from '$/modules/bo/verification/roles.guard';
 import { Roles } from '$/modules/bo/verification/roles.decorator';
-import { BoRole } from '@org/types';
+import { BoRole, ClientUserUpdateDto } from '@org/types';
 
 @UseGuards(JwtAuthGuard, RolesGuard)
 @Controller('clients')
 export class ClientUserController {
+  private logger = new Logger(this.constructor.name);
   constructor(private readonly userService: UserService) {}
   @Roles(BoRole.ADMIN)
   @Get()
   findAll(@Query('page') page: number = 1, @Query('limit') limit: number = 10) {
     return this.userService.findByPage(page, limit);
+  }
+
+  @Roles(BoRole.ADMIN)
+  @Patch(':id')
+  async patchUser(@Param('id') id: string, @Body()dto: ClientUserUpdateDto) {
+    try {
+      const updatedUser = await this.userService.updateUser(id, dto);
+      if (updatedUser !== null && updatedUser !== undefined) {
+        return {affectedRows: 1};
+      }
+    } catch (error) {
+      this.logger.error(error);
+      throw error;
+    }
   }
 
   @Roles(BoRole.ADMIN)

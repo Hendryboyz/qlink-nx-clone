@@ -51,7 +51,7 @@ export default function MemberContextProvider({ children }: { children: ReactNod
       setTotal(total);
     }
     fetchClientUsers();
-  }, [paging]);
+  }, [paging, members]);
 
   const ctxValues: MemberContextType = {
     editingMember,

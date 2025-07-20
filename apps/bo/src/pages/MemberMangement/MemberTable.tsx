@@ -1,5 +1,5 @@
 import React, { useContext } from 'react';
-import { UserSourceType, UserVO } from '@org/types';
+import { UserVO } from '@org/types';
 import { Button, Modal, Space } from 'antd';
 import API from '$/utils/fetch';
 import { ProTable } from '@ant-design/pro-components';
@@ -16,7 +16,6 @@ export default function MemberTable() {
     setMembers,
     setEditingMember,
   } = useContext(MemberContext);
-
   const onDeleting = (clientId: string) => {
     const client = members.find(c => c.id === clientId);
     Modal.confirm({
@@ -63,6 +62,11 @@ export default function MemberTable() {
       title: 'Birthday',
       dataIndex: 'birthday',
       key: 'birthday',
+    },
+    {
+      title: 'Gender',
+      dataIndex: 'gender',
+      key: 'gender',
     },
     {
       title: 'Email',

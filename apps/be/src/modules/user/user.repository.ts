@@ -89,6 +89,7 @@ export class UserRepository {
           'first_name',
           'mid_name',
           'last_name',
+          'gender',
           'birthday',
           'email',
           'phone',
@@ -102,6 +103,7 @@ export class UserRepository {
         .where({
           is_delete: false,
         })
+        .orderBy('updatedAt', 'desc')
         .offset(offset)
         .limit(limit);
       const [{ count }] = await this.knex('users').count('id as count');

@@ -10,77 +10,128 @@ import {
 import { MemberContext } from '$/pages/MemberMangement/MemberContext';
 import dayjs from 'dayjs';
 import { STATES, typedObjectEntries, UserSourceDisplay } from '@org/common';
-import { UserSourceType } from '@org/types';
+import { UserSourceType, UserVO } from '@org/types';
+import API from '$/utils/fetch';
+
+type FieldType = {
+  firstName: string;
+  midName?: string;
+  lastName: string;
+  birthday: dayjs.Dayjs;
+  email: string;
+  phone: string;
+  addressCity: string;
+  addressState: string;
+  facebook?: string;
+  whatsapp?: string;
+  source?: number;
+};
 
 
 export default function MemberEditingForm() {
-  const {editingMember, setEditingMember} = useContext(MemberContext);
+  const {editingMember, setEditingMember, setMembers} = useContext(MemberContext);
+  const [form] = Form.useForm();
+
   function valueChangeHandler(values: any) {
+  }
+
+  const userValues = {
+    firstName: editingMember.firstName,
+    midName: editingMember.midName,
+    lastName: editingMember.lastName,
+    birthday: editingMember.birthday &&
+                dayjs(editingMember.birthday, 'YYYY-MM-DD'),
+    email: editingMember.email,
+    phone: editingMember.phone,
+    addressCity: editingMember.addressCity,
+    addressState: editingMember.addressState,
+    facebook: editingMember.facebook,
+    whatsapp: editingMember.whatsapp,
+    source: editingMember.source,
+  }
+
+  async function handleFormSubmit(values: FieldType) {
+    const payload = {
+      ...values,
+      birthday: values.birthday.format(),
+    };
+    try {
+      const updatedUsers = await API.patchClientUser(editingMember.id, payload);
+      if (updatedUsers !== undefined && updatedUsers !== null) {
+        setMembers((prevUsers: UserVO[]) => {
+          return prevUsers.map(u => {
+            if (u.id === editingMember.id) {
+              return { id: u.id };
+            }
+            return u;
+          });
+        });
+        setEditingMember(undefined);
+      }
+    } catch(e) {
+      console.error(e);
+    }
   }
 
   return (
     <Form
-      labelCol={{ span: 4 }}
+      form={form}
+      labelCol={{ span: 6 }}
       wrapperCol={{ span: 14 }}
       layout="horizontal"
-      initialValues={{ size: 'default' }}
-      // onValuesChange={valueChangeHandler}
+      initialValues={userValues}
+      onValuesChange={valueChangeHandler}
       style={{ maxWidth: 600 }}
-      onFinish={() => {}}
+      onFinish={handleFormSubmit}
     >
       <Form.Item
         label="First Name"
         name="firstName"
         rules={[{ required: true, message: 'Please input the first name!' }]}
       >
-        <Input defaultValue={editingMember.firstName} />
+        <Input />
       </Form.Item>
       <Form.Item
         label="Mid Name"
         name="midName"
         rules={[{ required: false, message: 'Please input the mid name!' }]}
       >
-        <Input defaultValue={editingMember.midName} />
+        <Input />
       </Form.Item>
       <Form.Item
         label="Last Name"
         name="lastName"
         rules={[{ required: true, message: 'Please input the last name!' }]}
       >
-        <Input defaultValue={editingMember.lastName} />
+        <Input />
       </Form.Item>
       <Form.Item label="Birthday" name="birthday">
-        <DatePicker
-          defaultValue={
-            editingMember.birthday &&
-            dayjs(editingMember.birthday, 'YYYY-MM-DD')
-          }
-        />
+        <DatePicker />
       </Form.Item>
       <Form.Item label="Email" name="email">
-        <Input defaultValue={editingMember.email} disabled />
+        <Input disabled />
       </Form.Item>
       <Form.Item label="Mobile" name="phone">
-        <Input value={editingMember.phone} disabled />
+        <Input  />
       </Form.Item>
       <Form.Item label="City" name="addressCity" rules={[{ required: true, message: 'Please input the city!' }]}>
-        <Input defaultValue={editingMember.addressCity} />
+        <Input />
       </Form.Item>
       <Form.Item label="State" name="addressState">
-        <Select defaultValue={editingMember.addressState}>
+        <Select>
           {STATES.map((state) => (
             <Select.Option key={state} value="state">{state}</Select.Option>
           ))}
         </Select>
       </Form.Item>
       <Form.Item label="Facebook ID" name="facebook">
-        <Input defaultValue={editingMember.facebook} />
+        <Input />
       </Form.Item>
       <Form.Item label="Whatsapp ID" name="whatsapp">
-        <Input defaultValue={editingMember.whatsapp} />
+        <Input />
       </Form.Item>
       <Form.Item label="Registration Source" name="source">
-        <Select defaultValue={UserSourceDisplay[editingMember.source]}>
+        <Select>
           {typedObjectEntries(UserSourceType)
             .filter(([k, v]) => {
               return isNaN(Number(k)) && v !== UserSourceType.NONE;
@@ -93,7 +144,7 @@ export default function MemberEditingForm() {
       <Form.Item>
         <Space>
           <Button htmlType="button" onClick={() => setEditingMember(null)}>Cancel</Button>
-          <Button htmlType="submit">Save</Button>
+          <Button type='primary' htmlType="submit">Save</Button>
         </Space>
       </Form.Item>
     </Form>

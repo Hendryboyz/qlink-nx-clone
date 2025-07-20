@@ -7,6 +7,7 @@ import {
   CreateBoUserDto,
   PostEntity,
   ResetBoUserPasswordDto,
+  ClientUserUpdateDto,
 } from '@org/types';
 import { GetPostsResponse, GetUsersResponse, MutateUserResponse, UploadImageResponse } from '$/types';
 class Api {
@@ -247,7 +248,11 @@ class Api {
   }
 
   async deleteClientUser(id: string): Promise<MutateUserResponse> {
-    return this.delete(`/users/client/${id}`);
+    return this.delete(`/users/clients/${id}`);
+  }
+
+  async patchClientUser(memberId: string, payload: ClientUserUpdateDto): Promise<MutateUserResponse> {
+    return this.patch(`/users/clients/${memberId}`, payload);
   }
 
   async createUser(userData: CreateBoUserDto): Promise<BoUser> {
