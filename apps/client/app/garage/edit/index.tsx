@@ -250,11 +250,11 @@ export default function GarageEdit({ data, onCancel, onRemove }: Props) {
                                <DateField
                                  name={key}
                                  defaultDisplayValue="0000-00-00"
-                                 className="text-lg"
+                                 className="text-base"
                                  autoOpen={true}
                                />
                              ) : formData.type === 'date' ? (
-                               <div className="bg-white text-lg" style={{ textAlign: 'left' }}>
+                               <div className="bg-white text-base" style={{ textAlign: 'left' }}>
                                  {getDisplayValue(key, initValue[key])}
                                </div>
                              ) : (
@@ -264,7 +264,7 @@ export default function GarageEdit({ data, onCancel, onRemove }: Props) {
                                  name={key}
                                  type={formData.type || 'text'}
                                  placeholder=""
-                                 className="bg-white text-lg"
+                                 className="bg-white text-base"
                                  value={editKey === key ? editValue : getDisplayValue(key, initValue[key])}
                                  onBlur={(e: React.FocusEvent<HTMLInputElement>) => {
                                    setFieldValue(key, initValue[key]);
@@ -276,7 +276,7 @@ export default function GarageEdit({ data, onCancel, onRemove }: Props) {
                                    setFieldValue(key, value);
                                    setEditValue(value);
                                  }}
-                                 disabled={!formData.editable || editKey != key}
+                                 readOnly={!formData.editable || editKey != key}
                                />
                              )}
                             {editKey === key && isValueChanged ? (
