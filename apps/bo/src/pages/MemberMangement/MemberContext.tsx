@@ -13,6 +13,7 @@ interface MemberContextType {
   total: number;
   paging: pagingType;
   setPaging: (prevState) => void
+  setFilterParams: (prevState) => void
   setMembers: (prevState) => void
   setEditingMember: (prevState) => void
 }
@@ -26,6 +27,7 @@ const INITIAL_STATE: MemberContextType = {
     page: 1,
   },
   setPaging: (prevState) => {},
+  setFilterParams: (prevState) => {},
   setMembers: (prevState) => {},
   setEditingMember: (prevState) => {},
 }
@@ -43,15 +45,16 @@ export default function MemberContextProvider({ children }: { children: ReactNod
   const [members, setMembers] = useState<UserVO[]>([]);
   const [total, setTotal] = useState(0);
   const [paging, setPaging] = useState(INITIAL_PAGING_VALUES);
+  const [filterParams, setFilterParams] = useState(undefined);
 
   useEffect(() => {
     async function fetchClientUsers() {
-      const { data, total } = await API.getClientUsers(paging.page, paging.pageSize);
+      const { data, total } = await API.getClientUsers(paging.page, paging.pageSize, filterParams);
       setMembers(data);
       setTotal(total);
     }
     fetchClientUsers();
-  }, [paging, members]);
+  }, [paging, filterParams, editingMember]);
 
   const ctxValues: MemberContextType = {
     editingMember,
@@ -59,6 +62,7 @@ export default function MemberContextProvider({ children }: { children: ReactNod
     total,
     paging,
     setPaging,
+    setFilterParams,
     setMembers,
     setEditingMember,
   }

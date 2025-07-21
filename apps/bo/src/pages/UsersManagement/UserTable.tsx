@@ -24,6 +24,7 @@ export default function UserTable(): ReactElement {
       dataIndex: 'id',
       key: 'id',
       hideInTable: true,
+      search: false,
     },
     {
       title: 'User Name',
@@ -39,6 +40,7 @@ export default function UserTable(): ReactElement {
       title: 'Create Date',
       dataIndex: 'createdAt',
       key: 'created_at',
+      search: false,
       render: (data, _) => {
         const date = dateTimeFormatter.format(new Date(data as string))
         return <span>{date}</span>;
@@ -48,6 +50,7 @@ export default function UserTable(): ReactElement {
       title: 'Last Login',
       dataIndex: 'lastLoginAt',
       key: 'lastLogin',
+      search: false,
       render: (data, _) => {
         const date = dateTimeFormatter.format(new Date(data as string))
         return <span>{date}</span>;
@@ -56,6 +59,7 @@ export default function UserTable(): ReactElement {
     {
       title: 'Action',
       key: 'action',
+      search: false,
       render: (_: unknown, record: any) => (
         <Space size="middle">
           <Button
@@ -124,6 +128,8 @@ export default function UserTable(): ReactElement {
         columns={tableColumns}
         dataSource={users}
         rowKey="id"
+        beforeSearchSubmit={(params) => {
+        }}
         search={{
           labelWidth: 'auto',
         }}

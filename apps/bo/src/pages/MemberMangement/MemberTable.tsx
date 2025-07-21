@@ -1,10 +1,10 @@
 import React, { useContext } from 'react';
 import { UserVO } from '@org/types';
-import { Button, Modal, Space } from 'antd';
+import { Button, Modal, Select, Space } from 'antd';
 import API from '$/utils/fetch';
 import { ProTable } from '@ant-design/pro-components';
 import { MemberContext } from '$/pages/MemberMangement/MemberContext';
-import { UserSourceDisplay } from '@org/common';
+import { STATES, UserSourceDisplay } from '@org/common';
 
 export default function MemberTable() {
 
@@ -13,9 +13,11 @@ export default function MemberTable() {
     total,
     paging,
     setPaging,
+    setFilterParams,
     setMembers,
     setEditingMember,
   } = useContext(MemberContext);
+
   const onDeleting = (clientId: string) => {
     const client = members.find(c => c.id === clientId);
     Modal.confirm({
@@ -37,6 +39,7 @@ export default function MemberTable() {
       dataIndex: 'id',
       key: 'id',
       hideInTable: true,
+      search: false,
     },
     {
       title: 'Member ID',
@@ -62,11 +65,13 @@ export default function MemberTable() {
       title: 'Birthday',
       dataIndex: 'birthday',
       key: 'birthday',
+      search: false,
     },
     {
       title: 'Gender',
       dataIndex: 'gender',
       key: 'gender',
+      search: false,
     },
     {
       title: 'Email',
@@ -87,26 +92,47 @@ export default function MemberTable() {
       title: 'State',
       dataIndex: 'addressState',
       key: 'addressState',
+      renderFormItem: (
+        dom,
+        { type, defaultRender, ...rest },
+        form) => {
+        return (
+          <Select
+            {...rest}
+            onChange={(val) =>{
+              form.setFieldValue(dom.key, val);
+            }}
+          >
+            {STATES.map((state) => (
+              <Select.Option key={state} value={state}>{state}</Select.Option>
+            ))}
+          </Select>
+        );
+      },
     },
     {
       title: 'Facebook ID',
       dataIndex: 'facebook',
       key: 'facebook',
+      search: false,
     },
     {
       title: 'Whatsapp ID',
       dataIndex: 'whatsapp',
       key: 'whatsapp',
+      search: false,
     },
     {
       title: 'Registration Date',
       dataIndex: 'createdAt',
       key: 'registrationDate',
+      search: false,
     },
     {
       title: 'Registration Source',
       dataIndex: 'source',
       key: 'RegistrationSource',
+      search: false,
       render: (source: string, _) => {
         let typeIndex = +source;
         if (!source || source === '-') {
@@ -118,11 +144,13 @@ export default function MemberTable() {
     {
       title: 'Verification Status',
       key: 'VerificationStatus',
+      search: false,
       render: () => (<Space>Verified</Space>),
     },
     {
       title: 'Actions',
       key: 'action',
+      search: false,
       render: (_: unknown, record: UserVO) => (
         <Space size="middle">
           <Button onClick={() => { setEditingMember(record) }}>Edit</Button>
@@ -145,6 +173,9 @@ export default function MemberTable() {
       columns={tableColumns}
       dataSource={members}
       rowKey="id"
+      beforeSearchSubmit={(params) => {
+        setFilterParams(params);
+      }}
       search={{
         labelWidth: 'auto',
       }}

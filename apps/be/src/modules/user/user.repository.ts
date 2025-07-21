@@ -9,6 +9,7 @@ import { IdentifierType, UserDto, UserEntity, UserUpdateDto } from '@org/types';
 import { KNEX_CONNECTION } from '$/database.module';
 import { Knex } from 'knex';
 import { isEmpty } from 'lodash';
+import { MemberQueryFilters } from '$/modules/user/user.types';
 
 @Injectable()
 export class UserRepository {
@@ -79,10 +80,10 @@ export class UserRepository {
     return await this.findById(obj.id);
   }
 
-  public async findByPage(page: number, limit: number) {
+  public async findByPage(page: number, limit: number, filters: MemberQueryFilters) {
     const offset = (page - 1) * limit;
     try {
-      const data = await this.knex('users')
+      const queryBuilder = this.knex('users')
         .select([
           'id',
           'member_id',
@@ -102,15 +103,49 @@ export class UserRepository {
         ])
         .where({
           is_delete: false,
-        })
-        .orderBy('updatedAt', 'desc')
+        });
+      this.appendFilters(queryBuilder, filters);
+      const data = await queryBuilder.orderBy('updatedAt', 'desc')
         .offset(offset)
         .limit(limit);
-      const [{ count }] = await this.knex('users').count('id as count');
-      return { data, total: parseInt(count as string, 10) };
+
+      const countBuilder = this.knex('users').count('id as count');
+      this.appendFilters(countBuilder, filters);
+      const [{ count }] = await countBuilder;
+      return { data, total: +count };
     } catch (error) {
       this.logger.error(`Error fetching users: ${error.message}`, error.stack);
       throw error;
+    }
+  }
+
+  private appendFilters(
+    queryBuilder: Knex.QueryBuilder,
+    filters: MemberQueryFilters,
+  ) {
+    if (filters.memberId) {
+      queryBuilder.andWhereLike('member_id', `%${filters.memberId}%`);
+    }
+    if (filters.firstName) {
+      queryBuilder.andWhereLike('first_name', `%${filters.firstName}%`);
+    }
+    if (filters.midName) {
+      queryBuilder.andWhereLike('mid_name', `%${filters.midName}%`);
+    }
+    if (filters.lastName) {
+      queryBuilder.andWhereLike('last_name', `%${filters.lastName}%`);
+    }
+    if (filters.email) {
+      queryBuilder.andWhereLike('email', `%${filters.email}%`);
+    }
+    if (filters.phone) {
+      queryBuilder.andWhereLike('phone', `%${filters.phone}%`);
+    }
+    if (filters.addressState) {
+      queryBuilder.andWhere('address_state', filters.addressState);
+    }
+    if (filters.addressCity) {
+      queryBuilder.andWhereILike('address_city', `%${filters.addressCity}%`);
     }
   }
 

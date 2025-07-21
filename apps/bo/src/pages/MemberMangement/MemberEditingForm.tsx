@@ -66,7 +66,7 @@ export default function MemberEditingForm() {
             return u;
           });
         });
-        setEditingMember(undefined);
+        setEditingMember(null);
       }
     } catch(e) {
       console.error(e);
@@ -120,7 +120,7 @@ export default function MemberEditingForm() {
       <Form.Item label="State" name="addressState">
         <Select>
           {STATES.map((state) => (
-            <Select.Option key={state} value="state">{state}</Select.Option>
+            <Select.Option key={state} value={state}>{state}</Select.Option>
           ))}
         </Select>
       </Form.Item>

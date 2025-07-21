@@ -1,4 +1,4 @@
-import { PostEntity, UserVO } from '@org/types';
+import { PostEntity } from '@org/types';
 
 export type FormValues = Pick<PostEntity, 'title' | 'category' | 'isActive' | 'isHighlight'>;
 

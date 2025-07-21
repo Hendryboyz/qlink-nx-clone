@@ -9,7 +9,13 @@ import {
   ResetBoUserPasswordDto,
   ClientUserUpdateDto,
 } from '@org/types';
-import { GetPostsResponse, GetUsersResponse, MutateUserResponse, UploadImageResponse } from '$/types';
+import {
+  GetPostsResponse, GetUsersFilters,
+  GetUsersResponse,
+  MutateUserResponse,
+  UploadImageResponse
+} from '$/types';
+
 class Api {
   private instance: AxiosInstance;
   private isRefreshing = false;
@@ -243,8 +249,20 @@ class Api {
     }
   }
 
-  async getClientUsers(page = 1, limit = 10): Promise<GetUsersResponse> {
-    return this.get(`/users/clients?page=${page}&limit=${limit}`);
+  async getClientUsers(page = 1, limit = 10, filters: GetUsersFilters = {}): Promise<GetUsersResponse> {
+    let queries = [];
+    if (filters) {
+      queries = Object.entries(filters).map(([key, value]) => {
+        if (value === undefined || value === null) return undefined;
+        return `${key}=${value}`
+      });
+    }
+    let resourceUrl = `/users/clients?page=${page}&limit=${limit}`;
+    if (queries.length > 0) {
+      resourceUrl += ("&" + queries.join("&"));
+    }
+
+    return this.get(resourceUrl);
   }
 
   async deleteClientUser(id: string): Promise<MutateUserResponse> {

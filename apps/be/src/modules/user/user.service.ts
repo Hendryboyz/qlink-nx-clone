@@ -3,6 +3,7 @@ import { IdentifierType, RegisterDto, UserEntity, UserUpdateDto, UserVO } from '
 import { UserRepository } from './user.repository';
 import { omit } from 'lodash';
 import { ENTITY_PREFIX, generateSalesForceId } from '$/modules/utils/id.util';
+import { MemberQueryFilters } from '$/modules/user/user.types';
 
 type UserOmitFields = ('birthday' | 'whatsapp' | 'facebook');
 
@@ -81,13 +82,14 @@ export class UserService {
   public async findByPage(
     page: number = 1,
     limit: number = 10,
+    filters: MemberQueryFilters,
   ): Promise<{
     data: UserVO[];
     total: number;
     page: number;
     limit: number;
   }> {
-    const {data, total} = await this.userRepository.findByPage(page, limit);
+    const {data, total} = await this.userRepository.findByPage(page, limit, filters);
     return {data, total, page, limit };
   }
 
