@@ -130,9 +130,7 @@ export default function UserTable(): ReactElement {
         rowKey="id"
         beforeSearchSubmit={(params) => {
         }}
-        search={{
-          labelWidth: 'auto',
-        }}
+        search={false}
         pagination={{
           onChange: ((page, pageSize) => {
             setPaging({page, pageSize});
