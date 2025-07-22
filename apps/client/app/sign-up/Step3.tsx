@@ -14,8 +14,7 @@ import {
   STATES,
 } from '@org/common';
 import SubmitButton from '$/components/Button/SubmitButton';
-import { DayPicker } from 'react-day-picker';
-import DatePickerClassNames from 'react-day-picker/style.module.css';
+import DateField from '$/components/Fields/DateField';
 import DropdownField from '$/components/Dropdown';
 import { usePopup } from '$/hooks/PopupProvider';
 import { DEFAULT_ERROR_MSG } from 'common/src';
@@ -115,7 +114,8 @@ type Props = {
 };
 const Step3 = (props: Props) => {
   const initValue: FormData = defaultValue;
-  const [showDatePicker, toggleDatePicker] = useState(false);
+  // Remove showDatePicker state
+  // const [showDatePicker, toggleDatePicker] = useState(false);
   const {email, token} = usePayload();
   const {showPopup} = usePopup();
   // const sourceOptions = typedObjectEntries(UserSourceType)
@@ -255,17 +255,10 @@ const Step3 = (props: Props) => {
                     </div>
                   </div>
                   <label htmlFor="birthday">
-                    <Field
-                      type="date"
-                      id="birthday"
+                    <DateField
                       name="birthday"
-                      placeholder="Birthday(YYYY-MM-DD)"
+                      defaultDisplayValue="Birthday"
                       className={DEFAULT_INPUT_STYLES}
-                      onChange={(e: any) => {
-                        // console.log(e.target.value);
-                        setFieldValue('birthday', e.target.value);
-                      }}
-                      // onClick={() => toggleDatePicker((p) => !p)}
                     />
                     <div className="min-h-7">
                       <ErrorMessage
@@ -273,19 +266,6 @@ const Step3 = (props: Props) => {
                         className={DEFAULT_ERROR_MSG_CLASS}
                         component="span"
                       />
-                    </div>
-                    <div className="absolute z-10 bg-white shadow-lg">
-                      {showDatePicker && (
-                        <DayPicker
-                          mode="single"
-                          selected={new Date(values.birthday)}
-                          classNames={DatePickerClassNames}
-                          onSelect={(d) =>
-                            setFieldValue('birthday', fromDate(d || new Date()))
-                          }
-                          onDayClick={() => toggleDatePicker(false)}
-                        />
-                      )}
                     </div>
                   </label>
                   <DropdownField
