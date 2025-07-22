@@ -185,8 +185,8 @@ const Step3 = (props: Props) => {
               <form onSubmit={handleSubmit}>
                 <div className="ml-2 mr-4">
                   <label id="email">
-                    <div className={`${DEFAULT_INPUT_STYLES} mb-7 h-12`}>
-                      <p className="text-gray-300 content-center h-full">{email || "user@example.com"}</p>
+                    <div className={`flex items-center ${DEFAULT_INPUT_STYLES} mb-7 h-12`}>
+                      <span className="text-gray-300 text-lg font-gilroy-medium">{email || "user@example.com"}</span>
                     </div>
                   </label>
                   <div>
