@@ -45,12 +45,12 @@ const Menu: React.FC<Props> = ({ isOpen, onClose }) => {
               <Cross2Icon height={24} width={24} />
             </button>
           </div>
-          <nav className="mt-9 text-xl pl-7 font-[GilroyRegular]">
+          <nav className="mt-8 text-xl pl-7 font-[GilroyRegular]">
             <ul>
               {mainItems.map((item, index) => {
                 const [title, link] = item;
                 return (
-                  <li key={index} className="py-4">
+                  <li key={index} className="py-2">
                     <Link href={link} className="hover:underline">
                       {title}
                     </Link>
