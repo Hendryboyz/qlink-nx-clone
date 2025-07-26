@@ -40,9 +40,11 @@ const Menu: React.FC<Props> = ({ isOpen, onClose }) => {
         }`}
       >
         <div className="px-5">
-          <button onClick={onClose} className="text-4xl">
-            <Cross2Icon height={24} width={24} />
-          </button>
+          <div className="h-9 flex items-center">
+            <button onClick={onClose} className="text-4xl">
+              <Cross2Icon height={24} width={24} />
+            </button>
+          </div>
           <nav className="mt-9 text-xl pl-7 font-[GilroyRegular]">
             <ul>
               {mainItems.map((item, index) => {
