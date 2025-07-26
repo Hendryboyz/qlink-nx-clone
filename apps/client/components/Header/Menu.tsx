@@ -40,8 +40,8 @@ const Menu: React.FC<Props> = ({ isOpen, onClose }) => {
         }`}
       >
         <div className="px-5">
-          <div className="h-9 flex items-center">
-            <button onClick={onClose} className="text-4xl">
+          <div className="h-7 flex items-center justify-start">
+            <button onClick={onClose}>
               <Cross2Icon height={24} width={24} />
             </button>
           </div>
