@@ -79,7 +79,7 @@ const ATTRS: Columns = {
   },
 };
 export default function GarageAdd() {
-  const DEFAULT_ERROR_MSG_CLASS = 'text-red-500 absolute top-0 right-0 text-xs text-right';
+  const DEFAULT_ERROR_MSG_CLASS = 'text-red-500 absolute top-0 right-0 text-xs text-right pl-3';
   const POPUP_BUTTON_STYLE = 'py-2 px-3 text-sm w-36 rounded-lg h-8 font-gilroy-bold';
   const [models, setModels] = useState<ModelVO[]>([]);
   const initValue: FormData = defaultValue;

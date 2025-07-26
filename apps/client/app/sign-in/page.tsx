@@ -94,7 +94,7 @@ export default function SignIn() {
                   />
                   <ErrorMessage
                     name="email"
-                    className="text-[#E19500] absolute"
+                    className="text-[#E19500] absolute pl-3"
                     component="span"
                   />
                 </div>
@@ -108,7 +108,7 @@ export default function SignIn() {
                   />
                   <ErrorMessage
                     name="password"
-                    className="text-[#E19500] absolute"
+                    className="text-[#E19500] absolute pl-3"
                     component="span"
                   />
                 </div>

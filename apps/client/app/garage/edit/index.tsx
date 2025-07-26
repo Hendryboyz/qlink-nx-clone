@@ -97,7 +97,7 @@ type Props = {
 };
 export default function GarageEdit({ data, onCancel, onRemove }: Props) {
   const DEFAULT_ERROR_MSG_CLASS =
-    'text-red-500 absolute top-0 right-0 text-xs text-right';
+    'text-red-500 absolute top-0 right-0 text-xs text-right pl-3';
   const POPUP_BUTTON_STYLE = 'py-2 px-3 text-sm w-36 rounded-lg h-8';
   const [models, setModels] = useState<ModelVO[]>([]);
   const [editKey, setEditKey] = useState<KEY | null>(null);
