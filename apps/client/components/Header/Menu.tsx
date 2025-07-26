@@ -39,7 +39,7 @@ const Menu: React.FC<Props> = ({ isOpen, onClose }) => {
           isOpen ? 'translate-x-0' : '-translate-x-full'
         }`}
       >
-        <div className="px-9">
+        <div className="px-5">
           <button onClick={onClose} className="text-4xl">
             <Cross2Icon height={24} width={24} />
           </button>
