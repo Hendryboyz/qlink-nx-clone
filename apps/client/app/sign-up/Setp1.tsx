@@ -87,7 +87,7 @@ const Step1 = (props: Props) => {
                   />
                   <ErrorMessage
                     name="email"
-                    className="text-red-500 absolute"
+                    className="text-red-500 absolute pl-3 text-sm font-gilroy-medium"
                     component="span"
                   />
                 </div>
