@@ -104,7 +104,7 @@ const defaultValue: FormData = {
 };
 
 const DEFAULT_INPUT_STYLES =
-  'block rounded-xl py-2 pl-6 pr-6 w-full bg-white border-[#FFCFA3] border-2 text-sm font-gilroy-medium';
+  'block rounded-xl py-2 pl-6 pr-6 w-full bg-white border-[#FFCFA3] border-2 text-sm font-gilroy-medium min-h-[48px]';
 
 const DEFAULT_ERROR_MSG_CLASS = 'text-red-500 pl-3';
 
