@@ -15,24 +15,25 @@ export default function InputField({ type = "text", name, placeholder, headIconS
   return (
     <label htmlFor={name}>
       <div
-        className={`flex items-center bg-white p-2 rounded-xl border-2 w-full ${customClassName} ${
+        className={`flex items-center bg-white p-2 rounded-xl border-2 w-full min-h-[48px] ${customClassName} ${
           !headIconSource && 'px-5'
         }`}
       >
-        {headIconSource && <img src={headIconSource} alt={name} />}
+        {headIconSource && <img src={headIconSource} alt={name} className="flex-shrink-0" />}
         <Field
           id={name}
           name={name}
           placeholder={placeholder}
           type={showPassword ? 'text' : type}
-          className="flex-grow ml-2 placeholder:text-sm text-lg font-gilroy-medium"
+          className="flex-grow ml-2 placeholder:text-sm text-sm font-gilroy-medium outline-none border-none bg-transparent align-middle"
+          style={{ lineHeight: 'normal', verticalAlign: 'middle' }}
           autoComplete={autoComplete ? 'on' : 'off'}
         />
         {type === 'password' && (
           <img
             src="assets/eye.svg"
             alt="phone"
-            className={`${headIconSource && '-ml-6'}`}
+            className={`flex-shrink-0 cursor-pointer ${headIconSource && '-ml-6'}`}
             onClick={() => setShowPassword((prevState) => !prevState)}
           />
         )}
