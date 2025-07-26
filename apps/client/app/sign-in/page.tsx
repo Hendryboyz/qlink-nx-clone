@@ -115,7 +115,7 @@ export default function SignIn() {
                 <div className="flex mt-5 justify-between items-center text-xs font-gilroy-medium">
                   <label
                     htmlFor="rememberMe"
-                    className="flex items-center cursor-pointer"
+                    className="flex items-center cursor-pointer pl-[13px]"
                   >
                     <Field name="rememberMe">
                       {({ field }) => (
@@ -153,7 +153,7 @@ export default function SignIn() {
                       Remember Me
                     </span>
                   </label>
-                  <Link href="/reset-password">
+                  <Link href="/reset-password" className="pr-3">
                     <span className="text-red-300">
                       Forgot password?
                     </span>
