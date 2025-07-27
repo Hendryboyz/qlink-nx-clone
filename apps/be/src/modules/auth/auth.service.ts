@@ -32,6 +32,7 @@ import {
   phoneRegex,
 } from '@org/common';
 import { ConfigService } from '@nestjs/config';
+import { hashPassword } from '$/modules/utils/auth.util';
 
 type AuthSuccessBO = {
   access_token: string;
@@ -78,7 +79,7 @@ export class AuthService {
       throw this.generateBadRequest(`Duplicate email: ${payload.email}`, 'email');
     }
 
-    const hashedPassword = await this.hashedPassword(payload.password);
+    const hashedPassword = await hashPassword(payload.password);
     const userVO = await this.userService.create(payload, hashedPassword);
     // 在實際應用中,您需要發送OTP給用戶(例如通過電子郵件或短信)
     return {
@@ -132,7 +133,7 @@ export class AuthService {
       };
     }
 
-    const hashedPassword = await this.hashedPassword(payload.password);
+    const hashedPassword = await hashPassword(payload.password);
     const {identifier, identifierType} = verifiedPayload;
     const userEntity = await this.userService.findOneWithType(identifier, identifierType);
     if (isNull(userEntity)) throw new NotFoundException('Not found user');
@@ -188,8 +189,8 @@ export class AuthService {
       birthday = '',
       source = NaN,
       email = '',
-      whatsapp = '',
-      facebook = '',
+      // whatsapp = '',
+      // facebook = '',
     } = payload;
 
     if (!phoneRegex.test(phone)) throw this.generateBadRequest('Invalid phone', 'phone');
@@ -231,9 +232,5 @@ export class AuthService {
   private signToken(identifier: string, identifierType: IdentifierType, id: string): string {
     const payload = { sub: id, identifier, identifierType };
     return this.jwtService.sign(payload);
-  }
-  private async hashedPassword(password: string): Promise<string> {
-    const PasswordSalt = 10;
-    return await bcrypt.hash(password, PasswordSalt);
   }
 }

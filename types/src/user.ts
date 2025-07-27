@@ -19,6 +19,7 @@ export interface UserEntity {
   facebook?: string;
   createdAt: Date;
   updatedAt: Date;
+  crmId?: string;
   isDelete: boolean;
 }
 
@@ -50,6 +51,7 @@ export interface UserUpdateDto extends ClientUserUpdateDto {
   password?: string;
   isDelete?: boolean;
   avatarS3uri?: string;
+  crmId?: string;
 }
 
 export enum UserType {

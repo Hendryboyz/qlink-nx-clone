@@ -1,21 +1,27 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { ProductDto, ProductRemoveDto, ProductUpdateDto, ProductVO } from '@org/types';
 import { ProductRepository } from './product.repository';
-import { ENTITY_PREFIX, generateSalesForceId } from '$/modules/utils/id.util';
+import { ENTITY_PREFIX, generateSalesForceId } from '$/modules/utils/auth.util';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class ProductService {
   private logger = new Logger(this.constructor.name);
-  constructor(private readonly productRepository: ProductRepository) {}
+  private isProduction: boolean = false;
+  constructor(
+    private readonly configService: ConfigService,
+    private readonly productRepository: ProductRepository,
+  ) {
+    this.isProduction = this.configService.get<string>('NODE_ENV') === 'production';
+  }
 
   async findByUser(userId: string): Promise<ProductVO[]> {
     const productEntities = await this.productRepository.findByUser(userId);
     return productEntities.map((e) => ({ img: '', ...e }));
   }
   async create(userId: string, productDto: ProductDto): Promise<ProductVO> {
-    const current = new Date();
-    const vehicleCount = await this.productRepository.countByYear(current.getFullYear());
-    productDto.id = generateSalesForceId(ENTITY_PREFIX.vehicle, vehicleCount);
+    const vehicleCount = await this.productRepository.getProductSequence();
+    productDto.id = generateSalesForceId(ENTITY_PREFIX.vehicle, vehicleCount, this.isProduction);
     const productEntity = await this.productRepository.create(
       userId,
       productDto

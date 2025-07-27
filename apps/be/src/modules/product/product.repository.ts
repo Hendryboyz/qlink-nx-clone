@@ -56,19 +56,14 @@ export class ProductRepository {
     }
   }
 
-  async countByYear(year: number): Promise<number> {
-    const dateClauses: string[] = ['EXTRACT(YEAR FROM created_at) = $1'];
-    const values: number[] = [year];
-    let query =
-      `SELECT COUNT(*) FROM product`;
-    if (dateClauses.length > 0) {
-      query += ' WHERE ' + dateClauses.join(' AND ');
-    }
+  async getProductSequence(): Promise<number> {
+    const query =
+      `SELECT nextval('vehicle_seq') AS count`;
     try {
-      const { rows } = await this.pool.query(query, values);
+      const { rows } = await this.pool.query(query);
       return +rows[0]['count'];
     } catch (error) {
-      this.logger.error(`Error count vehicle by year: ${year}:`, error);
+      this.logger.error(`fail to get next vehicle sequence`, error);
       throw error;
     }
   }

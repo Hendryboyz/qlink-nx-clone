@@ -12,6 +12,7 @@ import { StorageModule } from '$/modules/upload/storage.module';
 import { BoUserModule } from '$/modules/bo/user/bo-user.module';
 import { NotificationModule } from './notification/notification.module';
 import { VerificationModule } from './modules/bo/verification/verification.module';
+import { CrmModule } from './modules/crm/crm.module';
 
 @Module({
   imports: [
@@ -48,6 +49,7 @@ import { VerificationModule } from './modules/bo/verification/verification.modul
     ]),
     NotificationModule,
     VerificationModule,
+    CrmModule,
   ],
 })
 export class AppModule {}

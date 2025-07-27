@@ -1,18 +1,19 @@
 export type ProductEntity = {
-    id: string;  // Vehicle Registration ID
-    userId: string;
-    vin: string;
-    engineNumber: string;
-    purchaseDate: string;
-    registrationDate: string;
-    dealerName: string;
-    year: number;
-    model: string; // mapping to DB
+  id: string;  // Vehicle Registration ID
+  userId: string;
+  vin: string;
+  engineNumber: string;
+  purchaseDate: string;
+  registrationDate: string;
+  dealerName: string;
+  year: number;
+  model: string; // mapping to DB
+  crmId?: string;
 }
 
 export type ProductVO = ProductEntity & {
     img?: string;
-} 
+}
 
 export type ProductDto = Omit<ProductEntity, 'user_id' >
 

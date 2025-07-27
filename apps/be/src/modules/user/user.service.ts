@@ -2,17 +2,24 @@ import { BadRequestException, Injectable, Logger } from '@nestjs/common';
 import { IdentifierType, RegisterDto, UserEntity, UserUpdateDto, UserVO } from '@org/types';
 import { UserRepository } from './user.repository';
 import { omit } from 'lodash';
-import { ENTITY_PREFIX, generateSalesForceId } from '$/modules/utils/id.util';
+import { ENTITY_PREFIX, generateSalesForceId } from '$/modules/utils/auth.util';
 import { MemberQueryFilters } from '$/modules/user/user.types';
+import { SalesforceSyncService } from '$/modules/crm/sales-force.service';
+import { ConfigService } from '@nestjs/config';
 
 type UserOmitFields = ('birthday' | 'whatsapp' | 'facebook');
 
 @Injectable()
 export class UserService {
   private logger = new Logger(this.constructor.name);
+  private isProduction: boolean = false;
   constructor(
+    private readonly configService: ConfigService,
+    private readonly syncCrmService: SalesforceSyncService,
     private readonly userRepository: UserRepository
-  ) {}
+  ) {
+    this.isProduction = this.configService.get<string>('NODE_ENV') === 'production';
+  }
 
   async findOne(phone: string): Promise<UserEntity> {
       return await this.userRepository.findByPhone(phone)
@@ -44,6 +51,17 @@ export class UserService {
       memberId: await this.generateMemberId(),
       gender: createUserDto.gender,
     });
+
+    this.logger.debug(`user[${userEntity.id}] created`, userEntity);
+
+    try {
+      const salesforceId = await this.syncCrmService.syncMember(userEntity);
+      userEntity.crmId = salesforceId;
+      await this.userRepository.update(userEntity.id, {crmId: salesforceId});
+    } catch(e) {
+      this.logger.error(`fail to sync user[${userEntity.id}] to salesforce`, e);
+    }
+
     return {
       ...omit(userEntity, [
         'createdAt',
@@ -55,10 +73,8 @@ export class UserService {
   }
 
   private async generateMemberId() {
-    const current = new Date();
-    const thisYear = current.getFullYear();
-    const userCountThisYear = await this.userRepository.countByTime(thisYear, null);
-    return generateSalesForceId(ENTITY_PREFIX.member, userCountThisYear);
+    const memberSeq = await this.userRepository.getMemberSequence();
+    return generateSalesForceId(ENTITY_PREFIX.member, memberSeq, this.isProduction);
   }
 
   async updatePassword(userId: string, password: string): Promise<UserVO> {

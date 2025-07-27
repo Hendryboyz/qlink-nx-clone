@@ -2,19 +2,19 @@ import {
   BadRequestException,
   Body,
   Controller,
-  Get,
+  Get, Headers,
   Logger,
   Post,
-  Put,
+  Put, Res,
   UploadedFile,
   UseGuards,
-  UseInterceptors,
+  UseInterceptors
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { AuthGuard } from '@nestjs/passport';
 import { UserId } from '$/decorators/userId.decorator';
 import { UserService } from './user.service';
-import { UserUpdateDto } from '@org/types';
+import { RegisterDto, UserUpdateDto } from '@org/types';
 import {
   imageFileFilter,
   imageStorage,
@@ -22,6 +22,9 @@ import {
 import { TransformInterceptor } from '$/interceptors/response.interceptor';
 import { S3storageService } from '$/modules/upload/s3storage.service';
 import { ConfigService } from '@nestjs/config';
+import { CODE_SUCCESS, HEADER_PRE_TOKEN, INVALID_PAYLOAD } from '@org/common';
+import { Response } from 'express';
+import { hashPassword } from '$/modules/utils/auth.util';
 
 @Controller('user')
 export class UserController {
@@ -37,6 +40,26 @@ export class UserController {
     this.cdnHostname = this.configService.get<string>(
       'AWS_CLOUDFRONT_HOSTNAME'
     );
+  }
+
+  @Post('')
+  async postUser(
+    @Body() payload: RegisterDto,
+  ) {
+    if (await this.userService.isEmailExist(payload.email)) {
+      throw new BadRequestException({
+        bizCode: INVALID_PAYLOAD,
+        data: {
+          error: {
+            type: 'email',
+            message: `Duplicate email: ${payload.email}`,
+          },
+        },
+      });
+    }
+
+    const hashedPassword = await hashPassword(payload.password);
+    return await this.userService.create(payload, hashedPassword);
   }
 
   @UseGuards(AuthGuard('jwt'))
