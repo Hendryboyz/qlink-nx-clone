@@ -101,7 +101,7 @@ export default function Garage() {
             className="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm flex justify-center items-center z-50"
             onClick={() => setIsModalOpen(false)}
           >
-            <div className="rounded-3xl overflow-hidden shadow-xl max-w-sm w-full m-4">
+            <div className="rounded-3xl overflow-hidden shadow-xl w-[264px] m-4">
               <ProductCard
                 data={currentProduct}
                 handleEdit={(data) => {
