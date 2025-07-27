@@ -32,7 +32,32 @@ const rowCss = css`
 
 const ProductCard = ({ data, handleEdit }: { data: ProductVO, handleEdit: (data: ProductVO) => void }) => {
   const { showPopup, hidePopup } = usePopup();
-  const [isGiftRedeemed, setIsGiftRedeemed] = useState(false);
+  
+  // Helper functions to manage gift redemptions in localStorage
+  const getGiftRedemptions = () => {
+    if (typeof window === 'undefined') return {};
+    try {
+      const stored = localStorage.getItem('gift_redemptions');
+      return stored ? JSON.parse(stored) : {};
+    } catch {
+      return {};
+    }
+  };
+
+  const setGiftRedemption = (userId: string, registrationDate: string, redeemed: boolean) => {
+    if (typeof window === 'undefined') return;
+    const redemptions = getGiftRedemptions();
+    const key = `${userId}_${registrationDate}`;
+    redemptions[key] = redeemed;
+    localStorage.setItem('gift_redemptions', JSON.stringify(redemptions));
+  };
+
+  // Check if gift has been redeemed from localStorage
+  const [isGiftRedeemed, setIsGiftRedeemed] = useState(() => {
+    const redemptions = getGiftRedemptions();
+    const key = `${data.userId}_${data.registrationDate}`;
+    return redemptions[key] === true;
+  });
 
   const {
     model,
@@ -140,6 +165,8 @@ const ProductCard = ({ data, handleEdit }: { data: ProductVO, handleEdit: (data:
                                 <Button
                                   className="py-2 px-6 text-xs leading-tight rounded-lg h-10 w-48 bg-[#D70127] text-white font-bold font-[GilroySemiBold]"
                                   onClick={() => {
+                                    // Save redemption status to localStorage
+                                    setGiftRedemption(data.userId, data.registrationDate, true);
                                     setIsGiftRedeemed(true);
                                     hidePopup();
                                   }}
