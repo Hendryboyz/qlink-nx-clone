@@ -85,7 +85,7 @@ const ProductCard = ({ data, handleEdit }: { data: ProductVO, handleEdit: (data:
           <h2 className="text-3xl font-gilroy-heavy text-primary-500 -mt-2">{modelDefined ? modelDefined.title : model}</h2>
         </div>
         <img
-          className="mr-8 mt-8 self-start"
+          className="mr-6 mt-6 self-start"
           src="/assets/file_edit.svg"
           alt="edit"
           onClick={() => {
