@@ -176,7 +176,7 @@ export default function GarageAdd() {
                           <DateField
                             name={key}
                             defaultDisplayValue="0000-00-00"
-                            className="text-base"
+                            className="text-base pl-0"
                           />
                         ) :
                           <Field
