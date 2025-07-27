@@ -22,12 +22,12 @@ const DropdownField: React.FC<Props> = ({
 }) => {
   return (
     <div>
-      <label htmlFor={label} className={`flex items-center justify-between min-h-[48px] ${className}`}>
+      <label htmlFor={label} className={`flex items-center justify-between ${className}`}>
         <Field
           as="select"
           id={name}
           name={name}
-          className="w-full appearance-none focus:outline-none bg-transparent border-none text-sm font-gilroy-medium"
+          className="w-full appearance-none focus:outline-none bg-transparent border-none text-sm font-gilroy-medium pl-[4px]"
           {...rest}
         >
           {placeholder && (
