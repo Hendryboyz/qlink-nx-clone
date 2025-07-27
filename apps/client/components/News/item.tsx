@@ -2,7 +2,7 @@ import React from 'react';
 import { useRouter } from 'next/navigation';
 
 import { PostCategoryEnum } from '@org/types';
-import { fromDate } from '@org/common';
+import { fromDateWithSlash } from '@org/common';
 import NewsType from '$/components/News/type';
 
 type Props = {
@@ -48,7 +48,7 @@ const NewsItem: React.FC<Props> = ({ type, date, title, imgUrl, id }) => {
       <div className="pt-3">
         <div className="flex items-center space-x-2 mb-1">
           <NewsType type={type} />
-          <span className="text-[13px] font-[GilroyMedium]">{fromDate(date)}</span>
+          <span className="text-[13px] font-[GilroyMedium]">{fromDateWithSlash(date)}</span>
         </div>
         <p className="text-sm font-[GilroyBold] h-16">{title}</p>
       </div>

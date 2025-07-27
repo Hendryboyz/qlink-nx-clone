@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import Header from '$/components/Header';
-import { fromDate } from '@org/common';
+import { fromDateWithSlash } from '@org/common';
 import { NextPage } from 'next';
 import API from '$/utils/fetch';
 import { PostEntity } from '@org/types';
@@ -24,10 +24,10 @@ const Detail: NextPage<Props> = ({ params }) => {
   }, []);
 
   return (
-    <div className="w-full min-h-full flex-1">
+    <div className="w-full min-h-full flex-1 overflow-hidden">
       <Header title="News" />
       {post && (
-        <div>
+        <div className="max-w-full">
           <div
             className="h-60 flex flex-col justify-between"
             style={{
@@ -40,13 +40,16 @@ const Detail: NextPage<Props> = ({ params }) => {
             }}
           >
             <div className="flex m-6 justify-end">
-              <NewsType type={post.category} />
+              <NewsType type={post.category} className="w-[60px] h-[20px] !text-[14px] flex items-center justify-center !pt-0" />
             </div>
             <h1 className="font-bold text-2xl p-6">{post.title}</h1>
           </div>
-          <div className="p-6">
-            <div className="my-5">{fromDate(new Date(post.createdAt))}</div>
-            <div dangerouslySetInnerHTML={{ __html: post.content }} />
+          <div className="px-[20px] py-6 w-screen max-w-screen overflow-x-hidden">
+            <div className="my-5 font-gilroy-medium text-base">{fromDateWithSlash(new Date(post.createdAt))}</div>
+            <div
+              className="font-gilroy-regular text-base tracking-[0px] font-normal leading-none break-words hyphens-auto"
+              dangerouslySetInnerHTML={{ __html: post.content }}
+            />
           </div>
         </div>
       )}
