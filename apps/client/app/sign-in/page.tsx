@@ -3,7 +3,7 @@
 import React, { Fragment } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { Formik, FormikErrors, Field, ErrorMessage } from 'formik';
+import { Formik, FormikErrors, Field, ErrorMessage, FieldProps } from 'formik';
 import Banner from '$/components/Banner';
 import { ColorBackground } from '$/components/Background';
 import API from '$/utils/fetch';
@@ -118,7 +118,7 @@ export default function SignIn() {
                     className="flex items-center cursor-pointer pl-[13px]"
                   >
                     <Field name="rememberMe">
-                      {({ field }) => (
+                      {({ field }: FieldProps) => (
                         <div className="relative">
                           <input
                             id="rememberMe"
