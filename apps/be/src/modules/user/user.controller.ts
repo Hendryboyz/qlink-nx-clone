@@ -2,13 +2,11 @@ import {
   BadRequestException,
   Body,
   Controller,
-  Get, Headers,
-  Logger,
+  Get, Logger, Param,
   Post,
-  Put, Res,
-  UploadedFile,
+  Put, UploadedFile,
   UseGuards,
-  UseInterceptors
+  UseInterceptors,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { AuthGuard } from '@nestjs/passport';
@@ -42,24 +40,9 @@ export class UserController {
     );
   }
 
-  @Post('')
-  async postUser(
-    @Body() payload: RegisterDto,
-  ) {
-    if (await this.userService.isEmailExist(payload.email)) {
-      throw new BadRequestException({
-        bizCode: INVALID_PAYLOAD,
-        data: {
-          error: {
-            type: 'email',
-            message: `Duplicate email: ${payload.email}`,
-          },
-        },
-      });
-    }
-
-    const hashedPassword = await hashPassword(payload.password);
-    return await this.userService.create(payload, hashedPassword);
+  // @Put(':id')
+  async updateClientUser(@Param('id') userId: string, @Body() payload: UserUpdateDto) {
+    return this.userService.updateUser(userId, payload);
   }
 
   @UseGuards(AuthGuard('jwt'))

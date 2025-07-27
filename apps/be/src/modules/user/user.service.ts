@@ -55,7 +55,7 @@ export class UserService {
     this.logger.debug(`user[${userEntity.id}] created`, userEntity);
 
     try {
-      const salesforceId = await this.syncCrmService.syncMember(userEntity);
+      const salesforceId = await this.syncCrmService.createMember(userEntity);
       userEntity.crmId = salesforceId;
       await this.userRepository.update(userEntity.id, {crmId: salesforceId});
     } catch(e) {
@@ -85,8 +85,22 @@ export class UserService {
   async updateUser(userId: string, updateData: UserUpdateDto): Promise<UserVO> {
     if (updateData.password != null) throw new BadRequestException();
 
-    const userEntity = await this.userRepository.update(userId, updateData);
-    return this.filterUserInfo(userEntity);
+    const updatedUser = await this.userRepository.update(userId, updateData);
+
+    this.logger.debug(`user[${updatedUser.id}] updated`, updatedUser);
+
+    try {
+      const salesforceId = await this.syncCrmService.updateMember(updatedUser);
+      if (salesforceId) {
+        this.logger.debug(`user[${updatedUser.id}(${updatedUser.crmId})] update to salesforce`)
+      } else {
+        this.logger.warn(`fail to update user[${updatedUser.id}(${updatedUser.crmId})] to salesforce`);
+      }
+    } catch(e) {
+      this.logger.error(`fail to update user[${updatedUser.id}(${updatedUser.crmId})] to salesforce`, e);
+    }
+
+    return this.filterUserInfo(updatedUser);
   }
 
   public async updateUserAvatar(userId: string, s3Key: string) {

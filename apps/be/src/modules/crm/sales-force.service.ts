@@ -64,16 +64,13 @@ export class SalesforceSyncService implements OnModuleInit{
     this.logger.debug(this.apiResource);
   }
 
-  public async syncMember(clientUser: UserEntity): Promise<string | undefined> {
-    const payload = this.castSalesforceMemberPayload(clientUser);
-    let response = await this.postMember(payload);
-    if (response.status === 401) {
-      await this.authSalesforce();
-      response = await this.postMember(payload);
-    }
+  public async createMember(clientUser: UserEntity): Promise<string | undefined> {
+    const payload = this.castSalesforceMemberCreationPayload(clientUser);
+    const syncAction = this.useReAuthQuery(this.postMember.bind(this));
+    const response = await syncAction(payload);
     const {data, status} = response;
     if (status > 299) {
-      this.logger.error(`fail to sync user to salesforce successfully, status code: ${status}, message: ${JSON.stringify(data)}`);
+      this.logger.error(`fail to sync user to salesforce, status code: ${status}, message: ${JSON.stringify(data)}`);
       return undefined;
     } else {
       this.logger.debug(`sync user to salesforce successfully, status code: ${status}, message: ${JSON.stringify(data)}`);
@@ -81,16 +78,17 @@ export class SalesforceSyncService implements OnModuleInit{
     }
   }
 
-  private castSalesforceMemberPayload(user: UserEntity) {
+  private castSalesforceMemberCreationPayload(user: UserEntity) {
     return {
       "Member_Profile_External_ID__c": user.id,
       "Member_ID__c": user.memberId,
       "First_Name__c": user.firstName,
       "Middle_Name__c": user.midName,
       "Last_Name__c": user.lastName,
-      "Birthdate__c": "1999-01-01",
+      "Birthdate__c": user.birthday,
       "Gender__c": user.gender,
       "Email__c": user.email,
+      "Mobile__c": user.phone,
       "State__c": user.addressState,
       "City__c": user.addressCity,
       "WhatsApp_ID__c": user.whatsapp,
@@ -119,6 +117,53 @@ export class SalesforceSyncService implements OnModuleInit{
       }
       return response;
     }
+  }
+
+  public async updateMember(updatedUser: UserEntity): Promise<string | undefined> {
+    const payload = this.castSalesforceMemberMutationPayload(updatedUser);
+    const salesforceObjectId = updatedUser.crmId;
+    const syncAction = this.useReAuthQuery(this.patchMember.bind(this));
+    const response = await syncAction({
+      memberObjectId: salesforceObjectId,
+      payload,
+    });
+    const {data, status} = response;
+    if (status > 299) {
+      this.logger.error(`fail to patch user to salesforce, status code: ${status}, message: ${JSON.stringify(data)}`);
+      return undefined;
+    } else {
+      this.logger.debug(`patch user to salesforce successfully, status code: ${status}, message: ${JSON.stringify(data)}`);
+      return data.id;
+    }
+  }
+
+  private castSalesforceMemberMutationPayload(user: UserEntity) {
+    return {
+      "First_Name__c": user.firstName,
+      "Middle_Name__c": user.midName,
+      "Last_Name__c": user.lastName,
+      "Birthdate__c": user.birthday,
+      "Gender__c": user.gender,
+      "Mobile__c": user.phone,
+      "State__c": user.addressState,
+      "City__c": user.addressCity,
+      "WhatsApp_ID__c": user.whatsapp,
+      "Facebook_ID__c": user.facebook,
+      "Registration_Source__c": UserSourceDisplay[user.source],
+    }
+  }
+
+  private patchMember(request: {
+    memberObjectId: string,
+    payload: any,
+  }): Promise<AxiosResponse> {
+    const {memberObjectId, payload} = request;
+    const patchMemberUrl = `${this.apiResource.instanceUrl}/services/data/v49.0/sobjects/Member_Profile__c/${memberObjectId}`;
+    return axios.patch(patchMemberUrl, payload, {
+      headers: {
+        'Authorization': `Bearer ${this.apiResource.accessToken}`,
+      }
+    });
   }
 
   public async syncVehicle(vehicleEntity: ProductEntity): Promise<VehicleSyncResult> {
