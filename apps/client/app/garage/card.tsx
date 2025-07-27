@@ -140,15 +140,17 @@ const ProductCard = ({ data, handleEdit }: { data: ProductVO, handleEdit: (data:
                     <p className="text-[#D70127] text-sm mb-6 font-[GilroyRegular]">
                       This will confirm that the welcome gift has been claimed. Please ask the authorized QLINK dealer to click this button for you.
                     </p>
-                    <div className="flex items-center justify-between gap-4 w-full">
+                    <div className="flex items-center justify-center gap-2 w-full">
                       <Button
-                        className="py-2 px-6 text-sm rounded-lg h-10 w-full bg-[#D70127] text-white font-bold"
+                        className="rounded-lg bg-[#D70127] text-white font-[GilroySemiBold] h-[30px]"
+                        style={{ fontSize: '14px', width: '100px' }}
                         onClick={hidePopup}
                       >
                         Cancel
                       </Button>
                       <Button
-                        className="py-2 px-6 text-sm rounded-lg h-10 w-full bg-[#D70127] text-white font-bold font-[GilroySemiBold]"
+                        className="rounded-lg bg-[#D70127] text-white font-[GilroySemiBold] h-[30px]"
+                        style={{ fontSize: '14px', width: '100px' }}
                         onClick={() => {
                           hidePopup();
                           // Show success popup
