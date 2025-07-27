@@ -32,7 +32,7 @@ const rowCss = css`
 
 const ProductCard = ({ data, handleEdit }: { data: ProductVO, handleEdit: (data: ProductVO) => void }) => {
   const { showPopup, hidePopup } = usePopup();
-  
+
   // Helper functions to manage gift redemptions in localStorage
   const getGiftRedemptions = () => {
     if (typeof window === 'undefined') return {};
@@ -118,18 +118,13 @@ const ProductCard = ({ data, handleEdit }: { data: ProductVO, handleEdit: (data:
           <p className="title">Dealer Name</p>
           <p className="font-semibold">{dealerName}</p>
         </div>
-        <div className="px-6 py-3 bg-gray-700 flex justify-center">
+        <div className="py-3 px-3 bg-gray-700" style={{ display: 'flex', justifyContent: 'center', width: '100%' }}>
           <button
-            className={`w-full mt-2 px-2 rounded-lg text-base text-center flex items-center justify-center leading-none border-none h-[27px] ${
+            className={`mt-2 px-2 rounded-lg text-base text-center flex items-center justify-center leading-[27px] border-none h-[27px] whitespace-nowrap pt-[2px] font-[GilroySemiBold] tracking-[0%] ${
               isGiftRedeemed
-                ? 'text-white bg-gray-500 cursor-not-allowed opacity-60 max-w-[240px]'
-                : 'text-[#DF6B00] bg-[#FFD429] cursor-pointer hover:bg-[#E5C027] max-w-[191px]'
+                ? 'text-white bg-gray-500 cursor-not-allowed opacity-60 w-[210px]'
+                : 'text-[#DF6B00] bg-[#FFD429] cursor-pointer hover:bg-[#E5C027] w-[191px]'
             }`}
-            style={{
-              // todo: need check font source
-              fontFamily: 'GilroySemiBold',
-              letterSpacing: '0%'
-            }}
             disabled={isGiftRedeemed}
             onClick={(e) => {
               e.stopPropagation();
@@ -190,7 +185,6 @@ const ProductCard = ({ data, handleEdit }: { data: ProductVO, handleEdit: (data:
           </button>
         </div>
       </div>
-
     </>
   );
 };
