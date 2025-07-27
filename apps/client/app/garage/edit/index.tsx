@@ -12,6 +12,7 @@ import {
   ProductRemoveDto,
   ProductUpdateDto,
   ProductVO,
+  UpdateProductData,
 } from '@org/types';
 import { usePopup } from '$/hooks/PopupProvider';
 import { DEFAULT_ERROR_MSG } from '@org/common';
@@ -177,7 +178,7 @@ export default function GarageEdit({ data, onCancel, onRemove }: Props) {
         validationSchema={CreateSchema}
         onSubmit={(values, { setSubmitting, setFieldValue }) => {
           if (!editKey) return;
-          const data: ProductUpdateDto['data'] = {};
+          const data: UpdateProductData = {};
           // @ts-expect-error F*CK
           data[editKey] = editValue;
           API.put('/product/save', {

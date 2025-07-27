@@ -1,6 +1,6 @@
 import { BadRequestException, Inject, Injectable, Logger } from '@nestjs/common';
 import { Pool } from 'pg';
-import { ProductDto, ProductEntity, ProductUpdateDto } from '@org/types';
+import { ProductDto, ProductEntity, UpdateProductData } from '@org/types';
 import { KNEX_CONNECTION } from '$/database.module';
 import { Knex } from 'knex';
 import { isEmpty } from 'lodash';
@@ -73,6 +73,7 @@ export class ProductRepository {
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       Object.entries(productDto).filter(([_, v]) => v !== undefined && v != '')
     );
+
     if (isEmpty(productToInsert))
       throw new BadRequestException('Empty payload');
 
@@ -88,7 +89,7 @@ export class ProductRepository {
 
   async update(
     id: string,
-    productUpdateDto: ProductUpdateDto['data']
+    productUpdateDto: UpdateProductData,
   ): Promise<ProductEntity> {
     const productToUpdate = Object.fromEntries(
       // eslint-disable-next-line @typescript-eslint/no-unused-vars

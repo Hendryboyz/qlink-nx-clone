@@ -1,8 +1,8 @@
 import { Controller, UseGuards, Get, Body, Post, Put, Delete } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
-import { UserId } from '../../decorators/userId.decorator';
+import { UserId } from '$/decorators/userId.decorator';
 import { ProductService } from './product.service';
-import { ProductDto, ProductRemoveDto, ProductUpdateDto } from '@org/types';
+import { CreateProductRequest, ProductDto, ProductRemoveDto, ProductUpdateDto } from '@org/types';
 
 @Controller('product')
 export class ProductController {
@@ -13,11 +13,17 @@ export class ProductController {
   async getProducts(@UserId() userId: string) {
     return this.productService.findByUser(userId);
   }
+
   @UseGuards(AuthGuard('jwt'))
   @Post('/save')
   async createProduct(@UserId() userId: string, @Body() payload: ProductDto) {
     return this.productService.create(userId, payload);
   }
+
+  async postProduct(@Body() payload: CreateProductRequest) {
+    return this.productService.create(payload.userId, payload);
+  }
+
   @UseGuards(AuthGuard('jwt'))
   @Put('/save')
   async updateProduct(@UserId() userId: string, @Body() payload: ProductUpdateDto) {

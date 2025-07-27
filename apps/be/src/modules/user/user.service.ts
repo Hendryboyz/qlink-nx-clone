@@ -12,7 +12,7 @@ type UserOmitFields = ('birthday' | 'whatsapp' | 'facebook');
 @Injectable()
 export class UserService {
   private logger = new Logger(this.constructor.name);
-  private isProduction: boolean = false;
+  private readonly isProduction: boolean = false;
   constructor(
     private readonly configService: ConfigService,
     private readonly syncCrmService: SalesforceSyncService,

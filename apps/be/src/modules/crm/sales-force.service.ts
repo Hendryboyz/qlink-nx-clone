@@ -123,9 +123,8 @@ export class SalesforceSyncService implements OnModuleInit{
 
   public async syncVehicle(vehicleEntity: ProductEntity): Promise<VehicleSyncResult> {
     const payload = this.castSalesforceVehiclePayload(vehicleEntity);
-    const syncAction = this.useReAuthQuery(this.postVehicle);
+    const syncAction = this.useReAuthQuery(this.postVehicle.bind(this));
     const response = await syncAction(payload);
-
     const {data, status} = response;
     if (status > 299) {
       this.logger.warn(`fail to sync vehicle to salesforce successfully, status code: ${status}, message: ${data}`);
@@ -153,7 +152,7 @@ export class SalesforceSyncService implements OnModuleInit{
 
   private castSalesforceVehiclePayload(vehicle: ProductEntity) {
     return {
-      "Vehicle_Reg_Data_External_ID__c": "5659a455-cfe6-4164-b085-b097bc45a58f",
+      "Vehicle_Reg_Data_External_ID__c": null,
       "Vehicle_Registration_ID__c": vehicle.id,
       "Model__r": {
         "Model_EID__c": vehicle.model
@@ -168,8 +167,8 @@ export class SalesforceSyncService implements OnModuleInit{
       },
       "Engine_Serial_Number_Check__c": vehicle.engineNumber,
       "Vehicle_Condition__c": "New",
-      "Purchase_Date__c": "{{$isoTimestamp}}",
-      "Registration_Date__c": "{{$isoTimestamp}}",
+      "Purchase_Date__c": vehicle.purchaseDate,
+      "Registration_Date__c": vehicle.registrationDate,
       "Member_ID__r": {
         "Member_Profile_External_ID__c": vehicle.userId
       },
@@ -181,7 +180,7 @@ export class SalesforceSyncService implements OnModuleInit{
   }
 
   private async verifyRegistration(salesforceVehicleId: string): Promise<boolean> {
-    const syncAction = this.useReAuthQuery(this.getVehicle);
+    const syncAction = this.useReAuthQuery(this.getVehicle.bind(this));
     const response = await syncAction(salesforceVehicleId);
 
     const {data, status} = response;
