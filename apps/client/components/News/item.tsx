@@ -33,7 +33,7 @@ const NewsItem: React.FC<Props> = ({ type, date, title, imgUrl, id }) => {
 
   return (
     <div
-      className="flex items-start space-x-4 hover:cursor-pointer"
+      className="flex items-start space-x-5 hover:cursor-pointer"
       onClick={() => {
         router.push(`/news/detail/${id}`);
       }}

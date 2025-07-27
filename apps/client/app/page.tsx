@@ -67,8 +67,8 @@ export default function Index() {
       <div className="my-8 px-6">
         <hr className="border border-[#E19500] bg-[#E19500]" />
       </div>
-      <div className="px-6 pb-6">
-        <h2 className="font-[GilroyBlack] text-primary pl-6 italic text-2xl mb-9">
+      <div className="px-5 pb-6">
+        <h2 className="font-[GilroyBlack] text-primary pl-5 italic text-2xl mb-9">
           Latest News
         </h2>
         <div className="grid gap-4 sm:grid-rows-6 sm:grid-cols-1 md:grid-rows-4  md:grid-cols-2 lg:grid-rows-2 lg:grid-cols-3">
