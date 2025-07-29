@@ -258,7 +258,7 @@ const Step3 = (props: Props) => {
                     <DateField
                       name="birthday"
                       defaultDisplayValue="Birthday"
-                      className={DEFAULT_INPUT_STYLES}
+                      className={`${DEFAULT_INPUT_STYLES} pl-[28px]`}
                     />
                     <div className="min-h-7">
                       <ErrorMessage

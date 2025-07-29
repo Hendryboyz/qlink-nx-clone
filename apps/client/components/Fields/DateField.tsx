@@ -125,7 +125,7 @@ const DateField: React.FC<DateFieldProps> = ({
       ) : (
         /* Custom display div */
         <div
-          className={`cursor-pointer w-full min-h-[48px] flex items-center pl-[28px] ${
+          className={`cursor-pointer w-full min-h-[48px] flex items-center ${
             field.value && field.value !== '0000-00-00' ? '' : 'text-gray-400'
           } ${className}`}
           onClick={handleClick}
