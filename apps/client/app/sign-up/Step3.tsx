@@ -274,6 +274,7 @@ const Step3 = (props: Props) => {
                     name="gender"
                     placeholder="Gender"
                     className={DEFAULT_INPUT_STYLES}
+                    textSize="text-sm"
                     options={GENDER.map((value) => ({ value: value }))}
                   >
                     <ErrorMessage
@@ -327,6 +328,7 @@ const Step3 = (props: Props) => {
                     name="addressState"
                     placeholder="State"
                     className={DEFAULT_INPUT_STYLES}
+                    textSize="text-sm"
                     options={STATES.map((value) => ({ value }))}
                   >
                     <ErrorMessage
