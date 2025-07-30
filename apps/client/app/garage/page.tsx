@@ -7,7 +7,7 @@ import ProductCard from './card';
 import { useRouter } from 'next/navigation';
 import API from '$/utils/fetch';
 import GarageEdit from './edit';
-import defaultMotorImage from '$/public/assets/sym125.png';
+import defaultMotorImage from '$/public/assets/vehicles/default_model.png';
 import { DEFAULT_MODELS } from '$/utils';
 
 export default function Garage() {
@@ -56,7 +56,9 @@ export default function Garage() {
         <div className="container mx-auto">
           <div className="grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 justify-items-center">
             {products.map((product) => {
-              const modelTitle = DEFAULT_MODELS.find(m => m.id.toString() === product.model)?.title;
+              const model = DEFAULT_MODELS.find(m => m.id.toString() === product.model);
+              const modelTitle = model?.title || product.model;
+              const modelImage = model?.img || defaultMotorImage.src;
               return (
                 <div
                   key={product.id}
@@ -70,7 +72,7 @@ export default function Garage() {
                   <div
                     style={{
                       height: '6rem',
-                      backgroundImage: `url(${defaultMotorImage.src})`,
+                      backgroundImage: `url(${modelImage})`,
                       backgroundSize: 'cover',
                       backgroundPosition: 'center center',
                       backgroundColor: '#DFDFDF'
