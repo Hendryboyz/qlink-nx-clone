@@ -47,13 +47,13 @@ export default function Garage() {
         handleFetch();
         setEditData(null);
         setIsEditMode(false);
+        requestAnimationFrame(() => window.scrollTo(0, 0));
       }}
     />
   ) : (
-    <div className="w-full  min-h-full flex-1">
+    <div className="w-full min-h-full flex-1">
       <Header title="My Garage" />
-      <div className="px-6 py-4">
-        <div className="container mx-auto">
+      <div className="py-5 px-5">
           <div className="grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 justify-items-center">
             {products.map((product) => {
               const model = DEFAULT_MODELS.find(m => m.id.toString() === product.model);
@@ -97,7 +97,6 @@ export default function Garage() {
               }}
             />
           </div>
-        </div>
         {isModalOpen && (
           <div
             className="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm flex justify-center items-center z-50"
