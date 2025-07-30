@@ -80,7 +80,7 @@ const ATTRS: Columns = {
 };
 export default function GarageAdd() {
   const DEFAULT_ERROR_MSG_CLASS = 'text-red-500 absolute top-0 right-0 text-xs text-right pl-3';
-  const POPUP_BUTTON_STYLE = 'py-2 px-3 text-sm w-36 rounded-lg h-8 font-gilroy-bold';
+  const POPUP_BUTTON_STYLE = 'py-2 px-3 text-sm rounded-lg h-[30px] font-[GilroySemiBold]';
   const [models, setModels] = useState<ModelVO[]>([]);
   const initValue: FormData = defaultValue;
   const router = useRouter();
@@ -109,9 +109,10 @@ export default function GarageAdd() {
                 useDefault: false,
                 title: 'Your product has been registered.',
                 content: (
-                  <div className="flex items-center justify-center gap-6">
+                  <div className="flex items-center justify-center gap-4">
                     <Button
                       className={POPUP_BUTTON_STYLE}
+                      style={{ width: '100px' }}
                       onClick={() => {
                         router.push('/garage');
                         hidePopup();
@@ -121,6 +122,7 @@ export default function GarageAdd() {
                     </Button>
                     <Button
                       className={POPUP_BUTTON_STYLE}
+                      style={{ width: '100px' }}
                       onClick={() => {
                         router.push('/');
                         hidePopup();
