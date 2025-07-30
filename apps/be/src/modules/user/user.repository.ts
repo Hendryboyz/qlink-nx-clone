@@ -10,6 +10,7 @@ import { KNEX_CONNECTION } from '$/database.module';
 import { Knex } from 'knex';
 import { isEmpty } from 'lodash';
 import { MemberQueryFilters } from '$/modules/user/user.types';
+import buildUpdatingMap from '$/modules/utils/repository.util';
 
 @Injectable()
 export class UserRepository {
@@ -65,10 +66,7 @@ export class UserRepository {
   }
 
   async update(id: string, userUpdateDto: UserUpdateDto): Promise<UserEntity> {
-    const userToUpdate = Object.fromEntries(
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      Object.entries(userUpdateDto).filter(([_, v]) => v !== undefined)
-    );
+    const userToUpdate = buildUpdatingMap(userUpdateDto);
     if (isEmpty(userToUpdate)) throw new BadRequestException('Empty payload');
     if (isEmpty(id)) throw new BadRequestException('Empty payload');
 

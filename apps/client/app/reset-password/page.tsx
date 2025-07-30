@@ -5,7 +5,7 @@ import { ColorBackground } from '../../components/Background';
 import Step1 from './Step1';
 import Step2 from './Step2';
 import Step3 from './Step3';
-import { PayloadProvider } from './PayloadContext';
+import { PayloadProvider } from '$/store/payload';
 
 export default function SignUp() {
   const [step, handleChangeStep] = useState(1);

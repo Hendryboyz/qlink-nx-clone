@@ -25,6 +25,12 @@ export type OtpJwtPayload = {
 
 const OTP_DIGIT: number = 4;
 
+type OTPSession = {
+  code: string;
+  sessionId: string;
+  expiredAt: Date;
+}
+
 @Injectable()
 export class OtpService {
   private logger = new Logger(this.constructor.name);
@@ -38,8 +44,7 @@ export class OtpService {
 
   async generateOtp(phone: string, type: OtpTypeEnum): Promise<string> {
     // !check rate-limit
-    await this.validateIdentifier(phone, IdentifierType.PHONE, type);
-
+    await this.isLegalOTPRequest(phone, IdentifierType.PHONE, type);
     const code = this.generateNDigitOtp(OTP_DIGIT);
     await this.otpRepository.create({ phone, type, code });
 
@@ -68,37 +73,36 @@ export class OtpService {
     return timeToResend <= expiredAt;
   }
 
-  async allowResendV2(identifier: string, identifierType: IdentifierType, type: OtpTypeEnum): Promise<boolean> {
+  async allowResendV2(sessionId: string, type: OtpTypeEnum): Promise<boolean> {
     if (process.env.IS_OTP_ENABLED === 'false') return true;
 
-    const previousOTP = await this.generalOtpRepository.findFirst(identifier, identifierType, type);
-    if (!previousOTP) {
+    const availableSession =
+      await this.generalOtpRepository.findAvailableSession(sessionId, type);
+    if (!availableSession) {
       return false;
     }
-
-    const expiredAt = addTime(previousOTP.createdAt, RESEND_OTP_TIME_SPAN);
-    const timeToResend = new Date();
-    return timeToResend <= expiredAt;
+    return this.isOTPAlive(availableSession);
   }
 
   async generateOtpV2(
     identifier: string,
     identifierType: IdentifierType,
-    type: OtpTypeEnum
+    type: OtpTypeEnum,
+    sessionId: string = undefined,
   ) {
-    await this.validateIdentifier(identifier, identifierType, type);
-    const code = await this.getOtpCode(identifier, identifierType, type);
-    await this.sendOTP(type, identifier, IdentifierType.EMAIL, code);
-    return code;
+    await this.isLegalOTPRequest(identifier, identifierType, type);
+    const session = await this.getOtpSession(identifier, identifierType, type, sessionId);
+    await this.sendOTP(type, identifier, IdentifierType.EMAIL, session.code);
+    return session;
   }
 
-  private async validateIdentifier(
+  public async isLegalOTPRequest(
     identifier: string,
     identifierType: IdentifierType,
     type: OtpTypeEnum
   ) {
     if (_.isEmpty(identifier)) {
-      throw new BadRequestException(`invalid ${identifierType}`);
+      throw new BadRequestException(`empty ${identifierType}`);
     }
 
     const user = await this.userService.findOneWithType(
@@ -116,33 +120,67 @@ export class OtpService {
     }
   }
 
-  private async getOtpCode(
+  private async getOtpSession(
     identifier: string,
     identifierType: IdentifierType,
-    type: OtpTypeEnum
-  ): Promise<string> {
-    const otp = await this.generalOtpRepository.findFirst(identifier, identifierType, type)
-    if (otp) {
-      if (!this.isOTPExpired(otp, type)) {
-        this.logger.debug(`${identifier}[${identifierType}] use the existing code: ${otp.code}`);
-        return otp.code;
+    type: OtpTypeEnum,
+    sessionId: string | undefined
+  ): Promise<OTPSession> {
+    if (sessionId) {
+      const otp = await this.generalOtpRepository.findAvailableSession(sessionId, type)
+      if (this.isOTPAlive(otp)) {
+        return this.extendOTPSession(otp);
       }
     }
+    return this.createNewOtpSession(identifier, identifierType, type);
+  }
+
+  private isOTPAlive(otp: GeneralOtpEntity): boolean {
+    const { expiredAt } = otp;
+    const current = new Date();
+    return current < expiredAt;
+  }
+
+  private async extendOTPSession(otp: GeneralOtpEntity): Promise<OTPSession> {
+    this.logger.debug(`${otp.identifier}[${otp.identifierType}] use the existing code: ${otp.code}`);
+    const extendedExpiredTime = this.getOTPExpiredTime(otp.type);
+    await this.generalOtpRepository.patch({
+      sessionId: otp.sessionId,
+      expiredAt: extendedExpiredTime,
+    });
+    return {
+      code: otp.code,
+      sessionId: otp.sessionId,
+      expiredAt: extendedExpiredTime,
+    };
+  }
+
+  private getOTPExpiredTime(type: OtpTypeEnum): Date {
+    const current = new Date();
+    return addTime(current, OTP_TTL[type]);
+  }
+
+  private async createNewOtpSession(
+    identifier: string,
+    identifierType: IdentifierType,
+    type: OtpTypeEnum,
+  ): Promise<OTPSession> {
     const code = this.generateNDigitOtp(OTP_DIGIT);
-    await this.generalOtpRepository.create({
+    const otpExpiredTime = this.getOTPExpiredTime(type);
+    const newOTPSession = await this.generalOtpRepository.create({
       identifier,
       identifierType,
       type,
       code,
+      expiredAt: otpExpiredTime
     });
+    this.logger.debug(newOTPSession);
     this.logger.debug(`${identifier}[${identifierType}] generate the new code: ${code}`);
-    return code;
-  }
-
-  private isOTPExpired(otp: GeneralOtpEntity, type: OtpTypeEnum): boolean {
-    const expiredAt = addTime(otp.createdAt, OTP_TTL[type]);
-    const current = new Date();
-    return current > expiredAt;
+    return {
+      code,
+      sessionId: newOTPSession.sessionId,
+      expiredAt: otpExpiredTime,
+    };
   }
 
   private async sendOTP(
@@ -152,7 +190,7 @@ export class OtpService {
     code: string,
   ) {
     this.logger.log(`Send OTP(${code}) to ${identifierType}: ${identifier}`);
-    const {messageTemplate, payload} = this.checkMailContent(type, identifier, code);
+    const {messageTemplate, payload} = this.checkMessageContent(type, identifier, code);
     if (identifierType === IdentifierType.EMAIL) {
       await this.notificationService.sendMail(identifier, messageTemplate, payload);
     } else {
@@ -160,7 +198,7 @@ export class OtpService {
     }
   }
 
-  private checkMailContent(
+  private checkMessageContent(
     type: OtpTypeEnum,
     identifier: string,
     code: string,
@@ -210,7 +248,8 @@ export class OtpService {
     code: string,
     identifier: string,
     identifierType: IdentifierType,
-    type: OtpTypeEnum
+    type: OtpTypeEnum,
+    sessionId: string,
   ): Promise<string> {
     const payload = {
       identifier,
@@ -223,8 +262,8 @@ export class OtpService {
     }
 
     const otp =
-      await this.generalOtpRepository.findWithCode(identifier, identifierType, code, type);
-    if (!otp || _.isEmpty(otp) || this.isOTPExpired(otp, type)) {
+      await this.generalOtpRepository.findWithCode(sessionId, code);
+    if (!otp || _.isEmpty(otp) || !this.isOTPAlive(otp)) {
       throw new BadRequestException('Invalid code');
     }
     await this.generalOtpRepository.verify(otp.id); // seems not important

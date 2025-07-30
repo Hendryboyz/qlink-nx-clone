@@ -5,7 +5,7 @@ import Link from 'next/link';
 import API from '$/utils/fetch';
 import { IdentifierType, OtpTypeEnum } from 'types/src';
 import { CODE_SUCCESS, emailRegex } from 'common/src';
-import { usePayload } from './PayloadContext';
+import { usePayload } from '$/store/payload';
 import SubmitButton from '$/components/Button/SubmitButton';
 import Recaptcha from '$/components/Fields/Recaptcha';
 import InputField from '$/components/Fields/InputField';
@@ -19,7 +19,7 @@ type Props = {
 };
 
 const Step1 = (props: Props) => {
-  const { setEmail } = usePayload()
+  const { setEmail, setOtpSessionId } = usePayload()
   const initValue: FormData = { email: '', recaptchaToken: '' };
   return (
     <Container title="Create an account" step={1}>
@@ -50,8 +50,10 @@ const Step1 = (props: Props) => {
             type: OtpTypeEnum.REGISTER,
           })
             .then((res) => {
-              if (res.bizCode == CODE_SUCCESS) {
+              const {bizCode, data} = res;
+              if (bizCode === CODE_SUCCESS) {
                 setEmail(email);
+                setOtpSessionId(data.sessionId);
                 props.onSuccess();
               } else {
                 setFieldError('email', res.message);

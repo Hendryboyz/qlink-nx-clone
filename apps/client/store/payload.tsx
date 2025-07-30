@@ -5,18 +5,28 @@ interface PayloadContextType {
   setEmail: (phone: string | null) => void;
   token: string | null;
   setToken: (token: string) => void;
+  otpSessionId: string | null;
+  setOtpSessionId: (sessionId: string) => void;
 }
 
 const PayloadContext = createContext<PayloadContextType | undefined>(undefined);
 
 export const PayloadProvider: React.FC<{children: ReactNode}> = ({ children }) => {
   const [email, setEmail] = useState<string | null>(null);
+  const [otpSessionId, setOtpSessionId] = useState<string | null>(null);
   const [token, setToken] = useState<string | null>(null);
-
+  const ctxValue = {
+    email,
+    setEmail,
+    token,
+    setToken,
+    otpSessionId,
+    setOtpSessionId,
+  };
   return (
-    <PayloadContext.Provider value={{ email, setEmail, token, setToken }}>
+    <PayloadContext.Provider value={ctxValue}>
       {children}
-    </PayloadContext.Provider>
+      </PayloadContext.Provider>
   );
 };
 
