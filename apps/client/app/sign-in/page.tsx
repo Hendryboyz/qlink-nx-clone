@@ -3,7 +3,7 @@
 import React, { Fragment } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { Formik, FormikErrors, Field, ErrorMessage } from 'formik';
+import { Formik, FormikErrors, Field, ErrorMessage, FieldProps } from 'formik';
 import Banner from '$/components/Banner';
 import { ColorBackground } from '$/components/Background';
 import API from '$/utils/fetch';
@@ -94,7 +94,7 @@ export default function SignIn() {
                   />
                   <ErrorMessage
                     name="email"
-                    className="text-[#E19500] absolute"
+                    className="text-[#E19500] absolute pl-3 text-sm font-gilroy-medium"
                     component="span"
                   />
                 </div>
@@ -108,31 +108,55 @@ export default function SignIn() {
                   />
                   <ErrorMessage
                     name="password"
-                    className="text-[#E19500] absolute"
+                    className="text-[#E19500] absolute pl-3 text-sm font-gilroy-medium"
                     component="span"
                   />
                 </div>
                 <div className="flex mt-5 justify-between items-center text-xs font-gilroy-medium">
                   <label
                     htmlFor="rememberMe"
-                    className="flex items-center pl-1"
+                    className="flex items-center cursor-pointer pl-[13px]"
                   >
-                    <Field
-                      id="rememberMe"
-                      name="rememberMe"
-                      type="checkbox"
-                      onChange={() => {
-                        setFieldValue('rememberMe', !values.rememberMe);
-                      }}
-                    />
-                    <span className="ml-2 mt-0.5 text-white">
+                    <Field name="rememberMe">
+                      {({ field }: FieldProps) => (
+                        <div className="relative">
+                          <input
+                            id="rememberMe"
+                            type="checkbox"
+                            checked={values.rememberMe}
+                            onChange={() => {
+                              setFieldValue('rememberMe', !values.rememberMe);
+                            }}
+                            className="sr-only"
+                          />
+                          <div
+                            className={`
+                              w-4 h-4 border-2 border-white rounded-sm flex items-center justify-center transition-all duration-200
+                              ${values.rememberMe
+                                ? 'bg-primary border-primary'
+                                : 'bg-transparent border-white'
+                              }
+                            `}
+                          >
+                            {values.rememberMe && (
+                              <img
+                                src="/assets/checked.svg"
+                                alt="checked"
+                                className="w-2.5 h-1.5"
+                              />
+                            )}
+                          </div>
+                        </div>
+                      )}
+                    </Field>
+                    <span className="ml-1 text-white">
                       Remember Me
                     </span>
                   </label>
-                  <Link href="/reset-password">
-                    <h4 className="text-red-300 text-right">
+                  <Link href="/reset-password" className="pr-3">
+                    <span className="text-red-300">
                       Forgot password?
-                    </h4>
+                    </span>
                   </Link>
                 </div>
               </div>

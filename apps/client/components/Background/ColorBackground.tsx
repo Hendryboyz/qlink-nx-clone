@@ -9,7 +9,7 @@ const ColorBackground: React.FC<HTMLAttributes<HTMLDivElement>> = ({
       style={{
         background: color,
       }}
-      className='w-full'
+      className="w-full min-h-screen"
     >
       {children}
     </div>

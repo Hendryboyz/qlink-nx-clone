@@ -1,5 +1,6 @@
 import { Field, FieldAttributes } from 'formik';
 import React from 'react';
+import { useField } from 'formik';
 
 type Option = {
   value: string | number,
@@ -19,19 +20,18 @@ const DropdownField: React.FC<Props> = ({
   className,
   ...rest
 }) => {
-  // console.log(options);
   return (
     <div>
-      <label htmlFor={label} className="flex items-center justify-between">
+      <label htmlFor={label} className={`flex items-center justify-between ${className}`}>
         <Field
           as="select"
           id={name}
           name={name}
-          className={`w-full appearance-none focus:outline-none ${className}`}
+          className="w-full appearance-none focus:outline-none bg-transparent border-none text-sm font-gilroy-medium pl-[4px]"
           {...rest}
         >
           {placeholder && (
-            <option value="" disabled selected hidden>
+            <option value="" disabled hidden>
               {placeholder}
             </option>
           )}

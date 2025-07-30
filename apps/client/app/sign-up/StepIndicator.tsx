@@ -27,7 +27,13 @@ const StepIndicator: React.FC<StepIndicatorProps> = ({ currentStep, steps }) => 
             ${step <= currentStep ? componentColor.active : `border ${componentColor.inactive}`}
             font-bold text-xl
           `}>
-            {(step < currentStep) ? <CheckIcon className="text-white" /> : index + 1}
+            {(step < currentStep) ? (
+              <img
+                src="/assets/checked.svg"
+                alt="checked"
+                width="10" height="7"
+              />
+            ) : index + 1}
           </div>
           {step < steps.length && (
             <div className={`

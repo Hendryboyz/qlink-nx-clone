@@ -27,14 +27,40 @@ const Popup: React.FC<{ content: PopupContent; onClose: () => void }> = ({
 }) => {
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
-      <div className="bg-white rounded-lg p-6 max-w-md min-w-96 m-4 text-center">
-        <div className="px-6 py-6">
-          <h2 className="text-sm font-gilroy-medium">{content.title}</h2>
+      <div 
+        className="bg-white rounded-lg flex flex-col justify-between"
+        style={{ 
+          width: '248px',
+          minHeight: '128px',
+          padding: '16px'
+        }}
+      >
+        {/* Content Area */}
+        <div className="flex-1 flex flex-col justify-center text-center">
+          <h2 className="text-sm font-gilroy-medium mb-2">{content.title}</h2>
+          {content.content && (content.useDefault === undefined || content.useDefault) && (
+            <div className="text-red-500 leading-tight font-[GilroyRegular]" style={{ fontSize: '12px' }}>
+              {content.content}
+            </div>
+          )}
         </div>
-        {content.content && content.content}
-        {(content.useDefault === undefined || content.useDefault) && <div className='flex justify-center'>
-          <Button theme='dark' className='text-sm h-8 w-full py-3 rounded-lg' onClick={onClose}>OK</Button>
-          </div>}
+        
+        {/* Button Area - Always at bottom */}
+        {(content.useDefault === undefined || content.useDefault) ? (
+          <div className="flex justify-center mt-4">
+            <Button 
+              className="bg-red-600 hover:bg-red-700 text-white font-[GilroySemiBold] px-6 py-2 rounded-lg h-[30px]"
+              style={{ fontSize: '14px', width: '216px' }}
+              onClick={onClose}
+            >
+              OK
+            </Button>
+          </div>
+        ) : (
+          <div className="mt-4 flex justify-center gap-2">
+            {content.content}
+          </div>
+        )}
       </div>
     </div>
   );

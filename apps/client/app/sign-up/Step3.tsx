@@ -14,8 +14,7 @@ import {
   STATES,
 } from '@org/common';
 import SubmitButton from '$/components/Button/SubmitButton';
-import { DayPicker } from 'react-day-picker';
-import DatePickerClassNames from 'react-day-picker/style.module.css';
+import DateField from '$/components/Fields/DateField';
 import DropdownField from '$/components/Dropdown';
 import { usePopup } from '$/hooks/PopupProvider';
 import { DEFAULT_ERROR_MSG } from 'common/src';
@@ -105,9 +104,9 @@ const defaultValue: FormData = {
 };
 
 const DEFAULT_INPUT_STYLES =
-  'block rounded-xl py-2 pl-6 pr-6 w-full bg-white border-[#FFCFA3] border-2 text-sm font-gilroy-medium';
+  'block rounded-xl py-2 pl-6 pr-6 w-full bg-white border-[#FFCFA3] border-2 text-sm font-gilroy-medium min-h-[48px]';
 
-const DEFAULT_ERROR_MSG_CLASS = 'text-red-500';
+const DEFAULT_ERROR_MSG_CLASS = 'text-red-500 pl-8 text-sm font-gilroy-medium';
 
 type Props = {
   onSuccess: () => void;
@@ -115,7 +114,8 @@ type Props = {
 };
 const Step3 = (props: Props) => {
   const initValue: FormData = defaultValue;
-  const [showDatePicker, toggleDatePicker] = useState(false);
+  // Remove showDatePicker state
+  // const [showDatePicker, toggleDatePicker] = useState(false);
   const {email, token} = usePayload();
   const {showPopup} = usePopup();
   // const sourceOptions = typedObjectEntries(UserSourceType)
@@ -181,14 +181,14 @@ const Step3 = (props: Props) => {
         }) => (
           <Fragment>
             <h4 className="text-primary text-xl">Enter Account Detail</h4>
-            <div className="flex-1 overflow-auto -mt-6 -mx-3">
-              <form onSubmit={handleSubmit} className="h-full overflow-auto">
+            <div className="-mt-6 -mx-3">
+              <form onSubmit={handleSubmit}>
                 <div className="ml-2 mr-4">
-                  <label id="email">
-                    <div className={`${DEFAULT_INPUT_STYLES} mb-7 h-12`}>
-                      <p className="text-gray-300 content-center h-full">{email || "user@example.com"}</p>
+                  {/* <label id="email">
+                    <div className={`flex items-center ${DEFAULT_INPUT_STYLES} mb-7 h-12`}>
+                      <span className="text-gray-300 text-lg font-gilroy-medium">{email || "user@example.com"}</span>
                     </div>
-                  </label>
+                  </label> */}
                   <div>
                     <InputField
                       name="password"
@@ -198,7 +198,7 @@ const Step3 = (props: Props) => {
                     />
                     <div className="min-h-7">
                       <ErrorMessage name="password">
-                        {(msg) => <span className="text-red-500">{msg}</span>}
+                        {(msg) => <span className="text-red-500 pl-8 text-sm font-gilroy-medium">{msg}</span>}
                       </ErrorMessage>
                     </div>
                   </div>
@@ -211,7 +211,7 @@ const Step3 = (props: Props) => {
                     />
                     <div className="min-h-7">
                       <ErrorMessage name="rePassword">
-                        {(msg) => <span className="text-red-500">{msg}</span>}
+                        {(msg) => <span className="text-red-500 pl-8 text-sm font-gilroy-medium">{msg}</span>}
                       </ErrorMessage>
                     </div>
                   </div>
@@ -224,7 +224,7 @@ const Step3 = (props: Props) => {
                     />
                     <div className="min-h-7">
                       <ErrorMessage name="firstName">
-                        {(msg) => <span className="text-red-500">{msg}</span>}
+                        {(msg) => <span className="text-red-500 pl-8 text-sm font-gilroy-medium">{msg}</span>}
                       </ErrorMessage>
                     </div>
                   </div>
@@ -237,7 +237,7 @@ const Step3 = (props: Props) => {
                     />
                     <div className="min-h-7">
                       <ErrorMessage name="midName">
-                        {(msg) => <span className="text-red-500">{msg}</span>}
+                        {(msg) => <span className="text-red-500 pl-8 text-sm font-gilroy-medium">{msg}</span>}
                       </ErrorMessage>
                     </div>
                   </div>
@@ -250,22 +250,15 @@ const Step3 = (props: Props) => {
                     />
                     <div className="min-h-7">
                       <ErrorMessage name="lastName">
-                        {(msg) => <span className="text-red-500">{msg}</span>}
+                        {(msg) => <span className="text-red-500 pl-8 text-sm font-gilroy-medium">{msg}</span>}
                       </ErrorMessage>
                     </div>
                   </div>
                   <label htmlFor="birthday">
-                    <Field
-                      type="date"
-                      id="birthday"
+                    <DateField
                       name="birthday"
-                      placeholder="Birthday(YYYY-MM-DD)"
-                      className={DEFAULT_INPUT_STYLES}
-                      onChange={(e: any) => {
-                        // console.log(e.target.value);
-                        setFieldValue('birthday', e.target.value);
-                      }}
-                      // onClick={() => toggleDatePicker((p) => !p)}
+                      defaultDisplayValue="Birthday"
+                      className={`${DEFAULT_INPUT_STYLES} pl-[28px]`}
                     />
                     <div className="min-h-7">
                       <ErrorMessage
@@ -273,19 +266,6 @@ const Step3 = (props: Props) => {
                         className={DEFAULT_ERROR_MSG_CLASS}
                         component="span"
                       />
-                    </div>
-                    <div className="absolute z-10 bg-white shadow-lg">
-                      {showDatePicker && (
-                        <DayPicker
-                          mode="single"
-                          selected={new Date(values.birthday)}
-                          classNames={DatePickerClassNames}
-                          onSelect={(d) =>
-                            setFieldValue('birthday', fromDate(d || new Date()))
-                          }
-                          onDayClick={() => toggleDatePicker(false)}
-                        />
-                      )}
                     </div>
                   </label>
                   <DropdownField
@@ -310,7 +290,7 @@ const Step3 = (props: Props) => {
                     />
                     <div className="min-h-7">
                       <ErrorMessage name="phone">
-                        {(msg) => <span className="text-red-500">{msg}</span>}
+                        {(msg) => <span className="text-red-500 pl-8 text-sm font-gilroy-medium">{msg}</span>}
                       </ErrorMessage>
                     </div>
                   </div>
@@ -337,7 +317,7 @@ const Step3 = (props: Props) => {
                     />
                     <div className="min-h-7">
                       <ErrorMessage name="addressCity">
-                        {(msg) => <span className="text-red-500">{msg}</span>}
+                        {(msg) => <span className="text-red-500 pl-8 text-sm font-gilroy-medium">{msg}</span>}
                       </ErrorMessage>
                     </div>
                   </div>
@@ -363,7 +343,7 @@ const Step3 = (props: Props) => {
                     />
                     <div className="min-h-7">
                       <ErrorMessage name="whatsapp">
-                        {(msg) => <span className="text-red-500">{msg}</span>}
+                        {(msg) => <span className="text-red-500 pl-8 text-sm font-gilroy-medium">{msg}</span>}
                       </ErrorMessage>
                     </div>
                   </div>
@@ -375,7 +355,7 @@ const Step3 = (props: Props) => {
                     />
                     <div className="min-h-7">
                       <ErrorMessage name="whatsapp">
-                        {(msg) => <span className="text-red-500">{msg}</span>}
+                        {(msg) => <span className="text-red-500 pl-8 text-sm font-gilroy-medium">{msg}</span>}
                       </ErrorMessage>
                     </div>
                   </div>

@@ -77,7 +77,7 @@ const Step3 = () => {
                   />
                   <div className="min-h-8">
                     <ErrorMessage name="password">
-                      {(msg) => <span className="text-[#E19500]">{msg}</span>}
+                      {(msg) => <span className="text-[#E19500] pl-8 text-sm font-gilroy-medium">{msg}</span>}
                     </ErrorMessage>
                   </div>
                 </div>
@@ -90,7 +90,7 @@ const Step3 = () => {
                   />
                   <div className="min-h-8">
                     <ErrorMessage name="rePassword">
-                      {(msg) => <span className="text-[#E19500]">{msg}</span>}
+                      {(msg) => <span className="text-[#E19500] pl-8 text-sm font-gilroy-medium">{msg}</span>}
                     </ErrorMessage>
                   </div>
                 </div>

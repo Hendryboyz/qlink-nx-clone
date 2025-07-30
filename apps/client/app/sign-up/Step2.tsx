@@ -124,7 +124,7 @@ const Step2 = (props: Props) => {
           ))}
         </div>
         {isActive ? (
-          <h4 className="text-center text-[#DF6B00] mt-6">
+          <h4 className="text-center text-[#DF6B00] mt-6 text-[13px] font-gilroy-medium font-normal leading-[100%] tracking-[0%]">
             Didn&apos;t receive code?
             <br />
             Resend in {formatTime(countdown)}

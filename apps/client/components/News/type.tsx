@@ -17,13 +17,14 @@ const getTypeColor = (type: PostCategoryEnum) => {
 };
 
 type Props = {
-  type: PostCategoryEnum
+  type: PostCategoryEnum;
+  className?: string;
 }
 
-const NewsType: React.FC<Props> = ({ type }: Props) => {
+const NewsType: React.FC<Props> = ({ type, className }: Props) => {
   return (
     <span
-      className={`text-[8px] text-white h-3 w-9 text-center rounded ${getTypeColor(type)}`}
+      className={`text-[8px] pt-[1px] text-white h-3 w-9 text-center font-gilroy-semibold ${getTypeColor(type)} ${className || ''}`}
     >
       {type}
     </span>

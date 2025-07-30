@@ -19,7 +19,7 @@ const Header: React.FC<Props> = ({ title, useBackBtn, customBtn, customBackActio
     <>
       <style>{`body { padding-top: 48px; }`}</style>
       <header
-        className="bg-primary pt-3 text-white px-4 w-full h-12"
+        className="bg-primary pt-3 text-white px-5 w-full h-12"
         style={{
           position: 'fixed',
           top: 0,
