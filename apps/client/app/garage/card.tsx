@@ -158,9 +158,10 @@ const ProductCard = ({ data, handleEdit }: { data: ProductVO, handleEdit: (data:
                             useDefault: false,
                             title: 'Gift Redeemed',
                             content: (
-                              <div className="flex justify-center py-4">
+                              <div className="flex justify-center">
                                 <Button
-                                  className="py-2 px-6 text-xs leading-tight rounded-lg h-10 w-48 bg-[#D70127] text-white font-bold font-[GilroySemiBold]"
+                                  className="bg-red-600 hover:bg-red-700 text-white font-[GilroySemiBold] px-6 py-2 rounded-lg h-[30px] text-sm"
+                                  style={{ width: '216px' }}
                                   onClick={() => {
                                     // Save redemption status to localStorage
                                     setGiftRedemption(data.userId, data.registrationDate, true);
