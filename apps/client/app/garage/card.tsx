@@ -6,8 +6,7 @@ import { css } from '@emotion/css';
 import { DEFAULT_MODELS } from '$/utils';
 import { usePopup } from '$/hooks/PopupProvider';
 import Button from '$/components/Button';
-// TODO: Need to change to dynamically get pictures in future version
-import defaultMotorImage from '$/public/assets/sym125.png';
+import defaultMotorImage from '$/public/assets/vehicles/default_model.png';
 
 const rowCss = css`
 & > div:not(:last-child)  {
@@ -69,12 +68,13 @@ const ProductCard = ({ data, handleEdit }: { data: ProductVO, handleEdit: (data:
     dealerName,
   } = data;
   const modelDefined = DEFAULT_MODELS.find(m => m.id.toString() === model);
+  const modelImage = modelDefined?.img || defaultMotorImage.src;
   return (
     <>
       <div
         className="flex justify-between min-h-[164px] bg-[#C3C3C3]"
         style={{
-          backgroundImage: `url(${defaultMotorImage.src})`,
+          backgroundImage: `url(${modelImage})`,
           backgroundSize: 'cover',
           backgroundPosition: 'center center',
           backgroundRepeat: 'no-repeat'
@@ -158,9 +158,10 @@ const ProductCard = ({ data, handleEdit }: { data: ProductVO, handleEdit: (data:
                             useDefault: false,
                             title: 'Gift Redeemed',
                             content: (
-                              <div className="flex justify-center py-4">
+                              <div className="flex justify-center">
                                 <Button
-                                  className="py-2 px-6 text-xs leading-tight rounded-lg h-10 w-48 bg-[#D70127] text-white font-bold font-[GilroySemiBold]"
+                                  className="bg-red-600 hover:bg-red-700 text-white font-[GilroySemiBold] px-6 py-2 rounded-lg h-[30px] text-sm"
+                                  style={{ width: '216px' }}
                                   onClick={() => {
                                     // Save redemption status to localStorage
                                     setGiftRedemption(data.userId, data.registrationDate, true);

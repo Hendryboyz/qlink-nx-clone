@@ -49,15 +49,15 @@ const Popup: React.FC<{ content: PopupContent; onClose: () => void }> = ({
         {(content.useDefault === undefined || content.useDefault) ? (
           <div className="flex justify-center mt-4">
             <Button 
-              className="bg-red-600 hover:bg-red-700 text-white font-[GilroySemiBold] px-6 py-2 rounded-lg h-[30px]"
-              style={{ fontSize: '14px', width: '216px' }}
+              className="bg-red-600 hover:bg-red-700 text-white font-[GilroySemiBold] px-6 py-2 rounded-lg h-[30px] text-sm"
+              style={{ width: '216px' }}
               onClick={onClose}
             >
               OK
             </Button>
           </div>
         ) : (
-          <div className="mt-4 flex justify-center gap-2">
+          <div className="mt-4 flex justify-center gap-4">
             {content.content}
           </div>
         )}

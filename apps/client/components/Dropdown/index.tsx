@@ -9,6 +9,7 @@ type Option = {
 interface Props extends FieldAttributes<any> {
   options: Option[];
   children?: React.ReactNode;
+  textSize?: string;
 }
 
 const DropdownField: React.FC<Props> = ({
@@ -18,6 +19,7 @@ const DropdownField: React.FC<Props> = ({
   placeholder,
   children,
   className,
+  textSize = 'text-[16px]',
   ...rest
 }) => {
   return (
@@ -27,7 +29,7 @@ const DropdownField: React.FC<Props> = ({
           as="select"
           id={name}
           name={name}
-          className="w-full appearance-none focus:outline-none bg-transparent border-none text-sm font-gilroy-medium pl-[4px]"
+          className={`w-full appearance-none focus:outline-none bg-transparent border-none ${textSize} font-gilroy-medium pl-[4px]`}
           {...rest}
         >
           {placeholder && (
