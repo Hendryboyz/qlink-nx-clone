@@ -76,7 +76,7 @@ const Step1 = (props: Props) => {
           <Fragment>
             <div className="font-gilroy-medium">
               <h4 className="text-primary text-xl">
-                Mobile Verification
+               Enter Email Address
               </h4>
               <Form id="signupForm">
                 <div className="mt-9">
