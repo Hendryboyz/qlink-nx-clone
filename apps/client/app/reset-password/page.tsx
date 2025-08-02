@@ -12,16 +12,20 @@ export default function SignUp() {
   const goNextStep = useCallback(() => {
     handleChangeStep(pre => pre+1)
   }, [])
+  
+  const goFirstStep = useCallback(() => {
+    handleChangeStep(1)
+  }, [])
   const children = useMemo(() => {
     switch (step) {
       case 1:
         return <Step1 onSuccess={goNextStep} />;
       case 2:
-        return <Step2 onSuccess={goNextStep} />;
+        return <Step2 onSuccess={goNextStep} goBack={goFirstStep} />;
       case 3:
         return <Step3 />;
     }
-  }, [step, goNextStep])
+  }, [step, goNextStep, goFirstStep])
 
   return (
     <PayloadProvider>

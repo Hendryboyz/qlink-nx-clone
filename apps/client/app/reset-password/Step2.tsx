@@ -11,32 +11,54 @@ import Button from '$/components/Button';
 
 type Props = {
   onSuccess: () => void;
+  goBack: () => void;
 };
 
 const Step2 = (props: Props) => {
-  const secsBeforeResend: number = 10; // 1 minutes
+  const secsBeforeResend: number = 60; // 1 minutes
+  const secsBeforeExpiration: number = 10; // 10 minutes
   const [otp, setOtp] = useState<string[]>(new Array(4).fill(''));
   const [countdown, setCountdown] = useState(secsBeforeResend);
+  const [expirationCountdown, setExpirationCountdown] = useState(secsBeforeExpiration);
   const [isActive, setIsActive] = useState(true);
+  const [isExpired, setIsExpired] = useState(false);
   const [isLoading, setLoading] = useState<boolean>(false);
   const [isSending, setSending] = useState<boolean>(false);
   const { email, otpSessionId, setToken } = usePayload();
   const { showPopup } = usePopup();
 
   useEffect(() => {
-    let interval: NodeJS.Timeout | null = null;
-    if (isActive && countdown > 0) {
-      interval = setInterval(() => {
+    let resendInterval: NodeJS.Timeout | null = null;
+    let expirationInterval: NodeJS.Timeout | null = null;
+
+    // Handle 1-minute resend countdown
+    if (isActive && countdown > 0 && !isExpired) {
+      resendInterval = setInterval(() => {
         setCountdown((prev) => prev - 1);
       }, 1000);
-    } else if (countdown === 0) {
+    } else if (countdown === 0 && !isExpired) {
       setIsActive(false);
     }
 
+    // Handle 10-minute expiration countdown
+    if (expirationCountdown > 0 && !isExpired) {
+      expirationInterval = setInterval(() => {
+        setExpirationCountdown((prev) => {
+          if (prev <= 1) {
+            setIsExpired(true);
+            setIsActive(false);
+            return 0;
+          }
+          return prev - 1;
+        });
+      }, 1000);
+    }
+
     return () => {
-      if (interval) clearInterval(interval);
+      if (resendInterval) clearInterval(resendInterval);
+      if (expirationInterval) clearInterval(expirationInterval);
     };
-  }, [isActive, countdown]);
+  }, [isActive, countdown, expirationCountdown, isExpired]);
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement>,
@@ -65,13 +87,15 @@ const Step2 = (props: Props) => {
       .then((res) => {
         if (res.bizCode == CODE_SUCCESS) {
           setCountdown(secsBeforeResend);
+          setExpirationCountdown(secsBeforeExpiration);
           setIsActive(true);
+          setIsExpired(false);
         } else {
           showPopup({ title: DEFAULT_ERROR_MSG })
         }
       })
       .finally(() => setSending(false));
-  }, [email, showPopup, otpSessionId]);
+  }, [email, showPopup, otpSessionId, secsBeforeResend, secsBeforeExpiration]);
 
   const handleSubmit = () => {
     const payload: OtpVerificationRequestDto = {
@@ -99,7 +123,7 @@ const Step2 = (props: Props) => {
       title="OTP Verification"
       bottomEle={
         <div className="flex justify-between items-center mt-auto">
-          <span className="text-xl text-[#FFF0D3]">Back</span>
+          <span className="text-xl text-[#FFF0D3]" onClick={props.goBack}>Back</span>
           <SubmitButton text="Next" buttonColor="beige" onClick={handleSubmit} isLoading={isLoading} />
         </div>
       }
@@ -126,15 +150,26 @@ const Step2 = (props: Props) => {
             />
           ))}
         </div>
-        {isActive ? (
-          <h4 className="text-center text-[#FFF0D3] mt-6">
+        {isExpired ? (
+          <div className="text-center mt-6">
+            <h4 className="text-[#DF6B00] text-[13px] font-gilroy-medium font-normal leading-[100%] tracking-[0%]">
+              Verification expired.{' '}
+              <span
+                className="text-blue-600 hover:underline cursor-pointer"
+                onClick={props.goBack}
+              >
+                Try again
+              </span>
+            </h4>
+          </div>
+        ) : isActive ? (
+          <h4 className="text-center text-[#DF6B00] mt-6 text-[13px] font-gilroy-medium font-normal leading-[100%] tracking-[0%]">
             Didn&apos;t receive code?
             <br />
             Resend in {formatTime(countdown)}
           </h4>
         ) : (
           <Button
-            theme='light'
             isLoading={isSending}
             className="mt-5 text-xs hover:cursor-pointer"
             onClick={handleResendOTP}
