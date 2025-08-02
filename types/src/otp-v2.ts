@@ -3,11 +3,13 @@ import { IsEnum, IsNotEmpty } from 'class-validator';
 
 export type GeneralOtpEntity = {
   id: number;
+  sessionId: string;
   type: OtpTypeEnum;
   code: string;
   identifier: string;
   identifierType: IdentifierType;
   isVerified: boolean;
+  expiredAt: Date;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -21,6 +23,7 @@ export interface OtpReqDto {
   identifier: string;
   identifierType: IdentifierType;
   type: OtpTypeEnum;
+  sessionId?: string;
 }
 
 export type StartOtpReqDto = OtpReqDto & { recaptchaToken?: string };
@@ -41,7 +44,16 @@ export class GeneralOtpDto {
   type!: OtpTypeEnum;
 }
 
-export type CreateGeneralOtpDto = GeneralOtpDto;
+export class CreateGeneralOtpDto extends GeneralOtpDto {
+  // ! is definite assignment assertion to announce a property without initialization, but it will be assign in runtime
+  expiredAt!: Date;
+}
 
-export class OtpVerificationRequestDto extends GeneralOtpDto {};
+export class OtpVerificationRequestDto extends GeneralOtpDto {
+  sessionId!: string;
+}
 
+export interface PatchOtpDto {
+  sessionId: string;
+  expiredAt?: Date;
+}

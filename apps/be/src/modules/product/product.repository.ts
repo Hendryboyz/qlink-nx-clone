@@ -1,9 +1,11 @@
 import { BadRequestException, Inject, Injectable, Logger } from '@nestjs/common';
 import { Pool } from 'pg';
-import { ProductDto, ProductEntity, UpdateProductData } from '@org/types';
-import { KNEX_CONNECTION } from '$/database.module';
 import { Knex } from 'knex';
 import { isEmpty } from 'lodash';
+
+import buildUpdatingMap from '$/modules/utils/repository.util';
+import { KNEX_CONNECTION } from '$/database.module';
+import { ProductDto, ProductEntity, UpdateProductData } from '@org/types';
 
 @Injectable()
 export class ProductRepository {
@@ -91,10 +93,7 @@ export class ProductRepository {
     id: string,
     productUpdateDto: UpdateProductData,
   ): Promise<ProductEntity> {
-    const productToUpdate = Object.fromEntries(
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      Object.entries(productUpdateDto).filter(([_, v]) => v !== undefined)
-    );
+    const productToUpdate = buildUpdatingMap(productUpdateDto);
     if (isEmpty(productToUpdate))
       throw new BadRequestException('Empty payload');
     if (isEmpty(id)) throw new BadRequestException('Empty payload');

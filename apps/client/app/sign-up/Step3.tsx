@@ -1,14 +1,14 @@
-import React, { Fragment, useState } from 'react';
+import React, { Fragment } from 'react';
 import Container from './Container';
-import { Formik, Field, ErrorMessage } from 'formik';
+import { Formik, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
 import API from '$/utils/fetch';
-import { GenderType, RegisterDto, UserSourceType, UserType } from 'types/src';
-import { usePayload } from './PayloadContext';
+import { GenderType, RegisterDto, UserType } from 'types/src';
+import { usePayload } from '$/store/payload';
 import {
   alphaWithSpacesMax50Regex, clientPhoneRegex,
   CODE_SUCCESS,
-  fromDate, GENDER,
+  GENDER,
   HEADER_PRE_TOKEN,
   passwordRegex,
   STATES,

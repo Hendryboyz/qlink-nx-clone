@@ -1,19 +1,28 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { Inject, Injectable, Logger } from '@nestjs/common';
 import { Pool, QueryResult } from 'pg';
-import { CreateGeneralOtpDto, GeneralOtpEntity, IdentifierType, OtpTypeEnum } from '@org/types';
-import { KNEX_CONNECTION } from '$/database.module';
 import { Knex } from 'knex';
+import {
+  CreateGeneralOtpDto,
+  GeneralOtpEntity,
+  IdentifierType,
+  OtpTypeEnum,
+  PatchOtpDto,
+} from '@org/types';
+import { KNEX_CONNECTION } from '$/database.module';
+import buildUpdatingMap from '$/modules/utils/repository.util';
 
 @Injectable()
 export class GeneralOtpRepository {
+  private logger = new Logger(this.constructor.name);
   constructor(
     private readonly pool: Pool,
     @Inject(KNEX_CONNECTION) private readonly knex: Knex
   ) {}
 
   async create(dto: CreateGeneralOtpDto) {
-    await this.knex('general_otp').insert(dto);
-    return true;
+    const [insertedOtp] = await this.knex('general_otp')
+      .insert(dto, ['id', 'session_id']);
+    return insertedOtp;
   }
 
   async findFirst(
@@ -45,15 +54,36 @@ export class GeneralOtpRepository {
   }
 
   async findWithCode(
-    identifier: string,
-    identifierType: IdentifierType,
+    sessionId: string,
     code: string,
-    type: OtpTypeEnum
   ): Promise<GeneralOtpEntity | null> {
     const query = {
-      text: `SELECT * FROM general_otp WHERE identifier = $1 AND identifier_type = $2 AND code = $3 AND type = $4 AND is_verified = false ORDER BY created_at DESC LIMIT 1`,
-      values: [identifier, identifierType.toString(), code, type],
+      text: `SELECT * FROM general_otp WHERE session_id = $1 AND code = $2 AND is_verified = false ORDER BY created_at DESC LIMIT 1`,
+      values: [sessionId, code],
     };
     return await this.queryOTP(query);
+  }
+
+  async findAvailableSession(sessionId: string, type: OtpTypeEnum): Promise<GeneralOtpEntity | null> {
+    const query = {
+      text: `SELECT * FROM general_otp WHERE session_id = $1 AND type = $2 AND is_verified = false ORDER BY created_at DESC LIMIT 1`,
+      values: [sessionId, type],
+    };
+    return await this.queryOTP(query);
+  }
+
+  public async patch(patchingDto: PatchOtpDto) {
+    const patchingFields = buildUpdatingMap(patchingDto);
+
+    const [otpSession] = await this.knex('general_otp')
+      .where('session_id', patchingDto.sessionId)
+      .update(patchingFields)
+      .returning(['id', 'session_id', 'expired_at']);
+
+    return {
+      id: otpSession.id,
+      sessionId: otpSession.sessionId,
+      expiredAt: patchingFields.expired_at,
+    }
   }
 }

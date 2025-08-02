@@ -1,21 +1,43 @@
-import React, { useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import Container from './Container';
 import API from '$/utils/fetch';
 import { IdentifierType, OtpTypeEnum, OtpVerificationRequestDto } from 'types/src';
-import { usePayload } from './PayloadContext';
+import { usePayload } from '$/store/payload';
 import { CODE_SUCCESS, DEFAULT_ERROR_MSG } from 'common/src';
 import SubmitButton from '$/components/Button/SubmitButton';
 import { usePopup } from '$/hooks/PopupProvider';
+import { formatTime } from '$/utils';
+import Button from '$/components/Button';
 
 type Props = {
   onSuccess: () => void;
 };
 
 const Step2 = (props: Props) => {
+  const secsBeforeResend: number = 10; // 1 minutes
   const [otp, setOtp] = useState<string[]>(new Array(4).fill(''));
+  const [countdown, setCountdown] = useState(secsBeforeResend);
+  const [isActive, setIsActive] = useState(true);
   const [isLoading, setLoading] = useState<boolean>(false);
-  const { email, setToken } = usePayload();
+  const [isSending, setSending] = useState<boolean>(false);
+  const { email, otpSessionId, setToken } = usePayload();
   const { showPopup } = usePopup();
+
+  useEffect(() => {
+    let interval: NodeJS.Timeout | null = null;
+    if (isActive && countdown > 0) {
+      interval = setInterval(() => {
+        setCountdown((prev) => prev - 1);
+      }, 1000);
+    } else if (countdown === 0) {
+      setIsActive(false);
+    }
+
+    return () => {
+      if (interval) clearInterval(interval);
+    };
+  }, [isActive, countdown]);
+
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement>,
     index: number
@@ -32,7 +54,24 @@ const Step2 = (props: Props) => {
     }
   };
 
-  // TODO: handle resend OTP
+  const handleResendOTP = useCallback(() => {
+    setSending(true);
+    API.post('/v2/auth/otp/resend', {
+      identifier: email || 'None',
+      identifierType: IdentifierType.EMAIL,
+      type: OtpTypeEnum.RESET_PASSWORD,
+      sessionId: otpSessionId,
+    })
+      .then((res) => {
+        if (res.bizCode == CODE_SUCCESS) {
+          setCountdown(secsBeforeResend);
+          setIsActive(true);
+        } else {
+          showPopup({ title: DEFAULT_ERROR_MSG })
+        }
+      })
+      .finally(() => setSending(false));
+  }, [email, showPopup, otpSessionId]);
 
   const handleSubmit = () => {
     const payload: OtpVerificationRequestDto = {
@@ -40,6 +79,7 @@ const Step2 = (props: Props) => {
       identifierType: IdentifierType.EMAIL,
       code: otp.join(''),
       type: OtpTypeEnum.RESET_PASSWORD,
+      sessionId: otpSessionId ? otpSessionId : '',
     };
     setLoading(true);
     API.post('/v2/auth/otp/verification', payload)
@@ -86,11 +126,22 @@ const Step2 = (props: Props) => {
             />
           ))}
         </div>
-        <h4 className="text-center text-[#FF7D7D] mt-5 text-[13px]">
-          Didn&apos;t receive code?
-          <br />
-          Resend in 60s
-        </h4>
+        {isActive ? (
+          <h4 className="text-center text-[#FFF0D3] mt-6">
+            Didn&apos;t receive code?
+            <br />
+            Resend in {formatTime(countdown)}
+          </h4>
+        ) : (
+          <Button
+            theme='light'
+            isLoading={isSending}
+            className="mt-5 text-xs hover:cursor-pointer"
+            onClick={handleResendOTP}
+          >
+            Resend
+          </Button>
+        )}
       </div>
     </Container>
   );

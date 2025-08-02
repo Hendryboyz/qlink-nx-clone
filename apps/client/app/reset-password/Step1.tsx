@@ -5,7 +5,7 @@ import Container from './Container';
 import API from '$/utils/fetch';
 import { IdentifierType, OtpTypeEnum, StartOtpReqDto } from '@org/types';
 import { CODE_SUCCESS, emailRegex } from '@org/common';
-import { usePayload } from './PayloadContext';
+import { usePayload } from '$/store/payload';
 import { Fragment } from 'react';
 import SubmitButton from '$/components/Button/SubmitButton';
 import { NOOP } from '$/utils';
@@ -21,7 +21,7 @@ type Props = {
 };
 const Step1 = (props: Props) => {
   const initValue: FormData = { email: '', recaptchaToken: '' };
-  const { setEmail } = usePayload();
+  const { setEmail, setOtpSessionId } = usePayload();
   return (
     <Container title="Forgot password?">
       <Formik
@@ -44,10 +44,12 @@ const Step1 = (props: Props) => {
             type: OtpTypeEnum.RESET_PASSWORD,
             recaptchaToken: values.recaptchaToken,
           };
-          API.post('/auth/otp/send', payload)
+          API.post('/v2/auth/otp', payload)
             .then((res) => {
-              if (res.bizCode == CODE_SUCCESS) {
+              const {bizCode, data} = res;
+              if (bizCode === CODE_SUCCESS) {
                 setEmail(email);
+                setOtpSessionId(data.sessionId);
                 props.onSuccess();
               } else {
                 setFieldError('email', res.message);

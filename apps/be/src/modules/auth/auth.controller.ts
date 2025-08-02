@@ -29,7 +29,8 @@ import {
   LoginDto, OtpReqDto,
   OtpTypeEnum,
   OtpVerificationRequestDto,
-  RegisterDto, ResendOtpReqDto,
+  RegisterDto,
+  ResendOtpReqDto,
   ResetPasswordDto,
   SendOtpDto,
   StartOtpReqDto,
@@ -179,7 +180,7 @@ export class AuthController {
     const {type, identifier, identifierType} = dto;
     const errMessage = await this.isAllowedSendOTP(type, identifier, identifierType);
     if (errMessage) {
-      this.logger.error(`is allowed send otp err: ${errMessage}`);
+      this.logger.error(`not allow to send otp err: ${errMessage}`);
       return {
         bizCode: INVALID,
         message: errMessage,
@@ -195,10 +196,12 @@ export class AuthController {
     }
 
     try {
-      await this.otpService.generateOtpV2(identifier, identifierType, type);
+      const otpSession = await this.otpService.generateOtpV2(identifier, identifierType, type, dto.sessionId);
       return {
         bizCode: CODE_SUCCESS,
-        data: true
+        data: {
+          sessionId: otpSession.sessionId,
+        }
       }
     } catch (e) {
       this.logger.error(e)
@@ -207,27 +210,20 @@ export class AuthController {
   }
 
   private async isAllowedSendOTP(type: OtpTypeEnum, identifier: string, identifierType: IdentifierType): Promise<string | null> {
-    if (type === OtpTypeEnum.REGISTER) {
-      const isDuplicateSignup = await this.userService.isExistingIdentifier(identifier, identifierType);
-      if (isDuplicateSignup) {
-        return `invalid ${identifierType}: ${identifier}`;
-      }
-    } else {
-      // reset password
-      const identifierNotFound = !(await this.userService.isExistingIdentifier(identifier, identifierType));
-      if (identifierNotFound) {
-        return `${identifierType} not found: ${identifier}`;
-      }
+    try {
+      await this.otpService.isLegalOTPRequest(identifier, identifierType, type);
+      return null
+    } catch (error) {
+      return error.message;
     }
-    return null;
   }
 
   @Version('2')
   @Post('otp/resend')
   @UsePipes(new ValidationPipe())
   async resendOTPV2(@Body() body: ResendOtpReqDto) {
-    const {identifier, identifierType, type} = body;
-    const isResendAllowed = await this.otpService.allowResendV2(identifier, identifierType, type);
+    const {identifier, identifierType, type, sessionId} = body;
+    const isResendAllowed = await this.otpService.allowResendV2(sessionId, type);
     if (!isResendAllowed) {
       throw new ForbiddenException(`not allow to resend ${type} OTP to ${identifierType}: ${identifier}`);
     }
@@ -253,9 +249,15 @@ export class AuthController {
   @Post('otp/verification')
   @UsePipes(new ValidationPipe())
   async verifyOtpCodeV2(@Body() body: OtpVerificationRequestDto) {
-    const { identifier, identifierType, code, type } = body;
+    const { identifier, identifierType, code, type, sessionId } = body;
     try {
-      const token = await this.otpService.verifyOtpV2(code, identifier, identifierType, type);
+      const token = await this.otpService.verifyOtpV2(
+        code,
+        identifier,
+        identifierType,
+        type,
+        sessionId
+      );
       return { bizCode: CODE_SUCCESS, data: token }
     } catch (e) {
       this.logger.error(e);

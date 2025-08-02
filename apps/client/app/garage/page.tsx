@@ -26,6 +26,7 @@ export default function Garage() {
     registrationDate: '',
     dealerName: '',
     model: '',
+    isVerified: false,
   });
   const handleFetch = useCallback(() => {
     API.get<ProductVO[]>('/product/list').then((res) => {

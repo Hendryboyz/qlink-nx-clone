@@ -6,7 +6,7 @@ import Step1 from './Setp1';
 import Step2 from './Step2';
 import Step3 from './Step3';
 import Success from './Success';
-import { PayloadProvider } from './PayloadContext';
+import { PayloadProvider } from '$/store/payload';
 
 const SignUp = () => {
   const [step, handleChangeStep] = useState(1);

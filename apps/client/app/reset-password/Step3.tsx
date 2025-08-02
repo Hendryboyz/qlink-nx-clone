@@ -9,7 +9,7 @@ import API from '$/utils/fetch';
 import { ResetPasswordDto } from '@org/types';
 import { CODE_SUCCESS, HEADER_PRE_TOKEN } from '@org/common';
 import { useRouter } from 'next/navigation';
-import { usePayload } from './PayloadContext';
+import { usePayload } from '$/store/payload';
 import { NOOP } from '$/utils';
 import InputField from '$/components/Fields/InputField';
 

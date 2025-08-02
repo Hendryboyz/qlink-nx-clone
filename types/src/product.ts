@@ -9,7 +9,7 @@ export type ProductEntity = {
   year: number;
   model: string; // mapping to DB
   crmId?: string;
-  isVerified: boolean;
+  isVerified?: boolean;
 }
 
 export type ProductVO = ProductEntity & {

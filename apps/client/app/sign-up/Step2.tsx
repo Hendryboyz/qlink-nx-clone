@@ -2,11 +2,12 @@ import React, { useCallback, useEffect, useState } from 'react';
 import Container from './Container';
 import API from '$/utils/fetch';
 import { IdentifierType, OtpTypeEnum } from 'types/src';
-import { usePayload } from './PayloadContext';
+import { usePayload } from '$/store/payload';
 import { CODE_SUCCESS, DEFAULT_ERROR_MSG } from 'common/src';
 import SubmitButton from '$/components/Button/SubmitButton';
 import Button from '$/components/Button';
 import { usePopup } from '$/hooks/PopupProvider';
+import { formatTime } from '$/utils';
 
 type Props = {
   onSuccess: () => void;
@@ -20,7 +21,7 @@ const Step2 = (props: Props) => {
   const [isActive, setIsActive] = useState(true);
   const [isLoading, setLoading] = useState<boolean>(false);
   const [isSending, setSending] = useState<boolean>(false);
-  const { email, setToken } = usePayload();
+  const { email, otpSessionId, setToken } = usePayload();
   const { showPopup } = usePopup()
 
   useEffect(() => {
@@ -38,31 +39,24 @@ const Step2 = (props: Props) => {
     };
   }, [isActive, countdown]);
 
-  const formatTime = useCallback((time: number) => {
-    const minutes = Math.floor(time / 60);
-    const seconds = time % 60;
-    return `${minutes.toString().padStart(2, '0')}:${seconds
-      .toString()
-      .padStart(2, '0')}`;
-  }, []);
-
   const handleResendOTP = useCallback(() => {
-    API.post('/v2/auth/otp', {
+    setSending(true);
+    API.post('/v2/auth/otp/resend', {
       identifier: email || 'None',
       identifierType: IdentifierType.EMAIL,
       type: OtpTypeEnum.REGISTER,
-      resend: true,
+      sessionId: otpSessionId,
     })
       .then((res) => {
         if (res.bizCode == CODE_SUCCESS) {
           setCountdown(secsBeforeResend);
           setIsActive(true);
         } else {
-          showPopup({ title: DEFAULT_ERROR_MSG})
+          showPopup({ title: DEFAULT_ERROR_MSG })
         }
       })
       .finally(() => setSending(false));
-  }, [email, showPopup]);
+  }, [email, showPopup, otpSessionId]);
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement>,
@@ -87,6 +81,7 @@ const Step2 = (props: Props) => {
       identifierType: IdentifierType.EMAIL,
       code: otp.join(''),
       type: OtpTypeEnum.REGISTER,
+      sessionId: otpSessionId,
     })
       .then((res) => {
         if (res.bizCode == CODE_SUCCESS) {
@@ -110,9 +105,9 @@ const Step2 = (props: Props) => {
           {otp.map((data, index) => (
             <input
               className="flex items-center justify-center
-              text-center
-            w-12 h-12 rounded-xl
-           bg-white border-[#FFCFA3] border-2 font-bold text-xl"
+                text-center
+                w-12 h-12 rounded-xl
+                bg-white border-[#FFCFA3] border-2 font-bold text-xl"
               type="number"
               name="otp"
               maxLength={1}
