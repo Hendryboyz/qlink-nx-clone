@@ -16,7 +16,7 @@ type Props = {
 
 const Step2 = (props: Props) => {
   const secsBeforeResend: number = 60; // 1 minutes
-  const secsBeforeExpiration: number = 10; // 10 minutes
+  const secsBeforeExpiration: number = 600; // 10 minutes
   const [otp, setOtp] = useState<string[]>(new Array(4).fill(''));
   const [countdown, setCountdown] = useState(secsBeforeResend);
   const [expirationCountdown, setExpirationCountdown] = useState(secsBeforeExpiration);
@@ -141,7 +141,7 @@ const Step2 = (props: Props) => {
         </div>
         {isExpired ? (
           <div className="text-center mt-6">
-            <h4 className="text-[#DF6B00] text-[13px] font-gilroy-medium font-normal leading-[100%] tracking-[0%]">
+            <h4 className="text-[#DF6B00] text-[13px] font-[GilroyMedium] font-normal leading-[100%] tracking-[0%]">
               Verification expired.{' '}
               <span
                 className="text-blue-600 hover:underline cursor-pointer"
@@ -152,15 +152,16 @@ const Step2 = (props: Props) => {
             </h4>
           </div>
         ) : isActive ? (
-          <h4 className="text-center text-[#DF6B00] mt-6 text-[13px] font-gilroy-medium font-normal leading-[100%] tracking-[0%]">
+          <h4 className="text-center text-[#FF7D7D] mt-6 text-[13px] font-gilroy-medium font-normal leading-[100%] tracking-[0%]">
             Didn&apos;t receive code?
             <br />
             Resend in {formatTime(countdown)}
           </h4>
         ) : (
           <Button
+            theme='light'
             isLoading={isSending}
-            className="mt-5 text-xs hover:cursor-pointer"
+            className="mt-5 text-sm hover:cursor-pointer font-gilroy-medium"
             onClick={handleResendOTP}
           >
             Resend
