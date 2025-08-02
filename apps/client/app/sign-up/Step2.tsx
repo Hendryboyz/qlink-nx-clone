@@ -16,7 +16,7 @@ type Props = {
 
 const Step2 = (props: Props) => {
   const secsBeforeResend: number = 60; // 1 minutes
-  const secsBeforeExpiration: number = 70; // 10 minutes
+  const secsBeforeExpiration: number = 600; // 10 minutes
   const [otp, setOtp] = useState<string[]>(new Array(4).fill(''));
   const [countdown, setCountdown] = useState(secsBeforeResend);
   const [expirationCountdown, setExpirationCountdown] = useState(secsBeforeExpiration);
