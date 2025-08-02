@@ -119,27 +119,16 @@ const Step2 = (props: Props) => {
   };
 
   return (
-    <Container
-      title="OTP Verification"
-      bottomEle={
-        <div className="flex justify-between items-center mt-auto">
-          <span className="text-xl text-[#FFF0D3]" onClick={props.goBack}>Back</span>
-          <SubmitButton text="Next" buttonColor="beige" onClick={handleSubmit} isLoading={isLoading} />
-        </div>
-      }
-    >
-      <div className="mt-auto">
-        <h4 className="text-[#FFF0D3] text-sm mb-9 text-center">
-          Please enter the 4-digit OTP (One-Time Password) sent to your
-          registered mobile number.
-        </h4>
-        <div className="flex justify-between items-center">
+    <Container title="OTP Verification">
+      <div>
+        <h4 className="text-primary text-xl">Enter OTP</h4>
+        <div className="flex justify-between items-center mt-6">
           {otp.map((data, index) => (
             <input
               className="flex items-center justify-center
-              text-center
-            w-12 h-12 rounded-xl
-           bg-white border-white border-2 font-bold text-xl"
+                text-center
+                w-12 h-12 rounded-xl
+                bg-white border-[#FFCFA3] border-2 font-bold text-xl"
               type="number"
               name="otp"
               maxLength={1}
@@ -177,6 +166,10 @@ const Step2 = (props: Props) => {
             Resend
           </Button>
         )}
+      </div>
+      <div className="flex justify-between items-center mt-auto">
+        <span className="text-xl text-[#FFF0D3]" onClick={props.goBack}>Back</span>
+        <SubmitButton text="Next" buttonColor="beige" onClick={handleSubmit} isLoading={isLoading} />
       </div>
     </Container>
   );
