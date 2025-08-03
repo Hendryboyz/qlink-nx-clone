@@ -31,7 +31,7 @@ const Step1 = (props: Props) => {
           if (!values.email) {
             errors.email = 'Required';
           } else if (!emailRegex.test(values.email)) {
-            errors.email = 'Invalid phone number';
+            errors.email = 'Invalid email format';
           }
           return errors;
         }}
