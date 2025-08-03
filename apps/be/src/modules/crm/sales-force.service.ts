@@ -181,7 +181,7 @@ export class SalesforceSyncService implements OnModuleInit{
       this.logger.debug(`sync vehicle to salesforce successfully, status code: ${status}, message: ${data}`);
       return {
         vehicleId: data.id,
-        isVerified: await this.verifyRegistration(data.id),
+        isVerified: false,
       }
     }
   }
@@ -203,22 +203,13 @@ export class SalesforceSyncService implements OnModuleInit{
         "Model_EID__c": vehicle.model
       },
       "Year__c": vehicle.year,
-      "VIN_Number__r": {
-        "VIN_Number_EID__c": vehicle.vin,
-      },
       "VIN_Number_Check__c": vehicle.vin,
-      "Engine_Serial_Number__r": {
-        "Engine_Serial_Number_EID__c": vehicle.engineNumber,
-      },
       "Engine_Serial_Number_Check__c": vehicle.engineNumber,
       "Vehicle_Condition__c": "New",
       "Purchase_Date__c": vehicle.purchaseDate,
       "Registration_Date__c": vehicle.registrationDate,
       "Member_ID__r": {
         "Member_Profile_External_ID__c": vehicle.userId
-      },
-      "Dealer_Name__r": {
-        "Name": vehicle.dealerName,
       },
       "Dealer_Name_Check__c": vehicle.dealerName,
     }

@@ -13,7 +13,7 @@ function isCreateProductRequest(dto: ProductDto | CreateProductRequest): dto is 
 @Injectable()
 export class ProductService {
   private logger = new Logger(this.constructor.name);
-  private isProduction: boolean = false;
+  private readonly isProduction: boolean = false;
   constructor(
     private readonly configService: ConfigService,
     private readonly syncCrmService: SalesforceSyncService,
@@ -37,6 +37,17 @@ export class ProductService {
       userId,
       productDto
     );
+
+    try {
+      const { vehicleId } = await this.syncCrmService.syncVehicle(
+        productEntity
+      );
+      await this.productRepository.update(productEntity.id, {
+        crmId: vehicleId,
+      });
+    } catch(e) {
+      this.logger.error(`fail to sync vehicle to salesforce`, e);
+    }
 
     this.logger.debug(productEntity);
     return { img: '', ...productEntity };
