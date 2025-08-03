@@ -1,4 +1,4 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { ForbiddenException, Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { CreateProductRequest, ProductDto, ProductRemoveDto, ProductUpdateDto, ProductVO } from '@org/types';
 import { ProductRepository } from './product.repository';
 import { ENTITY_PREFIX, generateSalesForceId } from '$/modules/utils/auth.util';
@@ -33,6 +33,7 @@ export class ProductService {
     if (isCreateProductRequest(productDto)) {
       productDto = _.omit(productDto, 'userId');
     }
+
     const productEntity = await this.productRepository.create(
       userId,
       productDto
@@ -54,12 +55,20 @@ export class ProductService {
   }
 
   async update(userId: string, payload: ProductUpdateDto): Promise<ProductVO> {
-    //!TODO: check user is product owner
-    const productEntity = await this.productRepository.update(
+    const existingProduct = await this.productRepository.findById(payload.id);
+    if (!existingProduct) {
+      throw new NotFoundException(`vehicle with id ${payload.id} not found`)
+    }
+
+    if (existingProduct.userId !== userId) {
+      throw new ForbiddenException(`only owner allow to update vehicle`);
+    }
+
+    const updatedProduct = await this.productRepository.update(
       payload.id,
       payload.data
     );
-    return { img: '', ...productEntity };
+    return { img: '', ...updatedProduct };
   }
 
   async remove(userId: string, payload: ProductRemoveDto): Promise<void> {
