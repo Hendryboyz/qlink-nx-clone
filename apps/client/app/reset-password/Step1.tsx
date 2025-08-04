@@ -31,7 +31,7 @@ const Step1 = (props: Props) => {
           if (!values.email) {
             errors.email = 'Required';
           } else if (!emailRegex.test(values.email)) {
-            errors.email = 'Invalid phone number';
+            errors.email = 'Invalid email format';
           }
           return errors;
         }}
@@ -70,10 +70,10 @@ const Step1 = (props: Props) => {
           setFieldValue,
         }) => (
           <Fragment>
-            <div className="mt-auto font-gilroy-medium">
+            <div className="font-gilroy-medium">
               <form>
                 <h4 className="text-[#FFF0D3] text-xl">
-                  Mobile Verification
+                  Enter Email Address
                 </h4>
                 <div className="mt-9">
                   <InputField

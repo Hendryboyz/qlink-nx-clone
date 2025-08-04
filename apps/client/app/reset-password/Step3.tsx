@@ -66,32 +66,37 @@ const Step3 = () => {
           isValid,
         }) => (
           <Fragment>
-            <div className="mt-auto">
+            <div className="font-gilroy-medium">
               <form>
-                <div>
-                  <InputField
-                    name="password"
-                    type="password"
-                    placeholder="Password"
-                    customClassName="border-white pr-3"
-                  />
-                  <div className="min-h-8">
-                    <ErrorMessage name="password">
-                      {(msg) => <span className="text-[#E19500] pl-8 text-sm font-gilroy-medium">{msg}</span>}
-                    </ErrorMessage>
+                <h4 className="text-[#FFF0D3] text-xl">
+                  Set New Password
+                </h4>
+                <div className="mt-9">
+                  <div>
+                    <InputField
+                      name="password"
+                      type="password"
+                      placeholder="Password"
+                      customClassName="border-white pr-3"
+                    />
+                    <div className="min-h-8">
+                      <ErrorMessage name="password">
+                        {(msg) => <span className="text-[#E19500] pl-8 text-sm font-gilroy-medium">{msg}</span>}
+                      </ErrorMessage>
+                    </div>
                   </div>
-                </div>
-                <div>
-                  <InputField
-                    name="rePassword"
-                    type="password"
-                    placeholder="Confirm new password"
-                    customClassName="border-white pr-3"
-                  />
-                  <div className="min-h-8">
-                    <ErrorMessage name="rePassword">
-                      {(msg) => <span className="text-[#E19500] pl-8 text-sm font-gilroy-medium">{msg}</span>}
-                    </ErrorMessage>
+                  <div>
+                    <InputField
+                      name="rePassword"
+                      type="password"
+                      placeholder="Confirm new password"
+                      customClassName="border-white pr-3"
+                    />
+                    <div className="min-h-8">
+                      <ErrorMessage name="rePassword">
+                        {(msg) => <span className="text-[#E19500] pl-8 text-sm font-gilroy-medium">{msg}</span>}
+                      </ErrorMessage>
+                    </div>
                   </div>
                 </div>
               </form>
