@@ -1,5 +1,12 @@
 import { ForbiddenException, Injectable, Logger, NotFoundException } from '@nestjs/common';
-import { CreateProductRequest, ProductDto, ProductRemoveDto, ProductUpdateDto, ProductVO } from '@org/types';
+import {
+  CreateProductRequest,
+  ProductDto,
+  ProductEntity,
+  ProductRemoveDto,
+  ProductUpdateDto,
+  ProductVO
+} from '@org/types';
 import { ProductRepository } from './product.repository';
 import { ENTITY_PREFIX, generateSalesForceId } from '$/modules/utils/auth.util';
 import { ConfigService } from '@nestjs/config';
@@ -58,14 +65,7 @@ export class ProductService {
   }
 
   async update(userId: string, payload: ProductUpdateDto): Promise<ProductVO> {
-    const existingProduct = await this.productRepository.findById(payload.id);
-    if (!existingProduct) {
-      throw new NotFoundException(`vehicle with id ${payload.id} not found`)
-    }
-
-    if (existingProduct.userId !== userId) {
-      throw new ForbiddenException(`only owner allow to update vehicle`);
-    }
+    const existingProduct = await this.getOwnedProduct(userId, payload.id);
 
     if (existingProduct.vin !== payload.data.vin
       || existingProduct.engineNumber !== payload.data.engineNumber
@@ -90,6 +90,18 @@ export class ProductService {
     return { img: '', ...updatedProduct };
   }
 
+  private async getOwnedProduct(userId: string, productId: string): Promise<ProductEntity> {
+    const existingProduct = await this.productRepository.findById(productId);
+    if (!existingProduct) {
+      throw new NotFoundException(`vehicle with id ${productId} not found`)
+    }
+
+    if (existingProduct.userId !== userId) {
+      throw new ForbiddenException(`only owner allow to update vehicle`);
+    }
+    return existingProduct;
+  }
+
   async autoVerifyProducts() {
     const unverifiedProducts =
       await this.productRepository.findAllowReVerifyProducts(this.reVerifyLimitTimes);
@@ -107,6 +119,7 @@ export class ProductService {
   }
 
   async remove(userId: string, payload: ProductRemoveDto): Promise<void> {
+    await this.getOwnedProduct(userId, payload.id);
     await this.productRepository.remove(userId, payload.id)
   }
 }
