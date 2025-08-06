@@ -9,16 +9,17 @@ export type ProductEntity = {
   year: number;
   model: string; // mapping to DB
   crmId?: string;
-  isVerified?: boolean;
+  isVerified: boolean;
+  verifyTimes: number
 }
 
 export type ProductVO = ProductEntity & {
     img?: string;
 }
 
-export type ProductDto = Omit<ProductEntity, 'userId' | 'crmId' | 'isVerified' >
+export type ProductDto = Omit<ProductEntity, 'userId' | 'crmId' | 'isVerified' | 'verifyTimes' >
 
-export type CreateProductRequest = Omit<ProductEntity, 'crmId' | 'isVerified' >
+export type CreateProductRequest = Omit<ProductEntity, 'crmId' | 'isVerified' | 'verifyTimes' >
 
 export type ProductUpdateDto =  {
     id: string;
@@ -27,14 +28,15 @@ export type ProductUpdateDto =  {
 
 export type UpdateProductData =
   Partial<Pick<ProductEntity,
-    'year'|
     'vin' |
     'engineNumber' |
+    'dealerName' |
+    'year'|
     'purchaseDate' |
     'registrationDate' |
-    'dealerName' |
     'crmId' |
-    'isVerified'
+    'isVerified' |
+    'verifyTimes'
   >>;
 
 export type ProductRemoveDto = {

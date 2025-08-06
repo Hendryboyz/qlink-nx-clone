@@ -20,6 +20,7 @@ export class ProductController {
     return this.productService.create(userId, payload);
   }
 
+  @Post('')
   async postProduct(@Body() payload: CreateProductRequest) {
     return this.productService.create(payload.userId, payload);
   }

@@ -17,6 +17,12 @@ type SalesForceAPIResource = {
   accessToken: string;
 }
 
+type SalesForceErrorMessage = {
+  message: string;
+  errorCode: string;
+  fields: string[];
+}
+
 type VehicleSyncResult = {
   vehicleId: string | null;
   isVerified: boolean;
@@ -172,7 +178,7 @@ export class SalesforceSyncService implements OnModuleInit{
     const response = await syncAction(payload);
     const {data, status} = response;
     if (status > 299) {
-      this.logger.warn(`fail to sync vehicle to salesforce successfully, status code: ${status}, message: ${data}`);
+      this.logger.warn(`fail to sync vehicle to salesforce, status code: ${status}, message: ${data}`);
       return {
         vehicleId: undefined,
         isVerified: false,
@@ -215,7 +221,112 @@ export class SalesforceSyncService implements OnModuleInit{
     }
   }
 
-  private async verifyRegistration(salesforceVehicleId: string): Promise<boolean> {
+  public async updateVehicle(vehicleEntity: ProductEntity): Promise<null | SalesForceErrorMessage> {
+    const payload = this.castPatchVehiclePayload(vehicleEntity);
+    const syncAction = this.useReAuthQuery(this.patchVehicle.bind(this));
+    const response = await syncAction({vehicleObjectId: vehicleEntity.crmId, payload});
+    const {data, status} = response;
+    if (status > 299) {
+      this.logger.warn(`fail to patch vehicle to salesforce, status code: ${status}, message: ${data}`);
+      if (!data || data.length === 0) {
+        return {
+          message: '',
+          errorCode: '',
+          fields: [],
+        }
+      } else {
+        const error = data[0]
+        return {
+          message: error['message'],
+          errorCode: error['errorCode'],
+          fields: error['fields'],
+        }
+      }
+    } else {
+      this.logger.debug(`patch vehicle to salesforce successfully, status code: ${status}, message: ${data}`);
+      return null;
+    }
+  }
+
+  private castPatchVehiclePayload(vehicle: ProductEntity) {
+    return {
+      "Model__r": {
+        "Model_EID__c": vehicle.model
+      },
+      "Year__c": vehicle.year,
+      "Purchase_Date__c": vehicle.purchaseDate,
+      "Registration_Date__c": vehicle.registrationDate,
+      "VIN_Number_Check__c": vehicle.vin,
+      "Engine_Serial_Number_Check__c": vehicle.engineNumber,
+      "Dealer_Name_Check__c": vehicle.dealerName,
+    }
+  }
+
+  public async verifyVehicle(vehicleEntity: ProductEntity): Promise<boolean> {
+    if (vehicleEntity.isVerified === true) {
+      return true
+    }
+    this.logger.debug(vehicleEntity);
+    const isVinNumberValid =
+      await this.verifyVehicleField(vehicleEntity.crmId, 'VIN_Number', vehicleEntity.vin);
+    const isEngineNumberValid =
+      await this.verifyVehicleField(vehicleEntity.crmId, 'Engine_Serial_Number', vehicleEntity.engineNumber);
+    await this.verifyVehicleField(vehicleEntity.crmId, 'Dealer_Name', vehicleEntity.dealerName);
+
+    return isVinNumberValid && isEngineNumberValid
+  }
+
+  private async verifyVehicleField(vehicleId: string, fieldName: string, value: string): Promise<boolean> {
+    if (!fieldName || !value) {
+      return false;
+    }
+    const payload = this.castPatchVerifyVehicleFieldPayload(fieldName, value);
+    const syncAction = this.useReAuthQuery(this.patchVehicle.bind(this));
+    try {
+      const response = await syncAction({vehicleObjectId: vehicleId, payload});
+      const {data, status} = response;
+      if (status > 299) {
+        this.logger.warn(`fail to verify vehicle ${fieldName}, status code: ${status}, message: ${data}`);
+        return false
+      } else {
+        this.logger.debug(`valid vehicle ${fieldName} successfully, status code: ${status}, message: ${data}`);
+        return true
+      }
+    } catch (e) {
+      this.logger.error(`verify vehicle ${fieldName} field failed: ${e}`);
+      return false;
+    }
+  }
+
+  private castPatchVerifyVehicleFieldPayload(fieldName: string, value: string) {
+    if (fieldName === 'Dealer_Name') {
+      return {
+        Dealer_Name__r: {
+          Name: value
+        },
+        Dealer_Name_Check__c: value,
+      };
+    }
+    return {
+      [`${fieldName}__r`]: {
+        [`${fieldName}_EID__c`]: value
+      },
+      [`${fieldName}_Check__c`]: value,
+    }
+  }
+
+  private async patchVehicle(data: {vehicleObjectId: string, payload: any}) {
+    const {vehicleObjectId, payload} = data;
+    const patchVehicleUrl =
+      `${this.apiResource.instanceUrl}/services/data/v49.0/sobjects/Vehicle_Registration_Data__c/${vehicleObjectId}`;
+    return axios.patch(patchVehicleUrl, payload, {
+      headers: {
+        'Authorization': `Bearer ${this.apiResource.accessToken}`,
+      }
+    });
+  }
+
+  private async isVehicleValid(salesforceVehicleId: string): Promise<boolean> {
     const syncAction = this.useReAuthQuery(this.getVehicle.bind(this));
     const response = await syncAction(salesforceVehicleId);
 

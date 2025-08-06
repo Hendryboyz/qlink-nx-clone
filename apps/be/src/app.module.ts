@@ -13,9 +13,12 @@ import { BoUserModule } from '$/modules/bo/user/bo-user.module';
 import { NotificationModule } from './notification/notification.module';
 import { VerificationModule } from './modules/bo/verification/verification.module';
 import { CrmModule } from './modules/crm/crm.module';
+import { TaskService } from '$/app/task.serivce';
+import { ScheduleModule } from '@nestjs/schedule';
 
 @Module({
   imports: [
+    ScheduleModule.forRoot(),
     ConfigModule.forRoot({
       isGlobal: true,
     }),
@@ -51,5 +54,6 @@ import { CrmModule } from './modules/crm/crm.module';
     VerificationModule,
     CrmModule,
   ],
+  providers: [TaskService],
 })
 export class AppModule {}

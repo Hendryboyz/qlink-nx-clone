@@ -32,7 +32,7 @@ export class ProductRepository {
       const { rows } = await this.pool.query(query, values);
       return rows || null;
     } catch (error) {
-      console.error(`Error fetching product by user_id: ${userId}`, error);
+      this.logger.error(`Error fetching product by user_id: ${userId}`, error);
       throw error;
     }
   }
@@ -53,7 +53,7 @@ export class ProductRepository {
       const { rows } = await this.pool.query(query, values);
       return rows[0] || null;
     } catch (error) {
-      console.error(`Error fetching product by id: ${id}`, error);
+      this.logger.error(`Error fetching product by id: ${id}`, error);
       throw error;
     }
   }
@@ -117,4 +117,25 @@ export class ProductRepository {
 
   }
 
+  async findAllowReVerifyProducts(verifiedLimit: number): Promise<ProductEntity[] | null> {
+    const query = `
+    SELECT *
+    FROM product
+    WHERE crm_id is not null
+      and is_verified = false
+      and verify_times <= $1
+  `;
+    const values = [verifiedLimit];
+    try {
+      const { rows } = await this.pool.query(query, values);
+      return rows || null;
+    } catch (error) {
+      this.logger.error(`fail to fetch products allowed to re-verify`);
+      throw error;
+    }
+  }
+
+  async increaseVerifyTimes(productId: string): Promise<number> {
+      return this.knex('product').where({id: productId}).increment('verify_times', 1);
+  }
 }

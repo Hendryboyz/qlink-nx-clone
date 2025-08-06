@@ -14,12 +14,14 @@ function isCreateProductRequest(dto: ProductDto | CreateProductRequest): dto is 
 export class ProductService {
   private logger = new Logger(this.constructor.name);
   private readonly isProduction: boolean = false;
+  private readonly reVerifyLimitTimes: number;
   constructor(
     private readonly configService: ConfigService,
     private readonly syncCrmService: SalesforceSyncService,
     private readonly productRepository: ProductRepository,
   ) {
     this.isProduction = this.configService.get<string>('NODE_ENV') === 'production';
+    this.reVerifyLimitTimes = this.configService.get<number>('AUTO_RE_VERIFY_VEHICLE_LIMIT_TIMES', 1);
   }
 
   async findByUser(userId: string): Promise<ProductVO[]> {
@@ -43,6 +45,7 @@ export class ProductService {
       const { vehicleId } = await this.syncCrmService.syncVehicle(
         productEntity
       );
+      productEntity.crmId = vehicleId;
       await this.productRepository.update(productEntity.id, {
         crmId: vehicleId,
       });
@@ -64,11 +67,43 @@ export class ProductService {
       throw new ForbiddenException(`only owner allow to update vehicle`);
     }
 
+    if (existingProduct.vin !== payload.data.vin
+      || existingProduct.engineNumber !== payload.data.engineNumber
+    ) {
+      payload.data.isVerified = false;
+      payload.data.verifyTimes = 0;
+    }
+
     const updatedProduct = await this.productRepository.update(
       payload.id,
       payload.data
     );
+
+    try {
+      const syncError = await this.syncCrmService.updateVehicle(updatedProduct);
+      if (syncError) {
+        this.logger.error(`fail to sync vehicle to salesforce reason: ${syncError.message}`)
+      }
+    } catch (e) {
+      this.logger.error(`fail to sync vehicle to salesforce`, e);
+    }
     return { img: '', ...updatedProduct };
+  }
+
+  async autoVerifyProducts() {
+    const unverifiedProducts =
+      await this.productRepository.findAllowReVerifyProducts(this.reVerifyLimitTimes);
+    for (const product of unverifiedProducts) {
+      const isVerified = await this.syncCrmService.verifyVehicle(product);
+      if (!isVerified) {
+        this.logger.warn(`fail to verify vehicle with id ${product.id} with salesforce`);
+        await this.productRepository.increaseVerifyTimes(product.id);
+      } else {
+        await this.productRepository.update(product.id, {
+          isVerified: true,
+        });
+      }
+    }
   }
 
   async remove(userId: string, payload: ProductRemoveDto): Promise<void> {
