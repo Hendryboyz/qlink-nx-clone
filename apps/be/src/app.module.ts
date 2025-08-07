@@ -15,6 +15,7 @@ import { VerificationModule } from './modules/bo/verification/verification.modul
 import { CrmModule } from './modules/crm/crm.module';
 import { TaskService } from '$/app/task.serivce';
 import { ScheduleModule } from '@nestjs/schedule';
+import { VehiclesModule } from './modules/bo/vehicles/vehicles.module';
 
 @Module({
   imports: [
@@ -30,6 +31,7 @@ import { ScheduleModule } from '@nestjs/schedule';
     BoAuthModule,
     PostsBoModule,
     BoUserModule,
+    VehiclesModule,
     StorageModule,
     RouterModule.register([
       {
@@ -46,6 +48,10 @@ import { ScheduleModule } from '@nestjs/schedule';
           {
             path: 'users',
             module: BoUserModule,
+          },
+          {
+            path: 'vehicles',
+            module: VehiclesModule,
           },
         ],
       },

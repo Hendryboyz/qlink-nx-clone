@@ -138,4 +138,17 @@ export class ProductRepository {
   async increaseVerifyTimes(productId: string): Promise<number> {
       return this.knex('product').where({id: productId}).increment('verify_times', 1);
   }
+
+  list(cursor: string, limit: number): Promise<ProductEntity[]> {
+    const queryBuilder = this.knex<ProductEntity>('product').orderBy('id').limit(limit);
+    if (cursor) {
+      queryBuilder.where('id', '>', cursor)
+    }
+    return queryBuilder;
+  }
+
+  async count(): Promise<number> {
+    const [{ count }] = await this.knex<ProductEntity>('product').count('id', { as: 'count' });
+    return +count;
+  }
 }
