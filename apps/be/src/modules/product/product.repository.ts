@@ -139,8 +139,10 @@ export class ProductRepository {
       return this.knex('product').where({id: productId}).increment('verify_times', 1);
   }
 
-  list(cursor: string, limit: number): Promise<ProductEntity[]> {
-    const queryBuilder = this.knex<ProductEntity>('product').orderBy('id').limit(limit);
+  list(cursor: string, page: number, limit: number): Promise<ProductEntity[]> {
+    const offset = (page-1) * limit;
+    const queryBuilder =
+      this.knex<ProductEntity>('product').orderBy('id').offset(offset).limit(limit);
     if (cursor) {
       queryBuilder.where('id', '>', cursor)
     }

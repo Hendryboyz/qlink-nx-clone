@@ -24,10 +24,11 @@ export class VehiclesController {
   @Get()
   async listByPaging(
     @Query('cursor') cursor: string = "",
-    @Query('limit') limit: number = 10
+    @Query('page') page: number = 0,
+    @Query('limit') limit: number = 10,
   ): Promise<ListVehicleDto> {
     try {
-      const {entities, count: total} = await this.productService.list(cursor, limit);
+      const {entities, count: total} = await this.productService.list(cursor, page, limit);
       return {
         data: this.convertToVehicleDto(entities),
         total,
