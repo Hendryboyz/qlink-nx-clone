@@ -5,7 +5,7 @@ import { isEmpty } from 'lodash';
 
 import buildUpdatingMap from '$/modules/utils/repository.util';
 import { KNEX_CONNECTION } from '$/database.module';
-import { ProductDto, ProductEntity, UpdateProductData } from '@org/types';
+import { ProductBoVO, ProductDto, ProductEntity, UpdateProductData } from '@org/types';
 
 @Injectable()
 export class ProductRepository {
@@ -139,9 +139,12 @@ export class ProductRepository {
       return this.knex('product').where({id: productId}).increment('verify_times', 1);
   }
 
-  list(page: number, limit: number): Promise<ProductEntity[]> {
+  list(page: number, limit: number): Promise<ProductBoVO[]> {
     const offset = (page-1) * limit;
-    return this.knex<ProductEntity>('product').orderBy('id').offset(offset).limit(limit);
+    return this.knex<ProductEntity>('product')
+      .joinRaw('inner join users on users.id = product.user_id::uuid')
+      .select('product.*', 'users.member_id')
+      .orderBy('id').offset(offset).limit(limit);
   }
 
   async count(): Promise<number> {

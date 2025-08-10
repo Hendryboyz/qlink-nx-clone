@@ -10,7 +10,7 @@ import {
   Query
 } from '@nestjs/common';
 import * as _ from 'lodash';
-import { BoRole, ListVehicleDto, ProductEntity, VehicleDTO } from '@org/types';
+import { BoRole, ListVehicleDto, ProductBoVO, VehicleDTO } from '@org/types';
 import { Roles } from '$/modules/bo/verification/roles.decorator';
 import { ProductService } from '$/modules/product/product.service';
 
@@ -39,9 +39,9 @@ export class VehiclesController {
     }
   }
 
-  private convertToVehicleDto(entities: ProductEntity[]): VehicleDTO[] {
+  private convertToVehicleDto(entities: ProductBoVO[]): VehicleDTO[] {
     return entities.map(e => {
-      const dto = _.omit(e, 'createdAt', 'updatedAt', 'verifyTimes');
+      const dto = _.omit(e, 'userId', 'createdAt', 'updatedAt', 'verifyTimes');
       return {
         ...dto,
         isAutoVerified: e.verifyTimes > 0,

@@ -1,9 +1,10 @@
 import { ProColumns } from '@ant-design/pro-table/es/typing';
 import { dateTimeFormatter } from '$/utils/formatter';
-import { Button, Modal, Space } from 'antd';
+import { Button, Modal, Space, Tooltip } from 'antd';
 import React, { ReactElement, useContext } from 'react';
 import { ProTable } from '@ant-design/pro-components';
 import { VehiclesContext } from '$/pages/VehiclesManagement/VehiclesContext';
+import { FileDoneOutlined, LoadingOutlined } from '@ant-design/icons';
 
 export default function VehiclesTable(): ReactElement {
   const {
@@ -12,8 +13,6 @@ export default function VehiclesTable(): ReactElement {
     paging,
     setPaging,
   } = useContext(VehiclesContext);
-
-  const pageCursor = vehicles.length > 0 && vehicles[vehicles.length - 1].id;
 
   const tableColumns: ProColumns[] = [
     {
@@ -66,8 +65,8 @@ export default function VehiclesTable(): ReactElement {
     },
     {
       title: 'Owned Member',
-      dataIndex: 'userId',
-      key: 'userId',
+      dataIndex: 'memberId',
+      key: 'memberId',
     },
     {
       title: 'Dealer Name',
@@ -78,11 +77,33 @@ export default function VehiclesTable(): ReactElement {
       title: 'Verification Status',
       dataIndex: 'isVerified',
       key: 'isVerified',
-      render: (isVerified, _) => {
+      render: (isVerified, record) => {
+        let autoVerifyStatus = (
+          <Tooltip placement="right" title={"wait for verified process"}>
+            <LoadingOutlined />
+          </Tooltip>
+        );
+        if (record.isAutoVerified) {
+          autoVerifyStatus = (
+            <Tooltip placement="bottom" title={"verify done, update vehicle info to trigger again"}>
+              <FileDoneOutlined />
+            </Tooltip>
+          )
+        }
         if (isVerified) {
-          return <span>Yes</span>;
+          return (
+            <div className="flex">
+              <span style={{paddingRight: '5px', color: 'green'}}>Success</span>
+              {autoVerifyStatus}
+            </div>
+          );
         } else {
-          return <span>No</span>;
+          return (
+            <div>
+              <span style={{paddingRight: '5px', color: 'red'}}>Fail</span>
+              {autoVerifyStatus}
+            </div>
+          );
         }
       },
     },
@@ -128,7 +149,7 @@ export default function VehiclesTable(): ReactElement {
       search={false}
       pagination={{
         onChange: ((page, pageSize) => {
-          setPaging({cursor: pageCursor, page, pageSize});
+          setPaging({page, pageSize});
         }),
         pageSize: paging.pageSize,
         total: total,

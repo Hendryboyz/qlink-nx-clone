@@ -17,6 +17,10 @@ export type ProductVO = ProductEntity & {
     img?: string;
 }
 
+export type ProductBoVO = ProductEntity & {
+  memberId: string;
+}
+
 export type ProductDto = Omit<ProductEntity, 'userId' | 'crmId' | 'isVerified' | 'verifyTimes' >
 
 export type CreateProductRequest = Omit<ProductEntity, 'crmId' | 'isVerified' | 'verifyTimes' >
