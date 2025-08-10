@@ -15,7 +15,7 @@ import {
   MutateUserResponse,
   UploadImageResponse
 } from '$/types';
-import { GetVehiclesResponse } from '$/types/vehicles';
+import { GetVehiclesFilters, GetVehiclesResponse } from '$/types/vehicles';
 
 class Api {
   private instance: AxiosInstance;
@@ -293,19 +293,19 @@ class Api {
   async listVehicles(
     page: number = 1,
     limit: number = 10,
-    filters: GetUsersFilters = {},
+    filters: GetVehiclesFilters = {},
   ): Promise<GetVehiclesResponse> {
-    // let queries = [];
-    // if (filters) {
-    //   queries = Object.entries(filters).map(([key, value]) => {
-    //     if (value === undefined || value === null) return undefined;
-    //     return `${key}=${value}`
-    //   });
-    // }
+    let queries = [];
+    if (filters) {
+      queries = Object.entries(filters).map(([key, value]) => {
+        if (value === undefined || value === null) return undefined;
+        return `${key}=${value}`
+      });
+    }
     let resourceUrl = `/vehicles?page=${page}&limit=${limit}`;
-    // if (queries.length > 0) {
-    //   resourceUrl += ("&" + queries.join("&"));
-    // }
+    if (queries.length > 0) {
+      resourceUrl += ("&" + queries.join("&"));
+    }
 
     return this.get(resourceUrl);
   }

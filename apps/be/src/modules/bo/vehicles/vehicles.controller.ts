@@ -13,6 +13,7 @@ import * as _ from 'lodash';
 import { BoRole, ListVehicleDto, ProductBoVO, VehicleDTO } from '@org/types';
 import { Roles } from '$/modules/bo/verification/roles.decorator';
 import { ProductService } from '$/modules/product/product.service';
+import { VehicleQueryFilters } from '$/modules/bo/vehicles/vehicles.types';
 
 @Controller('')
 export class VehiclesController {
@@ -25,9 +26,10 @@ export class VehiclesController {
   async listByPaging(
     @Query('page') page: number = 0,
     @Query('limit') limit: number = 10,
+    @Query() filters: VehicleQueryFilters,
   ): Promise<ListVehicleDto> {
     try {
-      const {entities, count: total} = await this.productService.list(page, limit);
+      const {entities, count: total} = await this.productService.list(page, limit, filters);
       const dto = this.convertToVehicleDto(entities);
       return {
         data: dto,
@@ -41,7 +43,7 @@ export class VehiclesController {
 
   private convertToVehicleDto(entities: ProductBoVO[]): VehicleDTO[] {
     return entities.map(e => {
-      const dto = _.omit(e, 'userId', 'createdAt', 'updatedAt', 'verifyTimes');
+      const dto = _.omit(e, 'createdAt', 'updatedAt', 'verifyTimes');
       return {
         ...dto,
         isAutoVerified: e.verifyTimes > 0,

@@ -6,6 +6,7 @@ import { isEmpty } from 'lodash';
 import buildUpdatingMap from '$/modules/utils/repository.util';
 import { KNEX_CONNECTION } from '$/database.module';
 import { ProductBoVO, ProductDto, ProductEntity, UpdateProductData } from '@org/types';
+import { VehicleQueryFilters } from '$/modules/bo/vehicles/vehicles.types';
 
 @Injectable()
 export class ProductRepository {
@@ -139,16 +140,51 @@ export class ProductRepository {
       return this.knex('product').where({id: productId}).increment('verify_times', 1);
   }
 
-  list(page: number, limit: number): Promise<ProductBoVO[]> {
+  list(
+    page: number, limit: number, filters: VehicleQueryFilters = {}): Promise<ProductBoVO[]> {
     const offset = (page-1) * limit;
-    return this.knex<ProductEntity>('product')
+    const queryBuilder = this.knex<ProductEntity>('product')
       .joinRaw('inner join users on users.id = product.user_id::uuid')
       .select('product.*', 'users.member_id')
       .orderBy('id').offset(offset).limit(limit);
+    this.appendFilters(queryBuilder, filters);
+    return queryBuilder;
   }
 
-  async count(): Promise<number> {
-    const [{ count }] = await this.knex<ProductEntity>('product').count('id', { as: 'count' });
+  private appendFilters(
+    queryBuilder: Knex.QueryBuilder,
+    filters: VehicleQueryFilters,
+  ) {
+    if (filters.year) {
+      queryBuilder.andWhere('year', +filters.year);
+    }
+
+    if (filters.model) {
+      queryBuilder.andWhereLike('model', `%${filters.model}%`);
+    }
+
+    if (filters.vin) {
+      queryBuilder.andWhereLike('vin', `%${filters.vin}%`);
+    }
+
+    if (filters.engineNumber) {
+      queryBuilder.andWhereLike('engine_number', `%${filters.engineNumber}%`);
+    }
+
+    if (filters.userId) {
+      queryBuilder.andWhere('user_id', filters.userId);
+    }
+
+    if (filters.dealerName) {
+      queryBuilder.andWhereLike('dealer_name', `%${filters.dealerName}%`);
+    }
+  }
+
+  async count(filters: VehicleQueryFilters = {}): Promise<number> {
+    const queryBuilder = this.knex<ProductEntity>('product');
+    this.appendFilters(queryBuilder, filters);
+
+    const [{ count }] = await queryBuilder.count('id', { as: 'count' });
     return +count;
   }
 }

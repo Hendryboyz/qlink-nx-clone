@@ -12,6 +12,7 @@ import { ENTITY_PREFIX, generateSalesForceId } from '$/modules/utils/auth.util';
 import { ConfigService } from '@nestjs/config';
 import { SalesforceSyncService } from '$/modules/crm/sales-force.service';
 import * as _ from 'lodash';
+import { VehicleQueryFilters } from '$/modules/bo/vehicles/vehicles.types';
 
 function isCreateProductRequest(dto: ProductDto | CreateProductRequest): dto is CreateProductRequest {
   return (dto as CreateProductRequest).userId !== undefined;
@@ -123,9 +124,13 @@ export class ProductService {
     await this.productRepository.remove(userId, payload.id)
   }
 
-  async list(page: number, limit: number) {
-    const products = await this.productRepository.list(page, limit);
-    const productCount = await this.productRepository.count();
+  async list(
+    page: number,
+    limit: number,
+    filters: VehicleQueryFilters,
+  ) {
+    const products = await this.productRepository.list(page, limit, filters);
+    const productCount = await this.productRepository.count(filters);
     return {
       entities: products,
       count: productCount,

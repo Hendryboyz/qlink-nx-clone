@@ -12,6 +12,7 @@ export default function VehiclesTable(): ReactElement {
     total,
     paging,
     setPaging,
+    setFilterParams,
   } = useContext(VehiclesContext);
 
   const tableColumns: ProColumns[] = [
@@ -19,6 +20,7 @@ export default function VehiclesTable(): ReactElement {
       title: 'VehicleId',
       dataIndex: 'id',
       key: 'id',
+      search: false,
     },
     {
       title: 'Model',
@@ -42,13 +44,14 @@ export default function VehiclesTable(): ReactElement {
     },
     // {
     //   title: 'Condition',
-    //   dataIndex: 'role',
-    //   key: 'role',
+    //   dataIndex: 'condition',
+    //   key: 'condition',
     // },
     {
       title: 'Purchase Date',
       dataIndex: 'purchaseDate',
       key: 'purchaseDate',
+      search: false,
       render: (data, _) => {
         const date = dateTimeFormatter.format(new Date(data as string))
         return <span>{date}</span>;
@@ -58,6 +61,7 @@ export default function VehiclesTable(): ReactElement {
       title: 'Registration Date',
       dataIndex: 'registrationDate',
       key: 'registrationDate',
+      search: false,
       render: (data, _) => {
         const date = dateTimeFormatter.format(new Date(data as string))
         return <span>{date}</span>;
@@ -77,6 +81,7 @@ export default function VehiclesTable(): ReactElement {
       title: 'Verification Status',
       dataIndex: 'isVerified',
       key: 'isVerified',
+      search: false,
       render: (isVerified, record) => {
         let autoVerifyStatus = (
           <Tooltip placement="right" title={"wait for verified process"}>
@@ -145,8 +150,18 @@ export default function VehiclesTable(): ReactElement {
       dataSource={vehicles}
       rowKey="id"
       beforeSearchSubmit={(params) => {
+        if (params.memberId) {
+          const target = vehicles.find(v => v.memberId === params.memberId);
+          params = {
+            ...params,
+            userId: target.userId,
+          };
+        }
+        setFilterParams(params);
       }}
-      search={false}
+      search={{
+        labelWidth: 'auto',
+      }}
       pagination={{
         onChange: ((page, pageSize) => {
           setPaging({page, pageSize});
