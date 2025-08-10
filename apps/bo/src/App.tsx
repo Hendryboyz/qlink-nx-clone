@@ -24,6 +24,8 @@ import CreateUser from './pages/UsersManagement/CreateUser';
 import UsersManagement from '$/pages/UsersManagement';
 import UserContextProvider from '$/pages/UsersManagement/UsersContext';
 import MemberContextProvider from '$/pages/MemberMangement/MemberContext';
+import VehiclesContextProvider from '$/pages/VehiclesManagement/VehiclesContext';
+import VehiclesManagement from '$/pages/VehiclesManagement';
 
 const { Content } = Layout;
 
@@ -75,6 +77,16 @@ function App() {
                   <MemberContextProvider>
                     <MemberManagement />
                   </MemberContextProvider>
+                </PrivateRoute>
+              }
+            />
+            <Route
+              path="vehicles"
+              element={
+                <PrivateRoute allowedRoles={[BoRole.ADMIN]}>
+                  <VehiclesContextProvider>
+                    <VehiclesManagement />
+                  </VehiclesContextProvider>
                 </PrivateRoute>
               }
             />

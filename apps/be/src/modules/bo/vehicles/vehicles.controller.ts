@@ -23,14 +23,14 @@ export class VehiclesController {
   @Roles(BoRole.ADMIN)
   @Get()
   async listByPaging(
-    @Query('cursor') cursor: string = "",
     @Query('page') page: number = 0,
     @Query('limit') limit: number = 10,
   ): Promise<ListVehicleDto> {
     try {
-      const {entities, count: total} = await this.productService.list(cursor, page, limit);
+      const {entities, count: total} = await this.productService.list(page, limit);
+      const dto = this.convertToVehicleDto(entities);
       return {
-        data: this.convertToVehicleDto(entities),
+        data: dto,
         total,
       };
     } catch (e) {
@@ -41,9 +41,7 @@ export class VehiclesController {
 
   private convertToVehicleDto(entities: ProductEntity[]): VehicleDTO[] {
     return entities.map(e => {
-      const dto = _.omit(e, [
-        'verifyTimes', 'createdAt', 'updatedAt'
-      ]);
+      const dto = _.omit(e, 'createdAt', 'updatedAt', 'verifyTimes');
       return {
         ...dto,
         isAutoVerified: e.verifyTimes > 0,

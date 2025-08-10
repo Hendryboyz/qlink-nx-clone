@@ -1,16 +1,12 @@
 import React, { useContext } from 'react';
-import MemberTable from '$/pages/MemberMangement/MemberTable';
-import { MemberContext } from '$/pages/MemberMangement/MemberContext';
-import MemberEditingForm from '$/pages/MemberMangement/MemberEditingForm';
-
+import { VehiclesContext } from '$/pages/VehiclesManagement/VehiclesContext';
+import VehiclesTable from '$/pages/VehiclesManagement/VehiclesTable';
 
 const Index: React.FC = () => {
-  const {editingMember} = useContext(MemberContext);
   return (
     <div>
-      <h1>Member Management</h1>
-      {!editingMember && <MemberTable />}
-      {editingMember && <MemberEditingForm />}
+      <h1>Vehicles Management</h1>
+      <VehiclesTable />
     </div>
   );
 

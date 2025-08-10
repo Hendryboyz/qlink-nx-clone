@@ -11,6 +11,7 @@ import {
   BarChartOutlined,
   LogoutOutlined,
   FileTextOutlined,
+  CarOutlined,
 } from '@ant-design/icons';
 
 const { Sider } = Layout;
@@ -64,6 +65,13 @@ const Sidebar: React.FC<SidebarProps> = ({ collapsed, setCollapsed }) => {
       label: 'Member Management',
       link: '/members',
       icon: <UserOutlined />,
+      adminOnly: true,
+      hidden: false,
+    },
+    {
+      label: 'Vehicles Management',
+      link: '/vehicles',
+      icon: <CarOutlined />,
       adminOnly: true,
       hidden: false,
     },

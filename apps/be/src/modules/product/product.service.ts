@@ -123,8 +123,8 @@ export class ProductService {
     await this.productRepository.remove(userId, payload.id)
   }
 
-  async list(cursor: string, page: number, limit: number) {
-    const products = await this.productRepository.list(cursor, page, limit);
+  async list(page: number, limit: number) {
+    const products = await this.productRepository.list(page, limit);
     const productCount = await this.productRepository.count();
     return {
       entities: products,

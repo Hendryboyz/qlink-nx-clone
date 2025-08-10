@@ -1,74 +1,71 @@
 import { createContext, ReactNode, useEffect, useState } from 'react';
-import { UserVO } from '@org/types';
+import { VehicleDTO } from '@org/types';
 import API from '$/utils/fetch';
 
 type pagingType = {
+  cursor: string;
   pageSize: number;
   page: number;
 };
 
-interface MemberContextType {
-  editingMember: UserVO;
-  members: UserVO[];
+interface VehiclesContextType {
+  vehicles: VehicleDTO[];
   total: number;
   paging: pagingType;
   setPaging: (prevState) => void
   setFilterParams: (prevState) => void
-  setMembers: (prevState) => void
-  setEditingMember: (prevState) => void
+  setVehicles: (prevState) => void
 }
 
-const INITIAL_STATE: MemberContextType = {
-  editingMember: null,
-  members: [],
+const INITIAL_STATE: VehiclesContextType = {
+  vehicles: [],
   total: 0,
   paging: {
+    cursor: '',
     pageSize: 10,
     page: 1,
   },
   setPaging: (prevState) => {},
   setFilterParams: (prevState) => {},
-  setMembers: (prevState) => {},
-  setEditingMember: (prevState) => {},
+  setVehicles: (prevState) => {},
 }
 
-export const MemberContext = createContext<MemberContextType>(INITIAL_STATE);
+export const VehiclesContext = createContext<VehiclesContextType>(INITIAL_STATE);
 
 const INITIAL_PAGING_VALUES = {
-  pageSize: 10,
+  cursor: "",
   page: 1,
+  pageSize: 10,
 };
 
 
-export default function MemberContextProvider({ children }: { children: ReactNode }) {
-  const [editingMember, setEditingMember] = useState<UserVO>(null);
-  const [members, setMembers] = useState<UserVO[]>([]);
+export default function VehiclesContextProvider({ children }: { children: ReactNode }) {
+  const [vehicles, setVehicles] = useState<VehicleDTO[]>([]);
   const [total, setTotal] = useState(0);
   const [paging, setPaging] = useState(INITIAL_PAGING_VALUES);
   const [filterParams, setFilterParams] = useState(undefined);
 
   useEffect(() => {
-    async function fetchClientUsers() {
-      const { data, total } = await API.getClientUsers(paging.page, paging.pageSize, filterParams);
-      setMembers(data);
-      setTotal(total);
+    async function fetchVehicles() {
+      const { data, total } = await API.listVehicles(
+        paging.page, paging.pageSize, filterParams);
+        setVehicles(data);
+        setTotal(total);
     }
-    fetchClientUsers();
-  }, [paging, filterParams, editingMember]);
+    fetchVehicles();
+  }, [paging, filterParams, setVehicles]);
 
-  const ctxValues: MemberContextType = {
-    editingMember,
-    members,
+  const ctxValues: VehiclesContextType = {
+    vehicles,
     total,
     paging,
     setPaging,
     setFilterParams,
-    setMembers,
-    setEditingMember,
+    setVehicles,
   }
   return (
-    <MemberContext.Provider value={ctxValues}>
+    <VehiclesContext.Provider value={ctxValues}>
       {children}
-    </MemberContext.Provider>
+    </VehiclesContext.Provider>
   );
 }
