@@ -1,19 +1,46 @@
 import { ProColumns } from '@ant-design/pro-table/es/typing';
 import { dateTimeFormatter } from '$/utils/formatter';
-import { Button, Modal, Space, Tooltip } from 'antd';
+import { Button, message, Modal, Space, Tooltip } from 'antd';
 import React, { ReactElement, useContext } from 'react';
 import { ProTable } from '@ant-design/pro-components';
 import { VehiclesContext } from '$/pages/VehiclesManagement/VehiclesContext';
 import { FileDoneOutlined, LoadingOutlined } from '@ant-design/icons';
+import { VehicleDTO } from '@org/types';
+import API from '$/utils/fetch';
 
 export default function VehiclesTable(): ReactElement {
   const {
     vehicles,
+    setVehicles,
     total,
     paging,
     setPaging,
     setFilterParams,
   } = useContext(VehiclesContext);
+  const [messageApi, contextHolder] = message.useMessage();
+
+  function handleDelete(vehicleId: string) {
+    Modal.confirm({
+      title: 'Confirm to delete user?',
+      content: `Do you want to delete vehicle[${vehicleId}] from Database?`,
+      okText: 'Delete',
+      okType: 'danger',
+      cancelText: 'Cancel',
+      onOk: async () => {
+        try {
+          await API.deleteVehicle(vehicleId);
+          setVehicles((prevVehicles: VehicleDTO[]) =>
+            prevVehicles.filter(v => v.id !== vehicleId));
+        } catch (error) {
+          messageApi.open({
+            type: 'error',
+            content: 'failed to delete vehicle',
+          });
+          console.error(error);
+        }
+      },
+    });
+  }
 
   const tableColumns: ProColumns[] = [
     {
@@ -116,11 +143,11 @@ export default function VehiclesTable(): ReactElement {
       title: 'Action',
       key: 'action',
       search: false,
-      render: (_: unknown, record: any) => (
+      render: (_: unknown, record: VehicleDTO) => (
         <Space size="middle">
           <Button
             danger
-            onClick={() => {}}
+            onClick={() => handleDelete(record.id)}
           >
             Delete
           </Button>
@@ -129,50 +156,38 @@ export default function VehiclesTable(): ReactElement {
     },
   ];
 
-  function handleDelete(vehicleId: string) {
-    // const deletingVehicle = vehicles.find(v => v.id === vehicleId);
-    Modal.confirm({
-      title: 'Confirm to delete user?',
-      content: `Do you want to delete vehicle from Database?`,
-      okText: 'Delete',
-      okType: 'danger',
-      cancelText: 'Cancel',
-      onOk: async () => {
-      },
-    });
-  }
-
-
-
   return (
-    <ProTable
-      columns={tableColumns}
-      dataSource={vehicles}
-      rowKey="id"
-      beforeSearchSubmit={(params) => {
-        if (params.memberId) {
-          const target = vehicles.find(v => v.memberId === params.memberId);
-          params = {
-            ...params,
-            userId: target.userId,
-          };
-        }
-        setFilterParams(params);
-      }}
-      search={{
-        labelWidth: 'auto',
-      }}
-      pagination={{
-        onChange: ((page, pageSize) => {
-          setPaging({page, pageSize});
-        }),
-        pageSize: paging.pageSize,
-        total: total,
-        showSizeChanger: true,
-      }}
-      scroll={{ x: 'max-content' }}
-      dateFormatter="string"
-      toolBarRender={undefined}
-    />
+    <>
+      {contextHolder}
+      <ProTable
+        columns={tableColumns}
+        dataSource={vehicles}
+        rowKey="id"
+        beforeSearchSubmit={(params) => {
+          if (params.memberId) {
+            const target = vehicles.find(v => v.memberId === params.memberId);
+            params = {
+              ...params,
+              userId: target.userId,
+            };
+          }
+          setFilterParams(params);
+        }}
+        search={{
+          labelWidth: 'auto',
+        }}
+        pagination={{
+          onChange: ((page, pageSize) => {
+            setPaging({page, pageSize});
+          }),
+          pageSize: paging.pageSize,
+          total: total,
+          showSizeChanger: true,
+        }}
+        scroll={{ x: 'max-content' }}
+        dateFormatter="string"
+        toolBarRender={undefined}
+      />
+    </>
   );
 }

@@ -309,6 +309,10 @@ class Api {
 
     return this.get(resourceUrl);
   }
+
+  async deleteVehicle(vehicleId: string) {
+    return this.delete(`/vehicles/${vehicleId}`);
+  }
 }
 
 const publicApiURL: string = import.meta.env.VITE_BO_PUBLIC_API_URL || '';
