@@ -32,11 +32,6 @@ export class ProductService {
     this.reVerifyLimitTimes = this.configService.get<number>('AUTO_RE_VERIFY_VEHICLE_LIMIT_TIMES', 1);
   }
 
-  async findByUser(userId: string): Promise<ProductVO[]> {
-    const productEntities = await this.productRepository.findByUser(userId);
-    return productEntities.map((e) => ({ img: '', ...e }));
-  }
-
   async create(userId: string, productDto: ProductDto | CreateProductRequest): Promise<ProductVO> {
     const vehicleCount = await this.productRepository.getProductSequence();
     productDto.id = generateSalesForceId(ENTITY_PREFIX.vehicle, vehicleCount, this.isProduction);
@@ -63,6 +58,24 @@ export class ProductService {
 
     this.logger.debug(productEntity);
     return { img: '', ...productEntity };
+  }
+
+  async findByUser(userId: string): Promise<ProductVO[]> {
+    const productEntities = await this.productRepository.findByUser(userId);
+    return productEntities.map((e) => ({ img: '', ...e }));
+  }
+
+  async list(
+    page: number,
+    limit: number,
+    filters: VehicleQueryFilters,
+  ) {
+    const products = await this.productRepository.list(page, limit, filters);
+    const productCount = await this.productRepository.count(filters);
+    return {
+      entities: products,
+      count: productCount,
+    }
   }
 
   async update(userId: string, payload: ProductUpdateDto): Promise<ProductVO> {
@@ -119,21 +132,12 @@ export class ProductService {
     }
   }
 
-  async remove(userId: string, payload: ProductRemoveDto): Promise<void> {
-    await this.getOwnedProduct(userId, payload.id);
-    await this.productRepository.remove(userId, payload.id)
+  async removeOwnedProduct(userId: string, productId: string): Promise<void> {
+    const ownedProduct = await this.getOwnedProduct(userId, productId);
+    await this.productRepository.remove(ownedProduct);
   }
 
-  async list(
-    page: number,
-    limit: number,
-    filters: VehicleQueryFilters,
-  ) {
-    const products = await this.productRepository.list(page, limit, filters);
-    const productCount = await this.productRepository.count(filters);
-    return {
-      entities: products,
-      count: productCount,
-    }
+  async removeById(productId: string): Promise<void> {
+    await this.productRepository.removeById(productId);
   }
 }

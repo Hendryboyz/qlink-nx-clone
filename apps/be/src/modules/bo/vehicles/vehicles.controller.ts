@@ -18,8 +18,7 @@ import { VehicleQueryFilters } from '$/modules/bo/vehicles/vehicles.types';
 @Controller('')
 export class VehiclesController {
   private logger = new Logger(this.constructor.name);
-  constructor(private productService: ProductService) {
-  }
+  constructor(private productService: ProductService) {}
 
   @Roles(BoRole.ADMIN)
   @Get()
@@ -54,7 +53,7 @@ export class VehiclesController {
   @Roles(BoRole.ADMIN)
   @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
-  delete(@Param('id') vehicleId: string): Promise<void> {
-    return null;
+  async delete(@Param('id') vehicleId: string): Promise<void> {
+    await this.productService.removeById(vehicleId);
   }
 }

@@ -16,6 +16,25 @@ export class ProductRepository {
     @Inject(KNEX_CONNECTION) private readonly knex: Knex
   ) {}
 
+  async create(userId: string, productDto: ProductDto): Promise<ProductEntity> {
+    const productToInsert = Object.fromEntries(
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      Object.entries(productDto).filter(([_, v]) => v !== undefined && v != '')
+    );
+
+    if (isEmpty(productToInsert))
+      throw new BadRequestException('Empty payload');
+
+    const [obj] = await this.knex('product')
+      .insert({
+        ...productToInsert,
+        user_id: userId,
+      })
+      .returning('id');
+
+    return await this.findById(obj.id);
+  }
+
   async findByUser(userId: string): Promise<ProductEntity[] | null> {
     const query = `
     SELECT
@@ -69,53 +88,6 @@ export class ProductRepository {
       this.logger.error(`fail to get next vehicle sequence`, error);
       throw error;
     }
-  }
-
-  async create(userId: string, productDto: ProductDto): Promise<ProductEntity> {
-    const productToInsert = Object.fromEntries(
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      Object.entries(productDto).filter(([_, v]) => v !== undefined && v != '')
-    );
-
-    if (isEmpty(productToInsert))
-      throw new BadRequestException('Empty payload');
-
-    const [obj] = await this.knex('product')
-      .insert({
-        ...productToInsert,
-        user_id: userId,
-      })
-      .returning('id');
-
-    return await this.findById(obj.id);
-  }
-
-  async update(
-    id: string,
-    productUpdateDto: UpdateProductData,
-  ): Promise<ProductEntity> {
-    const productToUpdate = buildUpdatingMap(productUpdateDto);
-    if (isEmpty(productToUpdate))
-      throw new BadRequestException('Empty payload');
-    if (isEmpty(id)) throw new BadRequestException('Empty payload');
-
-    const [obj] = await this.knex('product')
-      .where({ id })
-      .update(productToUpdate)
-      .returning('id');
-
-    return await this.findById(obj.id);
-  }
-
-  async remove(userId: string, id: string): Promise<void> {
-    const query = `
-      DELETE FROM product
-      WHERE id = $1
-      AND user_id = $2
-    `
-    await this.pool.query(query, [id, userId])
-    // rowCount should be 1
-
   }
 
   async findAllowReVerifyProducts(verifiedLimit: number): Promise<ProductEntity[] | null> {
@@ -186,5 +158,37 @@ export class ProductRepository {
 
     const [{ count }] = await queryBuilder.count('id', { as: 'count' });
     return +count;
+  }
+
+  async update(
+    id: string,
+    productUpdateDto: UpdateProductData,
+  ): Promise<ProductEntity> {
+    const productToUpdate = buildUpdatingMap(productUpdateDto);
+    if (isEmpty(productToUpdate))
+      throw new BadRequestException('Empty payload');
+    if (isEmpty(id)) throw new BadRequestException('Empty payload');
+
+    const [obj] = await this.knex('product')
+      .where({ id })
+      .update(productToUpdate)
+      .returning('id');
+
+    return await this.findById(obj.id);
+  }
+
+  remove(product: ProductEntity): Promise<number> {
+    // rowCount should be 1
+    return this.buildQueryById(product.id)
+      .andWhere('user_id', product.userId)
+      .delete();
+  }
+
+  private buildQueryById(productId: string) {
+    return this.knex('product').where('id', productId);
+  }
+
+  async removeById(productId: string) {
+    return this.buildQueryById(productId).delete();
   }
 }

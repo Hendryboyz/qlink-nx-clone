@@ -33,6 +33,6 @@ export class ProductController {
   @UseGuards(AuthGuard('jwt'))
   @Delete('/remove')
   async removeProduct(@UserId() userId: string, @Body() payload: ProductRemoveDto) {
-    return this.productService.remove(userId, payload);
+    return this.productService.removeOwnedProduct(userId, payload.id);
   }
 }
