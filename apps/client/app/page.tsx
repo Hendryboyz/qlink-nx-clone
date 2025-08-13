@@ -64,7 +64,7 @@ export default function Index() {
         </div>
       </div>
       {/* News */}
-      <div className="my-5 px-6">
+      <div className="my-5 px-5">
         <hr className="border border-[#E19500] bg-[#E19500]" />
       </div>
       <div className="px-5 pb-6 pt-2">
