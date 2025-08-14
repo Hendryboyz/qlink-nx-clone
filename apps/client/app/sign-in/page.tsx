@@ -26,13 +26,13 @@ export default function SignIn() {
   const { showPopup } = usePopup();
 
   function onClose() {
-    router.push('/');
+    router.push('/')
   }
 
   return (
     <ColorBackground color="#D70127">
-      <div className="w-full py-16 pb-10 px-12 flex flex-col h-full flex-1 ">
-        <div onClick={onClose}>
+      <div className="w-full py-32 px-12 flex flex-col min-h-screen">
+        <div className="absolute top-[24px] right-[24px]" onClick={onClose}>
           <Cross2Icon
             height={24}
             width={24}
@@ -40,8 +40,9 @@ export default function SignIn() {
             className="justify-self-end cursor-pointer"
           />
         </div>
-        <Banner className="self-center" />
-        <Formik
+        <div className="flex flex-col w-full">
+          <Banner />
+          <Formik
           initialValues={initValue}
           validate={(values) => {
             const errors: FormikErrors<FormData> = {};
@@ -82,7 +83,7 @@ export default function SignIn() {
             isValid,
           }) => (
             <Fragment>
-              <div className="space-y-6 p-2">
+              <div className="py-20">
                 <div>
                   <InputField
                     type="text"
@@ -96,7 +97,7 @@ export default function SignIn() {
                     name="email"
                     className="text-[#E19500] absolute pl-10 text-sm font-gilroy-medium"
                     component="span"
-                  />
+                  />/
                 </div>
                 <div>
                   <InputField
@@ -112,7 +113,7 @@ export default function SignIn() {
                     component="span"
                   />
                 </div>
-                <div className="flex mt-5 justify-between items-center text-xs font-gilroy-medium">
+                <div className="flex mt-7 justify-between items-center text-xs font-gilroy-medium">
                   <label
                     htmlFor="rememberMe"
                     className="flex items-center cursor-pointer pl-[13px]"
@@ -159,21 +160,23 @@ export default function SignIn() {
                     </span>
                   </Link>
                 </div>
+                <div className="flex justify-end items-center mt-8">
+                  <SubmitButton
+                    buttonColor="beige"
+                    text="Sign In"
+                    onClick={() => (isValid ? handleSubmit() : NOOP())}
+                    isLoading={isSubmitting}
+                  />
+                </div>
               </div>
-              <div className="flex justify-end items-center mt-auto">
-                <SubmitButton
-                  buttonColor="beige"
-                  text="Sign In"
-                  onClick={() => (isValid ? handleSubmit() : NOOP())}
-                  isLoading={isSubmitting}
-                />
-              </div>
+
             </Fragment>
           )}
-        </Formik>
-        <Link href="/sign-up" className="text-center text-sm mt-8 text-red-300">
-          <h4>Don&apos;t have account? Sign up</h4>
-        </Link>
+          </Formik>
+          <Link href="/sign-up" className="text-center text-sm text-red-300 -mt-12">
+            <h4>Don&apos;t have account? Sign up</h4>
+          </Link>
+        </div>
       </div>
     </ColorBackground>
   );
