@@ -127,6 +127,7 @@ const Step2 = (props: Props) => {
             <input
               className="flex items-center justify-center
                 text-center
+                text-primary
                 w-12 h-12 rounded-xl
                 bg-white border-[#FFCFA3] border-2 font-bold text-xl"
               type="number"
