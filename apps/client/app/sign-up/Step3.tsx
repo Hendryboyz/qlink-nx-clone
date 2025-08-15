@@ -126,7 +126,9 @@ const Step3 = (props: Props) => {
 
   return (
     <Container title="Account detail" step={3}>
-      <Formik
+      <h4 className="text-primary text-xl">Enter Account detail</h4>
+      <div className="mt-6">
+        <Formik
         initialValues={initValue}
         validationSchema={SignupSchema}
         onSubmit={(values, { setSubmitting, setFieldError }) => {
@@ -380,6 +382,7 @@ const Step3 = (props: Props) => {
           </Fragment>
         )}
       </Formik>
+      </div>
     </Container>
   );
 };
