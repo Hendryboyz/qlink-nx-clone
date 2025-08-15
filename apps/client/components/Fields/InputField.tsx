@@ -15,7 +15,7 @@ export default function InputField({ type = "text", name, placeholder, headIconS
   return (
     <label htmlFor={name}>
       <div
-        className={`flex items-center bg-white p-2 rounded-xl border-2 w-full min-h-[48px] ${customClassName} ${
+        className={`flex items-center bg-white p-2 rounded-xl border-[1px] w-full min-h-[48px] ${customClassName} ${
           !headIconSource && 'px-5'
         }`}
       >
