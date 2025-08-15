@@ -38,7 +38,7 @@ const SubmitButton: React.FC<SubmitButtonProps> = ({text, isLoading, buttonColor
       <div className={`mr-2 text-xl ${iconColor.text} flex items-center`}>{text}</div>
       <div className={`rounded-full p-2 ${iconColor.bg}`}>
         {isLoading ? (
-          <div className="w-8 h-8 border-4 border-primary border-t-white rounded-full animate-spin"></div>
+          <div className="w-[24px] h-[24px] border-4 border-primary border-t-white rounded-full animate-spin"></div>
         ) : (
           <div className={`rounded-full ${arrowColor}`}>
             <ArrowRightIcon width={24} height={24} />
