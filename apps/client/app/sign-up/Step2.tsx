@@ -121,7 +121,7 @@ const Step2 = (props: Props) => {
   };
 
   return (
-    <Container title="Create an account" step={2}>
+    <Container title="OTP verification" step={2}>
       <div>
         <h4 className="text-primary text-xl">Enter OTP</h4>
         <div className="flex justify-between items-center mt-6">
@@ -130,7 +130,7 @@ const Step2 = (props: Props) => {
               className="flex items-center justify-center
                 text-center
                 w-12 h-12 rounded-xl
-                bg-white border-[#FFCFA3] border-2 font-bold text-xl"
+                bg-white border-[#FFCFA3] border-[1px] font-bold text-xl"
               type="number"
               name="otp"
               maxLength={1}
@@ -160,16 +160,13 @@ const Step2 = (props: Props) => {
             Resend in {formatTime(countdown)}
           </h4>
         ) : (
-          <Button
-            isLoading={isSending}
-            className="mt-5 text-xs hover:cursor-pointer"
-            onClick={handleResendOTP}
-          >
+          <h4 className="text-center text-[#DF6B00] mt-6 text-[13px] font-gilroy-medium font-normal leading-[100%] tracking-[0%]"
+              onClick={handleResendOTP}>
             Resend
-          </Button>
+          </h4>
         )}
       </div>
-      <div className="flex justify-between items-center mt-auto">
+      <div className="flex justify-between items-center mt-auto mt-32">
         <span className="text-xl text-red-600 hover:underline hover:cursor-pointer" onClick={props.goBack}>Back</span>
         <SubmitButton text="Next" isLoading={isLoading} onClick={handleSubmit} />
       </div>
