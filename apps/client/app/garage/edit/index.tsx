@@ -279,7 +279,7 @@ export default function GarageEdit({ data, onCancel, onRemove }: Props) {
           </span>
           <img
             alt="remove"
-            src="/assets/trash.png"
+            src="/assets/trash.svg"
           />
         </div>
       </div>
