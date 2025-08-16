@@ -104,7 +104,7 @@ const defaultValue: FormData = {
 };
 
 const DEFAULT_INPUT_STYLES =
-  'block rounded-xl py-2 pl-6 pr-6 w-full bg-white border-[#FFCFA3] border-2 text-sm font-gilroy-medium min-h-[48px]';
+  'block rounded-xl py-2 pl-6 pr-6 w-full bg-white border-[#FFCFA3] border-[1px] text-sm font-gilroy-medium min-h-[48px]';
 
 const DEFAULT_ERROR_MSG_CLASS = 'text-red-500 pl-8 text-sm font-gilroy-medium';
 
@@ -126,8 +126,8 @@ const Step3 = (props: Props) => {
 
   return (
     <Container title="Account detail" step={3}>
-      <h4 className="text-primary text-xl">Enter Account detail</h4>
-      <div className="mt-6">
+        <h4 className="text-primary text-xl">Enter Account Detail</h4>
+      <div>
         <Formik
         initialValues={initValue}
         validationSchema={SignupSchema}
@@ -182,10 +182,9 @@ const Step3 = (props: Props) => {
           isSubmitting,
         }) => (
           <Fragment>
-            <h4 className="text-primary text-xl">Enter Account Detail</h4>
-            <div className="-mt-6 -mx-3">
+            <div className="mt-8">
               <form onSubmit={handleSubmit}>
-                <div className="ml-2 mr-4">
+                <div>
                   {/* <label id="email">
                     <div className={`flex items-center ${DEFAULT_INPUT_STYLES} mb-7 h-12`}>
                       <span className="text-gray-300 text-lg font-gilroy-medium">{email || "user@example.com"}</span>
@@ -196,7 +195,7 @@ const Step3 = (props: Props) => {
                       name="password"
                       type="password"
                       placeholder="Password"
-                      customClassName="border-[#FFCFA3] pr-3"
+                      customClassName="border-[#FFCFA3] pr-5"
                     />
                     <div className="min-h-7">
                       <ErrorMessage name="password">
@@ -209,7 +208,7 @@ const Step3 = (props: Props) => {
                       name="rePassword"
                       type="password"
                       placeholder="Re-enter Password"
-                      customClassName="border-[#FFCFA3] pr-3"
+                      customClassName="border-[#FFCFA3] pr-5"
                     />
                     <div className="min-h-7">
                       <ErrorMessage name="rePassword">
@@ -222,7 +221,7 @@ const Step3 = (props: Props) => {
                       name="firstName"
                       type="text"
                       placeholder="First Name"
-                      customClassName="border-[#FFCFA3] pr-3"
+                      customClassName="border-[#FFCFA3] pr-5"
                     />
                     <div className="min-h-7">
                       <ErrorMessage name="firstName">
@@ -235,7 +234,7 @@ const Step3 = (props: Props) => {
                       name="midName"
                       type="text"
                       placeholder="Mid Name"
-                      customClassName="border-[#FFCFA3] pr-3"
+                      customClassName="border-[#FFCFA3] pr-5"
                     />
                     <div className="min-h-7">
                       <ErrorMessage name="midName">
@@ -248,7 +247,7 @@ const Step3 = (props: Props) => {
                       name="lastName"
                       type="text"
                       placeholder="Last Name"
-                      customClassName="border-[#FFCFA3] pr-3"
+                      customClassName="border-[#FFCFA3] pr-5"
                     />
                     <div className="min-h-7">
                       <ErrorMessage name="lastName">
