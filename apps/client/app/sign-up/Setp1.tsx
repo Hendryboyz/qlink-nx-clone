@@ -75,7 +75,7 @@ const Step1 = (props: Props) => {
         }) => (
           <Fragment>
             <div className="font-gilroy-medium">
-              <h4 className="text-primary text-xl">
+              <h4 className="font-gilroy-medium text-primary text-xl">
                Enter Email Address
               </h4>
               <Form id="signupForm">
@@ -106,7 +106,7 @@ const Step1 = (props: Props) => {
               </Form>
             </div>
             <div className="mt-auto font-gilroy-medium">
-              <div className="flex justify-end text-red-500 items-center mt-12">
+              <div className="flex justify-end text-red-500 items-center mt-[54px]">
                 <SubmitButton
                   text="Next"
                   isLoading={isSubmitting}
