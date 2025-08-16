@@ -46,16 +46,21 @@ export default function Editable({editKey, title, type = 'text', defaultValue, v
   const showEditButton = () => {
     if (isEditing) {
       return (
-        <div className="flex gap-1 self-end mb-[3px]">
-          <IconButton color="blue" disabled={error !== ''} onClick={() => {
+        <div className="flex gap-1">
+          <IconButton 
+            className="icon-button-small" 
+            color="blue" 
+            disabled={error !== ''} 
+            onClick={() => {
             if (saveChange && isChangeAllowed) {
               saveChange(editKey, currentValue);
             }
             setIsEditing(wasEditing => !wasEditing);
           }}>
-            <CheckIcon height={18} width={18} />
+            <CheckIcon height={16} width={16} />
           </IconButton>
           <IconButton
+            className="icon-button-small"
             color="blue"
             onClick={() => {
               setCurrentValue(defaultValue);
@@ -63,7 +68,7 @@ export default function Editable({editKey, title, type = 'text', defaultValue, v
               setIsEditing(wasEditing => !wasEditing);
             }}
           >
-            <Cross2Icon height={18} width={18} />
+            <Cross2Icon height={16} width={16} />
           </IconButton>
         </div>
       );
@@ -150,7 +155,7 @@ export default function Editable({editKey, title, type = 'text', defaultValue, v
         <div className="h-auto min-h-4 flex flex-col content-around -mt-1">
           {isEditing ? (
             <>
-              <Input className="min-w-60 mr-1 text-lg text-[]" />
+              <Input className="min-w-60 mr-1 text-lg h-6 py-0 outline-none focus:ring-0 focus:border-gray-300" />
               {error && <span className="text-red-600">{error}</span>}
             </>
           ) : (

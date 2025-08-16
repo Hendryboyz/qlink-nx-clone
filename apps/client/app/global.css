@@ -158,4 +158,14 @@ label {
     @apply absolute bottom-0 left-6 right-6 h-0.5 bg-gray-100;
     content: '';
   }
+  
+  .icon-button-small {
+    width: 24px !important;
+    height: 25px !important;
+    min-width: 0 !important;
+    min-height: 0 !important;
+    max-width: none !important;
+    max-height: none !important;
+    padding: 0 !important;
+  }
 }
