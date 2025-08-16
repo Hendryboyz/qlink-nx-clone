@@ -49,10 +49,10 @@ export default function Editable({editKey, title, type = 'text', defaultValue, v
     if (isEditing) {
       return (
         <div className="flex gap-1">
-          <IconButton 
-            className="icon-button-small" 
-            color="blue" 
-            disabled={error !== ''} 
+          <IconButton
+            className="icon-button-small"
+            color="blue"
+            disabled={error !== ''}
             onClick={() => {
             if (saveChange && isChangeAllowed) {
               saveChange(editKey, currentValue);
@@ -117,8 +117,8 @@ export default function Editable({editKey, title, type = 'text', defaultValue, v
       );
     } else if (type === 'dropdown') {
       return (
-        <Select.Root 
-          value={currentValue ? String(currentValue) : undefined} 
+        <Select.Root
+          value={currentValue ? String(currentValue) : undefined}
           onValueChange={(value) => setCurrentValue(value)}
           size="1"
         >
@@ -136,7 +136,7 @@ export default function Editable({editKey, title, type = 'text', defaultValue, v
       const [isDatePickerOpen, setIsDatePickerOpen] = useState(false);
       const [isManualInput, setIsManualInput] = useState(false);
       const [manualInputValue, setManualInputValue] = useState('');
-      
+
       // Auto-open DatePicker when entering edit mode
       useEffect(() => {
         if (isEditing && type === 'date') {
@@ -144,11 +144,11 @@ export default function Editable({editKey, title, type = 'text', defaultValue, v
           setIsManualInput(false);
         }
       }, [isEditing, type]);
-      
-      const dateValue = currentValue && currentValue !== '0000-00-00' 
-        ? new Date(currentValue) 
+
+      const dateValue = currentValue && currentValue !== '0000-00-00'
+        ? new Date(currentValue)
         : null;
-      
+
       const handleDateChange = (date: Date | null) => {
         if (date) {
           const formattedDate = date.toISOString().split('T')[0];
@@ -159,7 +159,7 @@ export default function Editable({editKey, title, type = 'text', defaultValue, v
         setIsDatePickerOpen(false);
         setIsEditing(false);
       };
-      
+
       const handleManualInputSubmit = () => {
         const dateRegex = /^(\d{4})-(\d{1,2})-(\d{1,2})$/;
         const match = manualInputValue.match(dateRegex);
@@ -190,11 +190,11 @@ export default function Editable({editKey, title, type = 'text', defaultValue, v
         setManualInputValue('');
         setIsEditing(false);
       };
-      
-      const displayValue = currentValue && currentValue !== '0000-00-00' 
-        ? currentValue 
+
+      const displayValue = currentValue && currentValue !== '0000-00-00'
+        ? currentValue
         : '0000-00-00';
-      
+
       return (
         <div className="relative">
           {isManualInput ? (
@@ -229,7 +229,7 @@ export default function Editable({editKey, title, type = 'text', defaultValue, v
               {displayValue}
             </div>
           )}
-          
+
           {isDatePickerOpen && !isManualInput && (
             <div className="absolute top-6 left-0 z-50">
               <DatePicker
@@ -254,7 +254,7 @@ export default function Editable({editKey, title, type = 'text', defaultValue, v
   };
 
   return (
-    <div className="flex justify-between items-center min-h-[3.1875rem] pl-6 pr-6 border-b-inset-6">
+    <div className="flex justify-between items-center min-h-[3.1875rem] pl-[1.25rem] pr-[1.25rem] border-b-inset-6">
       <div className="flex flex-col text-gray-400">
         <span className="text-xs font-gilroy-regular text-[12px] text-[#D70127]">{title}</span>
         <div className="h-auto min-h-4 flex flex-col content-around -mt-1">
@@ -265,7 +265,7 @@ export default function Editable({editKey, title, type = 'text', defaultValue, v
             </>
           ) : (
             <span className="font-semibold text-[1rem] min-h-[1rem] inline-block">
-              {type === 'dropdown' && options && currentValue 
+              {type === 'dropdown' && options && currentValue
                 ? options.find(opt => String(opt.value) === String(currentValue))?.label || currentValue
                 : currentValue || '\u00A0'}
             </span>
