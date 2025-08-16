@@ -159,7 +159,7 @@ export default function Editable({editKey, title, type = 'text', defaultValue, v
               {error && <span className="text-red-600">{error}</span>}
             </>
           ) : (
-            <span className="font-semibold text-[1rem]">{currentValue}</span>
+            <span className="font-semibold text-[1rem] min-h-[1rem] inline-block">{currentValue || '\u00A0'}</span>
           )}
         </div>
       </div>
