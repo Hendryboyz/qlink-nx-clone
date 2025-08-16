@@ -81,7 +81,7 @@ export default function Member() {
     <div className="w-full min-h-full flex-1">
       <Header title="Member" />
       <div className="md:px-36">
-        <div className="pt-3 bg-gray-300 relative flex justify-between">
+        <div className="pt-3 pb-[0.375rem] bg-gray-300 relative flex justify-between">
           <div className="flex">
             <Upload
               name="avatar"
@@ -97,13 +97,13 @@ export default function Member() {
               />
             </Upload>
             <p className="content-center flex flex-col ml-3 mt-2 font-gilroy-semibold">
-              <span className="text-2xl text-gray-500">ABC {user?.firstName}</span>
-              <span className="text-xl text-gray-500 -mt-1">ABC {user?.lastName}</span>
+              <span className="text-2xl text-gray-500">{user?.firstName}</span>
+              <span className="text-xl text-gray-500 -mt-1">{user?.lastName}</span>
             </p>
           </div>
         </div>
         {user && (
-          <div className='mt-3 pl-2'>
+          <div className='mt-6 pl-2'>
             <Editable
               key="id"
               editKey="id"
