@@ -106,7 +106,7 @@ const defaultValue: FormData = {
 const DEFAULT_INPUT_STYLES =
   'block rounded-xl py-2 pl-6 pr-6 w-full bg-white border-[#FFCFA3] border-[1px] text-sm font-gilroy-medium min-h-[48px]';
 
-const DEFAULT_ERROR_MSG_CLASS = 'text-red-500 pl-8 text-sm font-gilroy-medium';
+const DEFAULT_ERROR_MSG_CLASS = 'text-red-500 pl-6 text-sm font-gilroy-medium';
 
 type Props = {
   onSuccess: () => void;
@@ -199,7 +199,7 @@ const Step3 = (props: Props) => {
                     />
                     <div className="min-h-7">
                       <ErrorMessage name="password">
-                        {(msg) => <span className="text-red-500 pl-8 text-sm font-gilroy-medium">{msg}</span>}
+                        {(msg) => <span className="text-red-500 pl-6 text-sm font-gilroy-medium">{msg}</span>}
                       </ErrorMessage>
                     </div>
                   </div>
@@ -212,7 +212,7 @@ const Step3 = (props: Props) => {
                     />
                     <div className="min-h-7">
                       <ErrorMessage name="rePassword">
-                        {(msg) => <span className="text-red-500 pl-8 text-sm font-gilroy-medium">{msg}</span>}
+                        {(msg) => <span className="text-red-500 pl-6 text-sm font-gilroy-medium">{msg}</span>}
                       </ErrorMessage>
                     </div>
                   </div>
@@ -225,7 +225,7 @@ const Step3 = (props: Props) => {
                     />
                     <div className="min-h-7">
                       <ErrorMessage name="firstName">
-                        {(msg) => <span className="text-red-500 pl-8 text-sm font-gilroy-medium">{msg}</span>}
+                        {(msg) => <span className="text-red-500 pl-6 text-sm font-gilroy-medium">{msg}</span>}
                       </ErrorMessage>
                     </div>
                   </div>
@@ -238,7 +238,7 @@ const Step3 = (props: Props) => {
                     />
                     <div className="min-h-7">
                       <ErrorMessage name="midName">
-                        {(msg) => <span className="text-red-500 pl-8 text-sm font-gilroy-medium">{msg}</span>}
+                        {(msg) => <span className="text-red-500 pl-6 text-sm font-gilroy-medium">{msg}</span>}
                       </ErrorMessage>
                     </div>
                   </div>
@@ -251,7 +251,7 @@ const Step3 = (props: Props) => {
                     />
                     <div className="min-h-7">
                       <ErrorMessage name="lastName">
-                        {(msg) => <span className="text-red-500 pl-8 text-sm font-gilroy-medium">{msg}</span>}
+                        {(msg) => <span className="text-red-500 pl-6 text-sm font-gilroy-medium">{msg}</span>}
                       </ErrorMessage>
                     </div>
                   </div>
@@ -292,7 +292,7 @@ const Step3 = (props: Props) => {
                     />
                     <div className="min-h-7">
                       <ErrorMessage name="phone">
-                        {(msg) => <span className="text-red-500 pl-8 text-sm font-gilroy-medium">{msg}</span>}
+                        {(msg) => <span className="text-red-500 pl-6 text-sm font-gilroy-medium">{msg}</span>}
                       </ErrorMessage>
                     </div>
                   </div>
@@ -319,7 +319,7 @@ const Step3 = (props: Props) => {
                     />
                     <div className="min-h-7">
                       <ErrorMessage name="addressCity">
-                        {(msg) => <span className="text-red-500 pl-8 text-sm font-gilroy-medium">{msg}</span>}
+                        {(msg) => <span className="text-red-500 pl-6 text-sm font-gilroy-medium">{msg}</span>}
                       </ErrorMessage>
                     </div>
                   </div>
@@ -346,7 +346,7 @@ const Step3 = (props: Props) => {
                     />
                     <div className="min-h-7">
                       <ErrorMessage name="whatsapp">
-                        {(msg) => <span className="text-red-500 pl-8 text-sm font-gilroy-medium">{msg}</span>}
+                        {(msg) => <span className="text-red-500 pl-6 text-sm font-gilroy-medium">{msg}</span>}
                       </ErrorMessage>
                     </div>
                   </div>
@@ -358,7 +358,7 @@ const Step3 = (props: Props) => {
                     />
                     <div className="min-h-7">
                       <ErrorMessage name="whatsapp">
-                        {(msg) => <span className="text-red-500 pl-8 text-sm font-gilroy-medium">{msg}</span>}
+                        {(msg) => <span className="text-red-500 pl-6 text-sm font-gilroy-medium">{msg}</span>}
                       </ErrorMessage>
                     </div>
                   </div>
