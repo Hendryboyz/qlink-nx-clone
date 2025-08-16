@@ -264,7 +264,11 @@ export default function Editable({editKey, title, type = 'text', defaultValue, v
               {error && <span className="text-red-600">{error}</span>}
             </>
           ) : (
-            <span className="font-semibold text-[1rem] min-h-[1rem] inline-block">{currentValue || '\u00A0'}</span>
+            <span className="font-semibold text-[1rem] min-h-[1rem] inline-block">
+              {type === 'dropdown' && options && currentValue 
+                ? options.find(opt => String(opt.value) === String(currentValue))?.label || currentValue
+                : currentValue || '\u00A0'}
+            </span>
           )}
         </div>
       </div>
