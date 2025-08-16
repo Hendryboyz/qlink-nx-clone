@@ -144,17 +144,17 @@ export default function Editable({editKey, title, type = 'text', defaultValue, v
   };
 
   return (
-    <div className="flex justify-between items-center py-3 pl-12 pr-6 border-b-2 border-gray-100">
+    <div className="flex justify-between items-center min-h-[3.1875rem] pl-6 pr-6 border-b-inset-6">
       <div className="flex flex-col text-gray-400">
-        <span className="text-xs mb-1">{title}</span>
-        <div className="h-auto min-h-8 flex flex-col content-around mt-1">
+        <span className="text-xs font-gilroy-regular text-[12px] text-[#D70127]">{title}</span>
+        <div className="h-auto min-h-4 flex flex-col content-around -mt-1">
           {isEditing ? (
             <>
-              <Input className="min-w-60 mr-1 text-lg" />
+              <Input className="min-w-60 mr-1 text-lg text-[]" />
               {error && <span className="text-red-600">{error}</span>}
             </>
           ) : (
-            <span className="font-semibold">{currentValue}</span>
+            <span className="font-semibold text-[1rem]">{currentValue}</span>
           )}
         </div>
       </div>

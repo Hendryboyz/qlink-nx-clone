@@ -148,3 +148,14 @@ label {
 .react-datepicker__day:hover {
   background-color: #fee2e2 !important;
 }
+
+@layer utilities {
+  .border-b-inset-6 {
+    @apply relative;
+  }
+  
+  .border-b-inset-6::after {
+    @apply absolute bottom-0 left-6 right-6 h-0.5 bg-gray-100;
+    content: '';
+  }
+}
