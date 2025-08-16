@@ -168,4 +168,49 @@ label {
     max-height: none !important;
     padding: 0 !important;
   }
+  
+  /* Custom Select dropdown height limit */
+  .rt-SelectContent {
+    max-height: 240px !important;
+    overflow-y: auto !important;
+  }
+  
+  /* Custom Select trigger styles */
+  .rt-SelectTrigger {
+    height: 24px !important;
+    min-height: 24px !important;
+    border: none !important;
+    border-width: 0 !important;
+    box-shadow: none !important;
+    background: transparent !important;
+    background-color: transparent !important;
+    padding: 0 !important;
+    font-size: 1rem !important;
+    font-weight: 600 !important;
+    outline: none !important;
+  }
+  
+  .rt-SelectTrigger:hover {
+    border: none !important;
+    border-width: 0 !important;
+    box-shadow: none !important;
+    background: transparent !important;
+    background-color: transparent !important;
+  }
+  
+  .rt-SelectTrigger:focus {
+    border: none !important;
+    border-width: 0 !important;
+    box-shadow: none !important;
+    outline: none !important;
+    background: transparent !important;
+    background-color: transparent !important;
+  }
+  
+  .rt-SelectTrigger:focus-visible {
+    border: none !important;
+    border-width: 0 !important;
+    box-shadow: none !important;
+    outline: none !important;
+  }
 }
