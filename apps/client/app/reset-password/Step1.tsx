@@ -75,14 +75,16 @@ const Step1 = (props: Props) => {
                 <h4 className="text-[#FFF0D3] text-xl">
                   Enter Email Address
                 </h4>
-                <div className="mt-9">
-                  <InputField
-                    type="tel"
-                    name="email"
-                    placeholder="Email"
-                    headIconSource="assets/mail.svg"
-                    customClassName="border-white"
-                  />
+                <div className="mt-7">
+                  <div id="email-input-container">
+                    <InputField
+                      type="tel"
+                      name="email"
+                      placeholder="Email"
+                      headIconSource="assets/mail.svg"
+                      customClassName="border-white"
+                    />
+                  </div>
                   <ErrorMessage
                     name="email"
                     className="text-[#E19500] absolute pl-11 text-sm font-gilroy-medium"
@@ -94,17 +96,20 @@ const Step1 = (props: Props) => {
                     recaptchaToken={values.recaptchaToken}
                     recaptchaError={errors.recaptchaToken}
                     setFieldValue={setFieldValue}
+                    targetElementId="email-input-container"
                   />
                 </div>
               </form>
             </div>
-            <div className="flex justify-end items-center mt-auto">
-              <SubmitButton
-                buttonColor="beige"
-                text="Send"
-                isLoading={isSubmitting}
-                onClick={() => (isValid ? handleSubmit() : NOOP())}
-              />
+            <div className="mt-auto font-gilroy-medium">
+              <div className="flex justify-end items-center mt-[54px]">
+                <SubmitButton
+                  buttonColor="beige"
+                  text="Send"
+                  isLoading={isSubmitting}
+                  onClick={() => (isValid ? handleSubmit() : NOOP())}
+                />
+              </div>
             </div>
           </Fragment>
         )}

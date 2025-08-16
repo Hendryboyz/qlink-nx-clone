@@ -68,20 +68,20 @@ const Step3 = () => {
           <Fragment>
             <div className="font-gilroy-medium">
               <form>
-                <h4 className="text-[#FFF0D3] text-xl">
+                <h4 className="text-[#FFF0D3] text-xl opacity-0">
                   Set New Password
                 </h4>
-                <div className="mt-9">
+                <div className="mt-7">
                   <div>
                     <InputField
                       name="password"
                       type="password"
-                      placeholder="Password"
-                      customClassName="border-white pr-3"
+                      placeholder="New Password"
+                      customClassName="border-white pr-5"
                     />
                     <div className="min-h-8">
                       <ErrorMessage name="password">
-                        {(msg) => <span className="text-[#E19500] pl-8 text-sm font-gilroy-medium">{msg}</span>}
+                        {(msg) => <span className="text-[#E19500] pl-6 text-sm font-gilroy-medium">{msg}</span>}
                       </ErrorMessage>
                     </div>
                   </div>
@@ -89,23 +89,23 @@ const Step3 = () => {
                     <InputField
                       name="rePassword"
                       type="password"
-                      placeholder="Confirm new password"
-                      customClassName="border-white pr-3"
+                      placeholder="Confirm New Password"
+                      customClassName="border-white pr-5"
                     />
                     <div className="min-h-8">
                       <ErrorMessage name="rePassword">
-                        {(msg) => <span className="text-[#E19500] pl-8 text-sm font-gilroy-medium">{msg}</span>}
+                        {(msg) => <span className="text-[#E19500] pl-6 text-sm font-gilroy-medium">{msg}</span>}
                       </ErrorMessage>
                     </div>
                   </div>
                 </div>
               </form>
             </div>
-            <div className="flex justify-end items-center mt-auto">
+            <div className="flex justify-end items-center mt-[42px]">
               <Button
                 theme="light"
                 className="uppercase font-gilroy-medium"
-                style={{ width: '85px' }}
+                style={{ width: '80px', height: '40px', borderRadius: '20px' }}
                 isLoading={isSubmitting}
                 onClick={() => (isValid ? handleSubmit() : NOOP())}
               >

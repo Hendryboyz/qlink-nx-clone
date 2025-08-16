@@ -119,17 +119,19 @@ const Step2 = (props: Props) => {
   };
 
   return (
-    <Container title="OTP Verification">
+    <Container title="OTP verification">
       <div>
-        <h4 className="text-primary text-xl">Enter OTP</h4>
-        <div className="flex justify-between items-center mt-6">
+        <div className='w-full -mt-9'>
+          <p className="text-center text-[13px] text-[#FFCFA3]">Please enter the 4-digit OTP (One-Time Password) sent to your registered Email address.</p>
+        </div>
+        <div className="flex justify-between items-center mt-7">
           {otp.map((data, index) => (
             <input
               className="flex items-center justify-center
                 text-center
                 text-primary
                 w-12 h-12 rounded-xl
-                bg-white border-[#FFCFA3] border-2 font-bold text-xl"
+                bg-white border-[#FFCFA3] border-[1px] font-bold text-xl"
               type="number"
               name="otp"
               maxLength={1}
@@ -159,17 +161,14 @@ const Step2 = (props: Props) => {
             Resend in {formatTime(countdown)}
           </h4>
         ) : (
-          <Button
-            theme='light'
-            isLoading={isSending}
-            className="mt-5 text-sm hover:cursor-pointer font-gilroy-medium"
+          <h4 className="text-center text-[#DF6B00] mt-6 text-[13px] font-gilroy-medium font-normal leading-[100%] tracking-[0%] hover:cursor-pointer"
             onClick={handleResendOTP}
           >
             Resend
-          </Button>
+          </h4>
         )}
       </div>
-      <div className="flex justify-between items-center mt-auto">
+      <div className="flex justify-between items-center mt-32">
         <span className="text-xl text-[#FFF0D3]" onClick={props.goBack}>Back</span>
         <SubmitButton text="Next" buttonColor="beige" onClick={handleSubmit} isLoading={isLoading} />
       </div>
