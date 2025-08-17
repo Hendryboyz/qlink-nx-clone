@@ -153,39 +153,45 @@ export default function GarageAdd() {
               }
               customBackAction={() => { router.push('/garage'); }}
             />
-            <div>
-              {(Object.entries(ATTRS) as [KEY, Columns[KEY]][]).map(
+            <div className="md:px-36">
+              <div className="mt-6 pl-2">
+                {(Object.entries(ATTRS) as [KEY, Columns[KEY]][]).map(
                 ([key, data]) => {
                   return (
                     <div
-                      className="flex items-center py-3 mx-6 border-b-2 border-gray-100"
+                      className="flex justify-between items-center min-h-[3.1875rem] pl-[1.25rem] pr-[1.25rem] border-b-inset-6"
                       key={key}
                     >
-                      <div className="flex flex-col w-full text-gray-400 relative">
-                        <span className="text-xs mb-1 text-[#D70127]">{data.title}</span>
+                      <div className="flex flex-col text-gray-400 flex-1">
+                        <span className="text-xs font-gilroy-regular text-[12px] text-[#D70127]">{data.title}</span>
+                        <div className="h-auto min-h-4 flex flex-col content-around -mt-1">
                         {data.type == 'select' ? (
-                          <DropdownField
-                            id={key}
-                            name={key}
-                            placeholder="X"
-                            options={models.map((vo) => ({
-                              value: vo.id,
-                              label: vo.title,
-                            }))}
-                            label={data.title}
-                          />
+                          <div className="w-full" style={{ color: '#6b7280', fontWeight: '600' }}>
+                            <DropdownField
+                              id={key}
+                              name={key}
+                              placeholder="X"
+                              options={models.map((vo) => ({
+                                value: vo.id,
+                                label: vo.title,
+                              }))}
+                              label={data.title}
+                              className="w-full min-w-60 h-6"
+                              textSize="text-base"
+                            />
+                          </div>
                         ) : data.type === 'date' ? (
                           <DateField
                             name={key}
                             defaultDisplayValue="0000-00-00"
-                            className="text-base pl-0 min-h-[24px]"
+                            className="text-base pl-0 min-h-[24px] font-semibold text-gray-500"
                           />
                         ) :
                           <Field
                             id={key}
                             name={key}
                             type={data.type || 'text'}
-                            className="text-base"
+                            className="text-base font-semibold text-gray-500"
                             placeholder=""
                           />
                         }
@@ -194,11 +200,13 @@ export default function GarageAdd() {
                           className={DEFAULT_ERROR_MSG_CLASS}
                           component="span"
                         />
+                        </div>
                       </div>
                     </div>
                   );
                 }
               )}
+              </div>
             </div>
           </Fragment>
         )}

@@ -97,9 +97,9 @@ export default function SignIn() {
                     name="email"
                     className="text-[#E19500] absolute pl-10 text-sm font-gilroy-medium"
                     component="span"
-                  />/
+                  />
                 </div>
-                <div>
+                <div className="mt-6">
                   <InputField
                     name="password"
                     type="password"

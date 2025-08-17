@@ -25,7 +25,7 @@ export default function InputField({ type = "text", name, placeholder, headIconS
           name={name}
           placeholder={placeholder}
           type={showPassword ? 'text' : type}
-          className="flex-grow placeholder:text-sm text-sm font-gilroy-medium outline-none border-none bg-transparent align-middle"
+          className={`flex-grow placeholder:text-sm text-sm font-gilroy-medium outline-none border-none bg-transparent align-middle ${headIconSource ? 'ml-2' : ''}`}
           style={{ lineHeight: 'normal', verticalAlign: 'middle' }}
           autoComplete={autoComplete ? 'on' : 'off'}
         />
