@@ -169,7 +169,7 @@ const Step2 = (props: Props) => {
           </h4>
         )}
       </div>
-      <div className="flex justify-between items-center mt-32">
+      <div className="flex justify-between items-center mt-[7.9rem]">
         <span className="text-xl text-[#FFF0D3]" onClick={props.goBack}>Back</span>
         <SubmitButton text="Next" buttonColor="beige" onClick={handleSubmit} isLoading={isLoading} />
       </div>

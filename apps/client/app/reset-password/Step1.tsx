@@ -102,7 +102,7 @@ const Step1 = (props: Props) => {
               </form>
             </div>
             <div className="mt-auto font-gilroy-medium">
-              <div className="flex justify-end items-center mt-[54px]">
+              <div className="flex justify-end items-center mt-[2.75rem]">
                 <SubmitButton
                   buttonColor="beige"
                   text="Send"

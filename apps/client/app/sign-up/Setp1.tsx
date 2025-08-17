@@ -106,7 +106,7 @@ const Step1 = (props: Props) => {
               </Form>
             </div>
             <div className="mt-auto font-gilroy-medium">
-              <div className="flex justify-end text-red-500 items-center mt-[54px]">
+              <div className="flex justify-end text-red-500 items-center mt-[2.75rem]">
                 <SubmitButton
                   text="Next"
                   isLoading={isSubmitting}
