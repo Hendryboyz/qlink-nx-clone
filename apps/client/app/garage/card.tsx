@@ -7,6 +7,7 @@ import { DEFAULT_MODELS } from '$/utils';
 import { usePopup } from '$/hooks/PopupProvider';
 import Button from '$/components/Button';
 import defaultMotorImage from '$/public/assets/vehicles/default_model.png';
+import { STATUS_CONFIG, getStatusConfig } from '$/utils/statusConfig';
 
 const rowCss = css`
 & > div:not(:last-child)  {
@@ -35,6 +36,9 @@ const rowCss = css`
 
 const ProductCard = ({ data, handleEdit }: { data: ProductVO, handleEdit: (data: ProductVO) => void }) => {
   const { showPopup, hidePopup } = usePopup();
+
+  // Get status configuration
+  const statusConfig = getStatusConfig(data.status);
 
   // Helper functions to manage gift redemptions in localStorage
   const getGiftRedemptions = () => {
@@ -76,7 +80,7 @@ const ProductCard = ({ data, handleEdit }: { data: ProductVO, handleEdit: (data:
   return (
     <>
       <div
-        className="flex justify-between min-h-[164px] bg-[#C3C3C3]"
+        className="relative flex justify-between min-h-[164px] bg-[#C3C3C3]"
         style={{
           backgroundImage: `url(${modelImage})`,
           backgroundSize: 'cover',
@@ -84,6 +88,16 @@ const ProductCard = ({ data, handleEdit }: { data: ProductVO, handleEdit: (data:
           backgroundRepeat: 'no-repeat'
         }}
       >
+        {/* Status Badge */}
+        <div
+          className="absolute top-6 left-6 w-[68px] h-[24px] rounded flex items-center justify-center"
+          style={{ backgroundColor: statusConfig.bgColor }}
+        >
+          <span className="text-white text-[14px] font-[GilroyBold] leading-[16px]">
+            {statusConfig.text}
+          </span>
+        </div>
+
         <div className="ml-9 mb-2 self-end">
           <p className="text-xl font-light text-white font-gilroy-light">{data.year}</p>
           <h2 className="text-3xl font-gilroy-heavy text-primary-500 -mt-2">{modelDefined ? modelDefined.title : model}</h2>

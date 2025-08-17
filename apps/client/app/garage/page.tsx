@@ -9,6 +9,7 @@ import API from '$/utils/fetch';
 import GarageEdit from './edit';
 import defaultMotorImage from '$/public/assets/vehicles/default_model.png';
 import { DEFAULT_MODELS } from '$/utils';
+import { getStatusConfig } from '$/utils/statusConfig';
 
 export default function Garage() {
   const router = useRouter();
@@ -60,6 +61,9 @@ export default function Garage() {
               const model = DEFAULT_MODELS.find(m => m.id.toString() === product.model);
               const modelTitle = model?.title || product.model;
               const modelImage = model?.img || defaultMotorImage.src;
+              // Get status configuration
+              const statusConfig = getStatusConfig(product.status);
+
               return (
                 <div
                   key={product.id}
@@ -71,6 +75,7 @@ export default function Garage() {
                 >
                   {/*<div className="h-24 bg-gray-300" />*/}
                   <div
+                    className="relative"
                     style={{
                       height: '6rem',
                       backgroundImage: `url(${modelImage})`,
@@ -78,7 +83,13 @@ export default function Garage() {
                       backgroundPosition: 'center center',
                       backgroundColor: '#DFDFDF'
                     }}
-                  />
+                  >
+                    {/* Status Dot */}
+                    <div
+                      className="absolute top-2.5 right-2.5 w-2 h-2 rounded-full"
+                      style={{ backgroundColor: statusConfig.bgColor }}
+                    />
+                  </div>
                   {/* Placeholder for image */}
                   <div className="px-4 py-[6px] bg-gray-500 flex justify-between text-white">
                     <div className="font-gilroy-bold text-[13px]">{modelTitle || product.model}</div>
