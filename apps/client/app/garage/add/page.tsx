@@ -79,7 +79,7 @@ const ATTRS: Columns = {
   },
 };
 export default function GarageAdd() {
-  const DEFAULT_ERROR_MSG_CLASS = 'text-red-500 absolute top-0 right-0 text-xs text-right pl-3';
+  const DEFAULT_ERROR_MSG_CLASS = 'text-red-500 text-xs block mt-1';
   const POPUP_BUTTON_STYLE = 'py-2 px-3 text-sm rounded-lg h-[30px] font-[GilroySemiBold]';
   const [models, setModels] = useState<ModelVO[]>([]);
   const initValue: FormData = defaultValue;
@@ -166,32 +166,74 @@ export default function GarageAdd() {
                         <span className="text-xs font-gilroy-regular text-[12px] text-[#D70127]">{data.title}</span>
                         <div className="h-auto min-h-4 flex flex-col content-around -mt-1">
                         {data.type == 'select' ? (
-                          <div className="w-full" style={{ color: '#6b7280', fontWeight: '600' }}>
-                            <DropdownField
-                              id={key}
+                          <Field name={key}>
+                            {({ field, form }: any) => {
+                              const [isOpen, setIsOpen] = useState(false);
+                              const selectedModel = models.find(m => String(m.id) === String(field.value));
+                              const displayValue = selectedModel ? selectedModel.title : 'X';
+                              
+                              return (
+                                <div className="relative">
+                                  <div 
+                                    className="flex justify-between items-center cursor-pointer w-full"
+                                    onClick={() => setIsOpen(!isOpen)}
+                                  >
+                                    <span 
+                                      className="text-base font-semibold text-gray-500"
+                                      style={{ 
+                                        display: 'inline-block',
+                                        minHeight: '1rem'
+                                      }}
+                                    >
+                                      {displayValue}
+                                    </span>
+                                    <img 
+                                      src="/assets/chevron_down.svg" 
+                                      className="flex-shrink-0"
+                                      alt="dropdown arrow"
+                                    />
+                                  </div>
+                                  
+                                  {isOpen && (
+                                    <>
+                                      <div 
+                                        className="fixed inset-0 z-40" 
+                                        onClick={() => setIsOpen(false)}
+                                      />
+                                      <div className="absolute top-6 left-0 z-50 bg-white border border-gray-200 rounded-lg shadow-lg max-h-60 overflow-y-auto min-w-max whitespace-nowrap">
+                                        {models.map((vo) => (
+                                          <div
+                                            key={vo.id}
+                                            className="px-4 py-2 hover:bg-gray-100 cursor-pointer text-gray-700 text-sm"
+                                            onClick={() => {
+                                              form.setFieldValue(key, String(vo.id));
+                                              setIsOpen(false);
+                                            }}
+                                          >
+                                            {vo.title}
+                                          </div>
+                                        ))}
+                                      </div>
+                                    </>
+                                  )}
+                                </div>
+                              );
+                            }}
+                          </Field>
+                        ) : data.type === 'date' ? (
+                          <div className="garage-date-field">
+                            <DateField
                               name={key}
-                              placeholder="X"
-                              options={models.map((vo) => ({
-                                value: vo.id,
-                                label: vo.title,
-                              }))}
-                              label={data.title}
-                              className="w-full min-w-60 h-6"
-                              textSize="text-base"
+                              defaultDisplayValue="0000-00-00"
+                              className="text-base pl-0 font-semibold text-gray-500"
                             />
                           </div>
-                        ) : data.type === 'date' ? (
-                          <DateField
-                            name={key}
-                            defaultDisplayValue="0000-00-00"
-                            className="text-base pl-0 min-h-[24px] font-semibold text-gray-500"
-                          />
                         ) :
                           <Field
                             id={key}
                             name={key}
                             type={data.type || 'text'}
-                            className="text-base font-semibold text-gray-500"
+                            className="text-base font-semibold text-gray-500 outline-none focus:outline-none border-none focus:border-none focus:ring-0"
                             placeholder=""
                           />
                         }

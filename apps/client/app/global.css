@@ -213,4 +213,26 @@ label {
     box-shadow: none !important;
     outline: none !important;
   }
+  
+  /* Force Select trigger to use same font weight as input fields */
+  .rt-SelectTrigger {
+    font-family: inherit !important;
+    font-weight: 600 !important;
+  }
+  
+  /* Remove Select trigger border */
+  .rt-SelectTrigger,
+  .rt-SelectTrigger:hover,
+  .rt-SelectTrigger:focus,
+  .rt-SelectTrigger[data-state="open"] {
+    border: none !important;
+    border-width: 0 !important;
+    box-shadow: none !important;
+  }
+  
+  /* Force DateField in garage add page to have consistent height */
+  .garage-date-field > div {
+    min-height: 1rem !important;
+    height: auto !important;
+  }
 }
