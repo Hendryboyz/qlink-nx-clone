@@ -14,7 +14,7 @@ const Banner = ({size, className, ...props }: BannerProps) => {
       <img
         src="/assets/qrc_logo.svg"
         alt="logo"
-        className={size ? size : "h-28 w-28"}
+        className={size ? size : "h-[6.375rem] w-[6.375rem]"}
       />
     </div>
   );
