@@ -173,7 +173,7 @@ export default function SignIn() {
             </Fragment>
           )}
           </Formik>
-          <Link href="/sign-up" className="text-center text-sm text-red-300 -mt-12">
+          <Link href="/sign-up" className="text-center text-sm text-red-300 -mt-12 font-gilroy-medium">
             <h4>Don&apos;t have account? Sign up</h4>
           </Link>
         </div>
