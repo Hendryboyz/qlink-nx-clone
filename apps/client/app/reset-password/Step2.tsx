@@ -122,7 +122,7 @@ const Step2 = (props: Props) => {
     <Container title="OTP verification">
       <div>
         <div className='w-full -mt-9'>
-          <p className="text-center text-[13px] text-[#FFCFA3]">Please enter the 4-digit OTP (One-Time Password) sent to your registered Email address.</p>
+          <p className="text-center text-[0.8125rem] text-[#FFCFA3] font-gilroy-medium">Please enter the 4-digit OTP (One-Time Password) sent to your registered Email address.</p>
         </div>
         <div className="flex justify-between items-center mt-7">
           {otp.map((data, index) => (

@@ -150,12 +150,12 @@ export default function SignIn() {
                         </div>
                       )}
                     </Field>
-                    <span className="ml-1 text-white">
+                    <span className="ml-1 text-white text-xs font-gilroy-medium">
                       Remember Me
                     </span>
                   </label>
                   <Link href="/reset-password" className="pr-3">
-                    <span className="text-red-300">
+                    <span className="text-red-300 text-xs font-gilroy-medium">
                       Forgot password?
                     </span>
                   </Link>

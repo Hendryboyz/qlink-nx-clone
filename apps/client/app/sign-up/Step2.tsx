@@ -168,7 +168,7 @@ const Step2 = (props: Props) => {
           </h4>
         )}
       </div>
-      <div className="flex justify-between items-center mt-[7.8rem] font-gilroy-medium`">
+      <div className="flex justify-between items-center mt-[7.8125rem] font-gilroy-medium`">
         <span className="text-xl text-red-600 hover:underline hover:cursor-pointer" onClick={props.goBack}>Back</span>
         <SubmitButton text="Next" isLoading={isLoading} onClick={handleSubmit} />
       </div>
