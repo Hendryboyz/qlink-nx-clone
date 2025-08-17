@@ -14,6 +14,10 @@ const rowCss = css`
 }
 & > div {
   padding-left: 12px;
+  height: 2.8125rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
   & .title {
     font-family: GilroyRegular;
     font-size: 12px;
@@ -120,7 +124,7 @@ const ProductCard = ({ data, handleEdit }: { data: ProductVO, handleEdit: (data:
         </div>
         <div className="py-3 px-3 bg-gray-700" style={{ display: 'flex', justifyContent: 'center', width: '100%' }}>
           <button
-            className={`mt-2 px-2 rounded-lg text-base text-center flex items-center justify-center leading-[27px] border-none h-[27px] whitespace-nowrap pt-[2px] font-[GilroySemiBold] tracking-[0%] ${
+            className={`mt-4 px-2 rounded-lg text-base text-center flex items-center justify-center leading-[27px] border-none h-[27px] whitespace-nowrap pt-[2px] font-[GilroySemiBold] tracking-[0%] ${
               isGiftRedeemed
                 ? 'text-white bg-gray-500 cursor-not-allowed opacity-60 w-[210px]'
                 : 'text-[#DF6B00] bg-[#FFD429] cursor-pointer hover:bg-[#E5C027] w-[191px]'
