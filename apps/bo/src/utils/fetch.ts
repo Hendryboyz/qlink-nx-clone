@@ -313,6 +313,27 @@ class Api {
   async deleteVehicle(vehicleId: string) {
     return this.delete(`/vehicles/${vehicleId}`);
   }
+
+  async countTotalMember(from?: Date): Promise<number> {
+    let resourceUrl = '/statistic/users/count';
+    if (from) {
+      resourceUrl += `?from=${from.toISOString()}`
+    }
+    return this.get(resourceUrl);
+  }
+
+  async countFailVerificationVehicles(): Promise<number> {
+    const resourceUrl = '/statistic/vehicles/count/verified_failed';
+    return this.get(resourceUrl);
+  }
+
+  async countVehiclesByField(field: string): Promise<{
+    model: string;
+    count: number;
+  }[]> {
+    const resourceUrl = `/statistic/vehicles/count?groupBy=${field}`;
+    return this.get(resourceUrl);
+  }
 }
 
 const publicApiURL: string = import.meta.env.VITE_BO_PUBLIC_API_URL || '';

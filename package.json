@@ -54,6 +54,8 @@
     "class-validator": "^0.14.1",
     "cookie-parser": "^1.4.6",
     "dayjs": "^1.11.13",
+    "echarts": "^6.0.0",
+    "echarts-for-react": "^3.0.2",
     "formik": "^2.4.6",
     "js-cookie": "^3.0.5",
     "knex": "^3.1.0",
