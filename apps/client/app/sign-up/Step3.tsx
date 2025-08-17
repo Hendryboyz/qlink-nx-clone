@@ -1,6 +1,6 @@
-import React, { Fragment } from 'react';
+import React, { Fragment, useState } from 'react';
 import Container from './Container';
-import { Formik, ErrorMessage } from 'formik';
+import { Formik, ErrorMessage, Field } from 'formik';
 import * as Yup from 'yup';
 import API from '$/utils/fetch';
 import { GenderType, RegisterDto, UserType } from 'types/src';
@@ -269,21 +269,60 @@ const Step3 = (props: Props) => {
                       />
                     </div>
                   </label>
-                  <DropdownField
-                    label="gender"
-                    id="gender"
-                    name="gender"
-                    placeholder="Gender"
-                    className={DEFAULT_INPUT_STYLES}
-                    textSize="text-sm"
-                    options={GENDER.map((value) => ({ value: value }))}
-                  >
-                    <ErrorMessage
-                      name="gender"
-                      className={DEFAULT_ERROR_MSG_CLASS}
-                      component="span"
-                    />
-                  </DropdownField>
+                  <div>
+                    <Field name="gender">
+                      {({ field, form }: any) => {
+                        const [isOpen, setIsOpen] = useState(false);
+                        const displayValue = field.value || 'Gender';
+                        
+                        return (
+                          <div className="relative">
+                            <div 
+                              className={`${DEFAULT_INPUT_STYLES} flex justify-between items-center cursor-pointer`}
+                              onClick={() => setIsOpen(!isOpen)}
+                            >
+                              <span className="text-sm font-gilroy-medium">
+                                {displayValue}
+                              </span>
+                              <img 
+                                src="/assets/chevron_down.svg" 
+                                className="flex-shrink-0"
+                                alt="dropdown arrow"
+                              />
+                            </div>
+                            
+                            {isOpen && (
+                              <>
+                                <div 
+                                  className="fixed inset-0 z-40" 
+                                  onClick={() => setIsOpen(false)}
+                                />
+                                <div className="absolute top-full left-0 z-50 bg-white border border-gray-200 rounded-lg shadow-lg max-h-60 overflow-y-auto min-w-max whitespace-nowrap mt-1">
+                                  {GENDER.map((value) => (
+                                    <div
+                                      key={value}
+                                      className="px-4 py-2 hover:bg-gray-100 cursor-pointer text-gray-700 text-sm"
+                                      onClick={() => {
+                                        form.setFieldValue('gender', value);
+                                        setIsOpen(false);
+                                      }}
+                                    >
+                                      {value}
+                                    </div>
+                                  ))}
+                                </div>
+                              </>
+                            )}
+                          </div>
+                        );
+                      }}
+                    </Field>
+                    <div className="min-h-7">
+                      <ErrorMessage name="gender">
+                        {(msg) => <span className="text-red-500 pl-6 text-sm font-gilroy-medium">{msg}</span>}
+                      </ErrorMessage>
+                    </div>
+                  </div>
                   <div>
                     <InputField
                       name="phone"
@@ -323,21 +362,60 @@ const Step3 = (props: Props) => {
                       </ErrorMessage>
                     </div>
                   </div>
-                  <DropdownField
-                    label="addressState"
-                    id="addressState"
-                    name="addressState"
-                    placeholder="State"
-                    className={DEFAULT_INPUT_STYLES}
-                    textSize="text-sm"
-                    options={STATES.map((value) => ({ value }))}
-                  >
-                    <ErrorMessage
-                      name="addressState"
-                      className={DEFAULT_ERROR_MSG_CLASS}
-                      component="span"
-                    />
-                  </DropdownField>
+                  <div>
+                    <Field name="addressState">
+                      {({ field, form }: any) => {
+                        const [isOpen, setIsOpen] = useState(false);
+                        const displayValue = field.value || 'State';
+                        
+                        return (
+                          <div className="relative">
+                            <div 
+                              className={`${DEFAULT_INPUT_STYLES} flex justify-between items-center cursor-pointer`}
+                              onClick={() => setIsOpen(!isOpen)}
+                            >
+                              <span className="text-sm font-gilroy-medium">
+                                {displayValue}
+                              </span>
+                              <img 
+                                src="/assets/chevron_down.svg" 
+                                className="flex-shrink-0"
+                                alt="dropdown arrow"
+                              />
+                            </div>
+                            
+                            {isOpen && (
+                              <>
+                                <div 
+                                  className="fixed inset-0 z-40" 
+                                  onClick={() => setIsOpen(false)}
+                                />
+                                <div className="absolute top-full left-0 z-50 bg-white border border-gray-200 rounded-lg shadow-lg max-h-60 overflow-y-auto min-w-max whitespace-nowrap mt-1">
+                                  {STATES.map((value) => (
+                                    <div
+                                      key={value}
+                                      className="px-4 py-2 hover:bg-gray-100 cursor-pointer text-gray-700 text-sm"
+                                      onClick={() => {
+                                        form.setFieldValue('addressState', value);
+                                        setIsOpen(false);
+                                      }}
+                                    >
+                                      {value}
+                                    </div>
+                                  ))}
+                                </div>
+                              </>
+                            )}
+                          </div>
+                        );
+                      }}
+                    </Field>
+                    <div className="min-h-7">
+                      <ErrorMessage name="addressState">
+                        {(msg) => <span className="text-red-500 pl-6 text-sm font-gilroy-medium">{msg}</span>}
+                      </ErrorMessage>
+                    </div>
+                  </div>
                   <div>
                     <InputField
                       name="whatsapp"
