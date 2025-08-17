@@ -7,6 +7,7 @@ import buildUpdatingMap from '$/modules/utils/repository.util';
 import { KNEX_CONNECTION } from '$/database.module';
 import { ProductBoVO, ProductDto, ProductEntity, UpdateProductData } from '@org/types';
 import { VehicleQueryFilters } from '$/modules/bo/vehicles/vehicles.types';
+import { CountProductFieldType } from '$/modules/product/product.types';
 
 @Injectable()
 export class ProductRepository {
@@ -157,6 +158,28 @@ export class ProductRepository {
     this.appendFilters(queryBuilder, filters);
 
     const [{ count }] = await queryBuilder.count('id', { as: 'count' });
+    return +count;
+  }
+
+  private createCountQuery() {
+    return this.knex<ProductEntity>('product').count('id', { as: 'count' });
+  }
+
+  async countByField(field: string): Promise<CountProductFieldType[] | number> {
+    const queryBuilder = this.createCountQuery();
+    if (field) {
+      return queryBuilder.groupBy(field).select(field);
+    } else {
+      const [{ count }] = await queryBuilder;
+      return +count;
+    }
+  }
+
+  async getVerifyFailedCount(): Promise<number> {
+    const [{ count }] = await this.createCountQuery()
+      .whereNotNull('crm_id')
+      .andWhere('is_verified', false)
+      .andWhere('verify_times', '>', 0);
     return +count;
   }
 

@@ -3,7 +3,6 @@ import {
   CreateProductRequest,
   ProductDto,
   ProductEntity,
-  ProductRemoveDto,
   ProductUpdateDto,
   ProductVO
 } from '@org/types';

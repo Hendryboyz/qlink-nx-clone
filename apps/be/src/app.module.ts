@@ -16,6 +16,7 @@ import { CrmModule } from './modules/crm/crm.module';
 import { TaskService } from '$/app/task.serivce';
 import { ScheduleModule } from '@nestjs/schedule';
 import { VehiclesModule } from './modules/bo/vehicles/vehicles.module';
+import { StatisticModule } from './modules/bo/statistic/statistic.module';
 
 @Module({
   imports: [
@@ -33,6 +34,7 @@ import { VehiclesModule } from './modules/bo/vehicles/vehicles.module';
     BoUserModule,
     VehiclesModule,
     StorageModule,
+    StatisticModule,
     RouterModule.register([
       {
         path: 'bo',
@@ -52,6 +54,10 @@ import { VehiclesModule } from './modules/bo/vehicles/vehicles.module';
           {
             path: 'vehicles',
             module: VehiclesModule,
+          },
+          {
+            path: 'statistic',
+            module: StatisticModule,
           },
         ],
       },

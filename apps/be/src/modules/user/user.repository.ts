@@ -48,7 +48,6 @@ export class UserRepository {
     }
   }
 
-
   async isEmailExist(email: string): Promise<boolean> {
     return this.isIdentifierExist(email, IdentifierType.EMAIL);
   }
@@ -107,10 +106,8 @@ export class UserRepository {
         .offset(offset)
         .limit(limit);
 
-      const countBuilder = this.knex('users').count('id as count');
-      this.appendFilters(countBuilder, filters);
-      const [{ count }] = await countBuilder;
-      return { data, total: +count };
+      const count = await this.countByFilter(filters);
+      return { data, total: count };
     } catch (error) {
       this.logger.error(`Error fetching users: ${error.message}`, error.stack);
       throw error;
@@ -145,6 +142,9 @@ export class UserRepository {
     if (filters.addressCity) {
       queryBuilder.andWhereILike('address_city', `%${filters.addressCity}%`);
     }
+    if (filters.from) {
+      queryBuilder.andWhere('created_at', '>=', filters.from);
+    }
   }
 
   public delete(id: string): Promise<number> {
@@ -177,6 +177,12 @@ export class UserRepository {
       this.logger.error('fail to fetch user sequence');
       throw error;
     }
+  }
 
+  async countByFilter(filters: MemberQueryFilters): Promise<number> {
+    const countBuilder = this.knex('users').count('id as count');
+    this.appendFilters(countBuilder, filters);
+    const [{ count }] = await countBuilder;
+    return +count;
   }
 }

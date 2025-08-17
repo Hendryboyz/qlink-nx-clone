@@ -5,4 +5,5 @@ export class VehicleQueryFilters {
   dealerName?: string;
   year?: number;
   userId?: string;
+  isVerified?: boolean;
 }

@@ -7,4 +7,5 @@ export class MemberQueryFilters {
   phone?: string;
   addressCity?: string;
   addressState?: string;
+  from?: Date;
 }
