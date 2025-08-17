@@ -97,7 +97,7 @@ const ProductCard = ({ data, handleEdit }: { data: ProductVO, handleEdit: (data:
           }}
         />
       </div>
-      <div className={`py-4 px-6 bg-gray-700 text-white ${rowCss}`}>
+      <div className={`pt-4 px-6 bg-gray-700 text-white ${rowCss}`}>
         <div>
           <p className="title">Registration ID</p>
           <p className="font-semibold">{id}</p>
@@ -118,13 +118,15 @@ const ProductCard = ({ data, handleEdit }: { data: ProductVO, handleEdit: (data:
           <p className="title">Registration Date</p>
           <p className="font-semibold">{registrationDate}</p>
         </div>
-        <div>
+        <div className="border-b border-[#D9D9D9]">
           <p className="title">Dealer Name</p>
           <p className="font-semibold">{dealerName}</p>
         </div>
-        <div className="py-3 px-3 bg-gray-700" style={{ display: 'flex', justifyContent: 'center', width: '100%' }}>
+
+        </div>
+        <div className="pt-4 pb-6 bg-gray-700 flex justify-center">
           <button
-            className={`mt-4 px-2 rounded-lg text-base text-center flex items-center justify-center leading-[27px] border-none h-[27px] whitespace-nowrap pt-[2px] font-[GilroySemiBold] tracking-[0%] ${
+            className={`rounded-lg text-base text-center leading-[27px] border-none h-[27px] whitespace-nowrap font-[GilroySemiBold] tracking-[0%] ${
               isGiftRedeemed
                 ? 'text-white bg-gray-500 cursor-not-allowed opacity-60 w-[210px]'
                 : 'text-[#DF6B00] bg-[#FFD429] cursor-pointer hover:bg-[#E5C027] w-[191px]'
@@ -187,7 +189,6 @@ const ProductCard = ({ data, handleEdit }: { data: ProductVO, handleEdit: (data:
           >
             {isGiftRedeemed ? 'Welcome Gift Redeemed' : 'Redeem Welcome Gift'}
           </button>
-        </div>
       </div>
     </>
   );
