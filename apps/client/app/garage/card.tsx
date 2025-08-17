@@ -139,50 +139,47 @@ const ProductCard = ({ data, handleEdit }: { data: ProductVO, handleEdit: (data:
               showPopup({
                 useDefault: false,
                 title: 'Redeem Welcome Gift?',
+                hasDetailText: true,
+                detailText: 'This will confirm that the welcome gift has been claimed. Please ask the authorized QLINK dealer to click this button for you.',
                 content: (
-                  <div className="px-4 py-4">
-                    <p className="text-[#D70127] text-sm mb-6 font-[GilroyRegular]">
-                      This will confirm that the welcome gift has been claimed. Please ask the authorized QLINK dealer to click this button for you.
-                    </p>
-                    <div className="flex items-center justify-center gap-2 w-full">
-                      <Button
-                        className="rounded-lg bg-[#D70127] text-white font-[GilroySemiBold] h-[30px]"
-                        style={{ fontSize: '14px', width: '100px' }}
-                        onClick={hidePopup}
-                      >
-                        Cancel
-                      </Button>
-                      <Button
-                        className="rounded-lg bg-[#D70127] text-white font-[GilroySemiBold] h-[30px]"
-                        style={{ fontSize: '14px', width: '100px' }}
-                        onClick={() => {
-                          hidePopup();
-                          // Show success popup
-                          showPopup({
-                            useDefault: false,
-                            title: 'Gift Redeemed',
-                            content: (
-                              <div className="flex justify-center">
-                                <Button
-                                  className="bg-red-600 hover:bg-red-700 text-white font-[GilroySemiBold] px-6 py-2 rounded-lg h-[30px] text-sm"
-                                  style={{ width: '216px' }}
-                                  onClick={() => {
-                                    // Save redemption status to localStorage
-                                    setGiftRedemption(data.userId, data.registrationDate, true);
-                                    setIsGiftRedeemed(true);
-                                    hidePopup();
-                                  }}
-                                >
-                                  Enjoy!
-                                </Button>
-                              </div>
-                            )
-                          });
-                        }}
-                      >
-                        OK
-                      </Button>
-                    </div>
+                  <div className="flex items-center justify-center gap-2 w-full">
+                    <Button
+                      className="rounded-lg bg-[#D70127] text-white font-[GilroySemiBold] h-[30px]"
+                      style={{ fontSize: '14px', width: '100px' }}
+                      onClick={hidePopup}
+                    >
+                      Cancel
+                    </Button>
+                    <Button
+                      className="rounded-lg bg-[#D70127] text-white font-[GilroySemiBold] h-[30px]"
+                      style={{ fontSize: '14px', width: '100px' }}
+                      onClick={() => {
+                        hidePopup();
+                        // Show success popup
+                        showPopup({
+                          useDefault: false,
+                          title: 'Gift Redeemed',
+                          content: (
+                            <div className="flex justify-center">
+                              <Button
+                                className="bg-red-600 hover:bg-red-700 text-white font-[GilroySemiBold] px-6 py-2 rounded-lg h-[30px] text-sm"
+                                style={{ width: '216px' }}
+                                onClick={() => {
+                                  // Save redemption status to localStorage
+                                  setGiftRedemption(data.userId, data.registrationDate, true);
+                                  setIsGiftRedeemed(true);
+                                  hidePopup();
+                                }}
+                              >
+                                Enjoy!
+                              </Button>
+                            </div>
+                          )
+                        });
+                      }}
+                    >
+                      OK
+                    </Button>
                   </div>
                 )
               });
