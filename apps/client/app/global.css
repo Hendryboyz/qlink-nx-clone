@@ -235,4 +235,10 @@ label {
     min-height: 1rem !important;
     height: auto !important;
   }
+  
+  /* Override DateField's min-h-[48px] in garage add page */
+  .garage-date-field .cursor-pointer {
+    min-height: 1rem !important;
+    height: auto !important;
+  }
 }
