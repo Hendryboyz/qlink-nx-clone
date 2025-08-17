@@ -17,7 +17,7 @@ const News = () => {
   }, [])
     return <div className="w-full min-h-full flex-1">
       <Header title="News" />
-      <div className="space-y-3 p-6 md:grid md:grid-cols-2 lg:grid-cols-3">
+      <div className="space-y-3 p-5 md:grid md:grid-cols-2 lg:grid-cols-3">
           {posts.map((item, index) => (
             <div key={index}>
               <NewsItem
