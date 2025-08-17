@@ -155,21 +155,25 @@ const Step2 = (props: Props) => {
               </span>
             </h4>
           </div>
-        ) : isActive ? (
-          <h4 className="text-center text-[#FF7D7D] mt-6 text-[13px] font-gilroy-medium font-normal leading-[100%] tracking-[0%]">
-            Didn&apos;t receive code?
-            <br />
-            Resend in {formatTime(countdown)}
-          </h4>
         ) : (
-          <h4 className="text-center text-[#DF6B00] mt-6 text-[13px] font-gilroy-medium font-normal leading-[100%] tracking-[0%] hover:cursor-pointer"
-            onClick={handleResendOTP}
-          >
-            Resend
-          </h4>
+          <div className="h-[60px] flex items-center justify-center">
+            {isActive ? (
+              <h4 className="text-center text-[#FF7D7D] text-[13px] font-gilroy-medium font-normal leading-[100%] tracking-[0%]">
+                Didn&apos;t receive code?
+                <br />
+                Resend in {formatTime(countdown)}
+              </h4>
+            ) : (
+              <h4 className="text-center text-[#DF6B00] text-[13px] font-gilroy-medium font-normal leading-[100%] tracking-[0%] hover:cursor-pointer"
+                onClick={handleResendOTP}
+              >
+                Resend
+              </h4>
+            )}
+          </div>
         )}
       </div>
-      <div className="flex justify-between items-center mt-[7.0625rem]">
+      <div className="flex justify-between items-center mt-[6.4375rem]">
         <span className="text-xl text-[#FFF0D3]" onClick={props.goBack}>Back</span>
         <SubmitButton text="Next" buttonColor="beige" onClick={handleSubmit} isLoading={isLoading} />
       </div>
