@@ -179,6 +179,7 @@ export const VehicleModelDistributionChart: React.FC = () => {
     },
     legend: {
       type: 'scroll',
+      bottom: 10,
     },
     series: [
       {
