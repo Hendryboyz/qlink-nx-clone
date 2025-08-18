@@ -61,7 +61,30 @@ export class ProductService {
 
   async findByUser(userId: string): Promise<ProductVO[]> {
     const productEntities = await this.productRepository.findByUser(userId);
-    return productEntities.map((e) => ({ img: '', ...e }));
+    return productEntities.map(
+      (e) => ({
+        img: '',
+        verifyStatus: this.confirmVerifyStatus(e),
+        ...e,
+      }));
+  }
+
+  private confirmVerifyStatus(product: ProductEntity): number {
+    /**
+     * 0: VERIFIED
+     * 1: PENDING
+     * 2: FAILED
+     */
+    if (!product.crmId) {
+      return 1
+    }
+    if (product.isVerified) {
+      return 0
+    }
+    if (!product.isVerified) {
+      return product.verifyTimes > 0 ? 2 : 1;
+    }
+    return 1;
   }
 
   async list(

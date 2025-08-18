@@ -13,8 +13,9 @@ export type ProductEntity = {
   verifyTimes: number
 }
 
-export type ProductVO = ProductEntity & {
-    img?: string;
+export type ProductVO = Omit<ProductEntity, 'crmId' | 'isVerified' | 'verifyTimes' > & {
+  verifyStatus?: number,
+  img?: string;
 }
 
 export type ProductBoVO = ProductEntity & {
