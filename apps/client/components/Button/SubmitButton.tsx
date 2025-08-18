@@ -35,13 +35,13 @@ const SubmitButton: React.FC<SubmitButtonProps> = ({text, isLoading, buttonColor
      ${isLoading ? 'cursor-not-allowed' : 'cursor-pointer'}
     `}
     >
-      <div className={`mr-5 text-xl ${iconColor.text}`}>{text}</div>
+      <div className={`mr-2 text-xl ${iconColor.text} flex items-center font-gilroy-medium`}>{text}</div>
       <div className={`rounded-full p-2 ${iconColor.bg}`}>
         {isLoading ? (
-          <div className="w-8 h-8 border-4 border-primary border-t-white rounded-full animate-spin"></div>
+          <div className="w-[24px] h-[24px] border-4 border-primary border-t-white rounded-full animate-spin"></div>
         ) : (
           <div className={`rounded-full ${arrowColor}`}>
-            <ArrowRightIcon width={30} height={30} />
+            <ArrowRightIcon width={24} height={24} />
           </div>
         )}
       </div>

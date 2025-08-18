@@ -119,16 +119,20 @@ const Step2 = (props: Props) => {
   };
 
   return (
-    <Container title="OTP Verification">
+    <Container title="OTP verification">
       <div>
-        <h4 className="text-primary text-xl">Enter OTP</h4>
-        <div className="flex justify-between items-center mt-6">
+        <div className='w-full -mt-9'>
+          <p className="text-center text-[0.8125rem] text-[#FFCFA3] font-gilroy-medium">Please enter the 4-digit OTP (One-Time Password) sent to your registered Email address.</p>
+        </div>
+        <div className="flex justify-between items-center mt-7">
           {otp.map((data, index) => (
             <input
               className="flex items-center justify-center
                 text-center
+                text-primary
                 w-12 h-12 rounded-xl
-                bg-white border-[#FFCFA3] border-2 font-bold text-xl"
+                bg-white border-[#FFCFA3] border-[1px] font-bold text-xl
+                outline-none focus:outline-none focus:ring-0 focus:border-[#FFCFA3]"
               type="number"
               name="otp"
               maxLength={1}
@@ -151,24 +155,25 @@ const Step2 = (props: Props) => {
               </span>
             </h4>
           </div>
-        ) : isActive ? (
-          <h4 className="text-center text-[#FF7D7D] mt-6 text-[13px] font-gilroy-medium font-normal leading-[100%] tracking-[0%]">
-            Didn&apos;t receive code?
-            <br />
-            Resend in {formatTime(countdown)}
-          </h4>
         ) : (
-          <Button
-            theme='light'
-            isLoading={isSending}
-            className="mt-5 text-sm hover:cursor-pointer font-gilroy-medium"
-            onClick={handleResendOTP}
-          >
-            Resend
-          </Button>
+          <div className="h-[60px] flex items-center justify-center">
+            {isActive ? (
+              <h4 className="text-center text-[#FF7D7D] text-[13px] font-gilroy-medium font-normal leading-[100%] tracking-[0%]">
+                Didn&apos;t receive code?
+                <br />
+                Resend in {formatTime(countdown)}
+              </h4>
+            ) : (
+              <h4 className="text-center text-[#DF6B00] text-[13px] font-gilroy-medium font-normal leading-[100%] tracking-[0%] hover:cursor-pointer"
+                onClick={handleResendOTP}
+              >
+                Resend
+              </h4>
+            )}
+          </div>
         )}
       </div>
-      <div className="flex justify-between items-center mt-auto">
+      <div className="flex justify-between items-center mt-[6.4375rem]">
         <span className="text-xl text-[#FFF0D3]" onClick={props.goBack}>Back</span>
         <SubmitButton text="Next" buttonColor="beige" onClick={handleSubmit} isLoading={isLoading} />
       </div>

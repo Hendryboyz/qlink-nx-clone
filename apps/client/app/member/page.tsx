@@ -81,7 +81,7 @@ export default function Member() {
     <div className="w-full min-h-full flex-1">
       <Header title="Member" />
       <div className="md:px-36">
-        <div className="p-6 bg-gray-300 relative flex justify-between">
+        <div className="pt-3 pb-[0.375rem] bg-gray-300 relative flex justify-between">
           <div className="flex">
             <Upload
               name="avatar"
@@ -90,20 +90,20 @@ export default function Member() {
               customRequest={handleUpload}
             >
               <img
-                className="border-white rounded-full border-4 w-16 h-16 ml-6 hover:cursor-pointer"
+                className="border-white rounded-full border-4 w-[4.5rem] h-[4.5rem] ml-6 hover:cursor-pointer"
                 src={avatarUrl ? avatarUrl : '/assets/user.svg'}
                 alt="avatar icon"
                 onClick={handleAvatarUpload}
               />
             </Upload>
-            <p className="content-center flex flex-col ml-5">
+            <p className="content-center flex flex-col ml-3 mt-2 font-gilroy-semibold">
               <span className="text-2xl text-gray-500">{user?.firstName}</span>
-              <span className="text-xl text-gray-500">{user?.lastName}</span>
+              <span className="text-xl text-gray-500 -mt-1">{user?.lastName}</span>
             </p>
           </div>
         </div>
         {user && (
-          <div>
+          <div className='mt-6 pl-2'>
             <Editable
               key="id"
               editKey="id"

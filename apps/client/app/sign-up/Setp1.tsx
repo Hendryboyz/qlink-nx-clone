@@ -79,14 +79,16 @@ const Step1 = (props: Props) => {
                Enter Email Address
               </h4>
               <Form id="signupForm">
-                <div className="mt-9">
-                  <InputField
-                    type="email"
-                    name="email"
-                    placeholder="Email"
-                    headIconSource="assets/mail.svg"
-                    customClassName="border-[#FFCFA3]"
-                  />
+                <div className="mt-7">
+                  <div id="email-input-container">
+                    <InputField
+                      type="email"
+                      name="email"
+                      placeholder="Email"
+                      headIconSource="assets/mail.svg"
+                      customClassName="border-[#FFCFA3]"
+                    />
+                  </div>
                   <ErrorMessage
                     name="email"
                     className="text-red-500 absolute pl-10 text-sm font-gilroy-medium"
@@ -98,12 +100,13 @@ const Step1 = (props: Props) => {
                     recaptchaToken={values.recaptchaToken}
                     recaptchaError={errors.recaptchaToken}
                     setFieldValue={setFieldValue}
+                    targetElementId="email-input-container"
                   />
                 </div>
               </Form>
             </div>
             <div className="mt-auto font-gilroy-medium">
-              <div className="flex justify-end text-red-500 items-center mt-12">
+              <div className="flex justify-end text-red-500 items-center mt-[2.75rem]">
                 <SubmitButton
                   text="Next"
                   isLoading={isSubmitting}
@@ -112,7 +115,7 @@ const Step1 = (props: Props) => {
                   }}
                 />
               </div>
-              <p className="text-[#DF6B00] text-center mt-12">
+              <p className="text-[#DF6B00] text-center mt-8 text-[14px]">
                 Already a member?&nbsp;
                 <Link href="/sign-in">
                   <span className="hover:underline">Log in</span>

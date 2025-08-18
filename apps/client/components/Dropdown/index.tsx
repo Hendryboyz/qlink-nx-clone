@@ -29,7 +29,7 @@ const DropdownField: React.FC<Props> = ({
           as="select"
           id={name}
           name={name}
-          className={`w-full appearance-none focus:outline-none bg-transparent border-none ${textSize} font-gilroy-medium pl-[4px]`}
+          className={`w-full appearance-none focus:outline-none bg-transparent border-none ${textSize} font-gilroy-medium`}
           {...rest}
         >
           {placeholder && (

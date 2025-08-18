@@ -1,6 +1,6 @@
-import React, { Fragment } from 'react';
+import React, { Fragment, useState } from 'react';
 import Container from './Container';
-import { Formik, ErrorMessage } from 'formik';
+import { Formik, ErrorMessage, Field } from 'formik';
 import * as Yup from 'yup';
 import API from '$/utils/fetch';
 import { GenderType, RegisterDto, UserType } from 'types/src';
@@ -104,9 +104,9 @@ const defaultValue: FormData = {
 };
 
 const DEFAULT_INPUT_STYLES =
-  'block rounded-xl py-2 pl-6 pr-6 w-full bg-white border-[#FFCFA3] border-2 text-sm font-gilroy-medium min-h-[48px]';
+  'block rounded-xl py-2 pl-6 pr-6 w-full bg-white border-[#FFCFA3] border-[1px] text-sm font-gilroy-medium min-h-[48px]';
 
-const DEFAULT_ERROR_MSG_CLASS = 'text-red-500 pl-8 text-sm font-gilroy-medium';
+const DEFAULT_ERROR_MSG_CLASS = 'text-red-500 pl-6 text-sm font-gilroy-medium';
 
 type Props = {
   onSuccess: () => void;
@@ -126,7 +126,9 @@ const Step3 = (props: Props) => {
 
   return (
     <Container title="Account detail" step={3}>
-      <Formik
+        <h4 className="text-primary text-xl">Enter Account Detail</h4>
+      <div>
+        <Formik
         initialValues={initValue}
         validationSchema={SignupSchema}
         onSubmit={(values, { setSubmitting, setFieldError }) => {
@@ -180,10 +182,9 @@ const Step3 = (props: Props) => {
           isSubmitting,
         }) => (
           <Fragment>
-            <h4 className="text-primary text-xl">Enter Account Detail</h4>
-            <div className="-mt-6 -mx-3">
+            <div className="mt-8">
               <form onSubmit={handleSubmit}>
-                <div className="ml-2 mr-4">
+                <div>
                   {/* <label id="email">
                     <div className={`flex items-center ${DEFAULT_INPUT_STYLES} mb-7 h-12`}>
                       <span className="text-gray-300 text-lg font-gilroy-medium">{email || "user@example.com"}</span>
@@ -194,11 +195,11 @@ const Step3 = (props: Props) => {
                       name="password"
                       type="password"
                       placeholder="Password"
-                      customClassName="border-[#FFCFA3] pr-3"
+                      customClassName="border-[#FFCFA3] pr-5"
                     />
                     <div className="min-h-7">
                       <ErrorMessage name="password">
-                        {(msg) => <span className="text-red-500 pl-8 text-sm font-gilroy-medium">{msg}</span>}
+                        {(msg) => <span className="text-red-500 pl-6 text-sm font-gilroy-medium">{msg}</span>}
                       </ErrorMessage>
                     </div>
                   </div>
@@ -207,11 +208,11 @@ const Step3 = (props: Props) => {
                       name="rePassword"
                       type="password"
                       placeholder="Re-enter Password"
-                      customClassName="border-[#FFCFA3] pr-3"
+                      customClassName="border-[#FFCFA3] pr-5"
                     />
                     <div className="min-h-7">
                       <ErrorMessage name="rePassword">
-                        {(msg) => <span className="text-red-500 pl-8 text-sm font-gilroy-medium">{msg}</span>}
+                        {(msg) => <span className="text-red-500 pl-6 text-sm font-gilroy-medium">{msg}</span>}
                       </ErrorMessage>
                     </div>
                   </div>
@@ -220,11 +221,11 @@ const Step3 = (props: Props) => {
                       name="firstName"
                       type="text"
                       placeholder="First Name"
-                      customClassName="border-[#FFCFA3] pr-3"
+                      customClassName="border-[#FFCFA3] pr-5"
                     />
                     <div className="min-h-7">
                       <ErrorMessage name="firstName">
-                        {(msg) => <span className="text-red-500 pl-8 text-sm font-gilroy-medium">{msg}</span>}
+                        {(msg) => <span className="text-red-500 pl-6 text-sm font-gilroy-medium">{msg}</span>}
                       </ErrorMessage>
                     </div>
                   </div>
@@ -233,11 +234,11 @@ const Step3 = (props: Props) => {
                       name="midName"
                       type="text"
                       placeholder="Mid Name"
-                      customClassName="border-[#FFCFA3] pr-3"
+                      customClassName="border-[#FFCFA3] pr-5"
                     />
                     <div className="min-h-7">
                       <ErrorMessage name="midName">
-                        {(msg) => <span className="text-red-500 pl-8 text-sm font-gilroy-medium">{msg}</span>}
+                        {(msg) => <span className="text-red-500 pl-6 text-sm font-gilroy-medium">{msg}</span>}
                       </ErrorMessage>
                     </div>
                   </div>
@@ -246,11 +247,11 @@ const Step3 = (props: Props) => {
                       name="lastName"
                       type="text"
                       placeholder="Last Name"
-                      customClassName="border-[#FFCFA3] pr-3"
+                      customClassName="border-[#FFCFA3] pr-5"
                     />
                     <div className="min-h-7">
                       <ErrorMessage name="lastName">
-                        {(msg) => <span className="text-red-500 pl-8 text-sm font-gilroy-medium">{msg}</span>}
+                        {(msg) => <span className="text-red-500 pl-6 text-sm font-gilroy-medium">{msg}</span>}
                       </ErrorMessage>
                     </div>
                   </div>
@@ -258,7 +259,7 @@ const Step3 = (props: Props) => {
                     <DateField
                       name="birthday"
                       defaultDisplayValue="Birthday"
-                      className={`${DEFAULT_INPUT_STYLES} pl-[28px]`}
+                      className={DEFAULT_INPUT_STYLES}
                     />
                     <div className="min-h-7">
                       <ErrorMessage
@@ -268,21 +269,60 @@ const Step3 = (props: Props) => {
                       />
                     </div>
                   </label>
-                  <DropdownField
-                    label="gender"
-                    id="gender"
-                    name="gender"
-                    placeholder="Gender"
-                    className={DEFAULT_INPUT_STYLES}
-                    textSize="text-sm"
-                    options={GENDER.map((value) => ({ value: value }))}
-                  >
-                    <ErrorMessage
-                      name="gender"
-                      className={DEFAULT_ERROR_MSG_CLASS}
-                      component="span"
-                    />
-                  </DropdownField>
+                  <div>
+                    <Field name="gender">
+                      {({ field, form }: any) => {
+                        const [isOpen, setIsOpen] = useState(false);
+                        const displayValue = field.value || 'Gender';
+                        
+                        return (
+                          <div className="relative">
+                            <div 
+                              className={`${DEFAULT_INPUT_STYLES} flex justify-between items-center cursor-pointer`}
+                              onClick={() => setIsOpen(!isOpen)}
+                            >
+                              <span className="text-sm font-gilroy-medium">
+                                {displayValue}
+                              </span>
+                              <img 
+                                src="/assets/chevron_down.svg" 
+                                className="flex-shrink-0"
+                                alt="dropdown arrow"
+                              />
+                            </div>
+                            
+                            {isOpen && (
+                              <>
+                                <div 
+                                  className="fixed inset-0 z-40" 
+                                  onClick={() => setIsOpen(false)}
+                                />
+                                <div className="absolute top-full left-0 z-50 bg-white border border-gray-200 rounded-lg shadow-lg max-h-60 overflow-y-auto min-w-max whitespace-nowrap mt-1">
+                                  {GENDER.map((value) => (
+                                    <div
+                                      key={value}
+                                      className="px-4 py-2 hover:bg-gray-100 cursor-pointer text-gray-700 text-sm"
+                                      onClick={() => {
+                                        form.setFieldValue('gender', value);
+                                        setIsOpen(false);
+                                      }}
+                                    >
+                                      {value}
+                                    </div>
+                                  ))}
+                                </div>
+                              </>
+                            )}
+                          </div>
+                        );
+                      }}
+                    </Field>
+                    <div className="min-h-7">
+                      <ErrorMessage name="gender">
+                        {(msg) => <span className="text-red-500 pl-6 text-sm font-gilroy-medium">{msg}</span>}
+                      </ErrorMessage>
+                    </div>
+                  </div>
                   <div>
                     <InputField
                       name="phone"
@@ -291,7 +331,7 @@ const Step3 = (props: Props) => {
                     />
                     <div className="min-h-7">
                       <ErrorMessage name="phone">
-                        {(msg) => <span className="text-red-500 pl-8 text-sm font-gilroy-medium">{msg}</span>}
+                        {(msg) => <span className="text-red-500 pl-6 text-sm font-gilroy-medium">{msg}</span>}
                       </ErrorMessage>
                     </div>
                   </div>
@@ -318,25 +358,64 @@ const Step3 = (props: Props) => {
                     />
                     <div className="min-h-7">
                       <ErrorMessage name="addressCity">
-                        {(msg) => <span className="text-red-500 pl-8 text-sm font-gilroy-medium">{msg}</span>}
+                        {(msg) => <span className="text-red-500 pl-6 text-sm font-gilroy-medium">{msg}</span>}
                       </ErrorMessage>
                     </div>
                   </div>
-                  <DropdownField
-                    label="addressState"
-                    id="addressState"
-                    name="addressState"
-                    placeholder="State"
-                    className={DEFAULT_INPUT_STYLES}
-                    textSize="text-sm"
-                    options={STATES.map((value) => ({ value }))}
-                  >
-                    <ErrorMessage
-                      name="addressState"
-                      className={DEFAULT_ERROR_MSG_CLASS}
-                      component="span"
-                    />
-                  </DropdownField>
+                  <div>
+                    <Field name="addressState">
+                      {({ field, form }: any) => {
+                        const [isOpen, setIsOpen] = useState(false);
+                        const displayValue = field.value || 'State';
+                        
+                        return (
+                          <div className="relative">
+                            <div 
+                              className={`${DEFAULT_INPUT_STYLES} flex justify-between items-center cursor-pointer`}
+                              onClick={() => setIsOpen(!isOpen)}
+                            >
+                              <span className="text-sm font-gilroy-medium">
+                                {displayValue}
+                              </span>
+                              <img 
+                                src="/assets/chevron_down.svg" 
+                                className="flex-shrink-0"
+                                alt="dropdown arrow"
+                              />
+                            </div>
+                            
+                            {isOpen && (
+                              <>
+                                <div 
+                                  className="fixed inset-0 z-40" 
+                                  onClick={() => setIsOpen(false)}
+                                />
+                                <div className="absolute top-full left-0 z-50 bg-white border border-gray-200 rounded-lg shadow-lg max-h-60 overflow-y-auto min-w-max whitespace-nowrap mt-1">
+                                  {STATES.map((value) => (
+                                    <div
+                                      key={value}
+                                      className="px-4 py-2 hover:bg-gray-100 cursor-pointer text-gray-700 text-sm"
+                                      onClick={() => {
+                                        form.setFieldValue('addressState', value);
+                                        setIsOpen(false);
+                                      }}
+                                    >
+                                      {value}
+                                    </div>
+                                  ))}
+                                </div>
+                              </>
+                            )}
+                          </div>
+                        );
+                      }}
+                    </Field>
+                    <div className="min-h-7">
+                      <ErrorMessage name="addressState">
+                        {(msg) => <span className="text-red-500 pl-6 text-sm font-gilroy-medium">{msg}</span>}
+                      </ErrorMessage>
+                    </div>
+                  </div>
                   <div>
                     <InputField
                       name="whatsapp"
@@ -345,7 +424,7 @@ const Step3 = (props: Props) => {
                     />
                     <div className="min-h-7">
                       <ErrorMessage name="whatsapp">
-                        {(msg) => <span className="text-red-500 pl-8 text-sm font-gilroy-medium">{msg}</span>}
+                        {(msg) => <span className="text-red-500 pl-6 text-sm font-gilroy-medium">{msg}</span>}
                       </ErrorMessage>
                     </div>
                   </div>
@@ -357,7 +436,7 @@ const Step3 = (props: Props) => {
                     />
                     <div className="min-h-7">
                       <ErrorMessage name="whatsapp">
-                        {(msg) => <span className="text-red-500 pl-8 text-sm font-gilroy-medium">{msg}</span>}
+                        {(msg) => <span className="text-red-500 pl-6 text-sm font-gilroy-medium">{msg}</span>}
                       </ErrorMessage>
                     </div>
                   </div>
@@ -380,6 +459,7 @@ const Step3 = (props: Props) => {
           </Fragment>
         )}
       </Formik>
+      </div>
     </Container>
   );
 };

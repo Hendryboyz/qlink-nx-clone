@@ -1,4 +1,5 @@
 import Title from '../../components/Title';
+import StepIndicator from '../sign-up/StepIndicator';
 
 type Props = {
   title: string;
@@ -8,13 +9,14 @@ type Props = {
 
 const Container = ({ title, bottomEle, children }: Props) => {
   return (
-    <div className="w-full py-16 px-12 flex flex-col h-full flex-1 gap-16">
-        <Title className="text-left w-10 text-[#FFF0D3]">
-          {title}
-        </Title>
-      <div className="h-13"></div>
-      <div className="h-[0px]"></div>
-      {children}
+  <div className="w-full pt-8 pb-10 px-12 flex flex-col h-full flex-1">
+      <Title className="text-left w-33 pr-16 text-[#FFF0D3]">{title}</Title>
+      <div className="pt-14 opacity-0">
+        <StepIndicator steps={[1,2,3]} currentStep={1}/>
+      </div>
+        <div className="mt-16">
+        {children}
+      </div>
       {bottomEle ? <div className="mt-auto">{bottomEle}</div> : null}
     </div>
   );

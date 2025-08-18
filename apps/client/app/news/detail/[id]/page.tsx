@@ -25,7 +25,7 @@ const Detail: NextPage<Props> = ({ params }) => {
 
   return (
     <div className="w-full min-h-full flex-1 overflow-hidden">
-      <Header title="News" />
+      <Header title="News" useBackBtn={true} />
       {post && (
         <div className="max-w-full">
           <div
@@ -39,15 +39,15 @@ const Detail: NextPage<Props> = ({ params }) => {
               backgroundPosition: 'center center',
             }}
           >
-            <div className="flex m-6 justify-end">
+            <div className="flex m-5 justify-end">
               <NewsType type={post.category} className="w-[60px] h-[20px] !text-[14px] flex items-center justify-center !pt-0" />
             </div>
-            <h1 className="font-bold text-2xl p-6">{post.title}</h1>
+            <h1 className="font-gilroy-bold text-xl pl-5 pb-3 pr-7 leading-tight">{post.title}</h1>
           </div>
           <div className="px-[20px] py-6 w-screen max-w-screen overflow-x-hidden">
-            <div className="my-5 font-gilroy-medium text-base">{fromDateWithSlash(new Date(post.createdAt))}</div>
+            <div className="mb-3 font-gilroy-medium text-base">{fromDateWithSlash(new Date(post.createdAt))}</div>
             <div
-              className="font-gilroy-regular text-base tracking-[0px] font-normal leading-none break-words hyphens-auto"
+              className="font-gilroy-regular text-base tracking-[0px] font-bold leading-[1.2] break-words hyphens-auto"
               dangerouslySetInnerHTML={{ __html: post.content }}
             />
           </div>

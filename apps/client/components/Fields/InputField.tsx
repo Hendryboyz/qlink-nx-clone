@@ -15,7 +15,7 @@ export default function InputField({ type = "text", name, placeholder, headIconS
   return (
     <label htmlFor={name}>
       <div
-        className={`flex items-center bg-white p-2 rounded-xl border-2 w-full min-h-[48px] ${customClassName} ${
+        className={`flex items-center bg-white p-2 rounded-xl border-[1px] w-full min-h-[48px] ${customClassName} ${
           !headIconSource && 'px-5'
         }`}
       >
@@ -25,7 +25,7 @@ export default function InputField({ type = "text", name, placeholder, headIconS
           name={name}
           placeholder={placeholder}
           type={showPassword ? 'text' : type}
-          className="flex-grow ml-2 placeholder:text-sm text-sm font-gilroy-medium outline-none border-none bg-transparent align-middle"
+          className={`flex-grow placeholder:text-sm text-sm font-gilroy-medium outline-none border-none bg-transparent align-middle ${headIconSource ? 'ml-2' : ''}`}
           style={{ lineHeight: 'normal', verticalAlign: 'middle' }}
           autoComplete={autoComplete ? 'on' : 'off'}
         />

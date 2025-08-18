@@ -33,7 +33,7 @@ const NewsItem: React.FC<Props> = ({ type, date, title, imgUrl, id }) => {
 
   return (
     <div
-      className="flex items-start space-x-5 hover:cursor-pointer"
+      className="flex items-start space-x-4 hover:cursor-pointer"
       onClick={() => {
         router.push(`/news/detail/${id}`);
       }}
@@ -46,11 +46,11 @@ const NewsItem: React.FC<Props> = ({ type, date, title, imgUrl, id }) => {
         />
       </div>
       <div className="pt-3">
-        <div className="flex items-center space-x-2 mb-1">
-          <NewsType type={type} />
-          <span className="text-[13px] font-[GilroyMedium]">{fromDateWithSlash(date)}</span>
+        <div className="flex items-center mb-1 ml-1">
+          <NewsType type={type} className='-mt-[2px]'/>
+          <span className="text-[13px] font-[GilroyMedium] ml-3">{fromDateWithSlash(date)}</span>
         </div>
-        <p className="text-sm font-[GilroyBold] h-16">{title}</p>
+        <p className="text-sm font-[GilroyBold] h-16 ml-1 leading-tight">{title}</p>
       </div>
     </div>
   );
