@@ -27,7 +27,6 @@ export default function Garage() {
     registrationDate: '',
     dealerName: '',
     model: '',
-    isVerified: false,
   });
   const handleFetch = useCallback(() => {
     API.get<ProductVO[]>('/product/list').then((res) => {
@@ -62,7 +61,7 @@ export default function Garage() {
               const modelTitle = model?.title || product.model;
               const modelImage = model?.img || defaultMotorImage.src;
               // Get status configuration
-              const statusConfig = getStatusConfig(product.status);
+              const statusConfig = getStatusConfig(product.verifyStatus);
 
               return (
                 <div

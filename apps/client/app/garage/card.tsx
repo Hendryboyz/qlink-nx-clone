@@ -38,7 +38,7 @@ const ProductCard = ({ data, handleEdit }: { data: ProductVO, handleEdit: (data:
   const { showPopup, hidePopup } = usePopup();
 
   // Get status configuration
-  const statusConfig = getStatusConfig(data.status);
+  const statusConfig = getStatusConfig(data.verifyStatus);
 
   // Helper functions to manage gift redemptions in localStorage
   const getGiftRedemptions = () => {
