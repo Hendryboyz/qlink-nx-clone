@@ -8,7 +8,7 @@ on:
       - backoffice-**
       - backend-**
 jobs:
-  Explore-Worflow-Status:
+  Explore-Workflow-Status:
     runs-on: ubuntu-latest
     steps:
       - run: echo "🎉 The job was automatically triggered by a ${{ github.event_name }} event."
@@ -24,7 +24,7 @@ jobs:
       - run: echo "🍏 This job's status is ${{ job.status }}."
 
   Build_Deploy-Backend:
-    if: ${{ startsWith(github.ref_name, 'backend-') }}
+    if: ${{ startsWith(github.ref_name, 'cicd/poc') }}
     uses: ./.github/workflows/cicd.yaml
     secrets: inherit
     with:
@@ -36,7 +36,7 @@ jobs:
       task-container-name: backend-app
 
   Build_Deploy-Backoffice:
-    if: ${{ startsWith(github.ref_name, 'backoffice-') }}
+    if: ${{ startsWith(github.ref_name, 'cicd/poc') }}
     uses: ./.github/workflows/cicd.yaml
     secrets: inherit
     with:
@@ -48,7 +48,7 @@ jobs:
       task-container-name: backoffice-app
 
   Build_Deploy-Client:
-    if: ${{ startsWith(github.ref_name, 'client-') }}
+    if: ${{ startsWith(github.ref_name, 'cicd/poc') }}
     uses: ./.github/workflows/cicd.yaml
     secrets: inherit
     with:
