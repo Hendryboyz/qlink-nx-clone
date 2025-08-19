@@ -3,6 +3,8 @@ run-name: ${{ github.actor }} is running qapp build & deployment for demo 🚀
 on:
   workflow_dispatch:
   push:
+    branches:
+      - cicd/poc
     tags:
       - client-**
       - backoffice-**
@@ -24,7 +26,7 @@ jobs:
       - run: echo "🍏 This job's status is ${{ job.status }}."
 
   Build_Deploy-Backend:
-    if: ${{ startsWith(github.ref_name, 'cicd/poc') }}
+    # if: ${{ startsWith(github.ref_name, 'backend-') }}
     uses: ./.github/workflows/cicd.yaml
     secrets: inherit
     with:
@@ -36,7 +38,7 @@ jobs:
       task-container-name: backend-app
 
   Build_Deploy-Backoffice:
-    if: ${{ startsWith(github.ref_name, 'cicd/poc') }}
+    # if: ${{ startsWith(github.ref_name, 'backoffice-') }}
     uses: ./.github/workflows/cicd.yaml
     secrets: inherit
     with:
@@ -48,7 +50,7 @@ jobs:
       task-container-name: backoffice-app
 
   Build_Deploy-Client:
-    if: ${{ startsWith(github.ref_name, 'cicd/poc') }}
+    # if: ${{ startsWith(github.ref_name, 'client-') }}
     uses: ./.github/workflows/cicd.yaml
     secrets: inherit
     with:
