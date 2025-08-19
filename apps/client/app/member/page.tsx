@@ -90,8 +90,8 @@ export default function Member() {
               customRequest={handleUpload}
             >
               <img
-                className="border-white rounded-full border-4 w-[4.5rem] h-[4.5rem] ml-6 hover:cursor-pointer"
                 src={avatarUrl ? avatarUrl : '/assets/user.svg'}
+                className="border-white rounded-full border-4 w-[4.5rem] h-[4.5rem] ml-6 hover:cursor-pointer object-cover shadow-avatar"
                 alt="avatar icon"
                 onClick={handleAvatarUpload}
               />
