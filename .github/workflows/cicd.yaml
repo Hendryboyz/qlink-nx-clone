@@ -57,8 +57,10 @@ jobs:
       - name: Build Docker Image
         id: build-image
         run: |
-          DB_PASSWORD=${{ secrets.DB_PASSWORD }}
           DB_USERNAME=${{ secrets.DB_USERNAME }}
+          DB_PASSWORD=${{ secrets.DB_PASSWORD }}
+          SMTP_USER=${{ secrets.SMTP_USER }}
+          SMTP_PASSWORD=${{ secrets.SMTP_PASSWORD }}
           RECAPTCHA_SECRET_KEY=${{ secrets.RECAPTCHA_SECRET_KEY }}
           RECAPTHCA_SITEKEY=${{ secrets.RECAPTHCA_SITEKEY }}
           envsubst < .env.template > .env
@@ -69,6 +71,16 @@ jobs:
           echo "image=$IMAGE_TAG" >> $GITHUB_OUTPUT
           # push the built image to ecr repository
           docker push $IMAGE_TAG
+
+      - name: Upload .env to config bucket
+        uses: zdurham/s3-upload-github-action@master
+        env:
+          FILE: .env
+          AWS_REGION: ${{ env.AWS_REGION }}
+          S3_BUCKET: ${{ env.AWS_S3_CONFIG_BUCKET }}
+          S3_KEY: .test.env
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
 
 #      - name: Fill in the new image ID in the Amazon ECS task definition
 #        id: task-def
