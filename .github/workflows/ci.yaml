@@ -15,6 +15,8 @@ on:
       ecr-repository:
         required: true
         type: string
+      push-config:
+        type: boolean
       task-definition:
         required: true
         type: string
@@ -64,14 +66,33 @@ jobs:
           RECAPTCHA_SECRET_KEY: ${{ secrets.RECAPTCHA_SECRET_KEY }}
           RECAPTHCA_SITEKEY: ${{ secrets.RECAPTHCA_SITEKEY }}
         run: |
-          envsubst < .env.template > .env
-          cat .env
           VERSION=$(grep '"version"' ${{ inputs.version-file }} | sed 's/.*"version":\ "\(.*\)",/\1/')
           IMAGE_TAG=${{ steps.login-ecr.outputs.registry }}/${{ inputs.ecr-repository }}:$VERSION
           docker buildx build --platform=linux/amd64 -t $IMAGE_TAG -f ${{ env.DOCKERFILE }} .
           echo "image=$IMAGE_TAG" >> $GITHUB_OUTPUT
           # push the built image to ecr repository
           docker push $IMAGE_TAG
+  Substitute-Push-DotEnv:
+    if: ${{ inputs.push-config }}
+    name: Build & Push Docker Image
+    runs-on: ubuntu-latest
+    environment: ${{ inputs.build-env }}
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Substitute DotEnv Configurations
+        id: build-image
+        env:
+          DB_USERNAME: ${{ secrets.DB_USERNAME }}
+          DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+          SMTP_USER: ${{ secrets.SMTP_USER }}
+          SMTP_PASSWORD: ${{ secrets.SMTP_PASSWORD }}
+          RECAPTCHA_SECRET_KEY: ${{ secrets.RECAPTCHA_SECRET_KEY }}
+          RECAPTHCA_SITEKEY: ${{ secrets.RECAPTHCA_SITEKEY }}
+        run: |
+          envsubst < .env.template > .env
+          cat .env
 
       - name: Upload .env to config bucket
         uses: zdurham/s3-upload-github-action@master

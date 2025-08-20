@@ -34,6 +34,7 @@ jobs:
       version-file: apps/be/project.json
       dockerfile: deployments/dockerfiles/backend.Dockerfile
       ecr-repository: qapp-dev-backend
+      push-config: true
       task-definition: deployments/tasks/demo/backend.json
       task-container-name: backend-app
 
