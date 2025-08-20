@@ -155,7 +155,7 @@ label {
   }
   
   .border-b-inset-6::after {
-    @apply absolute bottom-0 left-6 right-6 h-0.5 bg-gray-100;
+    @apply absolute bottom-0 left-5 right-5 h-[1px] bg-gray-100;
     content: '';
   }
   
