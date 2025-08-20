@@ -56,8 +56,9 @@ jobs:
           echo "DOCKERFILE=$DOCKERFILE" >> $GITHUB_ENV
           echo "Using Dockerfile: $DOCKERFILE"
 
+
       - name: Substitute DotEnv Configurations
-        id: build-image
+        id: dotenv-sub
         env:
           DB_USERNAME: ${{ secrets.DB_USERNAME }}
           DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
@@ -68,6 +69,7 @@ jobs:
         run: |
           envsubst < .env.template > .env
           cat .env
+
 
       - name: Upload .env to config bucket
         if: ${{ inputs.push-config }}
