@@ -27,7 +27,7 @@ jobs:
 
   Build_Deploy-Backend:
     # if: ${{ startsWith(github.ref_name, 'backend-') }}
-    uses: ./.github/workflows/cicd.yaml
+    uses: ./.github/workflows/ci.yaml
     secrets: inherit
     with:
       build-env: demo
@@ -39,7 +39,7 @@ jobs:
 
   Build_Deploy-Backoffice:
     # if: ${{ startsWith(github.ref_name, 'backoffice-') }}
-    uses: ./.github/workflows/cicd.yaml
+    uses: ./.github/workflows/ci.yaml
     secrets: inherit
     with:
       build-env: demo
@@ -51,7 +51,7 @@ jobs:
 
   Build_Deploy-Client:
     # if: ${{ startsWith(github.ref_name, 'client-') }}
-    uses: ./.github/workflows/cicd.yaml
+    uses: ./.github/workflows/ci.yaml
     secrets: inherit
     with:
       build-env: demo
