@@ -57,12 +57,12 @@ jobs:
       - name: Build Docker Image
         id: build-image
         env:
-          DB_USERNAME=${{ secrets.DB_USERNAME }}
-          DB_PASSWORD=${{ secrets.DB_PASSWORD }}
-          SMTP_USER=${{ secrets.SMTP_USER }}
-          SMTP_PASSWORD=${{ secrets.SMTP_PASSWORD }}
-          RECAPTCHA_SECRET_KEY=${{ secrets.RECAPTCHA_SECRET_KEY }}
-          RECAPTHCA_SITEKEY=${{ secrets.RECAPTHCA_SITEKEY }}
+          DB_USERNAME: ${{ secrets.DB_USERNAME }}
+          DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+          SMTP_USER: ${{ secrets.SMTP_USER }}
+          SMTP_PASSWORD: ${{ secrets.SMTP_PASSWORD }}
+          RECAPTCHA_SECRET_KEY: ${{ secrets.RECAPTCHA_SECRET_KEY }}
+          RECAPTHCA_SITEKEY: ${{ secrets.RECAPTHCA_SITEKEY }}
         run: |
           envsubst < .env.template > .env
           cat .env
