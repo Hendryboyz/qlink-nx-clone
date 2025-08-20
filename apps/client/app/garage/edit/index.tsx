@@ -110,7 +110,6 @@ export default function GarageEdit({ data, onCancel, onRemove }: Props) {
     if (!editingKey) return;
 
     const updateData: UpdateProductData = {};
-    // @ts-expect-error Type assertion for dynamic key
     updateData[editingKey as keyof UpdateProductData] = savingValue;
 
     try {
