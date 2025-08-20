@@ -79,7 +79,7 @@ jobs:
           FILE: .env
           AWS_REGION: ${{ env.AWS_REGION }}
           S3_BUCKET: ${{ env.AWS_S3_CONFIG_BUCKET }}
-          S3_KEY: .test.env
+          S3_KEY: ${{ env.DOTENV_CONFIG }}
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
 
