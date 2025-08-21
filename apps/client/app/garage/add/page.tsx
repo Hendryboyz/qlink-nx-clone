@@ -28,7 +28,7 @@ const CreateSchema = Yup.object().shape({
 });
 interface FormData {
   model: string;
-  year: number | '0000';
+  year: number | string;
   vin: string;
   dealerName: string;
   engineNumber: string;
@@ -40,42 +40,50 @@ type Columns = {
   [k in KEY]: {
     title: string;
     type?: string;
+    placeholder?: string;
   };
 };
 const defaultValue: FormData = {
   model: '',
-  year: '0000',
-  vin: '0000',
-  dealerName: 'X',
-  engineNumber: '0000',
+  year: '',
+  vin: '',
+  dealerName: '',
+  engineNumber: '',
   purchaseDate: '0000-00-00',
-  registrationDate: '0000-00-00',
+  registrationDate: new Date().toISOString().split('T')[0],
 };
 const ATTRS: Columns = {
   model: {
     title: 'Model',
     type: 'select',
+    placeholder: 'Please select a model',
   },
   year: {
     title: 'Year',
     type: 'number',
+    placeholder: 'Enter year (e.g. 2024)',
   },
   vin: {
     title: 'VIN No.',
+    placeholder: 'Enter VIN number',
   },
   engineNumber: {
     title: 'Engine Serial No.',
+    placeholder: 'Enter engine serial number',
   },
   purchaseDate: {
     title: 'Purchase Date',
-    type: 'date'
+    type: 'date',
+    placeholder: 'Select purchase date (YYYY-MM-DD)'
   },
   registrationDate: {
     title: 'Registration Date',
-    type: 'date'
+    type: 'date',
+    placeholder: 'Select registration date'
   },
   dealerName: {
     title: 'Dealer Name',
+    placeholder: 'Enter dealer name',
   },
 };
 export default function GarageAdd() {
@@ -170,34 +178,34 @@ export default function GarageAdd() {
                             {({ field, form }: any) => {
                               const [isOpen, setIsOpen] = useState(false);
                               const selectedModel = models.find(m => String(m.id) === String(field.value));
-                              const displayValue = selectedModel ? selectedModel.title : 'X';
-                              
+                              const displayValue = selectedModel ? selectedModel.title : (data.placeholder || 'X');
+
                               return (
                                 <div className="relative">
-                                  <div 
+                                  <div
                                     className="flex justify-between items-center cursor-pointer w-full"
                                     onClick={() => setIsOpen(!isOpen)}
                                   >
-                                    <span 
-                                      className="text-base font-semibold text-gray-500"
-                                      style={{ 
+                                    <span
+                                      className={`text-base ${selectedModel ? 'font-semibold text-gray-500' : 'font-normal text-gray-400'}`}
+                                      style={{
                                         display: 'inline-block',
                                         minHeight: '1rem'
                                       }}
                                     >
                                       {displayValue}
                                     </span>
-                                    <img 
-                                      src="/assets/chevron_down.svg" 
+                                    <img
+                                      src="/assets/chevron_down.svg"
                                       className="flex-shrink-0"
                                       alt="dropdown arrow"
                                     />
                                   </div>
-                                  
+
                                   {isOpen && (
                                     <>
-                                      <div 
-                                        className="fixed inset-0 z-40" 
+                                      <div
+                                        className="fixed inset-0 z-40"
                                         onClick={() => setIsOpen(false)}
                                       />
                                       <div className="absolute top-6 left-0 z-50 bg-white border border-gray-200 rounded-lg shadow-lg max-h-60 overflow-y-auto min-w-max whitespace-nowrap">
@@ -224,7 +232,8 @@ export default function GarageAdd() {
                           <div className="garage-date-field">
                             <DateField
                               name={key}
-                              defaultDisplayValue="0000-00-00"
+                              defaultDisplayValue={data.placeholder || "0000-00-00"}
+                              placeholder={data.placeholder}
                               className="text-base pl-0 font-semibold text-gray-500"
                             />
                           </div>
@@ -233,8 +242,8 @@ export default function GarageAdd() {
                             id={key}
                             name={key}
                             type={data.type || 'text'}
-                            className="text-base font-semibold text-gray-500 outline-none focus:outline-none border-none focus:border-none focus:ring-0"
-                            placeholder=""
+                            className="text-base font-semibold text-gray-500 placeholder:text-gray-400 placeholder:font-normal outline-none focus:outline-none border-none focus:border-none focus:ring-0"
+                            placeholder={data.placeholder || ""}
                           />
                         }
                         <ErrorMessage

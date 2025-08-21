@@ -126,8 +126,10 @@ const DateField: React.FC<DateFieldProps> = ({
         /* Custom display div */
         <div
           className={`cursor-pointer w-full min-h-[48px] flex items-center ${
-            field.value && field.value !== '0000-00-00' ? '' : 'text-gray-400'
-          } ${className}`}
+            field.value && field.value !== '0000-00-00' 
+              ? className 
+              : 'text-base pl-0 text-gray-400 font-normal'
+          }`}
           onClick={handleClick}
           onDoubleClick={handleDoubleClick}
           style={{ textAlign: 'left' }}
