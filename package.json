@@ -11,7 +11,6 @@
     "validate": "node db_migration/flyway.js validate",
     "baseline": "node db_migration/flyway.js baseline",
     "repair": "node db_migration/flyway.js repair",
-    "release-backend": "release-it --config apps/be/.release-it.json",
     "release-client": "release-it --config apps/client/.release-it.json",
     "release-bo": "release-it --config apps/bo/.release-it.json"
   },

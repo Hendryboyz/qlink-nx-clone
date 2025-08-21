@@ -25,8 +25,8 @@ jobs:
           ls ${{ github.workspace }}
       - run: echo "🍏 This job's status is ${{ job.status }}."
 
-  Build_Deploy-Backend:
-    if: ${{ startsWith(github.ref_name, 'backoffice-') || startsWith(github.ref, 'client-') }}
+  Build-Backend:
+    if: ${{ startsWith(github.ref_name, 'backend-') }}
     uses: ./.github/workflows/ci.yaml
     secrets: inherit
     with:
@@ -38,7 +38,7 @@ jobs:
       task-definition: deployments/tasks/demo/backend.json
       task-container-name: backend-app
 
-  Build_Deploy-Backoffice:
+  Build-Backoffice:
     if: ${{ startsWith(github.ref_name, 'backoffice-') }}
     uses: ./.github/workflows/ci.yaml
     secrets: inherit
@@ -50,7 +50,7 @@ jobs:
       task-definition: deployments/tasks/demo/backoffice.json
       task-container-name: backoffice-app
 
-  Build_Deploy-Client:
+  Build-Client:
     if: ${{ startsWith(github.ref_name, 'client-') }}
     uses: ./.github/workflows/ci.yaml
     secrets: inherit
