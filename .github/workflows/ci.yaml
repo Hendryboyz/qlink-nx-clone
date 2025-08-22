@@ -17,15 +17,6 @@ on:
         type: string
       push-config:
         type: boolean
-      task-definition:
-        required: true
-        type: string
-      task-container-name:
-        required: true
-        type: string
-
-env:
-  AWS_REGION: ap-northeast-1
 
 jobs:
   Build-and-Push-Image:
@@ -41,7 +32,7 @@ jobs:
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ${{ env.AWS_REGION }}
+          aws-region: ${{ vars.AWS_REGION }}
 
       - name: Login to Amazon ECR
         id: login-ecr
@@ -56,7 +47,6 @@ jobs:
           echo "DOCKERFILE=$DOCKERFILE" >> $GITHUB_ENV
           echo "Using Dockerfile: $DOCKERFILE"
 
-
       - name: Substitute DotEnv Configurations
         id: dotenv-sub
         env:
@@ -69,7 +59,6 @@ jobs:
         run: |
           envsubst < .env.template > .env
           cat .env
-
 
       - name: Upload .env to config bucket
         if: ${{ inputs.push-config }}
@@ -98,11 +87,3 @@ jobs:
           echo "image=$IMAGE_TAG" >> $GITHUB_OUTPUT
           # push the built image to ecr repository
           docker push $IMAGE_TAG
-
-#      - name: Fill in the new image ID in the Amazon ECS task definition
-#        id: task-def
-#        uses: aws-actions/amazon-ecs-render-task-definition@v1
-#        with:
-#          task-definition: ${{ inputs.task-definition }}
-#          container-name: ${{ inputs.task-container-name }}
-#          image: ${{ steps.build-image.outputs.image }}

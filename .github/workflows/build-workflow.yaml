@@ -1,4 +1,4 @@
-name: QApp Build & Deploy
+name: QApp Build
 run-name: ${{ github.actor }} is running qapp build & deployment for demo 🚀
 on:
   workflow_dispatch:
