@@ -48,7 +48,7 @@ jobs:
       task-definition: deployments/tasks/demo/backend.json
       task-container-name: backend-app
       ecs-service: qapp-dev-backend-service
-      dry-run: true
+#      dry-run: true
 
 #  Build-Backoffice:
 #    uses: ./.github/workflows/ci.yaml
