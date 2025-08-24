@@ -191,7 +191,7 @@ export default function GarageEdit({ data, onCancel, onRemove }: Props) {
         customBackAction={onCancel}
       />
       <div className="md:px-36">
-        <div className="mt-3 pl-2">
+        <div className="mt-4 pl-1">
           <Editable
             key="id"
             editKey="id"

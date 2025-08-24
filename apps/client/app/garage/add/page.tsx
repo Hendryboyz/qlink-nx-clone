@@ -162,17 +162,17 @@ export default function GarageAdd() {
               customBackAction={() => { router.push('/garage'); }}
             />
             <div className="md:px-36">
-              <div className="mt-6 pl-2">
+              <div className="mt-4 pl-1">
                 {(Object.entries(ATTRS) as [KEY, Columns[KEY]][]).map(
                 ([key, data]) => {
                   return (
                     <div
-                      className="flex justify-between items-center min-h-[3.1875rem] pl-[1.25rem] pr-[1.25rem] border-b-inset-6"
+                      className="flex justify-between items-center min-h-[3.375rem] pl-[1.25rem] pr-[1.25rem] border-b-inset-6"
                       key={key}
                     >
                       <div className="flex flex-col text-gray-400 flex-1">
                         <span className="text-xs font-gilroy-regular text-[12px] text-[#D70127]">{data.title}</span>
-                        <div className="h-auto min-h-4 flex flex-col content-around -mt-1">
+                        <div className="h-auto min-h-4 flex flex-col content-around mt-[2px]">
                         {data.type == 'select' ? (
                           <Field name={key}>
                             {({ field, form }: any) => {
