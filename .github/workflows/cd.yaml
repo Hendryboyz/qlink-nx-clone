@@ -17,9 +17,6 @@ on:
       task-container-name:
         required: true
         type: string
-      ecs-cluster:
-        required: true
-        type: string
       ecs-service:
         required: true
         type: string
@@ -61,6 +58,7 @@ jobs:
       - name: Debug Task Definition Render Result
         if: ${{ inputs.dry-run }}
         run: |
+          echo "Deploy following task definition to ${{ vars.ECS_CLUSTER }}/${{ inputs.ecs-service }}"
           echo ${{ steps.render-task-def.outputs.task-definition }}
 
 
@@ -71,5 +69,5 @@ jobs:
         with:
           task-definition: ${{ steps.render-task-def.outputs.task-definition }}
           service: ${{ inputs.ecs-service }}
-          cluster: ${{ inputs.ecs-cluster }}
+          cluster: ${{ vars.ECS_CLUSTER }}
           wait-for-service-stability: true

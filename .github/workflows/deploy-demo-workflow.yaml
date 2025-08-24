@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
   push:
     branches:
-      - release
+      - cicd/poc
 jobs:
   Explore-Workflow-Status:
     runs-on: ubuntu-latest
@@ -20,3 +20,15 @@ jobs:
         run: |
           ls ${{ github.workspace }}
       - run: echo "🍏 This job's status is ${{ job.status }}."
+  Build-Backend:
+    uses: ./.github/workflows/cd.yaml
+    secrets: inherit
+    with:
+      build-env: demo
+      version-file: apps/be/project.json
+      dockerfile: deployments/dockerfiles/backend.Dockerfile
+      ecr-repository: qapp-dev-backend
+      task-definition: deployments/tasks/demo/backend.json
+      task-container-name: backend-app
+      ecs-service: qapp-dev-backend-service
+      dry-run: true
