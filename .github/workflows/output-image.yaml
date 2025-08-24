@@ -1,5 +1,5 @@
-name: Build application image workflow
-run-name: Run image build
+name: Output image workflow
+
 on:
   workflow_call:
     inputs:
@@ -19,16 +19,27 @@ on:
         type: boolean
     outputs:
       imagetag:
-        value: ${{ jobs.Build-and-Push-Image.outputs.image_version }}
-        description: "the image version that build and push by the CI workflow"
+        value: ${{ jobs.example_job.outputs.image_version }}
+        description: "the image build and push by the CI workflow"
+      image:
+        value: ${{ jobs.example_job.outputs.image }}
+        description: "the image build and push by the CI workflow"
+      firstword:
+        description: "The first output string"
+        value: ${{ jobs.example_job.outputs.output1 }}
+      secondworld:
+        description: "The second output string"
+        value: "world"
 
 jobs:
-  Build-and-Push-Image:
+  example_job:
     name: Build & Push Docker Image
     runs-on: ubuntu-latest
     environment: ${{ inputs.build-env }}
     outputs:
+      output1: ${{ steps.build-image.outputs.firstword }}
       image_version: ${{ steps.build-image.outputs.image_version }}
+      image: ${{ steps.build-image.outputs.image }}
     steps:
       - name: Checkout Code
         uses: actions/checkout@v3
@@ -65,17 +76,6 @@ jobs:
         run: |
           envsubst < .env.template > .env
 
-      - name: Upload .env to config bucket
-        if: ${{ inputs.push-config }}
-        uses: zdurham/s3-upload-github-action@master
-        env:
-          FILE: .env
-          AWS_REGION: ${{ env.AWS_REGION }}
-          S3_BUCKET: ${{ env.AWS_S3_CONFIG_BUCKET }}
-          S3_KEY: ${{ env.DOTENV_CONFIG }}
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-
       - name: Build Docker Image
         id: build-image
         run: |
@@ -83,9 +83,9 @@ jobs:
           if [ -n "${{ inputs.version-file }}" ] ;then
             VERSION=$(grep '"version"' ${{ inputs.version-file }} | sed 's/.*"version":\ "\(.*\)",/\1/')
           fi
-          IMAGE_TAG=${{ steps.login-ecr.outputs.registry }}/${{ inputs.ecr-repository }}:$VERSION
           cat .env
-          docker buildx build --platform=linux/amd64 -t $IMAGE_TAG -f ${{ env.DOCKERFILE }} .
+          IMAGE_TAG=${{ steps.login-ecr.outputs.registry }}/${{ inputs.ecr-repository }}:$VERSION
+          echo "image_version=$VERSION"
           echo "image_version=$VERSION" >> $GITHUB_OUTPUT
-          # push the built image to ecr repository
-          docker push $IMAGE_TAG
+          echo "image=$IMAGE_TAG" >> $GITHUB_OUTPUT
+          echo "firstword=hello" >> $GITHUB_OUTPUT

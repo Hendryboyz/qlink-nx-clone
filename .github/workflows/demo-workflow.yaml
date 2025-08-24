@@ -32,13 +32,10 @@ jobs:
       push-config: true
 
   Check-Build-Backend-Result:
-    needs: Build-Backend
     runs-on: ubuntu-latest
+    needs: Build-Backend
     steps:
-      - name: Echo
-        run: |
-          OUTPUT=${{ needs.Build-Backend.outputs.image }}
-          echo $OUTPUT
+      - run: echo ${{ needs.Build-Backend.outputs.imagetag }}
 
   Deploy-Backend:
     needs: [Build-Backend, Check-Build-Backend-Result]
@@ -46,27 +43,26 @@ jobs:
     secrets: inherit
     with:
       build-env: demo
-      #      version-file: apps/be/project.json
-      deploy-image: ${{ needs.Build-Backend.outputs.image }}
+      deploy-version: ${{ needs.Build-Backend.outputs.imagetag }}
       ecr-repository: qapp-dev-backend
       task-definition: deployments/tasks/demo/backend.json
       task-container-name: backend-app
       ecs-service: qapp-dev-backend-service
-  #      dry-run: true
+      dry-run: true
 
-  Build-Backoffice:
-    uses: ./.github/workflows/ci.yaml
-    secrets: inherit
-    with:
-      build-env: demo
-      dockerfile: deployments/dockerfiles/bo.Dockerfile
-      ecr-repository: qapp-dev-backoffice
-
-  Build-Client:
-    uses: ./.github/workflows/ci.yaml
-    secrets: inherit
-    with:
-      build-env: demo
-      dockerfile: deployments/dockerfiles/client.Dockerfile
-      ecr-repository: qapp-dev-client
+#  Build-Backoffice:
+#    uses: ./.github/workflows/ci.yaml
+#    secrets: inherit
+#    with:
+#      build-env: demo
+#      dockerfile: deployments/dockerfiles/bo.Dockerfile
+#      ecr-repository: qapp-dev-backoffice
+#
+#  Build-Client:
+#    uses: ./.github/workflows/ci.yaml
+#    secrets: inherit
+#    with:
+#      build-env: demo
+#      dockerfile: deployments/dockerfiles/client.Dockerfile
+#      ecr-repository: qapp-dev-client
 

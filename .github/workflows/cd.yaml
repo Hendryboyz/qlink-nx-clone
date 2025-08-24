@@ -5,7 +5,7 @@ on:
       build-env:
         required: true
         type: string
-      deploy-image:
+      deploy-version:
         required: true
         type: string
       ecr-repository:
@@ -38,6 +38,16 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ vars.AWS_REGION }}
 
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v1
+
+      - name: Prepare the Variables for Deployment Steps
+        id: prep-vars
+        run: |
+          IMAGE_TAG=${{ steps.login-ecr.outputs.registry }}/${{ inputs.ecr-repository }}:${{ inputs.deploy-version }}
+          echo "image=$IMAGE_TAG" >> $GITHUB_OUTPUT
+
 # Render Action Repo: https://github.com/aws-actions/amazon-ecs-render-task-definition
       - name: Fill in the new image ID in the Amazon ECS task definition
         id: render-task-def
@@ -45,7 +55,7 @@ jobs:
         with:
           task-definition: ${{ inputs.task-definition }}
           container-name: ${{ inputs.task-container-name }}
-          image: ${{ inputs.deploy-image }}
+          image: ${{ steps.prep-vars.outputs.image }}
 
       - name: Debug Task Definition Render Result
         if: ${{ inputs.dry-run }}
@@ -53,6 +63,7 @@ jobs:
           echo "Deploy following task definition to ${{ vars.ECS_CLUSTER }}/${{ inputs.ecs-service }}"
           echo ${{ steps.render-task-def.outputs.task-definition }}
           cat ${{ steps.render-task-def.outputs.task-definition }}
+
 
 # Deploy Action Repo: https://github.com/aws-actions/amazon-ecs-deploy-task-definition
       - name: Deploy to ECS cluster
