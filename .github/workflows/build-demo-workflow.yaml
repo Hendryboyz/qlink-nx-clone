@@ -4,14 +4,13 @@ on:
   workflow_dispatch:
   push:
     branches:
-      - release
+      - cicd/poc
 jobs:
   Build-Backend:
     uses: ./.github/workflows/ci.yaml
     secrets: inherit
     with:
       build-env: demo
-      version-file: apps/be/project.json
       dockerfile: deployments/dockerfiles/backend.Dockerfile
       ecr-repository: qapp-dev-backend
       push-config: true
@@ -21,7 +20,6 @@ jobs:
     secrets: inherit
     with:
       build-env: demo
-      version-file: apps/bo/project.json
       dockerfile: deployments/dockerfiles/bo.Dockerfile
       ecr-repository: qapp-dev-backoffice
 
@@ -31,7 +29,6 @@ jobs:
     secrets: inherit
     with:
       build-env: demo
-      version-file: apps/client/project.json
       dockerfile: deployments/dockerfiles/client.Dockerfile
       ecr-repository: qapp-dev-client
 

@@ -10,7 +10,7 @@ on:
         required: true
         type: string
       version-file:
-        required: true
+        required: false
         type: string
       ecr-repository:
         required: true
@@ -81,7 +81,10 @@ jobs:
           RECAPTCHA_SECRET_KEY: ${{ secrets.RECAPTCHA_SECRET_KEY }}
           RECAPTHCA_SITEKEY: ${{ secrets.RECAPTHCA_SITEKEY }}
         run: |
-          VERSION=$(grep '"version"' ${{ inputs.version-file }} | sed 's/.*"version":\ "\(.*\)",/\1/')
+          VERSION=latest
+          if [ -n "${{ inputs.version-file }}" ] ;then
+            VERSION=$(grep '"version"' ${{ inputs.version-file }} | sed 's/.*"version":\ "\(.*\)",/\1/')
+          fi
           IMAGE_TAG=${{ steps.login-ecr.outputs.registry }}/${{ inputs.ecr-repository }}:$VERSION
           docker buildx build --platform=linux/amd64 -t $IMAGE_TAG -f ${{ env.DOCKERFILE }} .
           echo "image=$IMAGE_TAG" >> $GITHUB_OUTPUT
