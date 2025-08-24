@@ -1,4 +1,4 @@
-name: Deploy to Production
+name: QLink Demo Site Build/Deploy
 run-name: ${{ github.actor }} is running qapp build & deployment for demo 🚀
 on:
   workflow_dispatch:
@@ -20,14 +20,44 @@ jobs:
         run: |
           ls ${{ github.workspace }}
       - run: echo "🍏 This job's status is ${{ job.status }}."
+
   Build-Backend:
+    name: build-backend
+    uses: ./.github/workflows/ci.yaml
+    secrets: inherit
+    with:
+      build-env: demo
+      dockerfile: deployments/dockerfiles/backend.Dockerfile
+      ecr-repository: qapp-dev-backend
+      push-config: true
+
+  Deploy-Backend:
+    needs: [Build-Backend]
     uses: ./.github/workflows/cd.yaml
     secrets: inherit
     with:
       build-env: demo
-#      version-file: apps/be/project.json
+      #      version-file: apps/be/project.json
+      deploy-image: ${{ needs.Build-Backend.outputs.image }}
       ecr-repository: qapp-dev-backend
       task-definition: deployments/tasks/demo/backend.json
       task-container-name: backend-app
       ecs-service: qapp-dev-backend-service
-#      dry-run: true
+  #      dry-run: true
+
+  Build-Backoffice:
+    uses: ./.github/workflows/ci.yaml
+    secrets: inherit
+    with:
+      build-env: demo
+      dockerfile: deployments/dockerfiles/bo.Dockerfile
+      ecr-repository: qapp-dev-backoffice
+
+  Build-Client:
+    uses: ./.github/workflows/ci.yaml
+    secrets: inherit
+    with:
+      build-env: demo
+      dockerfile: deployments/dockerfiles/client.Dockerfile
+      ecr-repository: qapp-dev-client
+

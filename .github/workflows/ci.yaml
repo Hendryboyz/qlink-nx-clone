@@ -17,6 +17,10 @@ on:
         type: string
       push-config:
         type: boolean
+    outputs:
+      image:
+        value: ${{ jobs.build-image.image }}
+        description: the image build and push by the CI workflow
 
 jobs:
   Build-and-Push-Image:

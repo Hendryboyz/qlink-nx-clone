@@ -7,7 +7,6 @@
             "memory": 512,
             "portMappings": [
                 {
-                    "name": "backend-app-3000-tcp",
                     "containerPort": 3000,
                     "hostPort": 3000,
                     "protocol": "tcp"
