@@ -19,7 +19,7 @@ on:
         type: boolean
     outputs:
       image:
-        value: ${{ jobs.build-image.image }}
+        value: ${{ jobs.Build-and-Push-Image.outputs.image }}
         description: the image build and push by the CI workflow
 
 jobs:
@@ -27,6 +27,8 @@ jobs:
     name: Build & Push Docker Image
     runs-on: ubuntu-latest
     environment: ${{ inputs.build-env }}
+    outputs:
+      image: ${{ steps.build-image.outputs.image }}
     steps:
       - name: Checkout Code
         uses: actions/checkout@v3
