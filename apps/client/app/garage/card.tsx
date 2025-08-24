@@ -99,7 +99,7 @@ const ProductCard = ({ data, handleEdit }: { data: ProductVO, handleEdit: (data:
         </div>
 
         <div className="ml-9 mb-2 self-end">
-          <p className="text-xl font-light text-white font-gilroy-light">{data.year}</p>
+          <p className="text-xl text-white font-[GilroyLight]">{data.year}</p>
           <h2 className="text-3xl font-gilroy-heavy text-primary-500 -mt-2">{modelDefined ? modelDefined.title : model}</h2>
         </div>
         <img
