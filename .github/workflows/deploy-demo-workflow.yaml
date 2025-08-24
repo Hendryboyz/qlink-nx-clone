@@ -25,9 +25,9 @@ jobs:
     secrets: inherit
     with:
       build-env: demo
-      version-file: apps/be/project.json
+#      version-file: apps/be/project.json
       ecr-repository: qapp-dev-backend
       task-definition: deployments/tasks/demo/backend.json
       task-container-name: backend-app
       ecs-service: qapp-dev-backend-service
-      dry-run: true
+#      dry-run: true
