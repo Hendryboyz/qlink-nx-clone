@@ -31,8 +31,17 @@ jobs:
       ecr-repository: qapp-dev-backend
       push-config: true
 
+  Check-Build-Backend-Result:
+    needs: Build-Backend
+    runs-on: ubuntu-latest
+    steps:
+      - name: Echo
+        run: |
+          OUTPUT=${{ needs.Build-Backend.outputs.image }}
+          echo $OUTPUT
+
   Deploy-Backend:
-    needs: [Build-Backend]
+    needs: [Build-Backend, Check-Build-Backend-Result]
     uses: ./.github/workflows/cd.yaml
     secrets: inherit
     with:

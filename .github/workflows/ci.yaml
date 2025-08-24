@@ -20,7 +20,7 @@ on:
     outputs:
       image:
         value: ${{ jobs.Build-and-Push-Image.outputs.image }}
-        description: the image build and push by the CI workflow
+        description: "the image build and push by the CI workflow"
 
 jobs:
   Build-and-Push-Image:
@@ -93,6 +93,6 @@ jobs:
           fi
           IMAGE_TAG=${{ steps.login-ecr.outputs.registry }}/${{ inputs.ecr-repository }}:$VERSION
           docker buildx build --platform=linux/amd64 -t $IMAGE_TAG -f ${{ env.DOCKERFILE }} .
-          echo "image=$IMAGE_TAG" >> $GITHUB_OUTPUT
+          echo "image=$IMAGE_TAG" >> "$GITHUB_OUTPUT"
           # push the built image to ecr repository
           docker push $IMAGE_TAG
