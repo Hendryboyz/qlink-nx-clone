@@ -6,7 +6,6 @@ on:
         required: true
         type: string
       version-file:
-        required: true
         type: string
       ecr-repository:
         required: true
@@ -45,7 +44,10 @@ jobs:
       - name: Prepare the Variables for Deployment Steps
         id: prep-vars
         run: |
-          VERSION=$(grep '"version"' ${{ inputs.version-file }} | sed 's/.*"version":\ "\(.*\)",/\1/')
+          VERSION=latest
+          if [ -n "${{ inputs.version-file }}" ] ;then
+            VERSION=$(grep '"version"' ${{ inputs.version-file }} | sed 's/.*"version":\ "\(.*\)",/\1/')
+          fi
           IMAGE_TAG=${{ steps.login-ecr.outputs.registry }}/${{ inputs.ecr-repository }}:$VERSION
           echo "image=$IMAGE_TAG" >> $GITHUB_OUTPUT
 
