@@ -45,9 +45,9 @@ const Detail: NextPage<Props> = ({ params }) => {
             <h1 className="font-gilroy-bold text-xl pl-5 pb-3 pr-7 leading-tight">{post.title}</h1>
           </div>
           <div className="px-[20px] py-6 w-screen max-w-screen overflow-x-hidden">
-            <div className="mb-3 font-gilroy-medium text-base">{fromDateWithSlash(new Date(post.createdAt))}</div>
+            <div className="mb-3 font-[GilroyMedium] text-base">{fromDateWithSlash(new Date(post.createdAt))}</div>
             <div
-              className="font-gilroy-regular text-base tracking-[0px] font-bold leading-[1.2] break-words hyphens-auto"
+              className="font-gilroy-regular text-base tracking-[0px] leading-[1.2] break-words hyphens-auto"
               dangerouslySetInnerHTML={{ __html: post.content }}
             />
           </div>

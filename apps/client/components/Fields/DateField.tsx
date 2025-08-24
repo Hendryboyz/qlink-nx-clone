@@ -126,11 +126,11 @@ const DateField: React.FC<DateFieldProps> = ({
         /* Custom display div */
         <div
           className={`cursor-pointer w-full min-h-[48px] flex items-center ${
-            field.value && field.value !== '0000-00-00' 
-              ? className 
-              : className.includes('bg-white') 
+            field.value && field.value !== '0000-00-00'
+              ? className
+              : className.includes('bg-white')
                 ? className.replace(/text-\w+-\d+/g, 'text-gray-400').replace(/font-\w+/g, 'font-normal')
-                : 'text-base pl-0 text-gray-400 font-normal'
+                : 'text-base pl-0 text-gray-400 font-[GilroyRegular]'
           }`}
           onClick={handleClick}
           onDoubleClick={handleDoubleClick}

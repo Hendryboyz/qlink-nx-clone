@@ -145,7 +145,7 @@ const Step2 = (props: Props) => {
         </div>
         {isExpired ? (
           <div className="text-center mt-6">
-            <h4 className="text-[#DF6B00] text-[13px] font-gilroy-medium font-normal leading-[100%] tracking-[0%]">
+            <h4 className="text-[#DF6B00] text-[13px] font-[GilroyMedium] font-normal leading-[100%] tracking-[0%]">
               Verification expired.{' '}
               <span
                 className="text-blue-600 hover:underline cursor-pointer"
@@ -158,13 +158,13 @@ const Step2 = (props: Props) => {
         ) : (
           <div className="h-[60px] flex items-center justify-center">
             {isActive? (
-              <h4 className="text-center text-[#DF6B00] text-[13px] font-gilroy-medium font-normal leading-[100%] tracking-[0%]">
+              <h4 className="text-center text-[#DF6B00] text-[13px] font-[GilroyMedium] font-normal leading-[100%] tracking-[0%]">
                 Didn&apos;t receive code?
                 <br />
                 Resend in {formatTime(countdown)}
               </h4>
             ) : (
-              <h4 className="text-center text-[#DF6B00] text-[13px] font-gilroy-medium font-normal leading-[100%] tracking-[0%] cursor-pointer"
+              <h4 className="text-center text-[#DF6B00] text-[13px] font-[GilroyMedium] font-normal leading-[100%] tracking-[0%] cursor-pointer"
                   onClick={handleResendOTP}>
                 Resend
               </h4>
@@ -172,7 +172,7 @@ const Step2 = (props: Props) => {
           </div>
         )}
       </div>
-      <div className="flex justify-between items-center mt-[6.375rem] font-gilroy-medium`">
+      <div className="flex justify-between items-center mt-[6.375rem] font-[GilroyMedium]`">
         <span className="text-xl text-red-600 hover:underline hover:cursor-pointer" onClick={props.goBack}>Back</span>
         <SubmitButton text="Next" isLoading={isLoading} onClick={handleSubmit} />
       </div>

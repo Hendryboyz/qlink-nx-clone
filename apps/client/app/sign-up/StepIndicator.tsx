@@ -22,10 +22,10 @@ const StepIndicator: React.FC<StepIndicatorProps> = ({ currentStep, steps }) => 
         <React.Fragment key={index}>
           <div className={`
             flex items-center justify-center
-            w-6 h-6 rounded-full border-2 text-xs
+            w-6 h-6 rounded-full border-2
             ${step < currentStep ? componentColor.bgActive : componentColor.bgInactive}
             ${step <= currentStep ? componentColor.active : `border ${componentColor.inactive}`}
-            font-bold text-xl
+            font-[GilroyMedium] text-[15px] leading-none
           `}>
             {(step < currentStep) ? (
               <img

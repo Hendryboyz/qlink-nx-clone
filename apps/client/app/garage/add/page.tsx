@@ -187,7 +187,7 @@ export default function GarageAdd() {
                                     onClick={() => setIsOpen(!isOpen)}
                                   >
                                     <span
-                                      className={`text-base ${selectedModel ? 'font-semibold text-gray-500' : 'font-normal text-gray-400'}`}
+                                      className={`text-base ${selectedModel ? 'font-[GilroySemiBold] text-gray-500' : 'font-[GilroyRegular] text-gray-400'}`}
                                       style={{
                                         display: 'inline-block',
                                         minHeight: '1rem'
@@ -234,7 +234,7 @@ export default function GarageAdd() {
                               name={key}
                               defaultDisplayValue={data.placeholder || "0000-00-00"}
                               placeholder={data.placeholder}
-                              className="text-base pl-0 font-semibold text-gray-500"
+                              className="text-base pl-0 font-[GilroySemiBold] text-gray-500"
                             />
                           </div>
                         ) :
@@ -242,7 +242,7 @@ export default function GarageAdd() {
                             id={key}
                             name={key}
                             type={data.type || 'text'}
-                            className="text-base font-semibold text-gray-500 placeholder:text-gray-400 placeholder:font-normal outline-none focus:outline-none border-none focus:border-none focus:ring-0"
+                            className="text-base font-[GilroySemiBold] text-gray-500 placeholder:text-gray-400 placeholder:font-normal outline-none focus:outline-none border-none focus:border-none focus:ring-0"
                             placeholder={data.placeholder || ""}
                           />
                         }

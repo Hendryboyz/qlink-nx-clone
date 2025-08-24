@@ -271,15 +271,16 @@ export default function GarageEdit({ data, onCancel, onRemove }: Props) {
           />
         </div>
         <div
-          className="flex items-center w-full justify-center mt-9 hover:cursor-pointer"
+          className="flex items-center w-full justify-center mt-6 hover:cursor-pointer"
           onClick={() => handleRemove()}
         >
-          <span className="text-primary-500 font-bold mr-2">
+          <span className="text-primary-500 text-sm font-[GilroyBold] mr-2 leading-none">
             Don&apos;t own the bike anymore?
           </span>
           <img
             alt="remove"
             src="/assets/trash.svg"
+            className="mb-[5px]"
           />
         </div>
       </div>

@@ -14,7 +14,7 @@ const StepIndicator: React.FC<StepIndicatorProps> = ({ currentStep, steps }) => 
             flex items-center justify-center
             w-12 h-12 rounded-sm
             ${index + 1 <= currentStep ? 'bg-primary text-white' : 'bg-white text-gray-500 border border-gray-300'}
-            font-bold text-xl
+            font-[GilroyMedium] text-[15px] leading-none
           `}>
             {index + 1}
           </div>
