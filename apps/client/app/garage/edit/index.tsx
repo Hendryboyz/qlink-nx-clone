@@ -90,6 +90,9 @@ type Props = {
   onCancel: () => void;
   onRemove: () => void;
 };
+
+const EDITABLE_MIN_HEIGHT = '3.375rem';
+
 export default function GarageEdit({ data, onCancel, onRemove }: Props) {
   const POPUP_BUTTON_STYLE = 'py-2 px-3 text-sm rounded-lg h-[30px] font-[GilroySemiBold]';
   const [models, setModels] = useState<ModelVO[]>([]);
@@ -190,11 +193,12 @@ export default function GarageEdit({ data, onCancel, onRemove }: Props) {
         customBackAction={onCancel}
       />
       <div className="md:px-36">
-        <div className="mt-3 pl-2">
+        <div className="mt-3 pl-1">
           <Editable
             key="id"
             editKey="id"
             title="Registration ID"
+            className={`min-h-[${EDITABLE_MIN_HEIGHT}]`}
             defaultValue={productData.id}
             isChangeAllowed={false}
           />
@@ -203,6 +207,7 @@ export default function GarageEdit({ data, onCancel, onRemove }: Props) {
             editKey="model"
             title="Model"
             type="dropdown"
+            className={`min-h-[${EDITABLE_MIN_HEIGHT}]`}
             defaultValue={String(productData.model)}
             saveChange={saveChange}
             isChangeAllowed={true}
@@ -216,6 +221,7 @@ export default function GarageEdit({ data, onCancel, onRemove }: Props) {
             editKey="year"
             title="Year"
             type="text"
+            className="min-h-[3.375rem]"
             defaultValue={productData.year?.toString()}
             saveChange={saveChange}
             validation={validationSchemas.year}
@@ -225,6 +231,7 @@ export default function GarageEdit({ data, onCancel, onRemove }: Props) {
             key="vin"
             editKey="vin"
             title="VIN No."
+            className={`min-h-[${EDITABLE_MIN_HEIGHT}]`}
             defaultValue={productData.vin}
             saveChange={saveChange}
             validation={validationSchemas.vin}
@@ -234,6 +241,7 @@ export default function GarageEdit({ data, onCancel, onRemove }: Props) {
             key="engineNumber"
             editKey="engineNumber"
             title="Engine Serial No."
+            className="min-h-[3.375rem]"
             defaultValue={productData.engineNumber}
             saveChange={saveChange}
             validation={validationSchemas.engineNumber}
@@ -244,6 +252,7 @@ export default function GarageEdit({ data, onCancel, onRemove }: Props) {
             editKey="purchaseDate"
             title="Purchase Date"
             type="date"
+            className={`min-h-[${EDITABLE_MIN_HEIGHT}]`}
             defaultValue={productData.purchaseDate}
             saveChange={saveChange}
             validation={validationSchemas.purchaseDate}
@@ -254,6 +263,7 @@ export default function GarageEdit({ data, onCancel, onRemove }: Props) {
             editKey="registrationDate"
             title="Registration Date"
             type="date"
+            className="min-h-[3.375rem]"
             defaultValue={productData.registrationDate}
             saveChange={saveChange}
             validation={validationSchemas.registrationDate}
@@ -263,6 +273,7 @@ export default function GarageEdit({ data, onCancel, onRemove }: Props) {
             key="dealerName"
             editKey="dealerName"
             title="Dealer Name"
+            className={`min-h-[${EDITABLE_MIN_HEIGHT}]`}
             defaultValue={productData.dealerName}
             saveChange={saveChange}
             validation={validationSchemas.dealerName}
@@ -270,15 +281,16 @@ export default function GarageEdit({ data, onCancel, onRemove }: Props) {
           />
         </div>
         <div
-          className="flex items-center w-full justify-center mt-9 hover:cursor-pointer"
+          className="flex items-center w-full justify-center mt-6 hover:cursor-pointer"
           onClick={() => handleRemove()}
         >
-          <span className="text-primary-500 font-bold mr-2">
+          <span className="text-primary-500 text-sm font-[GilroyBold] mr-2 leading-none">
             Don&apos;t own the bike anymore?
           </span>
           <img
             alt="remove"
             src="/assets/trash.svg"
+            className="mb-[5px]"
           />
         </div>
       </div>

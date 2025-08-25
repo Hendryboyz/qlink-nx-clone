@@ -99,7 +99,7 @@ const ProductCard = ({ data, handleEdit }: { data: ProductVO, handleEdit: (data:
         </div>
 
         <div className="ml-9 mb-2 self-end">
-          <p className="text-xl font-light text-white font-gilroy-light">{data.year}</p>
+          <p className="text-xl text-white font-[GilroyLight]">{data.year}</p>
           <h2 className="text-3xl font-gilroy-heavy text-primary-500 -mt-2">{modelDefined ? modelDefined.title : model}</h2>
         </div>
         <img
@@ -114,27 +114,27 @@ const ProductCard = ({ data, handleEdit }: { data: ProductVO, handleEdit: (data:
       <div className={`pt-4 px-6 bg-gray-700 text-white ${rowCss}`}>
         <div>
           <p className="title">Registration ID</p>
-          <p className="font-semibold">{id}</p>
+          <p className="font-[GilroySemiBold]">{id}</p>
         </div>
         <div>
           <p className="title">VIN Number</p>
-          <p className="font-semibold">{vin}</p>
+          <p className="font-[GilroySemiBold]">{vin}</p>
         </div>
         <div>
           <p className="title">Engine Serial Number</p>
-          <p className="font-semibold">{engineNumber}</p>
+          <p className="font-[GilroySemiBold]">{engineNumber}</p>
         </div>
         <div>
           <p className="title">Purchase Date</p>
-          <p className="font-semibold">{purchaseDate}</p>
+          <p className="font-[GilroySemiBold]">{purchaseDate}</p>
         </div>
         <div>
           <p className="title">Registration Date</p>
-          <p className="font-semibold">{registrationDate}</p>
+          <p className="font-[GilroySemiBold]">{registrationDate}</p>
         </div>
         <div className="border-b border-[#D9D9D9]">
           <p className="title">Dealer Name</p>
-          <p className="font-semibold">{dealerName}</p>
+          <p className="font-[GilroySemiBold]">{dealerName}</p>
         </div>
 
         </div>

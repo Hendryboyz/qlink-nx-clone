@@ -162,17 +162,17 @@ export default function GarageAdd() {
               customBackAction={() => { router.push('/garage'); }}
             />
             <div className="md:px-36">
-              <div className="mt-6 pl-2">
+              <div className="mt-4 pl-1">
                 {(Object.entries(ATTRS) as [KEY, Columns[KEY]][]).map(
                 ([key, data]) => {
                   return (
                     <div
-                      className="flex justify-between items-center min-h-[3.1875rem] pl-[1.25rem] pr-[1.25rem] border-b-inset-6"
+                      className="flex justify-between items-center min-h-[3.375rem] pl-[1.25rem] pr-[1.25rem] border-b-inset-6"
                       key={key}
                     >
                       <div className="flex flex-col text-gray-400 flex-1">
                         <span className="text-xs font-gilroy-regular text-[12px] text-[#D70127]">{data.title}</span>
-                        <div className="h-auto min-h-4 flex flex-col content-around -mt-1">
+                        <div className="h-auto min-h-4 flex flex-col content-around mt-[2px]">
                         {data.type == 'select' ? (
                           <Field name={key}>
                             {({ field, form }: any) => {
@@ -187,7 +187,7 @@ export default function GarageAdd() {
                                     onClick={() => setIsOpen(!isOpen)}
                                   >
                                     <span
-                                      className={`text-base ${selectedModel ? 'font-semibold text-gray-500' : 'font-normal text-gray-400'}`}
+                                      className={`text-base ${selectedModel ? 'font-[GilroySemiBold] text-gray-500' : 'font-[GilroyRegular] text-gray-400'}`}
                                       style={{
                                         display: 'inline-block',
                                         minHeight: '1rem'
@@ -234,7 +234,7 @@ export default function GarageAdd() {
                               name={key}
                               defaultDisplayValue={data.placeholder || "0000-00-00"}
                               placeholder={data.placeholder}
-                              className="text-base pl-0 font-semibold text-gray-500"
+                              className="text-base pl-0 font-[GilroySemiBold] text-gray-500"
                             />
                           </div>
                         ) :
@@ -242,7 +242,7 @@ export default function GarageAdd() {
                             id={key}
                             name={key}
                             type={data.type || 'text'}
-                            className="text-base font-semibold text-gray-500 placeholder:text-gray-400 placeholder:font-normal outline-none focus:outline-none border-none focus:border-none focus:ring-0"
+                            className="text-base font-[GilroySemiBold] text-gray-500 placeholder:text-gray-400 placeholder:font-normal outline-none focus:outline-none border-none focus:border-none focus:ring-0"
                             placeholder={data.placeholder || ""}
                           />
                         }

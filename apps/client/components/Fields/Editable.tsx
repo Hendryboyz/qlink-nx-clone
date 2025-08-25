@@ -20,9 +20,10 @@ type EditableProps = {
   isChangeAllowed: boolean;
   options?: Option[];
   saveChange?: (editingKey: string, savingValue: any) => void;
+  className?: string;
 }
 
-export default function Editable({editKey, title, type = 'text', defaultValue, validation, isChangeAllowed, options, saveChange }: EditableProps) {
+export default function Editable({editKey, title, type = 'text', defaultValue, validation, isChangeAllowed, options, saveChange, className }: EditableProps) {
   if (type === 'date' && defaultValue) {
     defaultValue = fromDate(new Date(defaultValue));
   }
@@ -254,17 +255,17 @@ export default function Editable({editKey, title, type = 'text', defaultValue, v
   };
 
   return (
-    <div className="flex justify-between items-center min-h-[3.1875rem] pl-[1.25rem] pr-[1.25rem] border-b-inset-6">
+    <div className={`flex justify-between items-center min-h-[3.1875rem] pl-[1.25rem] pr-[1.25rem] border-b-inset-6 ${className || ''}`}>
       <div className="flex flex-col text-gray-400">
         <span className="text-xs font-gilroy-regular text-[12px] text-[#D70127]">{title}</span>
-        <div className="h-auto min-h-4 flex flex-col content-around -mt-1">
+        <div className="h-auto min-h-4 flex flex-col content-around">
           {isEditing ? (
             <>
               <Input className="min-w-60 mr-1 text-lg h-6 py-0 outline-none focus:ring-0 focus:border-gray-300" />
               {error && <span className="text-red-600">{error}</span>}
             </>
           ) : (
-            <span className="font-semibold text-[1rem] min-h-[1rem] inline-block">
+            <span className="font-[GilroySemiBold] text-[1rem] min-h-[1rem] inline-block">
               {type === 'dropdown' && options && currentValue
                 ? options.find(opt => String(opt.value) === String(currentValue))?.label || currentValue
                 : currentValue || '\u00A0'}

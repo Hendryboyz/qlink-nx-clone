@@ -158,13 +158,13 @@ const Step2 = (props: Props) => {
         ) : (
           <div className="h-[60px] flex items-center justify-center">
             {isActive ? (
-              <h4 className="text-center text-[#FF7D7D] text-[13px] font-gilroy-medium font-normal leading-[100%] tracking-[0%]">
+              <h4 className="text-center text-[#FF7D7D] text-[13px] font-[GilroyMedium] font-normal leading-[100%] tracking-[0%]">
                 Didn&apos;t receive code?
                 <br />
                 Resend in {formatTime(countdown)}
               </h4>
             ) : (
-              <h4 className="text-center text-[#DF6B00] text-[13px] font-gilroy-medium font-normal leading-[100%] tracking-[0%] hover:cursor-pointer"
+              <h4 className="text-center text-[#DF6B00] text-[13px] font-[GilroyMedium] font-normal leading-[100%] tracking-[0%] hover:cursor-pointer"
                 onClick={handleResendOTP}
               >
                 Resend

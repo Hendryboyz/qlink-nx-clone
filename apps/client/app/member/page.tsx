@@ -103,7 +103,7 @@ export default function Member() {
           </div>
         </div>
         {user && (
-          <div className='mt-6 pl-2'>
+          <div className='mt-6 pl-1'>
             <Editable
               key="id"
               editKey="id"

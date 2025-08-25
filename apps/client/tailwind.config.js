@@ -13,6 +13,7 @@ module.exports = {
           'gilroy-semibold': ['GilroySemiBold', 'sans-serif'],
           'gilroy-black': ['GilroyBlack', 'sans-serif'],
           'gilroy-heavy': ['GilroyHeavy', 'sans-serif'],
+          'gilroy-light': ['GilroyLight', 'sans-serif'],
         },
         colors: {
           primary: {
