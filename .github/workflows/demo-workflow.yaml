@@ -30,15 +30,8 @@ jobs:
       dockerfile: deployments/dockerfiles/backend.Dockerfile
       ecr-repository: qapp-dev-backend
       push-config: true
-
-  Check-Build-Backend-Result:
-    runs-on: ubuntu-latest
-    needs: Build-Backend
-    steps:
-      - run: echo ${{ needs.Build-Backend.outputs.imagetag }}
-
   Deploy-Backend:
-    needs: [Build-Backend, Check-Build-Backend-Result]
+    needs: [Build-Backend]
     uses: ./.github/workflows/cd.yaml
     secrets: inherit
     with:
@@ -50,19 +43,42 @@ jobs:
       ecs-service: qapp-dev-backend-service
 #      dry-run: true
 
-#  Build-Backoffice:
-#    uses: ./.github/workflows/ci.yaml
+  Build-Backoffice:
+    uses: ./.github/workflows/ci.yaml
+    secrets: inherit
+    with:
+      build-env: demo
+      dockerfile: deployments/dockerfiles/bo.Dockerfile
+      ecr-repository: qapp-dev-backoffice
+  Deploy-Backoffice:
+    needs: Build-Backoffice
+    uses: ./.github/workflows/cd.yaml
+    secrets: inherit
+    with:
+      build-env: demo
+      deploy-version: ${{ needs.Build-Backoffice.outputs.imagetag }}
+      ecr-repository: qapp-dev-backoffice
+      task-definition: deployments/tasks/demo/backoffice.json
+      task-container-name: backoffice-app
+      ecs-service: qapp-dev-backoffice-service
+      dry-run: true
+
+  Build-Client:
+    uses: ./.github/workflows/ci.yaml
+    secrets: inherit
+    with:
+      build-env: demo
+      dockerfile: deployments/dockerfiles/client.Dockerfile
+      ecr-repository: qapp-dev-client
+#  Deploy-Client:
+#    needs: Build-Client
+#    uses: ./.github/workflows/cd.yaml
 #    secrets: inherit
 #    with:
 #      build-env: demo
-#      dockerfile: deployments/dockerfiles/bo.Dockerfile
-#      ecr-repository: qapp-dev-backoffice
-#
-#  Build-Client:
-#    uses: ./.github/workflows/ci.yaml
-#    secrets: inherit
-#    with:
-#      build-env: demo
-#      dockerfile: deployments/dockerfiles/client.Dockerfile
+#      deploy-version: ${{ needs.Build-Client.outputs.imagetag }}
 #      ecr-repository: qapp-dev-client
+#      task-definition: deployments/tasks/demo/client.json
+#      task-container-name: client-app
+#      ecs-service: qapp-dev-client-service
 
