@@ -1,0 +1,93 @@
+name: Build application image workflow
+run-name: Run image build
+on:
+  workflow_call:
+    inputs:
+      build-env:
+        required: true
+        type: string
+      dockerfile:
+        required: true
+        type: string
+      version-file:
+        required: false
+        type: string
+      ecr-repository:
+        required: true
+        type: string
+      push-config:
+        type: boolean
+    outputs:
+      imagetag:
+        value: ${{ jobs.Build-and-Push-Image.outputs.image_version }}
+        description: "the image version that build and push by the CI workflow"
+
+jobs:
+  Build-and-Push-Image:
+    name: Build & Push Docker Image
+    runs-on: ubuntu-latest
+    environment: ${{ inputs.build-env }}
+    outputs:
+      image_version: ${{ steps.build-image.outputs.image_version }}
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ vars.AWS_REGION }}
+
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v1
+
+      - name: Environment Variables Injection and Determine Dockerfile Path
+        env:
+          ENVVARS_JSON: ${{ toJSON(vars) }}
+        run: |
+          echo "$ENVVARS_JSON" | jq -r 'keys[] as $k | "\($k)=\(.[$k])"' >> $GITHUB_ENV
+          DOCKERFILE="${{ inputs.dockerfile }}"
+          echo "DOCKERFILE=$DOCKERFILE" >> $GITHUB_ENV
+          echo "Using Dockerfile: $DOCKERFILE"
+
+      - name: Substitute DotEnv Configurations
+        id: dotenv-sub
+        env:
+          DB_USERNAME: ${{ secrets.DB_USERNAME }}
+          DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+          SMTP_USER: ${{ secrets.SMTP_USER }}
+          SMTP_PASSWORD: ${{ secrets.SMTP_PASSWORD }}
+          RECAPTCHA_SECRET_KEY: ${{ secrets.RECAPTCHA_SECRET_KEY }}
+          RECAPTHCA_SITEKEY: ${{ secrets.RECAPTHCA_SITEKEY }}
+          SALESFORCE_CLIENT_SECRET: ${{ secrets.SALESFORCE_CLIENT_SECRET }}
+          SALESFORCE_PASSWORD: ${{ secrets.SALESFORCE_PASSWORD }}
+        run: |
+          envsubst < .env.template > .env
+
+      - name: Upload .env to config bucket
+        if: ${{ inputs.push-config }}
+        uses: zdurham/s3-upload-github-action@master
+        env:
+          FILE: .env
+          AWS_REGION: ${{ env.AWS_REGION }}
+          S3_BUCKET: ${{ env.AWS_S3_CONFIG_BUCKET }}
+          S3_KEY: ${{ env.DOTENV_CONFIG }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+
+      - name: Build Docker Image
+        id: build-image
+        run: |
+          VERSION=latest
+          if [ -n "${{ inputs.version-file }}" ] ;then
+            VERSION=$(grep '"version"' ${{ inputs.version-file }} | sed 's/.*"version":\ "\(.*\)",/\1/')
+          fi
+          IMAGE_TAG=${{ steps.login-ecr.outputs.registry }}/${{ inputs.ecr-repository }}:$VERSION
+          cat .env
+          docker buildx build --platform=linux/amd64 -t $IMAGE_TAG -f ${{ env.DOCKERFILE }} .
+          echo "image_version=$VERSION" >> $GITHUB_OUTPUT
+          # push the built image to ecr repository
+          docker push $IMAGE_TAG

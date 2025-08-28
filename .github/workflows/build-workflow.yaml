@@ -1,0 +1,37 @@
+name: QApp Build
+run-name: ${{ github.actor }} is running qapp build & deployment for demo 🚀
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - release
+jobs:
+  Build-Backend:
+    uses: ./.github/workflows/ci.yaml
+    secrets: inherit
+    with:
+      build-env: demo
+      version-file: apps/be/project.json
+      dockerfile: deployments/dockerfiles/backend.Dockerfile
+      ecr-repository: qapp-dev-backend
+      push-config: true
+
+  Build-Backoffice:
+    uses: ./.github/workflows/ci.yaml
+    secrets: inherit
+    with:
+      build-env: demo
+      version-file: apps/bo/project.json
+      dockerfile: deployments/dockerfiles/bo.Dockerfile
+      ecr-repository: qapp-dev-backoffice
+
+  Build-Client:
+    if: ${{ startsWith(github.ref_name, 'client-') }}
+    uses: ./.github/workflows/ci.yaml
+    secrets: inherit
+    with:
+      build-env: demo
+      version-file: apps/client/project.json
+      dockerfile: deployments/dockerfiles/client.Dockerfile
+      ecr-repository: qapp-dev-client
+

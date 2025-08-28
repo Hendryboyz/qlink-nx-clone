@@ -1,14 +1,14 @@
 {
   "containerDefinitions": [
     {
-      "name": "backoffice-app",
-      "image": "038462772752.dkr.ecr.ap-northeast-1.amazonaws.com/qapp-dev-backoffice:latest",
+      "name": "client-app",
+      "image": "038462772752.dkr.ecr.us-east-1.amazonaws.com/qapp-prod-client:latest",
       "cpu": 256,
       "memory": 512,
       "portMappings": [
         {
-          "containerPort": 80,
-          "hostPort": 80,
+          "containerPort": 3000,
+          "hostPort": 3000,
           "protocol": "tcp"
         }
       ],
@@ -16,7 +16,7 @@
       "environment": [],
       "environmentFiles": [
         {
-          "value": "arn:aws:s3:::qapp-dev-configs-bucket/.dev.env",
+          "value": "arn:aws:s3:::qapp-prod-configs-bucket/.env",
           "type": "s3"
         }
       ],
@@ -25,19 +25,19 @@
       "logConfiguration": {
         "logDriver": "awslogs",
         "options": {
-          "awslogs-group": "/qapp/dev/ecs/backoffice",
+          "awslogs-group": "/qapp/prod/ecs/client",
           "awslogs-region": "ap-northeast-1",
-          "awslogs-stream-prefix": "qapp_backend-log-stream-dev"
+          "awslogs-stream-prefix": "qapp_client-log-stream-prod"
         }
       },
       "systemControls": []
     }
   ],
-  "family": "qapp-dev-backoffice-definition",
-  "taskRoleArn": "arn:aws:iam::038462772752:role/qapp-dev-ECS_task-iam_role",
-  "executionRoleArn": "arn:aws:iam::038462772752:role/qapp-dev-ECS-task_execution_role",
+  "family": "qapp-prod-client-definition",
+  "taskRoleArn": "arn:aws:iam::038462772752:role/qapp-prod-ECS_task-iam_role",
+  "executionRoleArn": "arn:aws:iam::038462772752:role/qapp-prod-ECS-task_execution_role",
   "networkMode": "awsvpc",
-  "revision": 2,
+  "revision": 7,
   "volumes": [
     {
       "name": "configs-storage",
@@ -57,6 +57,9 @@
     },
     {
       "name": "com.amazonaws.ecs.capability.docker-remote-api.1.19"
+    },
+    {
+      "name": "ecs.capability.env-files.s3"
     },
     {
       "name": "com.amazonaws.ecs.capability.task-iam-role"
@@ -81,12 +84,12 @@
   ],
   "cpu": "256",
   "memory": "512",
-  "registeredAt": "2025-03-04T01:25:27.763Z",
+  "registeredAt": "2025-03-04T01:25:27.714Z",
   "registeredBy": "arn:aws:iam::038462772752:user/terraform",
   "tags": [
     {
       "key": "Environment",
-      "value": "dev"
+      "value": "prod"
     }
   ]
 }

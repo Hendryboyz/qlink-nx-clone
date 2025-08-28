@@ -1,0 +1,69 @@
+name: QLink Demo Site Build/Deploy
+run-name: ${{ github.actor }} is running qapp build & deployment for demo 🚀
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - release
+jobs:
+  Build-Backend:
+    name: build-backend
+    uses: ./.github/workflows/ci.yaml
+    secrets: inherit
+    with:
+      build-env: prod
+      dockerfile: deployments/dockerfiles/backend.Dockerfile
+      ecr-repository: qapp-prod-backend
+      push-config: true
+  Deploy-Backend:
+    needs: [Build-Backend]
+    uses: ./.github/workflows/cd.yaml
+    secrets: inherit
+    with:
+      build-env: prod
+      deploy-version: ${{ needs.Build-Backend.outputs.imagetag }}
+      ecr-repository: qapp-prod-backend
+      task-definition: deployments/tasks/prod/backend.json
+      task-container-name: backend-app
+      ecs-service: qapp-prod-backend-service
+#      dry-run: true
+
+  Build-Backoffice:
+    uses: ./.github/workflows/ci.yaml
+    secrets: inherit
+    with:
+      build-env: prod
+      dockerfile: deployments/dockerfiles/bo.Dockerfile
+      ecr-repository: qapp-prod-backoffice
+  Deploy-Backoffice:
+    needs: Build-Backoffice
+    uses: ./.github/workflows/cd.yaml
+    secrets: inherit
+    with:
+      build-env: prod
+      deploy-version: ${{ needs.Build-Backoffice.outputs.imagetag }}
+      ecr-repository: qapp-prod-backoffice
+      task-definition: deployments/tasks/prod/backoffice.json
+      task-container-name: backoffice-app
+      ecs-service: qapp-prod-backoffice-service
+
+  Build-Client:
+    uses: ./.github/workflows/ci.yaml
+    secrets: inherit
+    with:
+      build-env: prod
+      dockerfile: deployments/dockerfiles/client.Dockerfile
+      ecr-repository: qapp-prod-client
+  Deploy-Client:
+    needs: Build-Client
+    uses: ./.github/workflows/cd.yaml
+    secrets: inherit
+    with:
+      build-env: prod
+      deploy-version: ${{ needs.Build-Client.outputs.imagetag }}
+      ecr-repository: qapp-prod-client
+      task-definition: deployments/tasks/prod/client.json
+      task-container-name: client-app
+      ecs-service: qapp-prod-client-service
+#      dry-run: true
+

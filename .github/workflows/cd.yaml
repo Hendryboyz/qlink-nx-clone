@@ -1,0 +1,76 @@
+name: Deploy to ECS workflow
+on:
+  workflow_call:
+    inputs:
+      build-env:
+        required: true
+        type: string
+      deploy-version:
+        required: true
+        type: string
+      ecr-repository:
+        required: true
+        type: string
+      task-definition:
+        required: true
+        type: string
+      task-container-name:
+        required: true
+        type: string
+      ecs-service:
+        required: true
+        type: string
+      dry-run:
+        required: false
+        type: boolean
+jobs:
+  Prepare-then-Deploy:
+    runs-on: ubuntu-latest
+    environment: ${{ inputs.build-env }}
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ vars.AWS_REGION }}
+
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v1
+
+      - name: Prepare the Variables for Deployment Steps
+        id: prep-vars
+        run: |
+          IMAGE_TAG=${{ steps.login-ecr.outputs.registry }}/${{ inputs.ecr-repository }}:${{ inputs.deploy-version }}
+          echo "image=$IMAGE_TAG" >> $GITHUB_OUTPUT
+
+# Render Action Repo: https://github.com/aws-actions/amazon-ecs-render-task-definition
+      - name: Fill in the new image ID in the Amazon ECS task definition
+        id: render-task-def
+        uses: aws-actions/amazon-ecs-render-task-definition@v1
+        with:
+          task-definition: ${{ inputs.task-definition }}
+          container-name: ${{ inputs.task-container-name }}
+          image: ${{ steps.prep-vars.outputs.image }}
+
+      - name: Debug Task Definition Render Result
+        if: ${{ inputs.dry-run }}
+        run: |
+          echo "Deploy following task definition to ${{ vars.ECS_CLUSTER }}/${{ inputs.ecs-service }}"
+          echo ${{ steps.render-task-def.outputs.task-definition }}
+          cat ${{ steps.render-task-def.outputs.task-definition }}
+
+
+# Deploy Action Repo: https://github.com/aws-actions/amazon-ecs-deploy-task-definition
+      - name: Deploy to ECS cluster
+        if: ${{ inputs.dry-run == null || inputs.dry-run == false }}
+        uses: aws-actions/amazon-ecs-deploy-task-definition@v2
+        with:
+          task-definition: ${{ steps.render-task-def.outputs.task-definition }}
+          service: ${{ inputs.ecs-service }}
+          cluster: ${{ vars.ECS_CLUSTER }}
+          wait-for-service-stability: true
