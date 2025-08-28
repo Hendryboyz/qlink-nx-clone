@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
   push:
     branches:
-      - cicd/poc
+      - main
 jobs:
   Explore-Workflow-Status:
     runs-on: ubuntu-latest
