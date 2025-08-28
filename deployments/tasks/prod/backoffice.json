@@ -26,7 +26,7 @@
         "logDriver": "awslogs",
         "options": {
           "awslogs-group": "/qapp/prod/ecs/backoffice",
-          "awslogs-region": "ap-northeast-1",
+          "awslogs-region": "us-east-1",
           "awslogs-stream-prefix": "qapp_backend-log-stream-prod"
         }
       },
