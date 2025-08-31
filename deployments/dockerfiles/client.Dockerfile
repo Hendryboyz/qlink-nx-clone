@@ -6,6 +6,7 @@ RUN npm install
 COPY . .
 COPY .env /source/.env
 
+
 RUN NODE_ENV=production npx nx run client:build:production
 
 FROM node:20.18.3-alpine AS runner

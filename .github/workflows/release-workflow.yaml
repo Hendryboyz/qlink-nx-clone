@@ -1,5 +1,5 @@
 name: QLink Demo Site Build/Deploy
-run-name: ${{ github.actor }} is running qapp build & deployment for demo 🚀
+run-name: ${{ github.actor }} is running qapp build & deployment to production 🚀
 on:
   workflow_dispatch:
   push:

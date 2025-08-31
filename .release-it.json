@@ -13,7 +13,7 @@
         "commitArgs": [],
         "tag": true,
         "tagExclude": null,
-        "tagName": "backoffice-${version}",
+        "tagName": "${version}",
         "tagMatch": null,
         "getLatestTagFromAllRefs": false,
         "tagAnnotation": "Release ${version}",
@@ -27,8 +27,8 @@
     "gitlab": false,
     "plugins": {
         "@release-it/bumper": {
-            "in": "apps/bo/project.json",
-            "out": "apps/bo/project.json"
+            "in": "package.json",
+            "out": "package.json"
         }
     }
 }

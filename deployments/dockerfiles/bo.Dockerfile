@@ -6,6 +6,7 @@ RUN npm install
 COPY . .
 COPY .env /source/.env
 
+
 RUN NODE_ENV=production npx nx run bo:build:production
 
 FROM nginx:1.27.4-alpine AS runner
