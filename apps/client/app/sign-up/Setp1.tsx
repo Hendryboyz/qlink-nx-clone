@@ -1,4 +1,4 @@
-import { Fragment } from 'react';
+import { Fragment, useEffect, useRef } from 'react';
 import Container from './Container';
 import { Formik, FormikErrors, ErrorMessage, Form } from 'formik';
 import Link from 'next/link';
@@ -9,6 +9,7 @@ import { usePayload } from '$/store/payload';
 import SubmitButton from '$/components/Button/SubmitButton';
 import Recaptcha from '$/components/Fields/Recaptcha';
 import InputField from '$/components/Fields/InputField';
+import ReCAPTCHA from 'react-google-recaptcha';
 
 interface FormData {
   email: string;
@@ -21,6 +22,7 @@ type Props = {
 const Step1 = (props: Props) => {
   const { setEmail, setOtpSessionId } = usePayload()
   const initValue: FormData = { email: '', recaptchaToken: '' };
+  const recaptchaRef = useRef<ReCAPTCHA>(null);
   return (
     <Container title="Create an account" step={1}>
       <Formik
@@ -59,7 +61,14 @@ const Step1 = (props: Props) => {
                 setFieldError('email', res.message);
               }
             })
-            .finally(() => setSubmitting(false));
+            .finally(() => {
+              setSubmitting(false);
+              if (recaptchaRef.current) {
+                const widgetId = recaptchaRef.current.getWidgetId();
+                console.debug(`reset recaptcha: ${widgetId}`);
+                recaptchaRef.current.reset();
+              }
+            });
         }}
       >
         {({
@@ -97,6 +106,7 @@ const Step1 = (props: Props) => {
                 </div>
                 <div className="mt-9">
                   <Recaptcha
+                    ref={recaptchaRef}
                     recaptchaToken={values.recaptchaToken}
                     recaptchaError={errors.recaptchaToken}
                     setFieldValue={setFieldValue}

@@ -6,11 +6,12 @@ import API from '$/utils/fetch';
 import { IdentifierType, OtpTypeEnum, StartOtpReqDto } from '@org/types';
 import { CODE_SUCCESS, emailRegex } from '@org/common';
 import { usePayload } from '$/store/payload';
-import { Fragment } from 'react';
+import { Fragment, useRef } from 'react';
 import SubmitButton from '$/components/Button/SubmitButton';
 import { NOOP } from '$/utils';
 import Recaptcha from '$/components/Fields/Recaptcha';
 import InputField from '$/components/Fields/InputField';
+import ReCAPTCHA from 'react-google-recaptcha';
 
 interface FormData {
   email: string;
@@ -22,6 +23,7 @@ type Props = {
 const Step1 = (props: Props) => {
   const initValue: FormData = { email: '', recaptchaToken: '' };
   const { setEmail, setOtpSessionId } = usePayload();
+  const recaptchaRef = useRef<ReCAPTCHA>(null);
   return (
     <Container title="Forgot password?">
       <Formik
@@ -55,7 +57,10 @@ const Step1 = (props: Props) => {
                 setFieldError('email', res.message);
               }
             })
-            .finally(() => setSubmitting(false));
+            .finally(() => {
+              setSubmitting(false);
+              recaptchaRef.current?.reset();
+            });
         }}
       >
         {({
@@ -93,6 +98,7 @@ const Step1 = (props: Props) => {
                 </div>
                 <div className="mt-9">
                   <Recaptcha
+                    ref={recaptchaRef}
                     recaptchaToken={values.recaptchaToken}
                     recaptchaError={errors.recaptchaToken}
                     setFieldValue={setFieldValue}
