@@ -19,10 +19,13 @@ type Props = {
   onSuccess: () => void;
 };
 
+const RECAPTCHA_TIMEOUT = 90 * 1000; // 90 secs
+
 const Step1 = (props: Props) => {
   const { setEmail, setOtpSessionId } = usePayload()
   const initValue: FormData = { email: '', recaptchaToken: '' };
   const recaptchaRef = useRef<ReCAPTCHA>(null);
+
   return (
     <Container title="Create an account" step={1}>
       <Formik

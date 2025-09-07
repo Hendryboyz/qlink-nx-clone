@@ -1,7 +1,7 @@
 import { Field } from 'formik';
 import ReCAPTCHA from 'react-google-recaptcha';
 import { FormikErrors } from 'formik/dist/types';
-import { useEffect, useState, forwardRef } from 'react';
+import { useEffect, useState, forwardRef, ForwardedRef } from 'react';
 
 type RecaptchaProps = {
   recaptchaToken: string;
@@ -13,9 +13,9 @@ type RecaptchaProps = {
 const Recaptcha = forwardRef<ReCAPTCHA, RecaptchaProps>(
   (
     props: RecaptchaProps,
-    ref ,
+    ref: ForwardedRef<ReCAPTCHA> ,
   ) => {
-    const recaptchaSitekey = process.env.NEXT_PUBLIC_RECAPTHCA_SITEKEY || '';
+    const recaptchaSiteKey = process.env.NEXT_PUBLIC_RECAPTHCA_SITEKEY || '';
     const [scale, setScale] = useState(1);
 
     useEffect(() => {
@@ -52,6 +52,11 @@ const Recaptcha = forwardRef<ReCAPTCHA, RecaptchaProps>(
 
     }, [props.targetElementId]);
 
+
+    async function handleRecaptchaChange(token: string | null) {
+      await props.setFieldValue("recaptchaToken", token, true);
+    }
+
     return (
       <>
         <Field
@@ -68,10 +73,8 @@ const Recaptcha = forwardRef<ReCAPTCHA, RecaptchaProps>(
           }}>
             <ReCAPTCHA
               ref={ref}
-              sitekey={recaptchaSitekey}
-              onChange={async (token) => {
-                await props.setFieldValue("recaptchaToken", token, true);
-              }}
+              sitekey={recaptchaSiteKey}
+              onChange={handleRecaptchaChange}
             />
           </div>
         </div>
