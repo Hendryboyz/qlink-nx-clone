@@ -51,7 +51,7 @@ const Menu: React.FC<Props> = ({ isOpen, onClose }) => {
                 const [title, link] = item;
                 return (
                   <li key={index} className="py-2">
-                    <Link href={link} className="hover:underline">
+                    <Link href={link} className="hover:underline" onClick={onClose}>
                       {title}
                     </Link>
                   </li>
@@ -63,7 +63,7 @@ const Menu: React.FC<Props> = ({ isOpen, onClose }) => {
                 const [title, link] = item;
                 return (
                   <li key={index} className="py-2">
-                    <Link href={link} className="text-[14px] hover:underline">
+                    <Link href={link} className="text-[14px] hover:underline" onClick={onClose}>
                       {title}
                     </Link>
                   </li>
