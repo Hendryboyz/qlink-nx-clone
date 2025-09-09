@@ -78,7 +78,7 @@ const Step1 = (props: Props) => {
                 <div className="mt-7">
                   <div id="email-input-container">
                     <InputField
-                      type="tel"
+                      type="email"
                       name="email"
                       placeholder="Email"
                       headIconSource="assets/mail.svg"
