@@ -213,13 +213,13 @@ export default function Editable({editKey, title, type = 'text', defaultValue, v
                   setIsEditing(false);
                 }
               }}
-              className="min-w-60 mr-1 text-[1rem] font-semibold h-6 py-0 outline-none focus:ring-0 focus:border-gray-300 border-none bg-transparent"
+              className="min-w-60 mr-1 text-[1rem] font-[GilroySemiBold] h-6 py-0 outline-none focus:ring-0 focus:border-gray-300 border-none bg-transparent"
               placeholder="YYYY-MM-DD"
               {...props}
             />
           ) : (
             <div
-              className="min-w-60 mr-1 text-[1rem] font-semibold h-6 py-0 cursor-pointer flex items-center"
+              className="min-w-60 mr-1 text-[1rem] font-[GilroySemiBold] h-6 py-0 cursor-pointer flex items-center"
               onClick={() => setIsDatePickerOpen(true)}
               onDoubleClick={() => {
                 setIsManualInput(true);
@@ -261,7 +261,7 @@ export default function Editable({editKey, title, type = 'text', defaultValue, v
         <div className="h-auto min-h-4 flex flex-col content-around">
           {isEditing ? (
             <>
-              <Input className="min-w-60 mr-1 text-lg h-6 py-0 outline-none focus:ring-0 focus:border-gray-300" />
+              <Input className="min-w-60 mr-1 font-[GilroySemiBold] h-6 py-0 outline-none focus:ring-0 focus:border-gray-300" />
               {error && <span className="text-red-600">{error}</span>}
             </>
           ) : (
