@@ -74,7 +74,7 @@ const ATTRS: Columns = {
   purchaseDate: {
     title: 'Purchase Date',
     type: 'date',
-    placeholder: 'Select purchase date (YYYY-MM-DD)'
+    placeholder: 'Select purchase date'
   },
   registrationDate: {
     title: 'Registration Date',
@@ -187,7 +187,7 @@ export default function GarageAdd() {
                                     onClick={() => setIsOpen(!isOpen)}
                                   >
                                     <span
-                                      className={`text-base ${selectedModel ? 'font-[GilroySemiBold] text-gray-500' : 'font-[GilroyRegular] text-gray-400'}`}
+                                      className={`text-base ${selectedModel ? 'font-[GilroySemiBold] text-gray-500' : 'font-[GilroySemiBold] text-gray-400'}`}
                                       style={{
                                         display: 'inline-block',
                                         minHeight: '1rem'
@@ -235,6 +235,7 @@ export default function GarageAdd() {
                               defaultDisplayValue={data.placeholder || "0000-00-00"}
                               placeholder={data.placeholder}
                               className="text-base pl-0 font-[GilroySemiBold] text-gray-500"
+                              placeholderClassName="text-base pl-0 text-gray-400 font-[GilroySemiBold]"
                             />
                           </div>
                         ) :
