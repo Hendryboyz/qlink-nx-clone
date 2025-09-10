@@ -77,7 +77,7 @@ export default function Garage() {
                   <div
                     className="relative"
                     style={{
-                      height: '6rem',
+                      height: '5.75rem',
                       backgroundImage: `url(${modelImage})`,
                       backgroundSize: 'cover',
                       backgroundPosition: 'center center',
@@ -91,9 +91,9 @@ export default function Garage() {
                     />
                   </div>
                   {/* Placeholder for image */}
-                  <div className="px-4 py-[6px] bg-gray-500 flex justify-between text-white">
-                    <div className="font-gilroy-bold text-[13px]">{modelTitle || product.model}</div>
-                    <p className="text-xs font-gilroy-regular">{product.vin}</p>
+                  <div className="px-4 py-[6px] bg-gray-500 flex justify-between items-center text-white h-[2.5rem]">
+                    <div className="font-gilroy-bold text-[13px] text-center leading-none">{modelTitle || product.model}</div>
+                    <p className="text-xs font-gilroy-regular text-center leading-none m-0">{product.vin}</p>
                   </div>
                 </div>
               )
