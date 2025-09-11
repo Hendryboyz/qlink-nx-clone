@@ -1,12 +1,20 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Form, Input, Button, message } from 'antd';
 import { useNavigate } from 'react-router-dom';
-import { BoLoginDto } from '@org/types';
+import { BoLoginDto, BoUser } from '@org/types';
 import API from '../utils/fetch';
 
 const Login: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const userString = localStorage.getItem('user');
+    const user: BoUser | null = userString ? JSON.parse(userString) : null;
+    if (user) {
+      navigate('/dashboard', {replace: true});
+    }
+  }, [navigate]);
 
   const onFinish = async (values: BoLoginDto) => {
     setLoading(true);
