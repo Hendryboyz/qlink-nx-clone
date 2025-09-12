@@ -128,7 +128,7 @@ const DateField: React.FC<DateFieldProps> = ({
       ) : (
         /* Custom display div */
         <div
-          className={`cursor-pointer w-full min-h-[48px] flex items-center ${
+          className={`cursor-pointer text-gray-400 w-full min-h-[48px] flex items-center ${
             field.value && field.value !== '0000-00-00'
               ? className
               : (placeholderClassName && placeholderClassName.length > 0)

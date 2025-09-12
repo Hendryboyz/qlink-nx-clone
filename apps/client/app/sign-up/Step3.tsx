@@ -281,7 +281,7 @@ const Step3 = (props: Props) => {
                               className={`${DEFAULT_INPUT_STYLES} flex justify-between items-center cursor-pointer`}
                               onClick={() => setIsOpen(!isOpen)}
                             >
-                              <span className="text-sm font-gilroy-medium">
+                              <span className={`text-sm font-gilroy-medium ${!field.value ? 'text-gray-400' : ''}`}>
                                 {displayValue}
                               </span>
                               <img 
