@@ -106,7 +106,7 @@ const defaultValue: FormData = {
 const DEFAULT_INPUT_STYLES =
   'block rounded-xl py-2 pl-6 pr-6 w-full bg-white border-[#FFCFA3] border-[1px] text-sm font-gilroy-medium min-h-[48px]';
 
-const DEFAULT_ERROR_MSG_CLASS = 'text-red-500 pl-6 text-sm font-gilroy-medium';
+const DEFAULT_ERROR_MSG_CLASS = 'text-red-500 pl-[1.3rem] text-sm font-gilroy-medium';
 
 type Props = {
   onSuccess: () => void;
@@ -199,7 +199,7 @@ const Step3 = (props: Props) => {
                     />
                     <div className="min-h-7">
                       <ErrorMessage name="password">
-                        {(msg) => <span className="text-red-500 pl-6 text-sm font-gilroy-medium">{msg}</span>}
+                        {(msg) => <span className="text-red-500 pl-[1.3rem] text-sm font-gilroy-medium">{msg}</span>}
                       </ErrorMessage>
                     </div>
                   </div>
@@ -212,7 +212,7 @@ const Step3 = (props: Props) => {
                     />
                     <div className="min-h-7">
                       <ErrorMessage name="rePassword">
-                        {(msg) => <span className="text-red-500 pl-6 text-sm font-gilroy-medium">{msg}</span>}
+                        {(msg) => <span className="text-red-500 pl-[1.3rem] text-sm font-gilroy-medium">{msg}</span>}
                       </ErrorMessage>
                     </div>
                   </div>
@@ -225,7 +225,7 @@ const Step3 = (props: Props) => {
                     />
                     <div className="min-h-7">
                       <ErrorMessage name="firstName">
-                        {(msg) => <span className="text-red-500 pl-6 text-sm font-gilroy-medium">{msg}</span>}
+                        {(msg) => <span className="text-red-500 pl-[1.3rem] text-sm font-gilroy-medium">{msg}</span>}
                       </ErrorMessage>
                     </div>
                   </div>
@@ -238,7 +238,7 @@ const Step3 = (props: Props) => {
                     />
                     <div className="min-h-7">
                       <ErrorMessage name="midName">
-                        {(msg) => <span className="text-red-500 pl-6 text-sm font-gilroy-medium">{msg}</span>}
+                        {(msg) => <span className="text-red-500 pl-[1.3rem] text-sm font-gilroy-medium">{msg}</span>}
                       </ErrorMessage>
                     </div>
                   </div>
@@ -251,7 +251,7 @@ const Step3 = (props: Props) => {
                     />
                     <div className="min-h-7">
                       <ErrorMessage name="lastName">
-                        {(msg) => <span className="text-red-500 pl-6 text-sm font-gilroy-medium">{msg}</span>}
+                        {(msg) => <span className="text-red-500 pl-[1.3rem] text-sm font-gilroy-medium">{msg}</span>}
                       </ErrorMessage>
                     </div>
                   </div>
@@ -274,27 +274,27 @@ const Step3 = (props: Props) => {
                       {({ field, form }: any) => {
                         const [isOpen, setIsOpen] = useState(false);
                         const displayValue = field.value || 'Gender';
-                        
+
                         return (
                           <div className="relative">
-                            <div 
+                            <div
                               className={`${DEFAULT_INPUT_STYLES} flex justify-between items-center cursor-pointer`}
                               onClick={() => setIsOpen(!isOpen)}
                             >
                               <span className={`text-sm font-gilroy-medium ${!field.value ? 'text-gray-400' : ''}`}>
                                 {displayValue}
                               </span>
-                              <img 
-                                src="/assets/chevron_down.svg" 
+                              <img
+                                src="/assets/chevron_down.svg"
                                 className="flex-shrink-0"
                                 alt="dropdown arrow"
                               />
                             </div>
-                            
+
                             {isOpen && (
                               <>
-                                <div 
-                                  className="fixed inset-0 z-40" 
+                                <div
+                                  className="fixed inset-0 z-40"
                                   onClick={() => setIsOpen(false)}
                                 />
                                 <div className="absolute top-full left-0 z-50 bg-white border border-gray-200 rounded-lg shadow-lg max-h-60 overflow-y-auto min-w-max whitespace-nowrap mt-1">
@@ -319,7 +319,7 @@ const Step3 = (props: Props) => {
                     </Field>
                     <div className="min-h-7">
                       <ErrorMessage name="gender">
-                        {(msg) => <span className="text-red-500 pl-6 text-sm font-gilroy-medium">{msg}</span>}
+                        {(msg) => <span className="text-red-500 pl-[1.3rem] text-sm font-gilroy-medium">{msg}</span>}
                       </ErrorMessage>
                     </div>
                   </div>
@@ -331,7 +331,7 @@ const Step3 = (props: Props) => {
                     />
                     <div className="min-h-7">
                       <ErrorMessage name="phone">
-                        {(msg) => <span className="text-red-500 pl-6 text-sm font-gilroy-medium">{msg}</span>}
+                        {(msg) => <span className="text-red-500 pl-[1.3rem] text-sm font-gilroy-medium">{msg}</span>}
                       </ErrorMessage>
                     </div>
                   </div>
@@ -358,7 +358,7 @@ const Step3 = (props: Props) => {
                     />
                     <div className="min-h-7">
                       <ErrorMessage name="addressCity">
-                        {(msg) => <span className="text-red-500 pl-6 text-sm font-gilroy-medium">{msg}</span>}
+                        {(msg) => <span className="text-red-500 pl-[1.3rem] text-sm font-gilroy-medium">{msg}</span>}
                       </ErrorMessage>
                     </div>
                   </div>
@@ -367,27 +367,27 @@ const Step3 = (props: Props) => {
                       {({ field, form }: any) => {
                         const [isOpen, setIsOpen] = useState(false);
                         const displayValue = field.value || 'State';
-                        
+
                         return (
                           <div className="relative">
-                            <div 
+                            <div
                               className={`${DEFAULT_INPUT_STYLES} flex justify-between items-center cursor-pointer`}
                               onClick={() => setIsOpen(!isOpen)}
                             >
-                              <span className="text-sm font-gilroy-medium">
+                              <span className={`text-sm font-gilroy-medium ${!field.value ? 'text-gray-400' : ''}`}>
                                 {displayValue}
                               </span>
-                              <img 
-                                src="/assets/chevron_down.svg" 
+                              <img
+                                src="/assets/chevron_down.svg"
                                 className="flex-shrink-0"
                                 alt="dropdown arrow"
                               />
                             </div>
-                            
+
                             {isOpen && (
                               <>
-                                <div 
-                                  className="fixed inset-0 z-40" 
+                                <div
+                                  className="fixed inset-0 z-40"
                                   onClick={() => setIsOpen(false)}
                                 />
                                 <div className="absolute top-full left-0 z-50 bg-white border border-gray-200 rounded-lg shadow-lg max-h-60 overflow-y-auto min-w-max whitespace-nowrap mt-1">
@@ -412,7 +412,7 @@ const Step3 = (props: Props) => {
                     </Field>
                     <div className="min-h-7">
                       <ErrorMessage name="addressState">
-                        {(msg) => <span className="text-red-500 pl-6 text-sm font-gilroy-medium">{msg}</span>}
+                        {(msg) => <span className="text-red-500 pl-[1.3rem] text-sm font-gilroy-medium">{msg}</span>}
                       </ErrorMessage>
                     </div>
                   </div>
@@ -424,7 +424,7 @@ const Step3 = (props: Props) => {
                     />
                     <div className="min-h-7">
                       <ErrorMessage name="whatsapp">
-                        {(msg) => <span className="text-red-500 pl-6 text-sm font-gilroy-medium">{msg}</span>}
+                        {(msg) => <span className="text-red-500 pl-[1.3rem] text-sm font-gilroy-medium">{msg}</span>}
                       </ErrorMessage>
                     </div>
                   </div>
@@ -436,7 +436,7 @@ const Step3 = (props: Props) => {
                     />
                     <div className="min-h-7">
                       <ErrorMessage name="whatsapp">
-                        {(msg) => <span className="text-red-500 pl-6 text-sm font-gilroy-medium">{msg}</span>}
+                        {(msg) => <span className="text-red-500 pl-[1.3rem] text-sm font-gilroy-medium">{msg}</span>}
                       </ErrorMessage>
                     </div>
                   </div>
