@@ -108,7 +108,7 @@ export default function Member() {
               key="id"
               editKey="id"
               title="Member ID"
-              defaultValue={user?.id}
+              defaultValue={user?.memberId}
               isChangeAllowed={false}
             />
             <Editable
