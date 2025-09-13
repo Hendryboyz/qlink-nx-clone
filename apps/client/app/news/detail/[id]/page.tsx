@@ -39,6 +39,9 @@ const Detail: NextPage<Props> = ({ params }) => {
               backgroundPosition: 'center center',
             }}
           >
+            {/* Gradient overlay for better text readability */}
+            <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/10 to-transparent pointer-events-none"></div>
+
             <div className="flex m-5 justify-end">
               <NewsType type={post.category} className="w-[60px] h-[20px] !text-[14px]" />
             </div>
@@ -47,7 +50,7 @@ const Detail: NextPage<Props> = ({ params }) => {
           <div className="px-[20px] py-6 w-screen max-w-screen overflow-x-hidden">
             <div className="mb-3 font-[GilroyMedium] text-base">{fromDateWithSlash(new Date(post.createdAt))}</div>
             <div
-              className="font-gilroy-regular text-base tracking-[0px] leading-[1.2] break-words hyphens-auto"
+              className="font-helvetica text-base tracking-[0px] leading-[1.2] break-words hyphens-auto"
               dangerouslySetInnerHTML={{ __html: post.content }}
             />
           </div>
