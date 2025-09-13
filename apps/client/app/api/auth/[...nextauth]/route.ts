@@ -1,4 +1,4 @@
-import NextAuth from 'next-auth';
+import NextAuth, { User } from 'next-auth';
 import Credentials from 'next-auth/providers/credentials';
 import { type CookieSerializeOptions } from "cookie";
 import API from '$/utils/fetch';
@@ -30,16 +30,21 @@ const handler = NextAuth({
         password: { label: "Password", type: "password" },
         rememberMe: { label: "Remember me", type: "checkbox" },
       },
-      authorize: async (credentials) => {
-        if (!credentials) return;
+      async authorize (credentials) {
+        if (!credentials) return null;
         try {
           const resp = await API.post('auth/login', {
             email: credentials.email,
             password: credentials.password,
             rememberMe: credentials.rememberMe,
-          });
+          }) as any;
           await setLoginCookies(resp, credentials.rememberMe === 'true');
-          return resp;
+          const user: User = {
+            id: resp.id,
+            name: resp.name,
+            email: credentials.email
+          }
+          return user;
         } catch (e) {
           console.error('error');
           console.error(e);
