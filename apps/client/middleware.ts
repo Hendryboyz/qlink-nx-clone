@@ -62,25 +62,42 @@ async function middlewareV1(request: NextRequest) {
   return NextResponse.next();
 }
 
-async function middleware(request: NextRequest) {
+const isIncludedRoute =
+  (baseRoutes: string[], requestPath: string): boolean =>
+    baseRoutes.some((baseRoute: string) => {
+      if (baseRoute === '/' && requestPath === baseRoute) {
+        return true;
+      }
+      return baseRoute !== '/' && requestPath.startsWith(baseRoute);
+    });
+
+async function middleware(request: any) {
+  const requestPath = request.nextUrl.pathname;
+  if (guestOnlyRoutes.includes(requestPath)) {
+    // If user is already authenticated → redirect to /member
+    if (request.nextauth?.token) {
+      return NextResponse.redirect(new URL("/member", request.url))
+    }
+  }
+
   return NextResponse.next();
 }
 
 export default withAuth(middleware, {
   callbacks: {
     authorized: ({ token, req }) => {
+      console.log('Authorized request', token);
       const requestPath = req.nextUrl.pathname;
-
-      if (publicRoutes.includes(requestPath)) {
+      if (isIncludedRoute(publicRoutes, requestPath)) {
         return true
       }
 
-      if (protectedRoutes.includes(requestPath)) {
+      if (isIncludedRoute(protectedRoutes, requestPath)) {
         return !!token;
       }
 
-      if (guestOnlyRoutes.includes(requestPath)) {
-        return !token;
+      if (isIncludedRoute(guestOnlyRoutes, requestPath)) {
+        return true;
       }
       return false;
     },

@@ -24,7 +24,7 @@ async function setLoginCookies(loginInfo: any, rememberMe: boolean) {
 const handler = NextAuth({
   providers: [
     Credentials({
-      name: 'credentials',
+      name: 'Credentials',
       credentials: {
         email: { label: "Email", type: "text" },
         password: { label: "Password", type: "password" },

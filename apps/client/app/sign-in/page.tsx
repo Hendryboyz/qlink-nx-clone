@@ -63,29 +63,14 @@ export default function SignIn() {
               email: values.email,
               password: values.password,
               rememberMe: values.rememberMe,
-              callbackUrl: signInCallback ? signInCallback : '/',
             }).then((res) => {
               if (res && res.ok) {
-                console.log(res);
-                router.push(signInCallback ? signInCallback : '/');
+                router.push('/member');
                 return;
               }
               console.error(res);
               showPopup({ title: 'Incorrect Credentials' });
-            }).finally(() => setSubmitting(false));;
-            // API.post('auth/login', {
-            //   email: String(values.email),
-            //   password: values.password,
-            //   rememberMe: values.rememberMe,
-            // })
-            //   .then((_) => {
-            //     router.push('/');
-            //   })
-            //   .catch((err) => {
-            //     console.error(err);
-            //     showPopup({ title: 'Incorrect Credentials' });
-            //   })
-            //   .finally(() => setSubmitting(false));
+            }).finally(() => setSubmitting(false));
           }}
         >
           {({
