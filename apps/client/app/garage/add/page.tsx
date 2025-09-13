@@ -87,7 +87,7 @@ const ATTRS: Columns = {
   },
 };
 export default function GarageAdd() {
-  const DEFAULT_ERROR_MSG_CLASS = 'text-red-500 text-xs block mt-1';
+  const DEFAULT_ERROR_MSG_CLASS = 'text-red-500 text-xs block -mt-[0.25rem] mb-[0.5rem]';
   const POPUP_BUTTON_STYLE = 'py-2 px-3 text-sm rounded-lg h-[30px] font-[GilroySemiBold]';
   const [models, setModels] = useState<ModelVO[]>([]);
   const initValue: FormData = defaultValue;
@@ -167,12 +167,13 @@ export default function GarageAdd() {
                 ([key, data]) => {
                   return (
                     <div
-                      className="flex justify-between items-center min-h-[3.375rem] pl-[1.25rem] pr-[1.25rem] border-b-inset-6"
+                      className="flex justify-between items-start min-h-[3.375rem] pl-[1.25rem] pr-[1.25rem] border-b-inset-6"
                       key={key}
                     >
                       <div className="flex flex-col text-gray-400 flex-1">
-                        <span className="text-xs font-gilroy-regular text-[12px] text-[#D70127]">{data.title}</span>
-                        <div className="h-auto min-h-4 flex flex-col content-around mt-[2px]">
+                        <div className="h-[3.375rem] flex flex-col justify-center">
+                          <span className="text-xs font-gilroy-regular text-[12px] text-[#D70127]">{data.title}</span>
+                          <div className="h-auto flex flex-col mt-[2px]">
                         {data.type == 'select' ? (
                           <Field name={key}>
                             {({ field, form }: any) => {
@@ -247,12 +248,13 @@ export default function GarageAdd() {
                             placeholder={data.placeholder || ""}
                           />
                         }
+                          </div>
+                        </div>
                         <ErrorMessage
                           name={key}
                           className={DEFAULT_ERROR_MSG_CLASS}
                           component="span"
                         />
-                        </div>
                       </div>
                     </div>
                   );
