@@ -14,6 +14,7 @@ module.exports = {
           'gilroy-black': ['GilroyBlack', 'sans-serif'],
           'gilroy-heavy': ['GilroyHeavy', 'sans-serif'],
           'gilroy-light': ['GilroyLight', 'sans-serif'],
+          'helvetica': ['Helvetica', 'Arial', 'sans-serif'],
         },
         colors: {
           primary: {
