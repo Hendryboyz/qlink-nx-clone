@@ -1,7 +1,7 @@
 'use client';
 
 import React, { Fragment } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { Formik, FormikErrors, Field, ErrorMessage, FieldProps } from 'formik';
 import {signIn} from "next-auth/react";
@@ -22,8 +22,6 @@ interface FormData {
 }
 
 export default function SignIn() {
-  const searchParams = useSearchParams();
-  const signInCallback = searchParams.get('callbackUrl');
   const initValue: FormData = { email: '', password: '', rememberMe: false };
   const router = useRouter();
   const { showPopup } = usePopup();
