@@ -1,8 +1,10 @@
 import Link from 'next/link';
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import API from '$/utils/fetch';
 import { Cross2Icon } from '@radix-ui/react-icons';
 import { useRouter } from 'next/navigation';
+import Cookies from 'js-cookie';
+import { ACCESS_TOKEN } from '@org/common';
 
 const mainItems = [
   ['Home', '/'],
@@ -26,6 +28,12 @@ type Props = {
 };
 const Menu: React.FC<Props> = ({ isOpen, onClose }) => {
   const router = useRouter();
+  const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
+
+  useEffect(() => {
+    const token = Cookies.get(ACCESS_TOKEN);
+    setIsLoggedIn(!!token);
+  }, []);
   return (
     <>
       <div
@@ -51,7 +59,7 @@ const Menu: React.FC<Props> = ({ isOpen, onClose }) => {
                 const [title, link] = item;
                 return (
                   <li key={index} className="py-2">
-                    <Link href={link} className="hover:underline">
+                    <Link href={link} className="hover:underline" onClick={onClose}>
                       {title}
                     </Link>
                   </li>
@@ -63,7 +71,7 @@ const Menu: React.FC<Props> = ({ isOpen, onClose }) => {
                 const [title, link] = item;
                 return (
                   <li key={index} className="py-2">
-                    <Link href={link} className="text-[14px] hover:underline">
+                    <Link href={link} className="text-[14px] hover:underline" onClick={onClose}>
                       {title}
                     </Link>
                   </li>
@@ -74,12 +82,17 @@ const Menu: React.FC<Props> = ({ isOpen, onClose }) => {
               <a
                 className="hover:cursor-pointer hover:underline text-gray-500"
                 onClick={() => {
-                  API.clearToken();
-                  setTimeout(() => router.push('/sign-in'), 500);
+                  if (isLoggedIn) {
+                    API.clearToken();
+                    setIsLoggedIn(false);
+                    setTimeout(() => router.push('/sign-in'), 500);
+                  } else {
+                    router.push('/sign-in');
+                  }
                 }}
               >
                 <img height={18} width={18} className="inline mr-2 pb-0.5" src='/assets/logout.svg' />
-                Logout
+                {isLoggedIn ? 'Logout' : 'Login'}
               </a>
             </div>
           </nav>

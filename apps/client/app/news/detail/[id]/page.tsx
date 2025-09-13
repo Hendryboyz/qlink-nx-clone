@@ -40,7 +40,7 @@ const Detail: NextPage<Props> = ({ params }) => {
             }}
           >
             <div className="flex m-5 justify-end">
-              <NewsType type={post.category} className="w-[60px] h-[20px] !text-[14px] flex items-center justify-center !pt-0" />
+              <NewsType type={post.category} className="w-[60px] h-[20px] !text-[14px]" />
             </div>
             <h1 className="font-gilroy-bold text-xl pl-5 pb-3 pr-7 leading-tight">{post.title}</h1>
           </div>

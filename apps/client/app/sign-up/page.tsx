@@ -7,8 +7,11 @@ import Step2 from './Step2';
 import Step3 from './Step3';
 import Success from './Success';
 import { PayloadProvider } from '$/store/payload';
+import { Cross2Icon } from '@radix-ui/react-icons';
+import { useRouter } from 'next/navigation';
 
 const SignUp = () => {
+  const router = useRouter();
   const [step, handleChangeStep] = useState(1);
   const goNextStep = useCallback(() => {
     handleChangeStep(pre => pre+1)
@@ -30,7 +33,19 @@ const SignUp = () => {
         return <Success />;
     }
   }, [step, goNextStep])
+
+  const onClose = () => router.push('/')
+
   return <PayloadProvider>
+    {step !== 4 && (
+      <div className="absolute top-[24px] right-[24px] text-primary" onClick={onClose}>
+        <Cross2Icon
+          height={24}
+          width={24}
+          className="justify-self-end cursor-pointer"
+        />
+      </div>
+    )}
     <ColorBackground color="#FFF0D3">{children}</ColorBackground>
   </PayloadProvider>;
 };

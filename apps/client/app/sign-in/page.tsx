@@ -95,7 +95,7 @@ export default function SignIn() {
                   />
                   <ErrorMessage
                     name="email"
-                    className="text-[#E19500] absolute pl-10 text-sm font-gilroy-medium"
+                    className="text-[#E19500] absolute pl-10 text-sm font-gilroy-medium mt-1"
                     component="span"
                   />
                 </div>

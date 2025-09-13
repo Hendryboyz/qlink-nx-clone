@@ -50,6 +50,14 @@
   font-display: swap;
 }
 
+@font-face {
+  font-family: 'GilroyLight';
+  src: url('/fonts/Gilroy-Light.ttf') format('truetype');
+  font-weight: 300;
+  font-style: normal;
+  font-display: swap;
+}
+
 
 
 /*@font-face {*/
@@ -153,12 +161,12 @@ label {
   .border-b-inset-6 {
     @apply relative;
   }
-  
+
   .border-b-inset-6::after {
     @apply absolute bottom-0 left-5 right-5 h-[1px] bg-gray-100;
     content: '';
   }
-  
+
   .icon-button-small {
     width: 24px !important;
     height: 25px !important;
@@ -168,13 +176,13 @@ label {
     max-height: none !important;
     padding: 0 !important;
   }
-  
+
   /* Custom Select dropdown height limit */
   .rt-SelectContent {
     max-height: 240px !important;
     overflow-y: auto !important;
   }
-  
+
   /* Custom Select trigger styles */
   .rt-SelectTrigger {
     height: 24px !important;
@@ -189,7 +197,7 @@ label {
     font-weight: 600 !important;
     outline: none !important;
   }
-  
+
   .rt-SelectTrigger:hover {
     border: none !important;
     border-width: 0 !important;
@@ -197,7 +205,7 @@ label {
     background: transparent !important;
     background-color: transparent !important;
   }
-  
+
   .rt-SelectTrigger:focus {
     border: none !important;
     border-width: 0 !important;
@@ -206,20 +214,20 @@ label {
     background: transparent !important;
     background-color: transparent !important;
   }
-  
+
   .rt-SelectTrigger:focus-visible {
     border: none !important;
     border-width: 0 !important;
     box-shadow: none !important;
     outline: none !important;
   }
-  
+
   /* Force Select trigger to use same font weight as input fields */
   .rt-SelectTrigger {
     font-family: inherit !important;
     font-weight: 600 !important;
   }
-  
+
   /* Remove Select trigger border */
   .rt-SelectTrigger,
   .rt-SelectTrigger:hover,
@@ -229,13 +237,13 @@ label {
     border-width: 0 !important;
     box-shadow: none !important;
   }
-  
+
   /* Force DateField in garage add page to have consistent height */
   .garage-date-field > div {
     min-height: 1rem !important;
     height: auto !important;
   }
-  
+
   /* Override DateField's min-h-[48px] in garage add page */
   .garage-date-field .cursor-pointer {
     min-height: 1rem !important;
