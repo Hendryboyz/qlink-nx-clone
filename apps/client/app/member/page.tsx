@@ -112,6 +112,15 @@ export default function Member() {
               isChangeAllowed={false}
             />
             <Editable
+              key="email"
+              editKey="email"
+              title="Email"
+              defaultValue={user?.email}
+              saveChange={saveChange}
+              validation={Yup.string().email().required()}
+              isChangeAllowed={true}
+            />
+            <Editable
               key="phone"
               editKey="phone"
               title="Phone number"
@@ -147,15 +156,6 @@ export default function Member() {
               title="Last name"
               defaultValue={user?.lastName}
               saveChange={saveChange}
-              isChangeAllowed={true}
-            />
-            <Editable
-              key="email"
-              editKey="email"
-              title="Email"
-              defaultValue={user?.email}
-              saveChange={saveChange}
-              validation={Yup.string().email().required()}
               isChangeAllowed={true}
             />
             <Editable

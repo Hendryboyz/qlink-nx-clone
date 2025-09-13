@@ -167,7 +167,7 @@ const Step2 = (props: Props) => {
               <h4 className="text-center text-[#DF6B00] text-[13px] font-[GilroyMedium] font-normal leading-[100%] tracking-[0%] hover:cursor-pointer"
                 onClick={handleResendOTP}
               >
-                Resend
+                Resend OTP
               </h4>
             )}
           </div>

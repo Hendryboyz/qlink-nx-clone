@@ -103,7 +103,7 @@ const Step1 = (props: Props) => {
                   </div>
                   <ErrorMessage
                     name="email"
-                    className="text-red-500 absolute pl-10 text-sm font-gilroy-medium"
+                    className="text-red-500 absolute pl-10 text-sm font-gilroy-medium mt-1"
                     component="span"
                   />
                 </div>

@@ -1,7 +1,6 @@
 import Link from 'next/link';
 import React from 'react';
 import { Cross2Icon } from '@radix-ui/react-icons';
-import { useRouter } from 'next/navigation';
 import SignButton from '$/components/Header/SignButton';
 
 const mainItems = [
@@ -25,7 +24,6 @@ type Props = {
   onClose?: () => void;
 };
 const Menu: React.FC<Props> = ({ isOpen, onClose }) => {
-  const router = useRouter();
   return (
     <>
       <div
@@ -51,7 +49,7 @@ const Menu: React.FC<Props> = ({ isOpen, onClose }) => {
                 const [title, link] = item;
                 return (
                   <li key={index} className="py-2">
-                    <Link href={link} className="hover:underline">
+                    <Link href={link} className="hover:underline" onClick={onClose}>
                       {title}
                     </Link>
                   </li>
@@ -63,7 +61,7 @@ const Menu: React.FC<Props> = ({ isOpen, onClose }) => {
                 const [title, link] = item;
                 return (
                   <li key={index} className="py-2">
-                    <Link href={link} className="text-[14px] hover:underline">
+                    <Link href={link} className="text-[14px] hover:underline" onClick={onClose}>
                       {title}
                     </Link>
                   </li>

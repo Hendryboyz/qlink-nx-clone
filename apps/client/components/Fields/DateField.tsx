@@ -7,6 +7,8 @@ interface DateFieldProps {
   name: string;
   placeholder?: string;
   className?: string;
+  // Custom classes for placeholder (when value is empty or '0000-00-00')
+  placeholderClassName?: string;
   defaultDisplayValue?: string;
   autoOpen?: boolean;
 }
@@ -15,6 +17,7 @@ const DateField: React.FC<DateFieldProps> = ({
   name,
   placeholder = "0000-00-00",
   className = "",
+  placeholderClassName = "",
   defaultDisplayValue = "0000-00-00",
   autoOpen = false,
   ...props
@@ -125,12 +128,14 @@ const DateField: React.FC<DateFieldProps> = ({
       ) : (
         /* Custom display div */
         <div
-          className={`cursor-pointer w-full min-h-[48px] flex items-center ${
+          className={`cursor-pointer text-gray-400 w-full min-h-[48px] flex items-center ${
             field.value && field.value !== '0000-00-00'
               ? className
-              : className.includes('bg-white')
-                ? className.replace(/text-\w+-\d+/g, 'text-gray-400').replace(/font-\w+/g, 'font-normal')
-                : 'text-base pl-0 text-gray-400 font-[GilroyRegular]'
+              : (placeholderClassName && placeholderClassName.length > 0)
+                ? placeholderClassName
+                : className.includes('bg-white')
+                  ? className.replace(/text-\w+-\d+/g, 'text-gray-400').replace(/font-\w+/g, 'font-normal')
+                  : 'text-base pl-0 text-gray-400 font-[GilroyRegular]'
           }`}
           onClick={handleClick}
           onDoubleClick={handleDoubleClick}

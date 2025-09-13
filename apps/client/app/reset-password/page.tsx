@@ -6,13 +6,17 @@ import Step1 from './Step1';
 import Step2 from './Step2';
 import Step3 from './Step3';
 import { PayloadProvider } from '$/store/payload';
+import { Cross2Icon } from '@radix-ui/react-icons';
+import { useRouter } from 'next/navigation';
 
 export default function SignUp() {
+  const router = useRouter();
+  const onClose = () => router.push('/')
   const [step, handleChangeStep] = useState(1);
   const goNextStep = useCallback(() => {
     handleChangeStep(pre => pre+1)
   }, [])
-  
+
   const goFirstStep = useCallback(() => {
     handleChangeStep(1)
   }, [])
@@ -29,6 +33,13 @@ export default function SignUp() {
 
   return (
     <PayloadProvider>
+    <div className="absolute top-[24px] right-[24px] text-[#FFF0D3]" onClick={onClose}>
+      <Cross2Icon
+        height={24}
+        width={24}
+        className="justify-self-end cursor-pointer"
+      />
+    </div>
     <ColorBackground color="#D70127">
       {children}
     </ColorBackground>
