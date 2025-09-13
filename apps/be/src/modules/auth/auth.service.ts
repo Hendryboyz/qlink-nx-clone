@@ -37,6 +37,9 @@ import { hashPassword } from '$/modules/utils/auth.util';
 type AuthSuccessBO = {
   access_token: string;
   user_id: string;
+  id: string;
+  email: string;
+  name: string;
 };
 
 @Injectable()
@@ -57,6 +60,9 @@ export class AuthService {
     return {
       access_token: this.signToken(email, IdentifierType.EMAIL, user.id),
       user_id: user.id,
+      id: user.id,
+      email: user.email,
+      name: `${user.lastName} ${user.firstName}`
     };
   }
 
@@ -85,6 +91,9 @@ export class AuthService {
     return {
       access_token: this.signToken(userVO.email, verifiedPayload.identifierType, userVO.id),
       user_id: userVO.id,
+      id: userVO.id,
+      email: userVO.email,
+      name: `${userVO.lastName} ${userVO.firstName}`,
       user: userVO,
     };
   }

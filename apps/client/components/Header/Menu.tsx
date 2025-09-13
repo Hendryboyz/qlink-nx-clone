@@ -1,8 +1,8 @@
 import Link from 'next/link';
 import React from 'react';
-import API from '$/utils/fetch';
 import { Cross2Icon } from '@radix-ui/react-icons';
 import { useRouter } from 'next/navigation';
+import SignButton from '$/components/Header/SignButton';
 
 const mainItems = [
   ['Home', '/'],
@@ -71,16 +71,7 @@ const Menu: React.FC<Props> = ({ isOpen, onClose }) => {
               })}
             </ul>
             <div className="mt-6">
-              <a
-                className="hover:cursor-pointer hover:underline text-gray-500"
-                onClick={() => {
-                  API.clearToken();
-                  setTimeout(() => router.push('/sign-in'), 500);
-                }}
-              >
-                <img height={18} width={18} className="inline mr-2 pb-0.5" src='/assets/logout.svg' />
-                Logout
-              </a>
+              <SignButton />
             </div>
           </nav>
         </div>

@@ -22,7 +22,7 @@ export interface RegisterDto {
 export interface LoginDto {
   email: string;
   password: string;
-  remember_me?: boolean;
+  rememberMe?: boolean;
 }
 
 export interface SendOtpDto {

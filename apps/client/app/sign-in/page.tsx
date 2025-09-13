@@ -1,12 +1,13 @@
 'use client';
 
 import React, { Fragment } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { Formik, FormikErrors, Field, ErrorMessage, FieldProps } from 'formik';
+import {signIn} from "next-auth/react";
+
 import Banner from '$/components/Banner';
 import { ColorBackground } from '$/components/Background';
-import API from '$/utils/fetch';
 import SubmitButton from '$/components/Button/SubmitButton';
 import { NOOP } from '$/utils';
 import { usePopup } from '$/hooks/PopupProvider';
@@ -21,6 +22,8 @@ interface FormData {
 }
 
 export default function SignIn() {
+  const searchParams = useSearchParams();
+  const signInCallback = searchParams.get('callbackUrl');
   const initValue: FormData = { email: '', password: '', rememberMe: false };
   const router = useRouter();
   const { showPopup } = usePopup();
@@ -46,7 +49,6 @@ export default function SignIn() {
           initialValues={initValue}
           validate={(values) => {
             const errors: FormikErrors<FormData> = {};
-            console.log(values.email);
             if (!values.email) {
               errors.email = 'Required';
             } else if (!emailRegex.test(values.email)) {
@@ -56,19 +58,34 @@ export default function SignIn() {
           }}
           onSubmit={(values, { setSubmitting }) => {
             setSubmitting(true);
-            API.post('auth/login', {
-              email: String(values.email),
+            signIn("credentials", {
+              redirect: false,
+              email: values.email,
               password: values.password,
-              remember_me: values.rememberMe,
-            })
-              .then((_) => {
-                router.push('/');
-              })
-              .catch((err) => {
-                console.error(err);
-                showPopup({ title: 'Incorrect Credentials' });
-              })
-              .finally(() => setSubmitting(false));
+              rememberMe: values.rememberMe,
+              callbackUrl: signInCallback ? signInCallback : '/',
+            }).then((res) => {
+              if (res && res.ok) {
+                console.log(res);
+                router.push(signInCallback ? signInCallback : '/');
+                return;
+              }
+              console.error(res);
+              showPopup({ title: 'Incorrect Credentials' });
+            }).finally(() => setSubmitting(false));;
+            // API.post('auth/login', {
+            //   email: String(values.email),
+            //   password: values.password,
+            //   rememberMe: values.rememberMe,
+            // })
+            //   .then((_) => {
+            //     router.push('/');
+            //   })
+            //   .catch((err) => {
+            //     console.error(err);
+            //     showPopup({ title: 'Incorrect Credentials' });
+            //   })
+            //   .finally(() => setSubmitting(false));
           }}
         >
           {({
