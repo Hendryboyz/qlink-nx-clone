@@ -64,6 +64,7 @@ jobs:
           RECAPTHCA_SITEKEY: ${{ secrets.RECAPTHCA_SITEKEY }}
           SALESFORCE_CLIENT_SECRET: ${{ secrets.SALESFORCE_CLIENT_SECRET }}
           SALESFORCE_PASSWORD: ${{ secrets.SALESFORCE_PASSWORD }}
+          NEXTAUTH_SECRET: ${{ secrets.NEXTAUTH_SECRET }}
         run: |
           envsubst < .env.template > .env
 
