@@ -60,3 +60,4 @@ deployments/local-dockerfiles/
 /.env.dev
 
 *123
+*.secret
