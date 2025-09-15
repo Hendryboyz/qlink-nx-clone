@@ -1,9 +1,8 @@
-import { type NextFetchEvent, NextResponse } from 'next/server';
+import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 import { withAuth } from "next-auth/middleware";
 import { ACCESS_TOKEN } from '@org/common';
 import API from './utils/fetch';
-import { NextRequestWithAuth } from 'next-auth/src/next/middleware';
 
 async function validateToken(token: string | undefined): Promise<boolean> {
   if (!token) { return false; }
@@ -73,8 +72,7 @@ const isIncludedRoute =
     });
 
 async function middleware(
-  request: NextRequestWithAuth,
-  _: NextFetchEvent,
+  request: any,
 ) {
   const requestPath = request.nextUrl.pathname;
   console.log('middleware', requestPath, request.nextauth);
