@@ -112,11 +112,10 @@ async function isRedirectMemberAfterSignIn(requestPath: string, isTokenValid: bo
   return isLoginHidden && isTokenValid;
 }
 
-
 // 配置中間件應該運行的路徑
 export const config = {
   matcher: [
-    "/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp|woff|woff2|ttf|eot)).*)",
+    "/((?!api|_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp|woff|woff2|ttf|eot)).*)",
   ],
 };
 
