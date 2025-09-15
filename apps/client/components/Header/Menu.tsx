@@ -49,7 +49,11 @@ const Menu: React.FC<Props> = ({ isOpen, onClose }) => {
                 const [title, link] = item;
                 return (
                   <li key={index} className="py-2">
-                    <Link href={link} className="hover:underline" onClick={onClose}>
+                    <Link
+                      className="hover:underline"
+                      href={link}
+                      onClick={onClose}
+                    >
                       {title}
                     </Link>
                   </li>

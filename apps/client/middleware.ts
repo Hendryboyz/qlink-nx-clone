@@ -1,8 +1,9 @@
-import { NextResponse } from 'next/server';
+import { type NextFetchEvent, NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 import { withAuth } from "next-auth/middleware";
 import { ACCESS_TOKEN } from '@org/common';
 import API from './utils/fetch';
+import { NextRequestWithAuth } from 'next-auth/src/next/middleware';
 
 async function validateToken(token: string | undefined): Promise<boolean> {
   if (!token) { return false; }
@@ -31,7 +32,7 @@ const guestOnlyRoutes = ['/sign-in', '/sign-up', '/reset-password'];
 
 const publicRoutes = ['/', '/news', '/privacy-policy', '/terms-of-service'];
 
-async function middlewareV1(request: NextRequest) {
+async function legacyMiddleware(request: NextRequest) {
   // 獲取 token，這裡假設它存儲在 cookie 中
   const token = request.cookies.get(ACCESS_TOKEN)?.value;
 
@@ -71,8 +72,12 @@ const isIncludedRoute =
       return baseRoute !== '/' && requestPath.startsWith(baseRoute);
     });
 
-async function middleware(request: any) {
+async function middleware(
+  request: NextRequestWithAuth,
+  _: NextFetchEvent,
+) {
   const requestPath = request.nextUrl.pathname;
+  console.log('middleware', requestPath, request.nextauth);
   if (guestOnlyRoutes.includes(requestPath)) {
     // If user is already authenticated → redirect to /member
     if (request.nextauth?.token) {
@@ -86,22 +91,18 @@ async function middleware(request: any) {
 export default withAuth(middleware, {
   callbacks: {
     authorized: ({ token, req }) => {
-      console.log('Authorized request', token);
       const requestPath = req.nextUrl.pathname;
+      console.log('Authorized request', token, requestPath);
       if (isIncludedRoute(publicRoutes, requestPath)) {
         return true
       }
 
       if (isIncludedRoute(protectedRoutes, requestPath)) {
-        return !!token;
+        return token !== undefined && token !== null;
       }
 
-      if (isIncludedRoute(guestOnlyRoutes, requestPath)) {
-        return true;
-      }
-      return false;
+      return isIncludedRoute(guestOnlyRoutes, requestPath);
     },
-
   },
 });
 

@@ -1,10 +1,10 @@
 'use client';
 
 import React, { Fragment } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { Formik, FormikErrors, Field, ErrorMessage, FieldProps } from 'formik';
-import {signIn} from "next-auth/react";
+import { signIn } from 'next-auth/react';
 
 import Banner from '$/components/Banner';
 import { ColorBackground } from '$/components/Background';
@@ -24,6 +24,9 @@ interface FormData {
 export default function SignIn() {
   const initValue: FormData = { email: '', password: '', rememberMe: false };
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const signInCallback = searchParams.get('callbackUrl') ?? '/';
+
   const { showPopup } = usePopup();
 
   function onClose() {
@@ -54,16 +57,18 @@ export default function SignIn() {
             }
             return errors;
           }}
-          onSubmit={(values, { setSubmitting }) => {
+          onSubmit={async (values, { setSubmitting }) => {
             setSubmitting(true);
             signIn("credentials", {
               redirect: false,
               email: values.email,
               password: values.password,
               rememberMe: values.rememberMe,
+              callbackUrl: signInCallback,
             }).then((res) => {
               if (res && res.ok) {
-                router.push('/member');
+                const callbackUrl = res.url ? res.url : '/';
+                window.location.replace(`${callbackUrl}`);
                 return;
               }
               console.error(res);

@@ -59,6 +59,7 @@ const handler = NextAuth({
   pages: {
     signIn: '/sign-in',
   },
+  callbacks: {},
   events: {
     signOut: async (message) => {
       const cookiesStore = await cookies();
