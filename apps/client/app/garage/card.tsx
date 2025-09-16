@@ -80,7 +80,7 @@ const ProductCard = ({ data, handleEdit }: { data: ProductVO, handleEdit: (data:
   return (
     <>
       <div
-        className="relative flex justify-between min-h-[164px] bg-[#C3C3C3]"
+        className="relative overflow-hidden flex justify-between min-h-[164px] bg-[#C3C3C3]"
         style={{
           backgroundImage: `url(${modelImage})`,
           backgroundSize: 'cover',
@@ -88,9 +88,11 @@ const ProductCard = ({ data, handleEdit }: { data: ProductVO, handleEdit: (data:
           backgroundRepeat: 'no-repeat'
         }}
       >
+         {/* Gradient overlay for better text readability */}
+         <div className="absolute inset-0 z-0 bg-gradient-to-t from-black/70 via-black/0 to-transparent pointer-events-none"></div>
         {/* Status Badge */}
         <div
-          className="absolute top-6 left-6 w-[68px] h-[24px] rounded flex items-center justify-center"
+          className="absolute top-6 left-6 z-10 w-[68px] h-[24px] rounded flex items-center justify-center"
           style={{ backgroundColor: statusConfig.bgColor }}
         >
           <span className="text-white text-[14px] font-[GilroyBold] leading-[16px]">
@@ -98,7 +100,7 @@ const ProductCard = ({ data, handleEdit }: { data: ProductVO, handleEdit: (data:
           </span>
         </div>
 
-        <div className="ml-9 mb-2 self-end">
+        <div className="relative z-10 ml-9 mb-2 self-end">
           <p className="text-xl text-white font-[GilroyLight]">{data.year}</p>
           <h2 className="text-3xl font-gilroy-heavy text-primary-500 -mt-2">{modelDefined ? modelDefined.title : model}</h2>
         </div>
