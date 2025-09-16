@@ -115,7 +115,7 @@ export class OtpService {
       }
     } else {
       if (user) {
-        throw new ConflictException(`conflict ${identifierType}`);
+        throw new ConflictException(`This email is already registered`);
       }
     }
   }
