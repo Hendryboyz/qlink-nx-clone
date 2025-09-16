@@ -262,7 +262,7 @@ export default function Editable({editKey, title, type = 'text', defaultValue, v
           {isEditing ? (
             <>
               <Input className="min-w-60 mr-1 font-[GilroySemiBold] h-6 py-0 outline-none focus:ring-0 focus:border-gray-300" />
-              {error && <span className="text-red-600">{error}</span>}
+              {error && <span className="text-red-600 font-[GilroyRegular] text-[12px]">{error}</span>}
             </>
           ) : (
             <span className="font-[GilroySemiBold] text-[1rem] min-h-[1rem] inline-block">
