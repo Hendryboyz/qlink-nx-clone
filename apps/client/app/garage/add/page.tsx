@@ -115,7 +115,7 @@ export default function GarageAdd() {
             .then((_) => {
               showPopup({
                 useDefault: false,
-                title: 'Your product has been registered.',
+                title: 'Your product registration has been submitted.',
                 content: (
                   <div className="flex items-center justify-center gap-4">
                     <Button
