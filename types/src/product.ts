@@ -5,7 +5,7 @@ export type ProductEntity = {
   engineNumber: string;
   purchaseDate: string;
   registrationDate: string;
-  dealerName: string;
+  dealerName?: string;
   year: number;
   model: string; // mapping to DB
   crmId?: string;

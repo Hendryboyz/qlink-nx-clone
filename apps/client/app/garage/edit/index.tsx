@@ -35,7 +35,7 @@ interface FormData {
   model: string;
   year: number;
   vin: string;
-  dealerName: string;
+  dealerName?: string;
   engineNumber: string;
   purchaseDate: string;
   registrationDate: string;

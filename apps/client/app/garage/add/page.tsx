@@ -9,7 +9,6 @@ import { ModelVO, ProductDto } from '@org/types';
 import { useRouter } from 'next/navigation';
 import { usePopup } from '$/hooks/PopupProvider';
 import { DEFAULT_ERROR_MSG } from '@org/common';
-import DropdownField from '$/components/Dropdown';
 import DateField from '$/components/Fields/DateField';
 import Button from '$/components/Button';
 import { DEFAULT_MODELS } from '$/utils';
@@ -17,7 +16,7 @@ const CreateSchema = Yup.object().shape({
   model: Yup.string().required('Required'),
   year: Yup.number().required('Required').typeError("Required"),
   vin: Yup.string().required('Required'),
-  dealerName: Yup.string().required('Required'),
+  dealerName: Yup.string(),
   engineNumber: Yup.string().required('Required'),
   purchaseDate: Yup.string()
     .matches(/^\d{4}-\d{2}-\d{2}$/, 'Date must be in YYYY-MM-DD format')
