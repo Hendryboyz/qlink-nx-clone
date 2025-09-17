@@ -261,7 +261,7 @@ export default function Editable({editKey, title, type = 'text', defaultValue, v
         <div className="min-h-[1.5rem] flex flex-col justify-start">
           <div className="min-h-[1rem]">
             {isEditing ? (
-              <Input className="min-w-60 mr-1 font-[GilroySemiBold] h-6 py-0 outline-none focus:ring-0 focus:border-gray-300" />
+              <Input className="min-w-50 mr-1 font-[GilroySemiBold] h-6 py-0 outline-none focus:ring-0 focus:border-gray-300" />
             ) : (
               <span className="font-[GilroySemiBold] text-[1rem] min-h-[1rem] inline-block">
                 {type === 'dropdown' && options && currentValue
