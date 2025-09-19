@@ -1,6 +1,6 @@
 'use client';
 
-import React, { Fragment, useCallback, useEffect, useState } from 'react';
+import React, { Fragment, useCallback, useEffect, useState, useRef } from 'react';
 import Header from '$/components/Header';
 import * as Yup from 'yup';
 import API from '$/utils/fetch';
@@ -16,6 +16,8 @@ import { DEFAULT_ERROR_MSG } from '@org/common';
 import Editable from '$/components/Fields/Editable';
 import Button from '$/components/Button';
 import { DEFAULT_MODELS } from '$/utils';
+import { IconButton } from '@radix-ui/themes';
+import { CheckIcon, Cross2Icon } from '@radix-ui/react-icons';
 
 // Validation schemas for individual fields
 const validationSchemas = {
@@ -93,6 +95,101 @@ type Props = {
 
 const EDITABLE_MIN_HEIGHT = '3.375rem';
 
+const ModelDropdown = React.forwardRef<
+  { handleSave: () => void; handleCancel: () => void },
+  {
+    value?: string;
+    options: { value: string; label: string }[];
+    onChange: (value: string) => void;
+    isEditing: boolean;
+    onSave: () => void;
+    onCancel: () => void;
+  }
+>(({ value, options, onChange, isEditing, onSave, onCancel }, ref) => {
+  const [isOpen, setIsOpen] = useState(false);
+  const [currentValue, setCurrentValue] = useState(value);
+
+  const displayValue = React.useMemo(() => {
+    if (!currentValue) return 'None';
+    const selectedOption = options.find(opt => opt.value === currentValue);
+    return selectedOption ? selectedOption.label : currentValue;
+  }, [currentValue, options]);
+
+  React.useEffect(() => {
+    setCurrentValue(value);
+  }, [value]);
+
+  const handleSave = () => {
+    if (currentValue && currentValue !== value) {
+      onChange(currentValue);
+    }
+    onSave();
+    setIsOpen(false);
+  };
+
+  const handleCancel = () => {
+    setCurrentValue(value);
+    onCancel();
+    setIsOpen(false);
+  };
+
+  React.useImperativeHandle(ref, () => ({
+    handleSave,
+    handleCancel
+  }));
+
+  if (!isEditing) {
+    return (
+      <div className="h-6 flex items-center">
+        <span className="font-[GilroySemiBold] text-[1rem]">
+          {displayValue}
+        </span>
+      </div>
+    );
+  }
+
+  return (
+    <div className="relative w-48 sm:w-56 md:w-64">
+      <div
+        className="w-full mr-1 text-[1rem] font-[GilroySemiBold] h-6 py-0 cursor-pointer flex justify-between items-center"
+        onClick={() => setIsOpen(!isOpen)}
+      >
+        <span className={!currentValue ? 'text-gray-400' : ''}>
+          {displayValue}
+        </span>
+        <img
+          src="/assets/chevron_down.svg"
+          className="flex-shrink-0 ml-2"
+          alt="dropdown arrow"
+        />
+      </div>
+
+      {isOpen && (
+        <>
+          <div
+            className="fixed inset-0 z-40"
+            onClick={() => setIsOpen(false)}
+          />
+          <div className="absolute top-full left-0 z-50 bg-white border border-gray-200 rounded-lg shadow-lg max-h-60 overflow-y-auto min-w-max whitespace-nowrap mt-1">
+            {options.map((option) => (
+              <div
+                key={option.value}
+                className="px-4 py-2 hover:bg-gray-100 cursor-pointer text-gray-700 text-sm"
+                onClick={() => {
+                  setCurrentValue(option.value);
+                  setIsOpen(false);
+                }}
+              >
+                {option.label}
+              </div>
+            ))}
+          </div>
+        </>
+      )}
+    </div>
+  );
+});
+
 export default function GarageEdit({ data, onCancel, onRemove }: Props) {
   const POPUP_BUTTON_STYLE = 'py-2 px-3 text-sm rounded-lg h-[30px] font-[GilroySemiBold]';
   const [models, setModels] = useState<ModelVO[]>([]);
@@ -107,6 +204,8 @@ export default function GarageEdit({ data, onCancel, onRemove }: Props) {
     dealerName: data.dealerName,
   });
   const { showPopup, hidePopup } = usePopup();
+  const [isModelEditing, setIsModelEditing] = useState(false);
+  const modelDropdownRef = useRef<{ handleSave: () => void; handleCancel: () => void }>(null);
 
   // Save change function for Editable components
   const saveChange = useCallback(async (editingKey: string, savingValue: any) => {
@@ -203,20 +302,54 @@ export default function GarageEdit({ data, onCancel, onRemove }: Props) {
             defaultValue={productData.id}
             isChangeAllowed={false}
           />
-          <Editable
-            key="model"
-            editKey="model"
-            title="Model"
-            type="dropdown"
-            className={`min-h-[${EDITABLE_MIN_HEIGHT}]`}
-            defaultValue={String(productData.model)}
-            saveChange={saveChange}
-            isChangeAllowed={true}
-            options={models.map((vo) => ({
-              value: String(vo.id),
-              label: vo.title,
-            }))}
-          />
+          <div className={`flex justify-between items-start min-h-[${EDITABLE_MIN_HEIGHT}] pl-[1.25rem] pr-[1.25rem] border-b-inset-6`}>
+            <div className="flex flex-col text-gray-400 relative pt-2">
+              <span className="text-xs font-gilroy-regular text-[12px] text-[#D70127]">Model</span>
+              <div className="min-h-[1.5rem] flex flex-col justify-start">
+                <div className="min-h-[1rem]">
+                  <ModelDropdown
+                    ref={modelDropdownRef}
+                    value={String(productData.model)}
+                    options={models.map((vo) => ({
+                      value: String(vo.id),
+                      label: vo.title,
+                    }))}
+                    onChange={(value) => saveChange('model', value)}
+                    isEditing={isModelEditing}
+                    onSave={() => setIsModelEditing(false)}
+                    onCancel={() => setIsModelEditing(false)}
+                  />
+                </div>
+              </div>
+            </div>
+            <div className="pt-4">
+              {isModelEditing ? (
+                <div className="flex gap-1">
+                  <IconButton
+                    className="icon-button-small"
+                    color="blue"
+                    onClick={() => modelDropdownRef.current?.handleSave()}
+                  >
+                    <CheckIcon height={16} width={16} />
+                  </IconButton>
+                  <IconButton
+                    className="icon-button-small"
+                    color="blue"
+                    onClick={() => modelDropdownRef.current?.handleCancel()}
+                  >
+                    <Cross2Icon height={16} width={16} />
+                  </IconButton>
+                </div>
+              ) : (
+                <img
+                  src="/assets/edit_pencil.svg"
+                  alt="edit"
+                  className="cursor-pointer"
+                  onClick={() => setIsModelEditing(true)}
+                />
+              )}
+            </div>
+          </div>
           <Editable
             key="year"
             editKey="year"
