@@ -6,6 +6,7 @@ import './global.css';
 import { StyledJsxRegistry } from './registry';
 import '@radix-ui/themes/styles.css';
 import { Theme } from '@radix-ui/themes';
+import Providers from '$/app/providers';
 
 export default function RootLayout({
   children,
@@ -30,5 +31,11 @@ export default function RootLayout({
 }
 
 const Wrapper = ({ children }: { children: React.ReactNode }) => {
-  return <div className="min-h-full flex justify-center bg-white">{children}</div>;
+  return (
+    <Providers>
+      <div className="min-h-full flex justify-center bg-white">
+        {children}
+      </div>
+    </Providers>
+  );
 };

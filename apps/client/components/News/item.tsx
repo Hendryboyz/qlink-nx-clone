@@ -40,7 +40,7 @@ const NewsItem: React.FC<Props> = ({ type, date, title, imgUrl, id }) => {
     >
       <div className="rounded-xl w-24 h-24 bg-gray-300 flex-shrink-0">
         <img
-          className="rounded-xl w-full h-full object-cover7b0fda7e38995450b19cae64525ad0bffddfb2ec"
+          className="rounded-xl w-full h-full object-cover"
           src={imageSource}
           alt="preview-image"
         />

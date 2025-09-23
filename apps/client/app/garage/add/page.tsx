@@ -9,7 +9,6 @@ import { ModelVO, ProductDto } from '@org/types';
 import { useRouter } from 'next/navigation';
 import { usePopup } from '$/hooks/PopupProvider';
 import { DEFAULT_ERROR_MSG } from '@org/common';
-import DropdownField from '$/components/Dropdown';
 import DateField from '$/components/Fields/DateField';
 import Button from '$/components/Button';
 import { DEFAULT_MODELS } from '$/utils';
@@ -17,7 +16,7 @@ const CreateSchema = Yup.object().shape({
   model: Yup.string().required('Required'),
   year: Yup.number().required('Required').typeError("Required"),
   vin: Yup.string().required('Required'),
-  dealerName: Yup.string().required('Required'),
+  dealerName: Yup.string(),
   engineNumber: Yup.string().required('Required'),
   purchaseDate: Yup.string()
     .matches(/^\d{4}-\d{2}-\d{2}$/, 'Date must be in YYYY-MM-DD format')
@@ -74,7 +73,7 @@ const ATTRS: Columns = {
   purchaseDate: {
     title: 'Purchase Date',
     type: 'date',
-    placeholder: 'Select purchase date (YYYY-MM-DD)'
+    placeholder: 'Select purchase date'
   },
   registrationDate: {
     title: 'Registration Date',
@@ -87,7 +86,7 @@ const ATTRS: Columns = {
   },
 };
 export default function GarageAdd() {
-  const DEFAULT_ERROR_MSG_CLASS = 'text-red-500 text-xs block mt-1';
+  const DEFAULT_ERROR_MSG_CLASS = 'text-red-500 text-xs block -mt-[0.25rem] mb-[0.5rem]';
   const POPUP_BUTTON_STYLE = 'py-2 px-3 text-sm rounded-lg h-[30px] font-[GilroySemiBold]';
   const [models, setModels] = useState<ModelVO[]>([]);
   const initValue: FormData = defaultValue;
@@ -115,7 +114,7 @@ export default function GarageAdd() {
             .then((_) => {
               showPopup({
                 useDefault: false,
-                title: 'Your product has been registered.',
+                title: 'Your product registration has been submitted.',
                 content: (
                   <div className="flex items-center justify-center gap-4">
                     <Button
@@ -167,12 +166,13 @@ export default function GarageAdd() {
                 ([key, data]) => {
                   return (
                     <div
-                      className="flex justify-between items-center min-h-[3.375rem] pl-[1.25rem] pr-[1.25rem] border-b-inset-6"
+                      className="flex justify-between items-start min-h-[3.375rem] pl-[1.25rem] pr-[1.25rem] border-b-inset-6"
                       key={key}
                     >
                       <div className="flex flex-col text-gray-400 flex-1">
-                        <span className="text-xs font-gilroy-regular text-[12px] text-[#D70127]">{data.title}</span>
-                        <div className="h-auto min-h-4 flex flex-col content-around mt-[2px]">
+                        <div className="h-[3.375rem] flex flex-col justify-center">
+                          <span className="text-xs font-gilroy-regular text-[12px] text-[#D70127]">{data.title}</span>
+                          <div className="h-auto flex flex-col mt-[2px]">
                         {data.type == 'select' ? (
                           <Field name={key}>
                             {({ field, form }: any) => {
@@ -187,7 +187,7 @@ export default function GarageAdd() {
                                     onClick={() => setIsOpen(!isOpen)}
                                   >
                                     <span
-                                      className={`text-base ${selectedModel ? 'font-[GilroySemiBold] text-gray-500' : 'font-[GilroyRegular] text-gray-400'}`}
+                                      className={`text-base ${selectedModel ? 'font-[GilroySemiBold] text-gray-500' : 'font-[GilroySemiBold] text-gray-400'}`}
                                       style={{
                                         display: 'inline-block',
                                         minHeight: '1rem'
@@ -235,6 +235,7 @@ export default function GarageAdd() {
                               defaultDisplayValue={data.placeholder || "0000-00-00"}
                               placeholder={data.placeholder}
                               className="text-base pl-0 font-[GilroySemiBold] text-gray-500"
+                              placeholderClassName="text-base pl-0 text-gray-400 font-[GilroySemiBold]"
                             />
                           </div>
                         ) :
@@ -246,12 +247,13 @@ export default function GarageAdd() {
                             placeholder={data.placeholder || ""}
                           />
                         }
+                          </div>
+                        </div>
                         <ErrorMessage
                           name={key}
                           className={DEFAULT_ERROR_MSG_CLASS}
                           component="span"
                         />
-                        </div>
                       </div>
                     </div>
                   );

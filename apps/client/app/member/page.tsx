@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState, useRef } from 'react';
 import { UserSourceType, UserUpdateDto, UserVO } from '@org/types';
 import Header from '$/components/Header';
 import * as Yup from 'yup';
@@ -8,6 +8,98 @@ import API from '$/utils/fetch';
 import Editable from '$/components/Fields/Editable';
 import { STATES, UserSourceDisplay } from '@org/common';
 import { Upload, UploadProps } from 'antd';
+import { IconButton } from '@radix-ui/themes';
+import { CheckIcon, Cross2Icon } from '@radix-ui/react-icons';
+
+const StateDropdown = React.forwardRef<
+  { handleSave: () => void; handleCancel: () => void },
+  {
+    value?: string;
+    onChange: (value: string) => void;
+    isEditing: boolean;
+    onSave: () => void;
+    onCancel: () => void;
+  }
+>(({ value, onChange, isEditing, onSave, onCancel }, ref) => {
+  const [isOpen, setIsOpen] = useState(false);
+  const [currentValue, setCurrentValue] = useState(value);
+  const displayValue = value || 'None';
+
+  React.useEffect(() => {
+    setCurrentValue(value);
+  }, [value]);
+
+  const handleSave = () => {
+    if (currentValue && currentValue !== value) {
+      onChange(currentValue);
+    }
+    onSave();
+    setIsOpen(false);
+  };
+
+  const handleCancel = () => {
+    setCurrentValue(value);
+    onCancel();
+    setIsOpen(false);
+  };
+
+  React.useImperativeHandle(ref, () => ({
+    handleSave,
+    handleCancel
+  }));
+
+
+  if (!isEditing) {
+    return (
+      <div className="h-6 flex items-center">
+        <span className="font-[GilroySemiBold] text-[1rem]">
+          {displayValue}
+        </span>
+      </div>
+    );
+  }
+
+  return (
+    <div className="relative w-32 sm:w-40 md:w-48">
+      <div
+        className="w-full mr-1 text-[1rem] font-[GilroySemiBold] h-6 py-0 cursor-pointer flex justify-between items-center"
+        onClick={() => setIsOpen(!isOpen)}
+      >
+        <span className={!currentValue ? 'text-gray-400' : ''}>
+          {currentValue || 'Select State'}
+        </span>
+        <img
+          src="/assets/chevron_down.svg"
+          className="flex-shrink-0 ml-2"
+          alt="dropdown arrow"
+        />
+      </div>
+
+      {isOpen && (
+        <>
+          <div
+            className="fixed inset-0 z-40"
+            onClick={() => setIsOpen(false)}
+          />
+          <div className="absolute top-full left-0 z-50 bg-white border border-gray-200 rounded-lg shadow-lg max-h-60 overflow-y-auto min-w-max whitespace-nowrap mt-1">
+            {STATES.map((state) => (
+              <div
+                key={state}
+                className="px-4 py-2 hover:bg-gray-100 cursor-pointer text-gray-700 text-sm"
+                onClick={() => {
+                  setCurrentValue(state);
+                  setIsOpen(false);
+                }}
+              >
+                {state}
+              </div>
+            ))}
+          </div>
+        </>
+      )}
+    </div>
+  );
+});
 
 export default function Member() {
   const [user, setUser] = useState<UserVO | null>(null);
@@ -15,6 +107,8 @@ export default function Member() {
   const [uploading, setUploading] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [isStateEditing, setIsStateEditing] = useState(false);
+  const stateDropdownRef = useRef<{ handleSave: () => void; handleCancel: () => void }>(null);
 
   useEffect(() => {
     const fetchUserInfo = async () => {
@@ -108,8 +202,17 @@ export default function Member() {
               key="id"
               editKey="id"
               title="Member ID"
-              defaultValue={user?.id}
+              defaultValue={user?.memberId}
               isChangeAllowed={false}
+            />
+            <Editable
+              key="email"
+              editKey="email"
+              title="Email"
+              defaultValue={user?.email}
+              saveChange={saveChange}
+              validation={Yup.string().email().required()}
+              isChangeAllowed={true}
             />
             <Editable
               key="phone"
@@ -150,15 +253,6 @@ export default function Member() {
               isChangeAllowed={true}
             />
             <Editable
-              key="email"
-              editKey="email"
-              title="Email"
-              defaultValue={user?.email}
-              saveChange={saveChange}
-              validation={Yup.string().email().required()}
-              isChangeAllowed={true}
-            />
-            <Editable
               key="addressCity"
               editKey="addressCity"
               title="City"
@@ -166,16 +260,50 @@ export default function Member() {
               saveChange={saveChange}
               isChangeAllowed={true}
             />
-            <Editable
-              key="addressState"
-              editKey="addressState"
-              type="dropdown"
-              title="State"
-              defaultValue={user?.addressState}
-              saveChange={saveChange}
-              isChangeAllowed={true}
-              options={STATES.map((value) => ({ value }))}
-            />
+            <div className="flex justify-between items-start min-h-[3.1875rem] pl-[1.25rem] pr-[1.25rem] border-b-inset-6">
+              <div className="flex flex-col text-gray-400 relative pt-2">
+                <span className="text-xs font-gilroy-regular text-[12px] text-[#D70127]">State</span>
+                <div className="min-h-[1.5rem] flex flex-col justify-start">
+                  <div className="min-h-[1rem]">
+                    <StateDropdown
+                      ref={stateDropdownRef}
+                      value={user?.addressState}
+                      onChange={(value) => saveChange('addressState', value)}
+                      isEditing={isStateEditing}
+                      onSave={() => setIsStateEditing(false)}
+                      onCancel={() => setIsStateEditing(false)}
+                    />
+                  </div>
+                </div>
+              </div>
+              <div className="pt-4">
+                {isStateEditing ? (
+                  <div className="flex gap-1">
+                    <IconButton
+                      className="icon-button-small"
+                      color="blue"
+                      onClick={() => stateDropdownRef.current?.handleSave()}
+                    >
+                      <CheckIcon height={16} width={16} />
+                    </IconButton>
+                    <IconButton
+                      className="icon-button-small"
+                      color="blue"
+                      onClick={() => stateDropdownRef.current?.handleCancel()}
+                    >
+                      <Cross2Icon height={16} width={16} />
+                    </IconButton>
+                  </div>
+                ) : (
+                  <img
+                    src="/assets/edit_pencil.svg"
+                    alt="edit"
+                    className="cursor-pointer"
+                    onClick={() => setIsStateEditing(true)}
+                  />
+                )}
+              </div>
+            </div>
             <Editable
               key="addressDetail"
               editKey="addressDetail"

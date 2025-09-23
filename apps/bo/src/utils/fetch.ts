@@ -18,7 +18,7 @@ import {
 import { GetVehiclesFilters, GetVehiclesResponse } from '$/types/vehicles';
 
 class Api {
-  private instance: AxiosInstance;
+  private readonly instance: AxiosInstance;
   private isRefreshing = false;
   private failedQueue: Array<{
     resolve: (value?: unknown) => void;

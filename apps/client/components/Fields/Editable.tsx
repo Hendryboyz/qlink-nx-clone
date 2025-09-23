@@ -213,13 +213,13 @@ export default function Editable({editKey, title, type = 'text', defaultValue, v
                   setIsEditing(false);
                 }
               }}
-              className="min-w-60 mr-1 text-[1rem] font-semibold h-6 py-0 outline-none focus:ring-0 focus:border-gray-300 border-none bg-transparent"
+              className="min-w-60 mr-1 text-[1rem] font-[GilroySemiBold] h-6 py-0 outline-none focus:ring-0 focus:border-gray-300 border-none bg-transparent"
               placeholder="YYYY-MM-DD"
               {...props}
             />
           ) : (
             <div
-              className="min-w-60 mr-1 text-[1rem] font-semibold h-6 py-0 cursor-pointer flex items-center"
+              className="min-w-60 mr-1 text-[1rem] font-[GilroySemiBold] h-6 py-0 cursor-pointer flex items-center"
               onClick={() => setIsDatePickerOpen(true)}
               onDoubleClick={() => {
                 setIsManualInput(true);
@@ -255,25 +255,33 @@ export default function Editable({editKey, title, type = 'text', defaultValue, v
   };
 
   return (
-    <div className={`flex justify-between items-center min-h-[3.1875rem] pl-[1.25rem] pr-[1.25rem] border-b-inset-6 ${className || ''}`}>
-      <div className="flex flex-col text-gray-400">
+    <div className={`flex justify-between items-start min-h-[3.1875rem] pl-[1.25rem] pr-[1.25rem] border-b-inset-6 ${className || ''}`}>
+      <div className="flex flex-col text-gray-400 relative pt-2">
         <span className="text-xs font-gilroy-regular text-[12px] text-[#D70127]">{title}</span>
-        <div className="h-auto min-h-4 flex flex-col content-around">
-          {isEditing ? (
-            <>
-              <Input className="min-w-60 mr-1 text-lg h-6 py-0 outline-none focus:ring-0 focus:border-gray-300" />
-              {error && <span className="text-red-600">{error}</span>}
-            </>
-          ) : (
-            <span className="font-[GilroySemiBold] text-[1rem] min-h-[1rem] inline-block">
-              {type === 'dropdown' && options && currentValue
-                ? options.find(opt => String(opt.value) === String(currentValue))?.label || currentValue
-                : currentValue || '\u00A0'}
-            </span>
+        <div className="min-h-[1.5rem] flex flex-col justify-start">
+          <div className="min-h-[1rem]">
+            {isEditing ? (
+              <Input className="min-w-50 mr-1 font-[GilroySemiBold] h-6 py-0 outline-none focus:ring-0 focus:border-gray-300" />
+            ) : (
+              <span className="font-[GilroySemiBold] text-[1rem] min-h-[1rem] inline-block">
+                {type === 'dropdown' && options && currentValue
+                  ? options.find(opt => String(opt.value) === String(currentValue))?.label || currentValue
+                  : currentValue || '\u00A0'}
+              </span>
+            )}
+          </div>
+          {error && isEditing && (
+            <div className="min-h-[0.75rem] mb-1">
+              <span className="text-red-600 font-[GilroyRegular] text-[12px]">{error}</span>
+            </div>
           )}
         </div>
       </div>
-      {isChangeAllowed && showEditButton() }
+      {isChangeAllowed && (
+        <div className="pt-4">
+          {showEditButton()}
+        </div>
+      )}
     </div>
   );
 }

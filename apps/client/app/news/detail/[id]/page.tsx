@@ -25,35 +25,38 @@ const Detail: NextPage<Props> = ({ params }) => {
 
   return (
     <div className="w-full min-h-full flex-1 overflow-hidden">
-      <Header title="News" useBackBtn={true} />
-      {post && (
-        <div className="max-w-full">
-          <div
-            className="h-60 flex flex-col justify-between"
-            style={{
-              backgroundImage: post.coverImage
-                ? `url(${post.coverImage})`
-                : undefined,
-              backgroundColor: post.coverImage ? undefined : '#D9D9D9',
-              backgroundSize: 'cover',
-              backgroundPosition: 'center center',
-            }}
-          >
-            <div className="flex m-5 justify-end">
-              <NewsType type={post.category} className="w-[60px] h-[20px] !text-[14px] flex items-center justify-center !pt-0" />
-            </div>
-            <h1 className="font-gilroy-bold text-xl pl-5 pb-3 pr-7 leading-tight">{post.title}</h1>
+    <Header title="News" useBackBtn={true} />
+    {post && (
+      <div className="max-w-full">
+        <div
+          className="h-60 flex flex-col justify-between relative"
+          style={{
+            backgroundImage: post.coverImage
+              ? `url(${post.coverImage})`
+              : undefined,
+            backgroundColor: post.coverImage ? undefined : '#D9D9D9',
+            backgroundSize: 'cover',
+            backgroundPosition: 'center center',
+          }}
+        >
+          {/* Gradient overlay for better text readability */}
+          <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-black/0 to-transparent pointer-events-none"></div>
+
+          <div className="flex m-5 justify-end relative z-10">
+            <NewsType type={post.category} className="w-[60px] h-[20px] !text-[14px]" />
           </div>
-          <div className="px-[20px] py-6 w-screen max-w-screen overflow-x-hidden">
-            <div className="mb-3 font-[GilroyMedium] text-base">{fromDateWithSlash(new Date(post.createdAt))}</div>
-            <div
-              className="font-gilroy-regular text-base tracking-[0px] leading-[1.2] break-words hyphens-auto"
-              dangerouslySetInnerHTML={{ __html: post.content }}
-            />
-          </div>
+          <h1 className="font-gilroy-bold text-xl pl-5 pb-3 pr-7 leading-tight text-white relative z-10">{post.title}</h1>
         </div>
-      )}
-    </div>
+        <div className="px-[20px] py-6 w-screen max-w-screen overflow-x-hidden">
+          <div className="mb-3 font-[GilroyMedium] text-base">{fromDateWithSlash(new Date(post.createdAt))}</div>
+          <div
+            className="font-helvetica text-base tracking-[0px] leading-[1.2] break-words hyphens-auto"
+            dangerouslySetInnerHTML={{ __html: post.content }}
+          />
+        </div>
+      </div>
+    )}
+  </div>
   );
 };
 

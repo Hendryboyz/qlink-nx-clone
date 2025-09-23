@@ -16,6 +16,7 @@ const PrivateRoute: React.FC<PrivateRouteProps> = ({
   const user: BoUser | null = userString ? JSON.parse(userString) : null;
 
   if (!user) {
+    console.log('No user found');
     return <Navigate to="/login" state={{ from: location }} replace />;
   }
 

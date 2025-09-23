@@ -1,4 +1,6 @@
-export const NOOP = () => {}
+export const NOOP = () => {
+  console.debug('this is dummy method');
+}
 export const API_PUBLIC_HOST = process.env.NEXT_PUBLIC_API_URL?.split('/api')[0];
 
 export const DEFAULT_MODELS = [

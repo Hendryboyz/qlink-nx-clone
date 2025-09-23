@@ -1,6 +1,7 @@
-import { ACCESS_TOKEN } from '@org/common';
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
+import { withAuth } from "next-auth/middleware";
+import { ACCESS_TOKEN } from '@org/common';
 import API from './utils/fetch';
 
 async function validateToken(token: string | undefined): Promise<boolean> {
@@ -26,7 +27,11 @@ async function validateToken(token: string | undefined): Promise<boolean> {
 // 這個函數可以是異步的，如果您需要等待 API 響應
 const protectedRoutes = ['/member', '/garage'];
 
-export async function middleware(request: NextRequest) {
+const guestOnlyRoutes = ['/sign-in', '/sign-up', '/reset-password'];
+
+const publicRoutes = ['/', '/news', '/privacy-policy', '/terms-of-service'];
+
+async function legacyMiddleware(request: NextRequest) {
   // 獲取 token，這裡假設它存儲在 cookie 中
   const token = request.cookies.get(ACCESS_TOKEN)?.value;
 
@@ -57,15 +62,60 @@ export async function middleware(request: NextRequest) {
   return NextResponse.next();
 }
 
+const isIncludedRoute =
+  (baseRoutes: string[], requestPath: string): boolean =>
+    baseRoutes.some((baseRoute: string) => {
+      if (baseRoute === '/' && requestPath === baseRoute) {
+        return true;
+      }
+      return baseRoute !== '/' && requestPath.startsWith(baseRoute);
+    });
+
+async function middleware(
+  request: any,
+) {
+  const requestPath = request.nextUrl.pathname;
+  console.log('middleware', requestPath, request.nextauth);
+  if (guestOnlyRoutes.includes(requestPath)) {
+    // If user is already authenticated → redirect to /member
+    if (request.nextauth?.token) {
+      return NextResponse.redirect(new URL("/member", request.url))
+    }
+  }
+
+  return NextResponse.next();
+}
+
+export default withAuth(middleware, {
+  callbacks: {
+    authorized: ({ token, req }) => {
+      const requestPath = req.nextUrl.pathname;
+      console.log('Authorized request', token, requestPath);
+      if (isIncludedRoute(publicRoutes, requestPath)) {
+        return true
+      }
+
+      if (isIncludedRoute(protectedRoutes, requestPath)) {
+        return token !== undefined && token !== null;
+      }
+
+      return isIncludedRoute(guestOnlyRoutes, requestPath);
+    },
+  },
+});
+
+
 async function isRedirectMemberAfterSignIn(requestPath: string, isTokenValid: boolean) {
-  const loginHiddenPaths = ['/sign-in', '/sign-up', '/reset-password'];
-  const isLoginHidden = loginHiddenPaths.some((path) =>
+  const isLoginHidden = guestOnlyRoutes.some((path) =>
     requestPath.startsWith(path)
   );
   return isLoginHidden && isTokenValid;
 }
+
 // 配置中間件應該運行的路徑
 export const config = {
-  matcher: protectedRoutes.map((path) => `${path}/:path*`),
+  matcher: [
+    "/((?!api|_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp|woff|woff2|ttf|eot)).*)",
+  ],
 };
 

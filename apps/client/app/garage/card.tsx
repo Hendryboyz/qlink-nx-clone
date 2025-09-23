@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { ProductVO } from '@org/types';
 import { css } from '@emotion/css';
 import { DEFAULT_MODELS } from '$/utils';
@@ -36,6 +36,8 @@ const rowCss = css`
 
 const ProductCard = ({ data, handleEdit }: { data: ProductVO, handleEdit: (data: ProductVO) => void }) => {
   const { showPopup, hidePopup } = usePopup();
+  const titleRef = useRef<HTMLHeadingElement>(null);
+  const [fontSize, setFontSize] = useState(1.875); // Default to 1.875rem (text-3xl)
 
   // Get status configuration
   const statusConfig = getStatusConfig(data.verifyStatus);
@@ -76,11 +78,45 @@ const ProductCard = ({ data, handleEdit }: { data: ProductVO, handleEdit: (data:
     dealerName,
   } = data;
   const modelDefined = DEFAULT_MODELS.find(m => m.id.toString() === model);
+
+  // Auto-resize text to fit container
+  useEffect(() => {
+    const adjustFontSize = () => {
+      const element = titleRef.current;
+      if (!element) return;
+
+      const container = element.parentElement;
+      if (!container) return;
+
+      // Get available width (container width minus margins/padding)
+      const containerStyle = window.getComputedStyle(container);
+      const availableWidth = container.clientWidth - parseFloat(containerStyle.paddingLeft) - parseFloat(containerStyle.paddingRight);
+
+      // Start with default size and reduce if needed
+      let currentFontSize = 1.875; // 1.875rem equivalent to text-3xl
+      element.style.fontSize = `${currentFontSize}rem`;
+
+      // Reduce font size until text fits (minimum 1rem)
+      while (element.scrollWidth > availableWidth && currentFontSize > 1) {
+        currentFontSize -= 0.03125; // Reduce by 0.03125rem each step
+        element.style.fontSize = `${currentFontSize}rem`;
+      }
+
+      setFontSize(currentFontSize);
+    };
+
+    // Run on mount and when data changes
+    adjustFontSize();
+
+    // Run on window resize
+    window.addEventListener('resize', adjustFontSize);
+    return () => window.removeEventListener('resize', adjustFontSize);
+  }, [data.model, modelDefined?.title]);
   const modelImage = modelDefined?.img || defaultMotorImage.src;
   return (
     <>
       <div
-        className="relative flex justify-between min-h-[164px] bg-[#C3C3C3]"
+        className="relative overflow-hidden flex justify-between min-h-[164px] bg-[#C3C3C3]"
         style={{
           backgroundImage: `url(${modelImage})`,
           backgroundSize: 'cover',
@@ -88,9 +124,11 @@ const ProductCard = ({ data, handleEdit }: { data: ProductVO, handleEdit: (data:
           backgroundRepeat: 'no-repeat'
         }}
       >
+         {/* Gradient overlay for better text readability */}
+         <div className="absolute inset-0 z-0 bg-gradient-to-t from-black/70 via-black/0 to-transparent pointer-events-none"></div>
         {/* Status Badge */}
         <div
-          className="absolute top-6 left-6 w-[68px] h-[24px] rounded flex items-center justify-center"
+          className="absolute top-6 left-6 z-10 w-[68px] h-[24px] rounded flex items-center justify-center"
           style={{ backgroundColor: statusConfig.bgColor }}
         >
           <span className="text-white text-[14px] font-[GilroyBold] leading-[16px]">
@@ -98,9 +136,20 @@ const ProductCard = ({ data, handleEdit }: { data: ProductVO, handleEdit: (data:
           </span>
         </div>
 
-        <div className="ml-9 mb-2 self-end">
+        <div className="relative z-10 ml-9 mb-2 self-end min-w-0">
           <p className="text-xl text-white font-[GilroyLight]">{data.year}</p>
-          <h2 className="text-3xl font-gilroy-heavy text-primary-500 -mt-2">{modelDefined ? modelDefined.title : model}</h2>
+          <h2
+            ref={titleRef}
+            className="font-gilroy-heavy text-primary-500 -mt-2 max-w-full"
+            style={{
+              fontSize: `${fontSize}rem`,
+              lineHeight: '1.2',
+              whiteSpace: 'nowrap'
+            }}
+          >
+            {modelDefined ? modelDefined.title : model}
+          </h2>
+          {/* <h2 className="text-3xl font-gilroy-heavy text-primary-500 -mt-2">AGRO 200000000000000000</h2> */}
         </div>
         <img
           className="mr-6 mt-6 self-start"

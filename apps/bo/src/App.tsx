@@ -26,6 +26,7 @@ import UserContextProvider from '$/pages/UsersManagement/UsersContext';
 import MemberContextProvider from '$/pages/MemberMangement/MemberContext';
 import VehiclesContextProvider from '$/pages/VehiclesManagement/VehiclesContext';
 import VehiclesManagement from '$/pages/VehiclesManagement';
+import NotFound from '$/pages/NotFound';
 
 const { Content } = Layout;
 
@@ -149,6 +150,7 @@ function App() {
               }
             />
           </Route>
+          <Route path="*" element={<NotFound />} />
         </Routes>
       </Router>
     </ConfigProvider>

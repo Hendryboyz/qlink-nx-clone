@@ -61,13 +61,13 @@ export class AuthController {
     @Res({ passthrough: true }) res: Response
   ) {
     this.logger.debug(body);
-    const { access_token, user_id } = await this.authService.login(
+    const { access_token, user_id, id, email, name } = await this.authService.login(
       body.email,
       body.password
     );
 
-    this.setToken(res, access_token, user_id, body.remember_me)
-    return { access_token, user_id };
+    this.setToken(res, access_token, user_id, body.rememberMe)
+    return { access_token, user_id, id, email, name };
   }
 
   @Post('logout')
