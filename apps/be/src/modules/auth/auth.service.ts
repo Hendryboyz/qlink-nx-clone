@@ -13,8 +13,6 @@ import {
   RegisterDto,
   ResetPasswordDto,
   User,
-  UserSourceType,
-  UserType,
   UserVO,
 } from '@org/types';
 
@@ -23,13 +21,11 @@ import { isNull, omit } from 'lodash';
 import axios from 'axios';
 import { OtpJwtPayload } from './otp.service';
 import {
-  alphaMax50Regex,
-  birthdayRegex,
   CODE_SUCCESS,
   emailRegex,
   INVALID_PAYLOAD,
   passwordRegex,
-  phoneRegex,
+  SignupSchema,
 } from '@org/common';
 import { ConfigService } from '@nestjs/config';
 import { hashPassword } from '$/modules/utils/auth.util';
@@ -183,59 +179,13 @@ export class AuthService {
     }
     return null;
   }
+
   private validateRegisterPayload(payload: RegisterDto) {
-    const {
-      phone,
-      type,
-      password,
-      rePassword,
-      firstName: first_name,
-      midName: mid_name = '',
-      lastName: last_name,
-      addressCity: address_city,
-      addressState: address_state,
-      addressDetail: address_detail = '',
-      birthday = '',
-      source = NaN,
-      email = '',
-      // whatsapp = '',
-      // facebook = '',
-    } = payload;
-
-    if (!phoneRegex.test(phone)) throw this.generateBadRequest('Invalid phone', 'phone');
-    if (!Object.values(UserType).includes(type)) throw this.generateBadRequest('Invalid user-type', 'type');
-    if (!passwordRegex.test(password)) throw this.generateBadRequest('Invalid password', 'password');
-    if (password !== rePassword) throw this.generateBadRequest('Unconfirmed password', 're_password');
-
-    // ! need improvement
-    if (
-      !alphaMax50Regex.test(first_name)
-      ||!alphaMax50Regex.test(last_name)
-      ||(mid_name !== '' && !alphaMax50Regex.test(mid_name))
-    )
-      throw this.generateBadRequest('Invalid name', 'first_name');
-
-    if (
-      !alphaMax50Regex.test(address_city) ||
-      !alphaMax50Regex.test(address_state) ||
-      (address_detail !== '' && !alphaMax50Regex.test(address_detail))
-    )
-      throw this.generateBadRequest('Invalid address', 'address_city');
-
-    if (birthday != '' && !birthdayRegex.test(birthday))
-      throw this.generateBadRequest('Invalid birthday', 'birthday');
-
-    this.logger.debug(source, Object.values(UserSourceType).includes(source));
-    if (
-      !Number.isNaN(source) &&
-      !Object.values(UserSourceType).includes(source)
-    )
-      throw this.generateBadRequest('Invalid source', 'source');
-
-    if (email != '' && !emailRegex.test(email))
+    SignupSchema.validateSync(payload);
+    const { email = '' } = payload;
+    if (email != '' && !emailRegex.test(email)) {
       throw this.generateBadRequest('Invalid email', 'email');
-    // whatsapp
-    // facebook
+    }
   }
 
   private signToken(identifier: string, identifierType: IdentifierType, id: string): string {

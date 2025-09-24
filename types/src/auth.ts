@@ -1,22 +1,22 @@
 import { GenderType, UserSourceType, UserType } from './user';
 
 export interface RegisterDto {
-  phone: string;
   email: string;
-  type: UserType;
-  password: string;
-  rePassword: string;
   firstName: string;
   midName?: string;
   lastName: string;
-  gender: GenderType;
-  addressState: string;
-  addressCity: string;
-  addressDetail?: string;
+  password: string;
+  rePassword: string;
   birthday?: string;
   source?: UserSourceType;
+  gender: GenderType;
+  addressCity: string;
+  addressState: string;
+  phone: string;
   whatsapp?: string;
   facebook?: string;
+  addressDetail?: string;
+  type: UserType;
 }
 
 export interface LoginDto {
