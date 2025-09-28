@@ -159,6 +159,12 @@ const DateField: React.FC<DateFieldProps> = ({
             popperPlacement="bottom-start"
             className="hidden"
             calendarClassName="shadow-lg border rounded-lg"
+            showMonthDropdown={true}
+            showYearDropdown={true}
+            scrollableYearDropdown={true}
+            yearDropdownItemNumber={90}
+            minDate={new Date('1900-01-01')}
+            maxDate={new Date()}
           />
         </div>
       )}
