@@ -7,6 +7,8 @@ import { NextPage } from 'next';
 import API from '$/utils/fetch';
 import { PostEntity } from '@org/types';
 import NewsType from '$/components/News/type';
+import ReactQuill from 'react-quill';
+import 'react-quill/dist/quill.bubble.css';
 
 type Props = {
   params: {
@@ -51,8 +53,13 @@ const Detail: NextPage<Props> = ({ params }) => {
           <div className="mb-3 font-[GilroyMedium] text-base">{fromDateWithSlash(new Date(post.createdAt))}</div>
           <div
             className="font-helvetica text-base tracking-[0px] leading-[1.2] break-words hyphens-auto"
-            dangerouslySetInnerHTML={{ __html: post.content }}
-          />
+          >
+            <ReactQuill
+              readOnly={true}
+              value={post.content}
+              theme="bubble"
+            />
+          </div>
         </div>
       </div>
     )}
