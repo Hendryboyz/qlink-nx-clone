@@ -145,7 +145,13 @@ export default function MemberTable() {
       title: 'Verification Status',
       key: 'VerificationStatus',
       search: false,
-      render: () => (<Space>Verified</Space>),
+      render: (_, user) => {
+        if (user && user.crmId && user.memberId) {
+          return (<Space>Verified</Space>)
+        } else {
+          return (<Space>-</Space>)
+        }
+      },
     },
     {
       title: 'Actions',

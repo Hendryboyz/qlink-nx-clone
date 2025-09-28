@@ -97,6 +97,7 @@ export class UserRepository {
           'facebook',
           'created_at',
           'source',
+          'crm_id',
         ])
         .where({
           is_delete: false,
