@@ -5,17 +5,23 @@ export const ENTITY_PREFIX = {
   vehicle: 'VRD',
 };
 
+export enum AppEnv {
+  production,
+  stage,
+  development
+}
+
 export function generateSalesForceId(
   entityPrefix: string,
   entityCount: number,
-  isProduction: boolean = false,
+  envName: AppEnv,
 ) {
   const current = new Date();
   const month = ((current.getMonth() + 1) + "").padStart(2, "0");
   const year = (current.getFullYear() % 100) + "";
   const monthOfYear = `${year}${month}`
   const serial = (entityCount + "").padStart(5, "0");
-  const leadingDigit = isProduction ? "0" : "1";
+  const leadingDigit = AppEnv[envName];
   return `${entityPrefix}-${monthOfYear}-${leadingDigit}${serial}`;
 }
 

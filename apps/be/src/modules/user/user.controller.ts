@@ -12,7 +12,7 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { AuthGuard } from '@nestjs/passport';
 import { UserId } from '$/decorators/userId.decorator';
 import { UserService } from './user.service';
-import { RegisterDto, UserUpdateDto } from '@org/types';
+import { UserUpdateDto } from '@org/types';
 import {
   imageFileFilter,
   imageStorage,
@@ -20,9 +20,6 @@ import {
 import { TransformInterceptor } from '$/interceptors/response.interceptor';
 import { S3storageService } from '$/modules/upload/s3storage.service';
 import { ConfigService } from '@nestjs/config';
-import { CODE_SUCCESS, HEADER_PRE_TOKEN, INVALID_PAYLOAD } from '@org/common';
-import { Response } from 'express';
-import { hashPassword } from '$/modules/utils/auth.util';
 
 @Controller('user')
 export class UserController {
@@ -40,9 +37,9 @@ export class UserController {
     );
   }
 
-  // @Put(':id')
-  async updateClientUser(@Param('id') userId: string, @Body() payload: UserUpdateDto) {
-    return this.userService.updateUser(userId, payload);
+  @Post(':id/sync')
+  async syncClientUser(@Param('id') userId: string) {
+    return this.userService.syncCRMByUserId(userId);
   }
 
   @UseGuards(AuthGuard('jwt'))

@@ -2,7 +2,11 @@ import { BadRequestException, Injectable, Logger } from '@nestjs/common';
 import { IdentifierType, RegisterDto, UserEntity, UserUpdateDto, UserVO } from '@org/types';
 import { UserRepository } from './user.repository';
 import { omit } from 'lodash';
-import { ENTITY_PREFIX, generateSalesForceId } from '$/modules/utils/auth.util';
+import {
+  AppEnv,
+  ENTITY_PREFIX,
+  generateSalesForceId,
+} from '$/modules/utils/auth.util';
 import { MemberQueryFilters } from '$/modules/user/user.types';
 import { SalesforceSyncService } from '$/modules/crm/sales-force.service';
 import { ConfigService } from '@nestjs/config';
@@ -12,13 +16,15 @@ type UserOmitFields = ('birthday' | 'whatsapp' | 'facebook');
 @Injectable()
 export class UserService {
   private logger = new Logger(this.constructor.name);
-  private readonly isProduction: boolean = false;
+  private readonly envName: AppEnv = AppEnv.development;
+
   constructor(
     private readonly configService: ConfigService,
     private readonly syncCrmService: SalesforceSyncService,
     private readonly userRepository: UserRepository
   ) {
-    this.isProduction = this.configService.get<string>('NODE_ENV') === 'production';
+    const nodeEnv = this.configService.get<string>('NODE_ENV');
+    this.envName = AppEnv[nodeEnv];
   }
 
   async findOne(phone: string): Promise<UserEntity> {
@@ -40,6 +46,34 @@ export class UserService {
     }
   }
 
+  async syncCRMByUserId(userId: string): Promise<boolean> {
+    const userEntity = await this.userRepository.findById(userId);
+    this.logger.debug(userId, userEntity);
+    if (!userEntity) {
+      throw new BadRequestException('User not found');
+    }
+
+    return this.syncNewUserToCRM(userEntity);
+  }
+
+  private async syncNewUserToCRM(user: UserEntity): Promise<boolean> {
+    if (user.crmId) {
+      return true;
+    }
+
+    try {
+      const salesforceId = await this.syncCrmService.createMember(user);
+      this.logger.debug(salesforceId);
+      user.crmId = salesforceId;
+      await this.userRepository.update(user.id, {crmId: salesforceId});
+    } catch(e) {
+      this.logger.error(`fail to sync user[${user.id}] to salesforce`, e);
+      return false
+    }
+
+    return true;
+  }
+
   async isEmailExist(email: string): Promise<boolean> {
     return await this.userRepository.isEmailExist(email);
   }
@@ -54,13 +88,7 @@ export class UserService {
 
     this.logger.debug(`user[${userEntity.id}] created`, userEntity);
 
-    try {
-      const salesforceId = await this.syncCrmService.createMember(userEntity);
-      userEntity.crmId = salesforceId;
-      await this.userRepository.update(userEntity.id, {crmId: salesforceId});
-    } catch(e) {
-      this.logger.error(`fail to sync user[${userEntity.id}] to salesforce`, e);
-    }
+    await this.syncNewUserToCRM(userEntity);
 
     return {
       ...omit(userEntity, [
@@ -74,7 +102,7 @@ export class UserService {
 
   private async generateMemberId() {
     const memberSeq = await this.userRepository.getMemberSequence();
-    return generateSalesForceId(ENTITY_PREFIX.member, memberSeq, this.isProduction);
+    return generateSalesForceId(ENTITY_PREFIX.member, memberSeq, this.envName);
   }
 
   async updatePassword(userId: string, password: string): Promise<UserVO> {

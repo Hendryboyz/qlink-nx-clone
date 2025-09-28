@@ -1,39 +1,51 @@
-import { ForbiddenException, Injectable, Logger, NotFoundException } from '@nestjs/common';
+import {
+  ForbiddenException,
+  Injectable,
+  Logger,
+  NotFoundException,
+} from '@nestjs/common';
 import {
   CreateProductRequest,
   ProductDto,
   ProductEntity,
   ProductUpdateDto,
-  ProductVO
+  ProductVO,
 } from '@org/types';
 import { ProductRepository } from './product.repository';
-import { ENTITY_PREFIX, generateSalesForceId } from '$/modules/utils/auth.util';
+import {
+  AppEnv,
+  ENTITY_PREFIX,
+  generateSalesForceId,
+} from '$/modules/utils/auth.util';
 import { ConfigService } from '@nestjs/config';
 import { SalesforceSyncService } from '$/modules/crm/sales-force.service';
 import * as _ from 'lodash';
 import { VehicleQueryFilters } from '$/modules/bo/vehicles/vehicles.types';
 
-function isCreateProductRequest(dto: ProductDto | CreateProductRequest): dto is CreateProductRequest {
+function isCreateProductRequest(
+  dto: ProductDto | CreateProductRequest
+): dto is CreateProductRequest {
   return (dto as CreateProductRequest).userId !== undefined;
 }
 
 @Injectable()
 export class ProductService {
   private logger = new Logger(this.constructor.name);
-  private readonly isProduction: boolean = false;
+  private readonly envName: AppEnv = AppEnv.development;
   private readonly reVerifyLimitTimes: number;
   constructor(
     private readonly configService: ConfigService,
     private readonly syncCrmService: SalesforceSyncService,
     private readonly productRepository: ProductRepository,
   ) {
-    this.isProduction = this.configService.get<string>('NODE_ENV') === 'production';
+    const nodeEnv = this.configService.get<string>('NODE_ENV');
+    this.envName = AppEnv[nodeEnv];
     this.reVerifyLimitTimes = this.configService.get<number>('AUTO_RE_VERIFY_VEHICLE_LIMIT_TIMES', 1);
   }
 
   async create(userId: string, productDto: ProductDto | CreateProductRequest): Promise<ProductVO> {
     const vehicleCount = await this.productRepository.getProductSequence();
-    productDto.id = generateSalesForceId(ENTITY_PREFIX.vehicle, vehicleCount, this.isProduction);
+    productDto.id = generateSalesForceId(ENTITY_PREFIX.vehicle, vehicleCount, this.envName);
     if (isCreateProductRequest(productDto)) {
       productDto = _.omit(productDto, 'userId');
     }
