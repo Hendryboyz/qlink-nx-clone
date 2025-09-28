@@ -71,16 +71,22 @@ export class SalesforceSyncService implements OnModuleInit{
   }
 
   public async createMember(clientUser: UserEntity): Promise<string | undefined> {
-    const payload = this.castSalesforceMemberCreationPayload(clientUser);
-    const syncAction = this.useReAuthQuery(this.postMember.bind(this));
-    const response = await syncAction(payload);
-    const {data, status} = response;
-    if (status > 299) {
-      this.logger.error(`fail to sync user to salesforce, status code: ${status}, message: ${JSON.stringify(data)}`);
-      return undefined;
-    } else {
+    try {
+      const payload = this.castSalesforceMemberCreationPayload(clientUser);
+      const syncAction = this.useReAuthQuery(this.postMember.bind(this));
+      const response = await syncAction(payload);
+      const {data, status} = response;
       this.logger.debug(`sync user to salesforce successfully, status code: ${status}, message: ${JSON.stringify(data)}`);
       return data.id;
+    } catch (error) {
+      if (error.response)  {
+        const { response } = error;
+        this.logger.error(
+          `fail to sync user to salesforce, status code: ${response.status}, message:`, response.data);
+      } else {
+        this.logger.error('fail to sync user to salesforce, status code: 500', error)
+      }
+      throw error;
     }
   }
 
@@ -126,21 +132,28 @@ export class SalesforceSyncService implements OnModuleInit{
   }
 
   public async updateMember(updatedUser: UserEntity): Promise<string | undefined> {
-    const payload = this.castSalesforceMemberMutationPayload(updatedUser);
-    const salesforceObjectId = updatedUser.crmId;
-    const syncAction = this.useReAuthQuery(this.patchMember.bind(this));
-    const response = await syncAction({
-      memberObjectId: salesforceObjectId,
-      payload,
-    });
-    const {data, status} = response;
-    if (status > 299) {
-      this.logger.error(`fail to patch user to salesforce, status code: ${status}, message: ${JSON.stringify(data)}`);
-      return undefined;
-    } else {
+    try {
+      const payload = this.castSalesforceMemberMutationPayload(updatedUser);
+      const salesforceObjectId = updatedUser.crmId;
+      const syncAction = this.useReAuthQuery(this.patchMember.bind(this));
+      const response = await syncAction({
+        memberObjectId: salesforceObjectId,
+        payload,
+      });
+      const {data, status} = response;
       this.logger.debug(`patch user to salesforce successfully, status code: ${status}, message: ${JSON.stringify(data)}`);
       return data.id;
+    } catch (error) {
+      if (error.response)  {
+        const { response } = error;
+        this.logger.error(
+          `fail to patch user to salesforce, status code: ${response.status}, message:`, response.data);
+      } else {
+        this.logger.error('fail to patch user to salesforce, status code: 500', error)
+      }
+      throw error;
     }
+
   }
 
   private castSalesforceMemberMutationPayload(user: UserEntity) {
@@ -173,22 +186,25 @@ export class SalesforceSyncService implements OnModuleInit{
   }
 
   public async syncVehicle(vehicleEntity: ProductEntity): Promise<VehicleSyncResult> {
-    const payload = this.castSalesforceVehiclePayload(vehicleEntity);
-    const syncAction = this.useReAuthQuery(this.postVehicle.bind(this));
-    const response = await syncAction(payload);
-    const {data, status} = response;
-    if (status > 299) {
-      this.logger.warn(`fail to sync vehicle to salesforce, status code: ${status}, message: ${data}`);
-      return {
-        vehicleId: undefined,
-        isVerified: false,
-      }
-    } else {
+    try {
+      const payload = this.castSalesforceVehiclePayload(vehicleEntity);
+      const syncAction = this.useReAuthQuery(this.postVehicle.bind(this));
+      const response = await syncAction(payload);
+      const {data, status} = response;
       this.logger.debug(`sync vehicle to salesforce successfully, status code: ${status}, message: ${data}`);
       return {
         vehicleId: data.id,
         isVerified: false,
       }
+    } catch (error) {
+      if (error.response)  {
+        const { response } = error;
+        this.logger.error(
+          `fail to sync vehicle to salesforce, status code: ${response.status}, message:`, response.data);
+      } else {
+        this.logger.error('fail to sync vehicle to salesforce, status code: 500', error)
+      }
+      throw error;
     }
   }
 
@@ -222,29 +238,41 @@ export class SalesforceSyncService implements OnModuleInit{
   }
 
   public async updateVehicle(vehicleEntity: ProductEntity): Promise<null | SalesForceErrorMessage> {
-    const payload = this.castPatchVehiclePayload(vehicleEntity);
-    const syncAction = this.useReAuthQuery(this.patchVehicle.bind(this));
-    const response = await syncAction({vehicleObjectId: vehicleEntity.crmId, payload});
-    const {data, status} = response;
-    if (status > 299) {
-      this.logger.warn(`fail to patch vehicle to salesforce, status code: ${status}, message: ${data}`);
-      if (!data || data.length === 0) {
+    try {
+      const payload = this.castPatchVehiclePayload(vehicleEntity);
+      const syncAction = this.useReAuthQuery(this.patchVehicle.bind(this));
+      const response = await syncAction({vehicleObjectId: vehicleEntity.crmId, payload});
+      const {data, status} = response;
+      this.logger.debug(`patch vehicle to salesforce successfully, status code: ${status}, message: ${data}`);
+      return null;
+    } catch (error) {
+      if (error.response)  {
+        const { response } = error;
+        if (!response.data || response.data.length === 0) {
+          return {
+            message: '',
+            errorCode: '',
+            fields: [],
+          }
+        }
+
+        const errorContent = response.data[0]
+        const patchErrorDetail = {
+          message: errorContent['message'],
+          errorCode: errorContent['errorCode'],
+          fields: errorContent['fields'],
+        }
+
+        this.logger.error(`fail to patch vehicle to salesforce, status code: ${response.status}, message: ${patchErrorDetail}`);
+        return patchErrorDetail;
+      } else {
+        this.logger.error('fail to patch vehicle to salesforce, status code: 500', error)
         return {
           message: '',
           errorCode: '',
           fields: [],
         }
-      } else {
-        const error = data[0]
-        return {
-          message: error['message'],
-          errorCode: error['errorCode'],
-          fields: error['fields'],
-        }
       }
-    } else {
-      this.logger.debug(`patch vehicle to salesforce successfully, status code: ${status}, message: ${data}`);
-      return null;
     }
   }
 
@@ -280,20 +308,20 @@ export class SalesforceSyncService implements OnModuleInit{
     if (!fieldName || !value) {
       return false;
     }
-    const payload = this.castPatchVerifyVehicleFieldPayload(fieldName, value);
-    const syncAction = this.useReAuthQuery(this.patchVehicle.bind(this));
     try {
+      const payload = this.castPatchVerifyVehicleFieldPayload(fieldName, value);
+      const syncAction = this.useReAuthQuery(this.patchVehicle.bind(this));
       const response = await syncAction({vehicleObjectId: vehicleId, payload});
       const {data, status} = response;
-      if (status > 299) {
-        this.logger.warn(`fail to verify vehicle ${fieldName}, status code: ${status}, message: ${data}`);
-        return false
+      this.logger.debug(`valid vehicle ${fieldName} successfully, status code: ${status}, message: ${data}`);
+      return true
+    } catch (error) {
+      if (error.response)  {
+        const { response } = error;
+        this.logger.error(`verify vehicle ${fieldName} field failed, status code ${response.status}, message `, response.data);
       } else {
-        this.logger.debug(`valid vehicle ${fieldName} successfully, status code: ${status}, message: ${data}`);
-        return true
+        this.logger.error(`verify vehicle ${fieldName} field failed, status code 500, message `, error);
       }
-    } catch (e) {
-      this.logger.error(`verify vehicle ${fieldName} field failed: ${e}`);
       return false;
     }
   }
