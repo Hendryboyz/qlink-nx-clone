@@ -67,7 +67,7 @@ export default function Garage() {
               return (
                 <div
                   key={product.id}
-                  className="flex flex-col max-w-[320px] w-full rounded-2xl overflow-hidden shadow-lg"
+                  className="flex flex-col w-full rounded-2xl overflow-hidden shadow-lg"
                   onClick={() => {
                     setCurrentProduct(product);
                     setIsModalOpen(true);
