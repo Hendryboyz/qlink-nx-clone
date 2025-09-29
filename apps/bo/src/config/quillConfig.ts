@@ -1,6 +1,6 @@
+import ReactQuill from 'react-quill';
 import Quill from 'quill';
 import ImageResize from 'quill-image-resize-module-react';
-import ReactQuill from 'react-quill';
 
 Quill.register('modules/imageResize', ImageResize);
 
@@ -55,6 +55,7 @@ class ImageWithStyle extends ParchmentEmbed {
 ImageWithStyle.blotName = 'imagewithstyle';
 ImageWithStyle.tagName = 'IMG';
 Quill.register(ImageWithStyle, true);
+
 export const quillFormats = [
   'header',
   'bold',
@@ -78,11 +79,9 @@ export const quillFormats = [
   'style',
 ];
 
-ImageWithStyle.blotName = 'imagewithstyle';
-ImageWithStyle.tagName = 'IMG';
-Quill.register(ImageWithStyle, true);
-
-export const createQuillModules = (handleImageUpload: () => void) => ({
+export const createQuillModules = (
+  handleImageUpload: () => void,
+) => ({
   toolbar: {
     container: [
       [{ header: [1, 2, 3, 4, 5, 6, false] }],
@@ -97,9 +96,9 @@ export const createQuillModules = (handleImageUpload: () => void) => ({
     handlers: {
       image: handleImageUpload,
     },
-    clipboard: {
-      matchVisual: false,
-    },
+  },
+  clipboard: {
+    matchVisual: false,
   },
   imageResize: {
     parchment: ReactQuill.Quill.import('parchment'),
