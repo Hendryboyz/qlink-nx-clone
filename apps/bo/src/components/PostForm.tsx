@@ -246,7 +246,10 @@ const PostForm: React.FC<PostFormProps> = ({
             modules={quillModules}
             formats={quillFormats}
             theme="snow"
-            style={{ height: '300px', marginBottom: '50px' }}
+            style={{
+              height: '640px',
+              marginBottom: '50px' ,
+          }}
           />
         </Form.Item>
 
