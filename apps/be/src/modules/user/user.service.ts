@@ -46,7 +46,7 @@ export class UserService {
     }
   }
 
-  async syncCRMByUserId(userId: string): Promise<boolean> {
+  async syncCRMByUserId(userId: string): Promise<string> {
     const userEntity = await this.userRepository.findById(userId);
     this.logger.debug(userId, userEntity);
     if (!userEntity) {
@@ -56,9 +56,9 @@ export class UserService {
     return this.syncNewUserToCRM(userEntity);
   }
 
-  private async syncNewUserToCRM(user: UserEntity): Promise<boolean> {
+  private async syncNewUserToCRM(user: UserEntity): Promise<string> {
     if (user.crmId) {
-      return true;
+      return user.crmId;
     }
 
     try {
@@ -66,12 +66,11 @@ export class UserService {
       this.logger.debug(salesforceId);
       user.crmId = salesforceId;
       await this.userRepository.update(user.id, {crmId: salesforceId});
-    } catch(e) {
-      this.logger.error(`fail to sync user[${user.id}] to salesforce`, e);
-      return false
+      return salesforceId;
+    } catch(error) {
+      this.logger.error(`fail to sync user[${user.id}] to salesforce`, error);
+      throw error;
     }
-
-    return true;
   }
 
   async isEmailExist(email: string): Promise<boolean> {

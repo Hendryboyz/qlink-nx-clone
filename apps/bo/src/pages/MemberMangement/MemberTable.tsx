@@ -1,6 +1,6 @@
-import React, { useContext } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { UserVO } from '@org/types';
-import { Button, Modal, Select, Space } from 'antd';
+import { Button, Modal, Select, Space, message } from 'antd';
 import API from '$/utils/fetch';
 import { ProTable } from '@ant-design/pro-components';
 import { MemberContext } from '$/pages/MemberMangement/MemberContext';
@@ -18,6 +18,24 @@ export default function MemberTable() {
     setEditingMember,
   } = useContext(MemberContext);
 
+  const [messageApi, contextHolder] = message.useMessage();
+
+  const [verifying, setVerifying] = useState({});
+  function setVerifyMember(clientId: string, isVerifying: boolean) {
+    setVerifying((prevState) => ({
+      ...prevState,
+      [clientId]: isVerifying,
+    }));
+  }
+
+  useEffect(() => {
+    const memberVerifying = {};
+    for (const member of members) {
+      memberVerifying[member.id] = false;
+    }
+    setVerifying(memberVerifying);
+  }, members);
+
   const onDeleting = (clientId: string) => {
     const client = members.find(c => c.id === clientId);
     Modal.confirm({
@@ -32,6 +50,25 @@ export default function MemberTable() {
       },
     });
   };
+
+  const onVerifyMember = async (clientId: string)=> {
+    setVerifyMember(clientId, true);
+    try {
+      const newCrmId = await API.verifyClientUser(clientId);
+      setMembers(prevUsers => {
+        const syncedMember = prevUsers.find(c => c.id === clientId);
+        syncedMember.crmId = newCrmId;
+        const otherMembers = prevUsers.filter(c => c.id !== clientId);
+        return [syncedMember, ...otherMembers];
+      });
+      messageApi.success(`sync successfully.`);
+    } catch (error) {
+      console.error(error);
+      messageApi.error('fail to sync member, please collect your use case and notify administrator.')
+    } finally {
+      setVerifyMember(clientId, false);
+    }
+  }
 
   const tableColumns = [
     {
@@ -147,9 +184,16 @@ export default function MemberTable() {
       search: false,
       render: (_, user) => {
         if (user && user.crmId && user.memberId) {
-          return (<Space>Verified</Space>)
+          return (<Button type="text" disabled>Verified</Button>)
         } else {
-          return (<Space>-</Space>)
+          return (
+            <Button
+              loading={verifying[user.id]}
+              onClick={() => onVerifyMember(user.id)}
+            >
+              {verifying && verifying[user.id] === true ? 'Verifying' : 'Verify'}
+            </Button>
+          );
         }
       },
     },
@@ -175,27 +219,30 @@ export default function MemberTable() {
   ];
 
   return (
-    <ProTable
-      columns={tableColumns}
-      dataSource={members}
-      rowKey="id"
-      beforeSearchSubmit={(params) => {
-        setFilterParams(params);
-      }}
-      search={{
-        labelWidth: 'auto',
-      }}
-      pagination={{
-        onChange: ((page, pageSize) => {
-          setPaging({page, pageSize});
-        }),
-        pageSize: paging.pageSize,
-        total: total,
-        showSizeChanger: true,
-        // showQuickJumper: true,
-      }}
-      scroll={{ x: 'max-content' }}
-      dateFormatter="string"
-    />
+    <>
+      {contextHolder}
+      <ProTable
+        columns={tableColumns}
+        dataSource={members}
+        rowKey="id"
+        beforeSearchSubmit={(params) => {
+          setFilterParams(params);
+        }}
+        search={{
+          labelWidth: 'auto',
+        }}
+        pagination={{
+          onChange: ((page, pageSize) => {
+            setPaging({page, pageSize});
+          }),
+          pageSize: paging.pageSize,
+          total: total,
+          showSizeChanger: true,
+          // showQuickJumper: true,
+        }}
+        scroll={{ x: 'max-content' }}
+        dateFormatter="string"
+      />
+    </>
   );
 }

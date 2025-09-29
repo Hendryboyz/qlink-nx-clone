@@ -270,6 +270,10 @@ class Api {
     return this.delete(`/users/clients/${id}`);
   }
 
+  async verifyClientUser(id: string) {
+    return this.post(`/users/clients/${id}/sync`);
+  }
+
   async patchClientUser(memberId: string, payload: ClientUserUpdateDto): Promise<MutateUserResponse> {
     return this.patch(`/users/clients/${memberId}`, payload);
   }

@@ -37,11 +37,6 @@ export class UserController {
     );
   }
 
-  @Post(':id/sync')
-  async syncClientUser(@Param('id') userId: string) {
-    return this.userService.syncCRMByUserId(userId);
-  }
-
   @UseGuards(AuthGuard('jwt'))
   @Get('/info')
   async getInfo(@UserId() userId: string) {
