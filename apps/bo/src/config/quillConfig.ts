@@ -1,6 +1,7 @@
 import ReactQuill from 'react-quill';
 import Quill from 'quill';
 import ImageResize from 'quill-image-resize-module-react';
+import React from 'react';
 
 Quill.register('modules/imageResize', ImageResize);
 
@@ -56,6 +57,14 @@ ImageWithStyle.blotName = 'imagewithstyle';
 ImageWithStyle.tagName = 'IMG';
 Quill.register(ImageWithStyle, true);
 
+// Register line-height style
+const Parchment = Quill.import('parchment');
+const LineHeightStyle = new Parchment.Attributor.Style('line-height', 'lineHeight', {
+  scope: Parchment.Scope.BLOCK,
+  whitelist: ['1.0', '1.2', '1.5', '1.8', '2.0']
+});
+Quill.register(LineHeightStyle, true);
+
 export const quillFormats = [
   'header',
   'bold',
@@ -68,6 +77,7 @@ export const quillFormats = [
   'link',
   'image',
   'align',
+  'line-height',
   'color',
   'background',
   'code-block',
@@ -81,6 +91,7 @@ export const quillFormats = [
 
 export const createQuillModules = (
   handleImageUpload: () => void,
+  quillRef: React.MutableRefObject<ReactQuill | null>,
 ) => ({
   toolbar: {
     container: [
@@ -92,9 +103,17 @@ export const createQuillModules = (
       [{ color: [] }, { background: [] }],
       ['link', 'clean'],
       ['image'],
+      [{ 'line-height': ['1.0', '1.2', '1.5', '1.8', '2.0'] }],
     ],
     handlers: {
       image: handleImageUpload,
+      'line-height': function(value) {
+        const quill = quillRef.current?.getEditor();
+        if (quill) {
+          const range = quill.getSelection(true);
+          quill.formatLine(range.index, range.length, {'line-height': value});
+        }
+      },
     },
   },
   clipboard: {

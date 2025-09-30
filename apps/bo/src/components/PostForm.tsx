@@ -17,6 +17,7 @@ import { PlusOutlined } from '@ant-design/icons';
 import ReactQuill, { Quill } from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
 import '../quill-image-resize.css';
+import '../quill-custom.css';
 import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
 import API from '../utils/fetch';
@@ -173,7 +174,7 @@ const PostForm: React.FC<PostFormProps> = ({
   };
 
   const quillModules = React.useMemo(
-    () => createQuillModules(handleImageUpload),
+    () => createQuillModules(handleImageUpload, quillRef),
     [handleImageUpload]
   );
 
