@@ -1,7 +1,13 @@
+.ql-editor {
+  overflow-y: scroll;
+  resize: vertical;
+  min-height: 320px;
+  max-height: 960px;
+}
+
 .ql-snow .ql-picker.ql-line-height {
   width: calc(100% + 20px);
 }
-
 
 /* Style the dropdown items */
 .ql-line-height .ql-picker-item::before {
