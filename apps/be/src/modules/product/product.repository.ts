@@ -42,7 +42,8 @@ export class ProductRepository {
       id, user_id, vin, engine_number, model,
       to_char(purchase_date, 'YYYY-MM-DD') as purchase_date,
       to_char(registration_date, 'YYYY-MM-DD') as registration_date,
-      dealer_name, year, created_at, updated_at
+      dealer_name, year, created_at, updated_at,
+      is_verified, crm_id
     FROM product
     WHERE user_id = $1
     ORDER BY purchase_date DESC
