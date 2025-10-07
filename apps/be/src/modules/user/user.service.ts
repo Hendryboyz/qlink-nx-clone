@@ -53,10 +53,10 @@ export class UserService {
       throw new BadRequestException('User not found');
     }
 
-    return this.syncNewUserToCRM(userEntity);
+    return this.syncUserToCRM(userEntity);
   }
 
-  private async syncNewUserToCRM(user: UserEntity): Promise<string> {
+  private async syncUserToCRM(user: UserEntity): Promise<string> {
     if (user.crmId) {
       return user.crmId;
     }
@@ -87,7 +87,7 @@ export class UserService {
 
     this.logger.debug(`user[${userEntity.id}] created`, userEntity);
 
-    await this.syncNewUserToCRM(userEntity);
+    await this.syncUserToCRM(userEntity);
 
     return {
       ...omit(userEntity, [
@@ -154,7 +154,25 @@ export class UserService {
     return this.userRepository.delete(id);
   }
 
-  public isExistingIdentifier(identifier: string, identifierType: IdentifierType): Promise<boolean> {
-    return this.userRepository.isIdentifierExist(identifier, identifierType);
+  public async reSyncCRM(): Promise<number> {
+    const users = await this.userRepository.findNotSyncCRM();
+    if (!users || users.length < 1) {
+      return 0;
+    }
+
+    let succeed = 0,
+        failure = 0;
+    for (const user of users) {
+      try {
+        await this.syncUserToCRM(user);
+        this.logger.debug('Resync user to CRM successfully', JSON.stringify(user));
+        succeed++;
+      } catch (e) {
+        this.logger.error(`fail to reSync user to CRM`, e);
+        failure++;
+      }
+    }
+    this.logger.log(`Re sync ${users.length} users to CRM, succeed: ${succeed}, failure: ${failure}`);
+    return succeed;
   }
 }

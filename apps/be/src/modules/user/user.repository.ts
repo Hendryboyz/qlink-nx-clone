@@ -186,4 +186,27 @@ export class UserRepository {
     const [{ count }] = await countBuilder;
     return +count;
   }
+
+  async findNotSyncCRM(): Promise<UserEntity[] | null> {
+    return this.knex('users')
+      .whereNull('crm_id')
+      .andWhere({ is_delete: false })
+      .select([
+        'id',
+        'member_id',
+        'first_name',
+        'mid_name',
+        'last_name',
+        'gender',
+        'birthday',
+        'email',
+        'phone',
+        'address_city',
+        'address_state',
+        'whatsapp',
+        'facebook',
+        'source',
+        'created_at',
+      ]);
+  }
 }
