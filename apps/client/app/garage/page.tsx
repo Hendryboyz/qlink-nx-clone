@@ -8,7 +8,7 @@ import { useRouter } from 'next/navigation';
 import API from '$/utils/fetch';
 import GarageEdit from './edit';
 import defaultMotorImage from '$/public/assets/vehicles/default_model.png';
-import { DEFAULT_MODELS } from '$/utils';
+import { DEFAULT_MODELS } from 'common/src';
 import { getStatusConfig } from '$/utils/statusConfig';
 
 export default function Garage() {

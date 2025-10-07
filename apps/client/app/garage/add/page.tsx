@@ -11,7 +11,7 @@ import { usePopup } from '$/hooks/PopupProvider';
 import { DEFAULT_ERROR_MSG } from '@org/common';
 import DateField from '$/components/Fields/DateField';
 import Button from '$/components/Button';
-import { DEFAULT_MODELS } from '$/utils';
+import { DEFAULT_MODELS } from 'common/src';
 const CreateSchema = Yup.object().shape({
   model: Yup.string().required('Required'),
   year: Yup.number().required('Required').typeError("Required"),

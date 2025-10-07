@@ -75,7 +75,6 @@ async function middleware(
   request: any,
 ) {
   const requestPath = request.nextUrl.pathname;
-  console.log('middleware', requestPath, request.nextauth);
   if (guestOnlyRoutes.includes(requestPath)) {
     // If user is already authenticated → redirect to /member
     if (request.nextauth?.token) {
@@ -90,7 +89,6 @@ export default withAuth(middleware, {
   callbacks: {
     authorized: ({ token, req }) => {
       const requestPath = req.nextUrl.pathname;
-      console.log('Authorized request', token, requestPath);
       if (isIncludedRoute(publicRoutes, requestPath)) {
         return true
       }
