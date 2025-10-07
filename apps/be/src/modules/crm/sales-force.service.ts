@@ -3,7 +3,7 @@ import { ConfigService } from '@nestjs/config';
 import axios, { AxiosResponse } from 'axios';
 import { URLSearchParams } from 'next/dist/compiled/@edge-runtime/primitives';
 import { ProductEntity, UserEntity } from '@org/types';
-import { UserSourceDisplay } from '@org/common';
+import { UserSourceDisplay, DEFAULT_MODELS } from '@org/common';
 
 type SalesForceCredentials = {
   clientId: string;
@@ -200,7 +200,7 @@ export class SalesforceSyncService implements OnModuleInit{
       if (error.response)  {
         const { response } = error;
         this.logger.error(
-          `fail to sync vehicle to salesforce, status code: ${response.status}, message:`, response.data);
+          `fail to sync vehicle to salesforce, status code: ${response.status}, message:`, JSON.stringify(response.data));
       } else {
         this.logger.error('fail to sync vehicle to salesforce, status code: 500', error)
       }
@@ -222,7 +222,7 @@ export class SalesforceSyncService implements OnModuleInit{
       "Vehicle_Reg_Data_External_ID__c": null,
       "Vehicle_Registration_ID__c": vehicle.id,
       "Model__r": {
-        "Model_EID__c": vehicle.model
+        "Model_EID__c": DEFAULT_MODELS.find(m => m.id.toString() === vehicle.model).title
       },
       "Year__c": vehicle.year,
       "VIN_Number_Check__c": vehicle.vin,

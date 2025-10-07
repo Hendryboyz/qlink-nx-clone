@@ -31,7 +31,7 @@ function isCreateProductRequest(
 @Injectable()
 export class ProductService {
   private logger = new Logger(this.constructor.name);
-  private readonly envName: AppEnv = AppEnv.development;
+  private readonly envPrefix: AppEnv = AppEnv.development;
   private readonly reVerifyLimitTimes: number;
   constructor(
     private readonly configService: ConfigService,
@@ -39,13 +39,31 @@ export class ProductService {
     private readonly productRepository: ProductRepository,
   ) {
     const nodeEnv = this.configService.get<string>('NODE_ENV');
-    this.envName = AppEnv[nodeEnv];
+    this.envPrefix = AppEnv[nodeEnv];
     this.reVerifyLimitTimes = this.configService.get<number>('AUTO_RE_VERIFY_VEHICLE_LIMIT_TIMES', 1);
+  }
+
+  private async syncProductToCRM(product: ProductEntity): Promise<string> {
+    if (!product || product.crmId) {
+      return product.crmId;
+    }
+
+    try {
+      const { vehicleId } = await this.syncCrmService.syncVehicle(product);
+      product.crmId = vehicleId;
+      await this.productRepository.update(product.id, {
+        crmId: vehicleId,
+      });
+      return vehicleId;
+    } catch(e) {
+      this.logger.error(`fail to sync vehicle to salesforce`, e);
+      throw e;
+    }
   }
 
   async create(userId: string, productDto: ProductDto | CreateProductRequest): Promise<ProductVO> {
     const vehicleCount = await this.productRepository.getProductSequence();
-    productDto.id = generateSalesForceId(ENTITY_PREFIX.vehicle, vehicleCount, this.envName);
+    productDto.id = generateSalesForceId(ENTITY_PREFIX.vehicle, vehicleCount, this.envPrefix);
     if (isCreateProductRequest(productDto)) {
       productDto = _.omit(productDto, 'userId');
     }
@@ -56,18 +74,12 @@ export class ProductService {
     );
 
     try {
-      const { vehicleId } = await this.syncCrmService.syncVehicle(
-        productEntity
-      );
-      productEntity.crmId = vehicleId;
-      await this.productRepository.update(productEntity.id, {
-        crmId: vehicleId,
-      });
+      await this.syncProductToCRM(productEntity);
     } catch(e) {
       this.logger.error(`fail to sync vehicle to salesforce`, e);
+      this.logger.debug(productEntity);
     }
 
-    this.logger.debug(productEntity);
     return { img: '', ...productEntity };
   }
 
@@ -150,14 +162,14 @@ export class ProductService {
     return existingProduct;
   }
 
-  async autoVerifyProducts() {
+  async verifyAllProducts() {
     const unverifiedProducts =
       await this.productRepository.findAllowReVerifyProducts(this.reVerifyLimitTimes);
     for (const product of unverifiedProducts) {
       const isVerified = await this.syncCrmService.verifyVehicle(product);
       if (!isVerified) {
         this.logger.warn(`fail to verify vehicle with id ${product.id} with salesforce`);
-        await this.productRepository.increaseVerifyTimes(product.id);
+        // await this.productRepository.increaseVerifyTimes(product.id);
       } else {
         await this.productRepository.update(product.id, {
           isVerified: true,
@@ -173,5 +185,27 @@ export class ProductService {
 
   async removeById(productId: string): Promise<void> {
     await this.productRepository.removeById(productId);
+  }
+
+  public async reSyncCRM(): Promise<number> {
+    const unSyncProducts = await this.productRepository.findNotSyncCRM();
+    if (!unSyncProducts || unSyncProducts.length < 1) {
+      return 0;
+    }
+
+    let succeed = 0,
+        failure = 0;
+    for (const product of unSyncProducts) {
+      try {
+        await this.syncProductToCRM(product);
+        this.logger.debug('Resync user to CRM successfully', JSON.stringify(product));
+        succeed++;
+      } catch (e) {
+        this.logger.error(`fail to reSync user to CRM`, e);
+        failure++;
+      }
+    }
+    this.logger.log(`Re sync ${unSyncProducts.length} products to CRM, succeed: ${succeed}, failure: ${failure}`);
+    return succeed;
   }
 }

@@ -91,6 +91,22 @@ export class ProductRepository {
     }
   }
 
+  async findNotSyncCRM(): Promise<ProductEntity[] | null> {
+    return this.knex('product')
+      .whereNull('crm_id')
+      .select([
+        'id',
+        'user_id',
+        'vin',
+        'engine_number',
+        'model',
+        'year',
+        'purchase_date',
+        'registration_date',
+        'dealer_name'
+      ]);
+  }
+
   async findAllowReVerifyProducts(verifiedLimit: number): Promise<ProductEntity[] | null> {
     const query = `
     SELECT *

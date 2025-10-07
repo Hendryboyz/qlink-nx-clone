@@ -13,6 +13,6 @@ export class TaskService {
   })
   async autoVerifyProductJob() {
     this.logger.debug('start to verify product');
-    await this.productService.autoVerifyProducts();
+    await this.productService.verifyAllProducts();
   }
 }

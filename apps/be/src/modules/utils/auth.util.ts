@@ -6,22 +6,21 @@ export const ENTITY_PREFIX = {
 };
 
 export enum AppEnv {
-  production,
-  stage,
-  development
+  production = 0,
+  stage = 1,
+  development = 2,
 }
 
 export function generateSalesForceId(
   entityPrefix: string,
   entityCount: number,
-  envName: AppEnv,
+  leadingDigit: AppEnv,
 ) {
   const current = new Date();
   const month = ((current.getMonth() + 1) + "").padStart(2, "0");
   const year = (current.getFullYear() % 100) + "";
   const monthOfYear = `${year}${month}`
   const serial = (entityCount + "").padStart(5, "0");
-  const leadingDigit = AppEnv[envName];
   return `${entityPrefix}-${monthOfYear}-${leadingDigit}${serial}`;
 }
 

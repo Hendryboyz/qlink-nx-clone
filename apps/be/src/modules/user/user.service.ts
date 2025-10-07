@@ -16,7 +16,7 @@ type UserOmitFields = ('birthday' | 'whatsapp' | 'facebook');
 @Injectable()
 export class UserService {
   private logger = new Logger(this.constructor.name);
-  private readonly envName: AppEnv = AppEnv.development;
+  private readonly envPrefix: AppEnv = AppEnv.development;
 
   constructor(
     private readonly configService: ConfigService,
@@ -24,7 +24,7 @@ export class UserService {
     private readonly userRepository: UserRepository
   ) {
     const nodeEnv = this.configService.get<string>('NODE_ENV');
-    this.envName = AppEnv[nodeEnv];
+    this.envPrefix = AppEnv[nodeEnv];
   }
 
   async findOne(phone: string): Promise<UserEntity> {
@@ -101,7 +101,7 @@ export class UserService {
 
   private async generateMemberId() {
     const memberSeq = await this.userRepository.getMemberSequence();
-    return generateSalesForceId(ENTITY_PREFIX.member, memberSeq, this.envName);
+    return generateSalesForceId(ENTITY_PREFIX.member, memberSeq, this.envPrefix);
   }
 
   async updatePassword(userId: string, password: string): Promise<UserVO> {
@@ -155,14 +155,14 @@ export class UserService {
   }
 
   public async reSyncCRM(): Promise<number> {
-    const users = await this.userRepository.findNotSyncCRM();
-    if (!users || users.length < 1) {
+    const unSyncUsers = await this.userRepository.findNotSyncCRM();
+    if (!unSyncUsers || unSyncUsers.length < 1) {
       return 0;
     }
 
     let succeed = 0,
         failure = 0;
-    for (const user of users) {
+    for (const user of unSyncUsers) {
       try {
         await this.syncUserToCRM(user);
         this.logger.debug('Resync user to CRM successfully', JSON.stringify(user));
@@ -172,7 +172,7 @@ export class UserService {
         failure++;
       }
     }
-    this.logger.log(`Re sync ${users.length} users to CRM, succeed: ${succeed}, failure: ${failure}`);
+    this.logger.log(`Re sync ${unSyncUsers.length} users to CRM, succeed: ${succeed}, failure: ${failure}`);
     return succeed;
   }
 }

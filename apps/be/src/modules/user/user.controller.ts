@@ -37,6 +37,11 @@ export class UserController {
     );
   }
 
+  @Post('resync')
+  async reSyncCRM(): Promise<number> {
+    return await this.userService.reSyncCRM();
+  }
+
   @UseGuards(AuthGuard('jwt'))
   @Get('/info')
   async getInfo(@UserId() userId: string) {
@@ -96,3 +101,4 @@ export class UserController {
     }
   }
 }
+

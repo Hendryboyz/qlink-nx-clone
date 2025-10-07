@@ -8,6 +8,11 @@ import { CreateProductRequest, ProductDto, ProductRemoveDto, ProductUpdateDto } 
 export class ProductController {
   constructor(private productService: ProductService) {}
 
+  @Post('resync')
+  async reSyncCRM(): Promise<number> {
+    return this.productService.reSyncCRM();
+  }
+
   @UseGuards(AuthGuard('jwt'))
   @Get('/list')
   async getProducts(@UserId() userId: string) {
