@@ -4,6 +4,7 @@ import { AppModule } from './app.module';
 import { join } from 'path';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { AllExceptionsFilter } from './common/filters/all-exceptions.filter';
+import * as bodyParser from 'body-parser';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
@@ -14,6 +15,9 @@ async function bootstrap() {
     Logger.log(`${req.method} ${req.url}`, 'Global Middleware');
     next();
   });
+
+  app.use(bodyParser.json({ limit: '50mb' }));
+  app.use(bodyParser.urlencoded({ extended: true, limit: '50mb' }));
 
   app.enableVersioning({
     type: VersioningType.URI,
