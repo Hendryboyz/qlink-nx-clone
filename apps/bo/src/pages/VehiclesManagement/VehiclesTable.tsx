@@ -1,7 +1,7 @@
 import { ProColumns } from '@ant-design/pro-table/es/typing';
 import { dateTimeFormatter } from '$/utils/formatter';
 import { Button, message, Modal, Space, Tooltip } from 'antd';
-import React, { ReactElement, useContext } from 'react';
+import React, { ReactElement, useContext, useState } from 'react';
 import { ProTable } from '@ant-design/pro-components';
 import { VehiclesContext } from '$/pages/VehiclesManagement/VehiclesContext';
 import { FileDoneOutlined, LoadingOutlined } from '@ant-design/icons';
@@ -18,6 +18,25 @@ export default function VehiclesTable(): ReactElement {
     setFilterParams,
   } = useContext(VehiclesContext);
   const [messageApi, contextHolder] = message.useMessage();
+  const [verifying, setVerifying] = useState(false);
+
+  async function handleReVerify() {
+    try {
+      setVerifying(true);
+      const syncResults = await API.verifyAllVehicles();
+      const successCount = syncResults.reduce((count: number, result) =>
+        count + (result.isVerified ? 1 : 0), 0);
+      const failureCount = syncResults.length - successCount;
+      message.info(
+        `try to re-sync ${syncResults.length} products: success: ${successCount}, failure: ${failureCount}`,
+        5,
+        );
+    } catch(e) {
+      message.error('something unexpected error while re-verify vehicles');
+    } finally {
+      setVerifying(false);
+    }
+  }
 
   function handleDelete(vehicleId: string) {
     Modal.confirm({
@@ -115,24 +134,24 @@ export default function VehiclesTable(): ReactElement {
             <LoadingOutlined />
           </Tooltip>
         );
-        if (record.isAutoVerified) {
+        if (isVerified) {
           autoVerifyStatus = (
             <Tooltip placement="bottom" title={"verify done, update vehicle info to trigger again"}>
-              <FileDoneOutlined />
+              <FileDoneOutlined style={{ color: '#2DC100' }} />
             </Tooltip>
           )
         }
         if (isVerified) {
           return (
             <div className="flex">
-              <span style={{paddingRight: '5px', color: 'green'}}>Success</span>
+              <span style={{paddingRight: '5px', color: '#2DC100'}}>Success</span>
               {autoVerifyStatus}
             </div>
           );
         } else {
           return (
             <div>
-              <span style={{paddingRight: '5px', color: 'red'}}>Fail</span>
+              <span style={{paddingRight: '5px', color: '#EFB700'}}>Pending</span>
               {autoVerifyStatus}
             </div>
           );
@@ -186,7 +205,17 @@ export default function VehiclesTable(): ReactElement {
         }}
         scroll={{ x: 'max-content' }}
         dateFormatter="string"
-        toolBarRender={undefined}
+        toolBarRender={() => [
+          <Button
+            key="button"
+            type="primary"
+            onClick={handleReVerify}
+            disabled={verifying}
+            loading={verifying}
+          >
+            ReVerify
+          </Button>,
+        ]}
       />
     </>
   );

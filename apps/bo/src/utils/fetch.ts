@@ -8,6 +8,7 @@ import {
   PostEntity,
   ResetBoUserPasswordDto,
   ClientUserUpdateDto,
+  VerifyResult,
 } from '@org/types';
 import {
   GetPostsResponse, GetUsersFilters,
@@ -316,6 +317,10 @@ class Api {
 
   async deleteVehicle(vehicleId: string) {
     return this.delete(`/vehicles/${vehicleId}`);
+  }
+
+  async verifyAllVehicles(): Promise<VerifyResult[]> {
+    return this.post(`/vehicles/verification`);
   }
 
   async countTotalMember(from?: Date): Promise<number> {
