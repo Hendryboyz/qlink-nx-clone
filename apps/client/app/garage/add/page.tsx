@@ -155,7 +155,12 @@ export default function GarageAdd() {
               customBtn={
                 <img
                   src="/assets/save.svg"
-                  onClick={() => handleSubmit()}
+                  onClick={() => {
+                    if (isSubmitting) {
+                      return;
+                    }
+                    handleSubmit();
+                  }}
                 />
               }
               customBackAction={() => { router.push('/garage'); }}
