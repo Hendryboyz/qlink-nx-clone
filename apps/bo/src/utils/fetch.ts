@@ -55,11 +55,13 @@ class Api {
         const originalRequest = error.config;
 
         // 如果是刷新 token 的請求失敗，直接返回錯誤
+        const routerBasename: string = import.meta.env.VITE_BO_ROUTER_BASENAME || '';
+        const signInRoute = `${routerBasename}/login`;
         if (originalRequest.url === '/auth/refresh') {
           this.processQueue(false, error);
           this.isRefreshing = false;
           this.clearToken();
-          window.location.href = '/login';
+          window.location.href = signInRoute;
           return Promise.reject(error);
         }
         else if (error.response.status === 401 && !originalRequest._retry) {
@@ -74,7 +76,7 @@ class Api {
             return this.instance(originalRequest);
           } catch (refreshError) {
             this.clearToken();
-            window.location.href = '/login';
+            window.location.href = signInRoute;
             return Promise.reject(refreshError);
           }
         }
