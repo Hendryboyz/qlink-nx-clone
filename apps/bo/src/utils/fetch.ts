@@ -108,7 +108,7 @@ class Api {
               this.processQueue(false, refreshError);
               this.isRefreshing = false;
               this.clearToken();
-              window.location.href = '/login';
+              window.location.href = signInRoute;
               return Promise.reject(refreshError);
             }
           }
