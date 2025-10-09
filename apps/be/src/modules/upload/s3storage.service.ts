@@ -24,7 +24,7 @@ export class S3storageService {
   }
 
   private getAWSCredentials() {
-    if (process.env.NODE_ENV === 'production') {
+    if (process.env.NODE_ENV === 'production' || process.env.NODE_ENV === 'stage') {
       return fromContainerMetadata();
     } else {
       return {
