@@ -65,6 +65,12 @@ export class VehiclesController {
   async updateVehicle(@Param('id') vehicleId: string, @Body() payload: UpdateVehicleDTO) {
     this.logger.debug(`UpdateVehicleDto: ${vehicleId}`);
     this.logger.debug(JSON.stringify(payload));
+    return this.productService.updateProduct({
+      id: vehicleId,
+      data: {
+        ...payload,
+      },
+    }) ;
   }
 
   @Roles(BoRole.ADMIN)

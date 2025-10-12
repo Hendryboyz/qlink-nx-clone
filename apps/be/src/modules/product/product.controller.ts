@@ -33,8 +33,9 @@ export class ProductController {
   @UseGuards(AuthGuard('jwt'))
   @Put('/save')
   async updateProduct(@UserId() userId: string, @Body() payload: ProductUpdateDto) {
-    return this.productService.update(userId, payload);
+    return this.productService.updateOwnedProduct(userId, payload);
   }
+
   @UseGuards(AuthGuard('jwt'))
   @Delete('/remove')
   async removeProduct(@UserId() userId: string, @Body() payload: ProductRemoveDto) {

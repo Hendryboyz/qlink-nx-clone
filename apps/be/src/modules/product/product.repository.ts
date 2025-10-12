@@ -65,7 +65,7 @@ export class ProductRepository {
       id, user_id, vin, engine_number, model,
       to_char(purchase_date, 'YYYY-MM-DD') as purchase_date,
       to_char(registration_date, 'YYYY-MM-DD') as registration_date,
-      dealer_name, year, created_at, updated_at
+      dealer_name, year, created_at, updated_at, crm_id
     FROM product
     WHERE id = $1
   `;
@@ -212,9 +212,9 @@ export class ProductRepository {
     const [obj] = await this.knex('product')
       .where({ id })
       .update(productToUpdate)
-      .returning('id');
+      .returning('*');
 
-    return await this.findById(obj.id);
+    return obj;
   }
 
   remove(product: ProductEntity): Promise<number> {

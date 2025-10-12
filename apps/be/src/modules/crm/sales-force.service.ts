@@ -222,7 +222,7 @@ export class SalesforceSyncService implements OnModuleInit{
       "Vehicle_Reg_Data_External_ID__c": null,
       "Vehicle_Registration_ID__c": vehicle.id,
       "Model__r": {
-        "Model_EID__c": DEFAULT_MODELS.find(m => m.id.toString() === vehicle.model).title
+        "Model_EID__c": this.convertToModelTitle(vehicle.model),
       },
       "Year__c": vehicle.year,
       "VIN_Number_Check__c": vehicle.vin,
@@ -235,6 +235,10 @@ export class SalesforceSyncService implements OnModuleInit{
       },
       "Dealer_Name_Check__c": vehicle.dealerName,
     }
+  }
+
+  private convertToModelTitle(modelId: string): string {
+    return DEFAULT_MODELS.find(m => m.id.toString() === modelId).title
   }
 
   public async updateVehicle(vehicleEntity: ProductEntity): Promise<null | SalesForceErrorMessage> {
@@ -279,7 +283,7 @@ export class SalesforceSyncService implements OnModuleInit{
   private castPatchVehiclePayload(vehicle: ProductEntity) {
     return {
       "Model__r": {
-        "Model_EID__c": vehicle.model
+        "Model_EID__c": this.convertToModelTitle(vehicle.model),
       },
       "Year__c": vehicle.year,
       "Purchase_Date__c": vehicle.purchaseDate,

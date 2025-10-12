@@ -48,9 +48,8 @@ export default function EditProductForm({ messageApi }: EditProductFormProps) {
     };
     try {
       const { id } = editingVehicle;
-      console.debug(id, payload);
       await API.patchVehicle(id, payload);
-      // setEditingVehicle(null);
+      setEditingVehicle(null);
       messageApi.success(`vehicle[${editingVehicle.id}] updated`);
     } catch (e) {
       console.error(e);

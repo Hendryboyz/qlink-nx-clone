@@ -125,9 +125,19 @@ export class ProductService {
     }
   }
 
-  async update(userId: string, payload: ProductUpdateDto): Promise<ProductVO> {
+  async updateOwnedProduct(userId: string, payload: ProductUpdateDto): Promise<ProductVO> {
     const existingProduct = await this.getOwnedProduct(userId, payload.id);
+    if (!existingProduct) {
+      throw new ForbiddenException(`product[${payload.id}] is not owned by ${userId}]`);
+    }
 
+    const updatedProduct = this.updateProduct(payload);
+
+    return { img: '', ...updatedProduct };
+  }
+
+  async updateProduct(payload: ProductUpdateDto): Promise<ProductEntity> {
+    const existingProduct = await this.productRepository.findById(payload.id);
     if (existingProduct.vin !== payload.data.vin
       || existingProduct.engineNumber !== payload.data.engineNumber
     ) {
@@ -148,7 +158,7 @@ export class ProductService {
     } catch (e) {
       this.logger.error(`fail to sync vehicle to salesforce`, e);
     }
-    return { img: '', ...updatedProduct };
+    return updatedProduct;
   }
 
   private async getOwnedProduct(userId: string, productId: string): Promise<ProductEntity> {
