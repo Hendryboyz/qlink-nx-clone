@@ -7,6 +7,7 @@ import { VehiclesContext } from '$/pages/VehiclesManagement/VehiclesContext';
 import { FileDoneOutlined, LoadingOutlined } from '@ant-design/icons';
 import { VehicleDTO } from '@org/types';
 import API from '$/utils/fetch';
+import { DEFAULT_MODELS } from '@org/common';
 
 export default function VehiclesTable(): ReactElement {
   const {
@@ -16,6 +17,7 @@ export default function VehiclesTable(): ReactElement {
     paging,
     setPaging,
     setFilterParams,
+    setEditingVehicle,
   } = useContext(VehiclesContext);
   const [messageApi, contextHolder] = message.useMessage();
   const [verifying, setVerifying] = useState(false);
@@ -72,6 +74,10 @@ export default function VehiclesTable(): ReactElement {
       title: 'Model',
       dataIndex: 'model',
       key: 'model',
+      render: (data, _) => {
+        const definedModel = DEFAULT_MODELS.find(m => m.id.toString() === data);
+        return <span>{definedModel.title}</span>;
+      }
     },
     {
       title: 'Year',
@@ -164,6 +170,7 @@ export default function VehiclesTable(): ReactElement {
       search: false,
       render: (_: unknown, record: VehicleDTO) => (
         <Space size="middle">
+          <Button onClick={() => { setEditingVehicle(record) }}>Edit</Button>
           <Button
             danger
             onClick={() => handleDelete(record.id)}

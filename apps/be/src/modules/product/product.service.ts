@@ -10,6 +10,7 @@ import {
   ProductEntity,
   ProductUpdateDto,
   ProductVO,
+  VerifyResult,
 } from '@org/types';
 import { ProductRepository } from './product.repository';
 import {
@@ -162,11 +163,12 @@ export class ProductService {
     return existingProduct;
   }
 
-  async verifyAllProducts() {
+  async verifyAllProducts(): Promise<VerifyResult[]> {
     const unverifiedProducts =
       await this.productRepository.findAllowReVerifyProducts(this.reVerifyLimitTimes);
+    const result: VerifyResult[] = [];
     for (const product of unverifiedProducts) {
-      const isVerified = await this.syncCrmService.verifyVehicle(product);
+      const isVerified = await this.verifyWithCRM(product);
       if (!isVerified) {
         this.logger.warn(`fail to verify vehicle with id ${product.id} with salesforce`);
         // await this.productRepository.increaseVerifyTimes(product.id);
@@ -175,6 +177,21 @@ export class ProductService {
           isVerified: true,
         });
       }
+      result.push({
+        productId: product.id,
+        isVerified: isVerified,
+      })
+    }
+    return result;
+  }
+
+  private async verifyWithCRM(product: ProductEntity): Promise<boolean> {
+    return false;
+    try {
+      return await this.syncCrmService.verifyVehicle(product);
+    } catch (e) {
+      this.logger.error(`fail to verify vehicle with id ${product.id} with salesforce`, e);
+      return false;
     }
   }
 

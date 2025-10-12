@@ -44,6 +44,17 @@ export type UpdateProductData =
     'verifyTimes'
   >>;
 
+export type UpdateVehicleDTO =
+  Partial<Pick<ProductEntity,
+    'model' |
+    'vin' |
+    'engineNumber' |
+    'dealerName' |
+    'year'|
+    'purchaseDate' |
+    'registrationDate'
+  >>;
+
 export type ProductRemoveDto = {
     id: string
 }

@@ -78,12 +78,21 @@ export default function MemberEditingForm() {
       form={form}
       labelCol={{ span: 6 }}
       wrapperCol={{ span: 14 }}
-      layout="horizontal"
+      layout="vertical"
       initialValues={userValues}
       onValuesChange={valueChangeHandler}
-      style={{ maxWidth: 600 }}
+      style={{
+        maxWidth: 600,
+        backgroundColor: 'white',
+        borderRadius: '5px',
+        padding: '15px 0px 15px 25px',
+        marginBottom: '30px',
+      }}
       onFinish={handleFormSubmit}
     >
+      <Form.Item label="Email" name="email">
+        <Input disabled />
+      </Form.Item>
       <Form.Item
         label="First Name"
         name="firstName"
@@ -107,9 +116,6 @@ export default function MemberEditingForm() {
       </Form.Item>
       <Form.Item label="Birthday" name="birthday">
         <DatePicker />
-      </Form.Item>
-      <Form.Item label="Email" name="email">
-        <Input disabled />
       </Form.Item>
       <Form.Item label="Mobile" name="phone">
         <Input  />

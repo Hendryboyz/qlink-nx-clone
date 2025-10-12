@@ -8,9 +8,9 @@ import { CreateProductRequest, ProductDto, ProductRemoveDto, ProductUpdateDto } 
 export class ProductController {
   constructor(private productService: ProductService) {}
 
-  @Post('resync')
-  async reSyncCRM(): Promise<number> {
-    return this.productService.reSyncCRM();
+  @Post('verify')
+  async verifyAllProductsInCRM(): Promise<void> {
+    await this.productService.verifyAllProducts();
   }
 
   @UseGuards(AuthGuard('jwt'))

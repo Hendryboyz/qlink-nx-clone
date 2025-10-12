@@ -9,15 +9,18 @@ type pagingType = {
 };
 
 interface VehiclesContextType {
+  editingVehicle: VehicleDTO;
   vehicles: VehicleDTO[];
   total: number;
   paging: pagingType;
-  setPaging: (prevState) => void
-  setFilterParams: (prevState) => void
-  setVehicles: (prevState) => void
+  setPaging: (prevState) => void;
+  setFilterParams: (prevState) => void;
+  setVehicles: (prevState) => void;
+  setEditingVehicle: (prevState) => void;
 }
 
 const INITIAL_STATE: VehiclesContextType = {
+  editingVehicle: null,
   vehicles: [],
   total: 0,
   paging: {
@@ -28,6 +31,7 @@ const INITIAL_STATE: VehiclesContextType = {
   setPaging: (prevState) => {},
   setFilterParams: (prevState) => {},
   setVehicles: (prevState) => {},
+  setEditingVehicle: (prevState) => {},
 }
 
 export const VehiclesContext = createContext<VehiclesContextType>(INITIAL_STATE);
@@ -40,6 +44,7 @@ const INITIAL_PAGING_VALUES = {
 
 
 export default function VehiclesContextProvider({ children }: { children: ReactNode }) {
+  const [editingVehicle, setEditingVehicle] = useState<VehicleDTO>(null);
   const [vehicles, setVehicles] = useState<VehicleDTO[]>([]);
   const [total, setTotal] = useState(0);
   const [paging, setPaging] = useState(INITIAL_PAGING_VALUES);
@@ -56,12 +61,14 @@ export default function VehiclesContextProvider({ children }: { children: ReactN
   }, [paging, filterParams, setVehicles]);
 
   const ctxValues: VehiclesContextType = {
+    editingVehicle,
     vehicles,
     total,
     paging,
     setPaging,
     setFilterParams,
     setVehicles,
+    setEditingVehicle,
   }
   return (
     <VehiclesContext.Provider value={ctxValues}>

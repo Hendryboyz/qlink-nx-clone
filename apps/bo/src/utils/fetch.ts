@@ -9,9 +9,11 @@ import {
   ResetBoUserPasswordDto,
   ClientUserUpdateDto,
   VerifyResult,
+  UpdateVehicleDTO
 } from '@org/types';
 import {
-  GetPostsResponse, GetUsersFilters,
+  GetPostsResponse,
+  GetUsersFilters,
   GetUsersResponse,
   MutateUserResponse,
   UploadImageResponse
@@ -315,6 +317,10 @@ class Api {
     }
 
     return this.get(resourceUrl);
+  }
+
+  async patchVehicle(vehicleId: string, payload: UpdateVehicleDTO) {
+    return this.put(`/vehicles/${vehicleId}`, payload);
   }
 
   async deleteVehicle(vehicleId: string) {
