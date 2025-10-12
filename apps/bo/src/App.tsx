@@ -14,13 +14,8 @@ import Login from './pages/Login';
 import Unauthorized from './pages/Unauthorized';
 import Dashboard from './pages/Dashboard';
 import MemberManagement from './pages/MemberMangement';
-import DealerManagement from './pages/DealerManagement';
-import AdvertisementManagement from './pages/AdvertisementManagement';
-import CouponManagement from './pages/CouponManagement';
-import ReportData from './pages/ReportData';
 import PostManagement from './pages/PostManagement';
 import { BoRole } from '@org/types';
-import CreateUser from './pages/UsersManagement/CreateUser';
 import UsersManagement from '$/pages/UsersManagement';
 import UserContextProvider from '$/pages/UsersManagement/UsersContext';
 import MemberContextProvider from '$/pages/MemberMangement/MemberContext';
@@ -102,38 +97,6 @@ function App() {
               }
             />
             <Route
-              path="dealers"
-              element={
-                <PrivateRoute allowedRoles={[BoRole.ADMIN]}>
-                  <DealerManagement />
-                </PrivateRoute>
-              }
-            />
-            <Route
-              path="advertisements"
-              element={
-                <PrivateRoute allowedRoles={[BoRole.ADMIN, BoRole.VIEWER]}>
-                  <AdvertisementManagement />
-                </PrivateRoute>
-              }
-            />
-            <Route
-              path="coupons"
-              element={
-                <PrivateRoute allowedRoles={[BoRole.ADMIN, BoRole.VIEWER]}>
-                  <CouponManagement />
-                </PrivateRoute>
-              }
-            />
-            <Route
-              path="reports"
-              element={
-                <PrivateRoute allowedRoles={[BoRole.ADMIN]}>
-                  <ReportData />
-                </PrivateRoute>
-              }
-            />
-            <Route
               path="post-management"
               element={
                 <PrivateRoute allowedRoles={[BoRole.ADMIN, BoRole.VIEWER]}>
@@ -141,14 +104,38 @@ function App() {
                 </PrivateRoute>
               }
             />
-            <Route
-              path="create-user"
-              element={
-                <PrivateRoute allowedRoles={[BoRole.ADMIN]}>
-                  <CreateUser />
-                </PrivateRoute>
-              }
-            />
+            {/*<Route*/}
+            {/*  path="dealers"*/}
+            {/*  element={*/}
+            {/*    <PrivateRoute allowedRoles={[BoRole.ADMIN]}>*/}
+            {/*      <DealerManagement />*/}
+            {/*    </PrivateRoute>*/}
+            {/*  }*/}
+            {/*/>*/}
+            {/*<Route*/}
+            {/*  path="advertisements"*/}
+            {/*  element={*/}
+            {/*    <PrivateRoute allowedRoles={[BoRole.ADMIN, BoRole.VIEWER]}>*/}
+            {/*      <AdvertisementManagement />*/}
+            {/*    </PrivateRoute>*/}
+            {/*  }*/}
+            {/*/>*/}
+            {/*<Route*/}
+            {/*  path="coupons"*/}
+            {/*  element={*/}
+            {/*    <PrivateRoute allowedRoles={[BoRole.ADMIN, BoRole.VIEWER]}>*/}
+            {/*      <CouponManagement />*/}
+            {/*    </PrivateRoute>*/}
+            {/*  }*/}
+            {/*/>*/}
+            {/*<Route*/}
+            {/*  path="reports"*/}
+            {/*  element={*/}
+            {/*    <PrivateRoute allowedRoles={[BoRole.ADMIN]}>*/}
+            {/*      <ReportData />*/}
+            {/*    </PrivateRoute>*/}
+            {/*  }*/}
+            {/*/>*/}
           </Route>
           <Route path="*" element={<NotFound />} />
         </Routes>
