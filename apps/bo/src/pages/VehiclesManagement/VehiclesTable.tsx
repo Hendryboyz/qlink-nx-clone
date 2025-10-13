@@ -1,7 +1,7 @@
 import { ProColumns } from '@ant-design/pro-table/es/typing';
 import { dateTimeFormatter } from '$/utils/formatter';
 import { Button, message, Modal, Space, Tooltip } from 'antd';
-import React, { ReactElement, useContext, useState } from 'react';
+import React, { ReactElement, useContext, useRef, useState } from 'react';
 import { ProTable } from '@ant-design/pro-components';
 import { VehiclesContext } from '$/pages/VehiclesManagement/VehiclesContext';
 import { FileDoneOutlined, LoadingOutlined } from '@ant-design/icons';
@@ -18,6 +18,7 @@ export default function VehiclesTable(): ReactElement {
     setPaging,
     setFilterParams,
     setEditingVehicle,
+    reloadVehicles,
   } = useContext(VehiclesContext);
   const [messageApi, contextHolder] = message.useMessage();
   const [verifying, setVerifying] = useState(false);
@@ -33,6 +34,7 @@ export default function VehiclesTable(): ReactElement {
         `try to re-sync ${syncResults.length} products: success: ${successCount}, failure: ${failureCount}`,
         5,
         );
+      reloadVehicles();
     } catch(e) {
       message.error('something unexpected error while re-verify vehicles');
     } finally {

@@ -17,6 +17,7 @@ interface VehiclesContextType {
   setFilterParams: (prevState) => void;
   setVehicles: (prevState) => void;
   setEditingVehicle: (prevState) => void;
+  reloadVehicles: () => void;
 }
 
 const INITIAL_STATE: VehiclesContextType = {
@@ -32,6 +33,7 @@ const INITIAL_STATE: VehiclesContextType = {
   setFilterParams: (prevState) => {},
   setVehicles: (prevState) => {},
   setEditingVehicle: (prevState) => {},
+  reloadVehicles: () => {},
 }
 
 export const VehiclesContext = createContext<VehiclesContextType>(INITIAL_STATE);
@@ -49,6 +51,11 @@ export default function VehiclesContextProvider({ children }: { children: ReactN
   const [total, setTotal] = useState(0);
   const [paging, setPaging] = useState(INITIAL_PAGING_VALUES);
   const [filterParams, setFilterParams] = useState(undefined);
+  const [refreshCounter, setRefreshCounter] = useState(0);
+
+  function reloadVehicles() {
+    setRefreshCounter(prev => prev + 1);
+  }
 
   useEffect(() => {
     async function fetchVehicles() {
@@ -58,7 +65,7 @@ export default function VehiclesContextProvider({ children }: { children: ReactN
         setTotal(total);
     }
     fetchVehicles();
-  }, [paging, filterParams, setVehicles]);
+  }, [paging, filterParams, setVehicles, refreshCounter]);
 
   const ctxValues: VehiclesContextType = {
     editingVehicle,
@@ -69,6 +76,7 @@ export default function VehiclesContextProvider({ children }: { children: ReactN
     setFilterParams,
     setVehicles,
     setEditingVehicle,
+    reloadVehicles,
   }
   return (
     <VehiclesContext.Provider value={ctxValues}>

@@ -196,7 +196,6 @@ export class ProductService {
   }
 
   private async verifyWithCRM(product: ProductEntity): Promise<boolean> {
-    return false;
     try {
       return await this.syncCrmService.verifyVehicle(product);
     } catch (e) {
