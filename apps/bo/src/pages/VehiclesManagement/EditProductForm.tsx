@@ -10,12 +10,14 @@ import {
   Space,
   Button,
   Select,
+  Flex,
 } from 'antd';
 import dayjs from 'dayjs';
 import { VehiclesContext } from '$/pages/VehiclesManagement/VehiclesContext';
 import type { MessageInstance } from 'antd/es/message/interface';
 import API from '$/utils/fetch';
 import { DEFAULT_MODELS } from '@org/common';
+import { CheckCircleFilled, CloseCircleFilled } from '@ant-design/icons';
 
 type FieldType = {
   model: string,
@@ -28,6 +30,19 @@ type FieldType = {
 
 type EditProductFormProps = {
   messageApi: MessageInstance;
+}
+
+type StatusIconProps = {
+  isSuccess: boolean;
+}
+
+const StatusIcon = (props: StatusIconProps) => {
+  const defaultStyle = { fontSize: '30px' };
+  if (props.isSuccess) {
+    return <CheckCircleFilled style={{ color: 'green', ...defaultStyle }} />;
+  } else {
+    return <CloseCircleFilled style={{ color: 'red', ...defaultStyle }} />;
+  }
 }
 
 export default function EditProductForm({ messageApi }: EditProductFormProps) {
@@ -72,15 +87,17 @@ export default function EditProductForm({ messageApi }: EditProductFormProps) {
           </Card>
         </Col>
         <Col className="gutter-row" span={8}>
-          <Card title="Sync CRM Status" bordered={false}>
-            <Card.Meta
-              title={'Sync'}
-              avatar={editingVehicle.crmId ? 'true' : 'false'}
-            />
-            <Card.Meta
-              title={'Verify'}
-              avatar={editingVehicle.isVerified ? 'true' : 'false'}
-            />
+          <Card title="CRM Status" bordered={false}>
+            <Flex justify="space-evenly">
+              <Flex vertical style={{ width:'100%', alignItems: 'center' }}>
+                <span><StatusIcon isSuccess={editingVehicle.crmId && editingVehicle.crmId !== ""} /></span>
+                <strong>Sync</strong>
+              </Flex>
+              <Flex vertical style={{ width:'100%', alignItems: 'center' }}>
+                <span><StatusIcon isSuccess={editingVehicle.isVerified} /></span>
+                <strong>Verification</strong>
+              </Flex>
+            </Flex>
           </Card>
         </Col>
       </Row>
