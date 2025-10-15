@@ -1,0 +1,29 @@
+name: QLink Demo Site Build/Deploy
+run-name: ${{ github.actor }} is running qapp build & deployment for new ui 🚀
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - features/ui
+jobs:
+
+  Build-Client:
+    uses: ./.github/workflows/ci.yaml
+    secrets: inherit
+    with:
+      build-env: demo
+      dockerfile: deployments/dockerfiles/client.Dockerfile
+      ecr-repository: qapp-dev-client
+  Deploy-Client:
+    needs: Build-Client
+    uses: ./.github/workflows/cd.yaml
+    secrets: inherit
+    with:
+      build-env: demo
+      deploy-version: ${{ needs.Build-Client.outputs.imagetag }}
+      ecr-repository: qapp-dev-client
+      task-definition: deployments/tasks/demo/client.json
+      task-container-name: client-app
+      ecs-service: qapp-dev-client-service
+#      dry-run: true
+
