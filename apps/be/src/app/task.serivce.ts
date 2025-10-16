@@ -20,7 +20,15 @@ export class TaskService {
     await this.productService.verifyAllProducts();
   }
 
-  @Cron("* * * * *", {
+  @Cron("0 0/6 * * *", {
+    name: 'job to re-sync members to salesforce',
+    timeZone: 'Asia/Taipei',
+  })
+  async resyncMembers() {
+    await this.userService.reSyncCRM();
+  }
+
+  @Cron("* 1/6 * * *", {
     name: 'job to re-sync products to salesforce',
     timeZone: 'Asia/Taipei',
   })
@@ -28,11 +36,5 @@ export class TaskService {
     await this.productService.reSyncCRM()
   }
 
-  @Cron("0 2/6 * * *", {
-    name: 'job to re-sync members to salesforce',
-    timeZone: 'Asia/Taipei',
-  })
-  async resyncMembers() {
-    await this.userService.reSyncCRM();
-  }
+
 }
