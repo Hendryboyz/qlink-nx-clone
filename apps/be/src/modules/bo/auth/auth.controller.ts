@@ -8,6 +8,7 @@ import {
   HttpCode,
   Logger,
   Get,
+  Res,
 } from '@nestjs/common';
 import { BoAuthService } from './auth.service';
 import {
@@ -15,18 +16,28 @@ import {
   BoAuthResponse,
 } from '@org/types';
 import { JwtAuthGuard } from '../verification/jwt-auth.guard';
-import { Request } from 'express';
+import { CookieOptions, Request, Response } from 'express';
+import { ConfigService } from '@nestjs/config';
+
+const ONE_MONTH = 30 * 24 * 60 * 60 * 1000;
 
 @Controller()
 export class BoAuthController {
   private readonly logger = new Logger(BoAuthController.name);
-
-  constructor(private boAuthService: BoAuthService) {
+  private readonly isProduction: boolean = false;
+  constructor(
+    private readonly boAuthService: BoAuthService,
+    private readonly configService: ConfigService,
+  ) {
     this.logger.log('BoAuthController initialized');
+    this.isProduction = this.configService.get<string>('NODE_ENV', 'development') !== 'development';
   }
 
   @Post('login')
-  async login(@Body() loginDto: BoLoginDto): Promise<BoAuthResponse> {
+  async login(
+    @Body() loginDto: BoLoginDto,
+    @Res({ passthrough: true }) res: Response
+  ): Promise<BoAuthResponse> {
     this.logger.log(`Login attempt received for user: ${loginDto.username}`);
     try {
       const user = await this.boAuthService.validateUser(
@@ -38,7 +49,8 @@ export class BoAuthController {
         throw new UnauthorizedException();
       }
       const result = await this.boAuthService.login(user);
-      this.logger.log(`Login successful for user: ${loginDto.username}`);
+      this.logger.log(`Login BO successful for user: ${loginDto.username}`);
+      this.setToken(res, result)
       return result;
     } catch (error) {
       this.logger.error(
@@ -68,5 +80,16 @@ export class BoAuthController {
   @Get('check')
   async checkAuth() {
     return { authenticated: true };
+  }
+
+  private setToken(res: Response, authResult: BoAuthResponse): void {
+    const cookieOptions: CookieOptions = {
+      secure: this.isProduction,
+    };
+
+    cookieOptions.sameSite = 'strict';
+    cookieOptions.maxAge = ONE_MONTH;
+    res.cookie('access_token', authResult.accessToken, cookieOptions);
+    res.cookie('refresh_token', authResult.refreshToken, cookieOptions);
   }
 }

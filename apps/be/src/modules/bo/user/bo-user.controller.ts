@@ -9,21 +9,25 @@ import {
   Post,
   Put,
   Query,
-  UseGuards
+  UseGuards,
 } from '@nestjs/common';
 import { Roles } from '$/modules/bo/verification/roles.decorator';
-import { BoRole, CreateBoUserDto, ListBoUserDTO, ResetBoUserPasswordDto } from '@org/types';
+import {
+  BoRole,
+  CreateBoUserDto,
+  ListBoUserDTO,
+  ResetBoUserPasswordDto,
+} from '@org/types';
 import { BoUserService } from '$/modules/bo/user/bo-user.service';
 import { JwtAuthGuard } from '$/modules/bo/verification/jwt-auth.guard';
 import { RolesGuard } from '$/modules/bo/verification/roles.guard';
 
-@Controller('')
+@UseGuards(JwtAuthGuard, RolesGuard)
+@Controller()
 export class BoUserController {
   private logger = new Logger(this.constructor.name);
-  constructor(private readonly service: BoUserService) {
-  }
+  constructor(private readonly service: BoUserService) {}
 
-  @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(BoRole.ADMIN)
   @Post('')
   async createUser(@Body() createUserDto: CreateBoUserDto) {
@@ -34,7 +38,7 @@ export class BoUserController {
   @Put(':id/password/reset')
   async resetPassword(
     @Param('id') userId: string,
-    @Body() body: ResetBoUserPasswordDto,
+    @Body() body: ResetBoUserPasswordDto
   ) {
     try {
       return await this.service.resetPassword(userId, body.password);
@@ -43,7 +47,7 @@ export class BoUserController {
     }
   }
 
-  @Roles(BoRole.ADMIN)
+  @Roles(BoRole.ADMIN, BoRole.VIEWER)
   @Get()
   listByPaging(
     @Query('page') page: number = 1,

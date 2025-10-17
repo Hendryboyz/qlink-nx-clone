@@ -1,14 +1,18 @@
-import { Controller, Get, Logger, Query } from '@nestjs/common';
+import { Controller, Get, Logger, Query, UseGuards } from '@nestjs/common';
 import {
   StatisticUserQueries,
   StatisticVehiclesQueries,
 } from '$/modules/bo/statistic/statistic.types';
 import { ProductAnalysisService } from '$/modules/product/product-analysis.service';
 import { UserAnalysisService } from '$/modules/user/user-analysis.service';
+import { RolesGuard } from '$/modules/bo/verification/roles.guard';
+import { Roles } from '$/modules/bo/verification/roles.decorator';
+import { BoRole } from '@org/types';
+import { JwtAuthGuard } from '$/modules/bo/verification/jwt-auth.guard';
 
-// 會員總數、當月份註冊數量、當月份註冊的車型比例、驗證失敗數量
-
-@Controller('')
+@UseGuards(JwtAuthGuard, RolesGuard)
+@Controller()
+@Roles(BoRole.ADMIN, BoRole.VIEWER)
 export class StatisticController {
   private logger = new Logger(this.constructor.name);
   constructor(

@@ -16,13 +16,34 @@ export class RolesGuard implements CanActivate {
   constructor(private reflector: Reflector, private jwtService: JwtService) {}
 
   canActivate(context: ExecutionContext): boolean {
-    const requiredRoles = this.reflector.getAllAndOverride<BoRole[]>('roles', [
-      context.getHandler(),
-      context.getClass(),
-    ]);
+    const requiredRoles = this.getMethodRequiredRoles(context);
     if (!requiredRoles) {
       return true;
     }
+
+    const token = this.getBearerToken(context);
+    try {
+      const decoded = this.jwtService.verify(token);
+      const request = context.switchToHttp().getRequest();
+      request.user = decoded;
+
+      this.logger.debug(
+        `User role: ${decoded.role}, Required roles: ${requiredRoles}`);
+      return requiredRoles.some((role) => decoded.role === role);
+    } catch (error) {
+      this.logger.error('Token verification failed', error.stack);
+      throw new UnauthorizedException('Invalid token');
+    }
+  }
+
+  private getMethodRequiredRoles(context: ExecutionContext): BoRole[] {
+    return this.reflector.getAllAndOverride<BoRole[]>('roles', [
+      context.getHandler(),
+      context.getClass(),
+    ]);
+  }
+
+  private getBearerToken(context: ExecutionContext): string {
     const request = context.switchToHttp().getRequest();
     const authHeader = request.headers.authorization;
 
@@ -36,18 +57,6 @@ export class RolesGuard implements CanActivate {
       this.logger.warn('Invalid Authorization header format');
       throw new UnauthorizedException('Invalid token format');
     }
-
-    try {
-      const decoded = this.jwtService.verify(token);
-      request.user = decoded;
-
-      this.logger.log(
-        `User role: ${decoded.role}, Required roles: ${requiredRoles}`
-      );
-      return requiredRoles.some((role) => decoded.role === role);
-    } catch (error) {
-      this.logger.error('Token verification failed', error.stack);
-      throw new UnauthorizedException('Invalid token');
-    }
+    return token;
   }
 }

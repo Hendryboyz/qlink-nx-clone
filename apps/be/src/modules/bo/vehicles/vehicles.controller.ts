@@ -11,6 +11,7 @@ import {
   Post,
   Put,
   Query,
+  UseGuards,
 } from '@nestjs/common';
 import * as _ from 'lodash';
 import {
@@ -24,13 +25,16 @@ import {
 import { Roles } from '$/modules/bo/verification/roles.decorator';
 import { ProductService } from '$/modules/product/product.service';
 import { VehicleQueryFilters } from '$/modules/bo/vehicles/vehicles.types';
+import { JwtAuthGuard } from '$/modules/bo/verification/jwt-auth.guard';
+import { RolesGuard } from '$/modules/bo/verification/roles.guard';
 
-@Controller('')
+@UseGuards(JwtAuthGuard, RolesGuard)
+@Controller()
 export class VehiclesController {
   private logger = new Logger(this.constructor.name);
   constructor(private productService: ProductService) {}
 
-  @Roles(BoRole.ADMIN)
+  @Roles(BoRole.ADMIN, BoRole.VIEWER)
   @Get()
   async listByPaging(
     @Query('page') page: number = 0,
