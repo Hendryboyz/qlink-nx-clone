@@ -5,11 +5,11 @@ import { join } from 'path';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { AllExceptionsFilter } from './common/filters/all-exceptions.filter';
 import * as bodyParser from 'body-parser';
+import { ConfigService } from '@nestjs/config';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
-  const globalPrefix = process.env.API_PREFIX || 'api';
-  const port = process.env.PORT || 3000;
+  const configService = app.get(ConfigService);
 
   app.use((req, res, next) => {
     Logger.log(`${req.method} ${req.url}`, 'Global Middleware');
@@ -36,6 +36,7 @@ async function bootstrap() {
     allowedHeaders: ['Content-Type', 'Authorization', 'pre-token'],
   });
 
+  const globalPrefix = configService.get<string>('API_PREFIX', 'api');
   app.setGlobalPrefix(globalPrefix);
 
   app.useStaticAssets(join(process.cwd(), 'apps/be/uploads'), {
@@ -47,6 +48,7 @@ async function bootstrap() {
 
   app.useGlobalFilters(new AllExceptionsFilter());
 
+  const port = configService.get<number>('PORT', 3000);
   await app.listen(port);
   Logger.log(
     `🚀 Application is running on: http://localhost:${port}/${globalPrefix}`
