@@ -13,6 +13,8 @@ import {
   FileTextOutlined,
   CarOutlined,
 } from '@ant-design/icons';
+import Cookies from 'js-cookie';
+import { BO_ACCESS_TOKEN, BO_REFRESH_TOKEN } from '@org/common';
 
 const { Sider } = Layout;
 
@@ -51,6 +53,8 @@ const Sidebar: React.FC<SidebarProps> = ({ collapsed, setCollapsed }) => {
 
   const handleLogout = () => {
     localStorage.removeItem('user');
+    Cookies.remove(BO_ACCESS_TOKEN);
+    Cookies.remove(BO_REFRESH_TOKEN);
     navigate('/login');
   };
 

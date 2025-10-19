@@ -18,8 +18,8 @@ import {
 import { JwtAuthGuard } from '../verification/jwt-auth.guard';
 import { CookieOptions, Request, Response } from 'express';
 import { ConfigService } from '@nestjs/config';
-
-const ONE_MONTH = 30 * 24 * 60 * 60 * 1000;
+import { BO_ACCESS_TOKEN, BO_REFRESH_TOKEN } from '@org/common';
+import { HttpStatusCode } from 'axios';
 
 @Controller()
 export class BoAuthController {
@@ -34,6 +34,7 @@ export class BoAuthController {
   }
 
   @Post('login')
+  @HttpCode(HttpStatusCode.Created)
   async login(
     @Body() loginDto: BoLoginDto,
     @Res({ passthrough: true }) res: Response
@@ -48,9 +49,10 @@ export class BoAuthController {
         this.logger.warn(`Login failed for user: ${loginDto.username}`);
         throw new UnauthorizedException();
       }
+
       const result = await this.boAuthService.login(user);
-      this.logger.log(`Login BO successful for user: ${loginDto.username}`);
       this.setToken(res, result)
+      this.logger.log(`Login BO successful for user: ${loginDto.username}`);
       return result;
     } catch (error) {
       this.logger.error(
@@ -63,17 +65,25 @@ export class BoAuthController {
 
   @UseGuards(JwtAuthGuard)
   @Post('logout')
-  @HttpCode(204)
-  async logout(@Req() req: Request) {
+  @HttpCode(HttpStatusCode.NoContent)
+  async logout(
+    @Req() req: Request,
+    @Res({ passthrough: true }) res: Response,
+    ) {
     const userId = req.user['userId'];
     await this.boAuthService.logout(userId);
+    res.clearCookie(BO_ACCESS_TOKEN);
+    res.clearCookie(BO_REFRESH_TOKEN);
   }
 
   @Post('refresh')
   async refreshToken(
-    @Body('refresh_token') refreshToken: string
+    @Body('refresh_token') refreshToken: string,
+    @Res({ passthrough: true }) res: Response,
   ): Promise<BoAuthResponse> {
-    return this.boAuthService.refreshToken(refreshToken);
+    const authResponse = await this.boAuthService.refreshToken(refreshToken);
+    this.setToken(res, authResponse);
+    return authResponse;
   }
 
   @UseGuards(JwtAuthGuard)
@@ -85,11 +95,18 @@ export class BoAuthController {
   private setToken(res: Response, authResult: BoAuthResponse): void {
     const cookieOptions: CookieOptions = {
       secure: this.isProduction,
+      sameSite: 'strict',
     };
 
-    cookieOptions.sameSite = 'strict';
-    cookieOptions.maxAge = ONE_MONTH;
-    res.cookie('access_token', authResult.accessToken, cookieOptions);
-    res.cookie('refresh_token', authResult.refreshToken, cookieOptions);
+    const ONE_DAY = 24 * 60 * 60 * 1000;
+    res.cookie(BO_ACCESS_TOKEN, authResult.accessToken, {
+      ...cookieOptions,
+      maxAge: ONE_DAY,
+    });
+    const SEVEN_DAY = 7 * 24 * 60 * 60 * 1000;
+    res.cookie(BO_REFRESH_TOKEN, authResult.refreshToken, {
+      ...cookieOptions,
+      maxAge: SEVEN_DAY,
+    });
   }
 }

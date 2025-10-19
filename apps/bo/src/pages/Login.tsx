@@ -3,6 +3,8 @@ import { Form, Input, Button, message } from 'antd';
 import { useNavigate } from 'react-router-dom';
 import { BoLoginDto, BoUser } from '@org/types';
 import API from '../utils/fetch';
+import Cookies from 'js-cookie';
+import { BO_ACCESS_TOKEN } from '@org/common';
 
 const Login: React.FC = () => {
   const [loading, setLoading] = useState(false);
@@ -10,8 +12,9 @@ const Login: React.FC = () => {
 
   useEffect(() => {
     const userString = localStorage.getItem('user');
+    const accessToken = Cookies.get(BO_ACCESS_TOKEN);
     const user: BoUser | null = userString ? JSON.parse(userString) : null;
-    if (user) {
+    if (user && accessToken) {
       navigate('/dashboard', {replace: true});
     }
   }, [navigate]);

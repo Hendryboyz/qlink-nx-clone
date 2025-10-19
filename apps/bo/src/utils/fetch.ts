@@ -19,6 +19,9 @@ import {
   UploadImageResponse
 } from '$/types';
 import { GetVehiclesFilters, GetVehiclesResponse } from '$/types/vehicles';
+import { BO_ACCESS_TOKEN, BO_REFRESH_TOKEN } from '@org/common';
+import Cookies from 'js-cookie';
+
 
 class Api {
   private readonly instance: AxiosInstance;
@@ -40,7 +43,8 @@ class Api {
 
     this.instance.interceptors.request.use(
       (config) => {
-        const token = localStorage.getItem('access_token');
+        // const token = localStorage.getItem('access_token');
+        const token = Cookies.get(BO_ACCESS_TOKEN);
         if (token) {
           config.headers['Authorization'] = `Bearer ${token}`;
         }
@@ -53,76 +57,82 @@ class Api {
 
     this.instance.interceptors.response.use(
       (response) => response,
-      async (error) => {
-        const originalRequest = error.config;
-
-        // 如果是刷新 token 的請求失敗，直接返回錯誤
-        const routerBasename: string = import.meta.env.VITE_BO_ROUTER_BASENAME || '';
-        const signInRoute = `${routerBasename}/login`;
-        if (originalRequest.url === '/auth/refresh') {
-          this.processQueue(false, error);
-          this.isRefreshing = false;
-          this.clearToken();
-          window.location.href = signInRoute;
-          return Promise.reject(error);
-        }
-        else if (error.response.status === 401 && !originalRequest._retry) {
-          originalRequest._retry = true;
-          try {
-            const refreshToken = localStorage.getItem('refresh_token');
-            const response = await this.refreshToken(refreshToken);
-            this.setToken(response.accessToken, response.refreshToken);
-            originalRequest.headers[
-              'Authorization'
-            ] = `Bearer ${response.accessToken}`;
-            return this.instance(originalRequest);
-          } catch (refreshError) {
-            this.clearToken();
-            window.location.href = signInRoute;
-            return Promise.reject(refreshError);
-          }
-        }
-
-        // 如果是 401 錯誤且未進行過重試
-        if (error.response?.status === 401 && !originalRequest._retry) {
-          originalRequest._retry = true;
-
-          if (!this.isRefreshing) {
-            this.isRefreshing = true;
-
-            try {
-              const refreshToken = localStorage.getItem('refresh_token');
-              if (!refreshToken) {
-                throw new Error('No refresh token available');
-              }
-
-              const response = await this.refreshToken(refreshToken);
-              this.setToken(response.accessToken, response.refreshToken);
-
-              this.processQueue(true);
-              this.isRefreshing = false;
-
-              originalRequest.headers[
-                'Authorization'
-              ] = `Bearer ${response.accessToken}`;
-              return this.instance(originalRequest);
-            } catch (refreshError) {
-              this.processQueue(false, refreshError);
-              this.isRefreshing = false;
-              this.clearToken();
-              window.location.href = signInRoute;
-              return Promise.reject(refreshError);
-            }
-          }
-
-          // 如果已經在刷新，將請求加入隊列
-          return new Promise((resolve, reject) => {
-            this.failedQueue.push({ resolve, reject });
-          });
-        }
-
+      (error) => {
         return Promise.reject(error);
-      }
+      },
+      // async (error) => {
+      //   const originalRequest = error.config;
+      //
+      //   // 如果是刷新 token 的請求失敗，直接返回錯誤
+      //   const routerBasename: string = import.meta.env.VITE_BO_ROUTER_BASENAME || '';
+      //   const signInRoute = `${routerBasename}/login`;
+      //   const isRefreshingFailed = originalRequest.url === '/auth/refresh'
+      //   if (isRefreshingFailed) {
+      //     this.processQueue(false, error);
+      //     this.isRefreshing = false;
+      //     this.clearToken();
+      //     window.location.href = signInRoute;
+      //     return Promise.reject(error);
+      //   }
+      //
+      //   if (error.response.status === 401 && !originalRequest._retry) {
+      //     originalRequest._retry = true;
+      //     try {
+      //       // const token = localStorage.getItem('access_token');
+      //       const refreshToken = Cookies.get(BO_REFRESH_TOKEN);
+      //       const response = await this.refreshToken(refreshToken);
+      //       // this.setToken(response.accessToken, response.refreshToken);
+      //       originalRequest.headers[
+      //         'Authorization'
+      //       ] = `Bearer ${response.accessToken}`;
+      //       return this.instance(originalRequest);
+      //     } catch (refreshError) {
+      //       this.clearToken();
+      //       window.location.href = signInRoute;
+      //       return Promise.reject(refreshError);
+      //     }
+      //   }
+      //
+      //   // 如果是 401 錯誤且未進行過重試
+      //   if (error.response?.status === 401 && !originalRequest._retry) {
+      //     originalRequest._retry = true;
+      //
+      //     if (!this.isRefreshing) {
+      //       this.isRefreshing = true;
+      //
+      //       try {
+      //         const refreshToken = Cookies.get(BO_REFRESH_TOKEN);
+      //         if (!refreshToken) {
+      //           throw new Error('No refresh token available');
+      //         }
+      //
+      //         const response = await this.refreshToken(refreshToken);
+      //         // this.setToken(response.accessToken, response.refreshToken);
+      //
+      //         this.processQueue(true);
+      //         this.isRefreshing = false;
+      //
+      //         originalRequest.headers[
+      //           'Authorization'
+      //         ] = `Bearer ${response.accessToken}`;
+      //         return this.instance(originalRequest);
+      //       } catch (refreshError) {
+      //         this.processQueue(false, refreshError);
+      //         this.isRefreshing = false;
+      //         this.clearToken();
+      //         window.location.href = signInRoute;
+      //         return Promise.reject(refreshError);
+      //       }
+      //     }
+      //
+      //     // 如果已經在刷新，將請求加入隊列
+      //     return new Promise((resolve, reject) => {
+      //       this.failedQueue.push({ resolve, reject });
+      //     });
+      //   }
+      //
+      //   return Promise.reject(error);
+      // }
     );
   }
 
@@ -138,26 +148,31 @@ class Api {
   }
 
   setToken(accessToken: string, refreshToken: string) {
-    localStorage.setItem('access_token', accessToken);
-    localStorage.setItem('refresh_token', refreshToken);
+    localStorage.setItem(BO_ACCESS_TOKEN, accessToken);
+    localStorage.setItem(BO_ACCESS_TOKEN, refreshToken);
   }
 
   clearToken() {
-    localStorage.removeItem('access_token');
-    localStorage.removeItem('refresh_token');
+    Cookies.remove(BO_ACCESS_TOKEN);
+    Cookies.remove(BO_REFRESH_TOKEN);
+    // localStorage.removeItem(BO_ACCESS_TOKEN);
+    // localStorage.removeItem(BO_REFRESH_TOKEN);
   }
 
   async login(loginDto: BoLoginDto): Promise<BoAuthResponse> {
-    const response = await this.post<BoAuthResponse>('/auth/login', loginDto);
-    this.setToken(response.accessToken, response.refreshToken);
-    return response;
+    return this.post<BoAuthResponse>('/auth/login', loginDto);
+    // this.setToken(response.accessToken, response.refreshToken);
   }
 
   async refreshToken(refreshToken: string): Promise<BoAuthResponse> {
-    const response = await this.post<BoAuthResponse>('/auth/refresh', {
+    return await this.post<BoAuthResponse>('/auth/refresh', {
       refresh_token: refreshToken,
     });
-    return response;
+  }
+
+  async check(): Promise<{authenticated: boolean}> {
+    return this.get<{authenticated: boolean}>('/auth/check');
+    // this.setToken(response.accessToken, response.refreshToken);
   }
 
   async get<T = ApiResponse>(
