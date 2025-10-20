@@ -11,11 +11,6 @@ async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
   const configService = app.get(ConfigService);
 
-  app.use((req, res, next) => {
-    Logger.log(`${req.method} ${req.url}`, 'Global Middleware');
-    next();
-  });
-
   app.use(bodyParser.json({ limit: '50mb' }));
   app.use(bodyParser.urlencoded({ extended: true, limit: '50mb' }));
 

@@ -56,7 +56,6 @@ deployments/local-dockerfiles/
 /pushecr.sh
 
 .env
-/.dev.env
 /.env.dev
 
 *123

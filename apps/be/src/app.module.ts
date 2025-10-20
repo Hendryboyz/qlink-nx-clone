@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { UserModule } from './modules/user/user.module';
 import { AuthModule } from './modules/auth/auth.module';
@@ -12,6 +12,7 @@ import { CrmModule } from './modules/crm/crm.module';
 import { TaskService } from '$/app/task.serivce';
 import { ScheduleModule } from '@nestjs/schedule';
 import { BoModule } from '$/modules/bo/bo.module';
+import { RequestLoggerMiddleware } from '$/middlewares/request-logger.middleware';
 
 @Module({
   imports: [
@@ -32,4 +33,8 @@ import { BoModule } from '$/modules/bo/bo.module';
   ],
   providers: [TaskService],
 })
-export class AppModule {}
+export class AppModule implements NestModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer.apply(RequestLoggerMiddleware).forRoutes('*');
+  }
+}
