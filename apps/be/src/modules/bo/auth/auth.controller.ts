@@ -18,7 +18,7 @@ import {
 import { JwtAuthGuard } from '../verification/jwt-auth.guard';
 import { CookieOptions, Request, Response } from 'express';
 import { ConfigService } from '@nestjs/config';
-import { BO_ACCESS_TOKEN, BO_REFRESH_TOKEN } from '@org/common';
+import { BO_ACCESS_TOKEN } from '@org/common';
 import { HttpStatusCode } from 'axios';
 
 @Controller()
@@ -73,7 +73,6 @@ export class BoAuthController {
     const userId = req.user['userId'];
     await this.boAuthService.logout(userId);
     res.clearCookie(BO_ACCESS_TOKEN);
-    res.clearCookie(BO_REFRESH_TOKEN);
   }
 
   @Post('refresh')
@@ -102,11 +101,6 @@ export class BoAuthController {
     res.cookie(BO_ACCESS_TOKEN, authResult.accessToken, {
       ...cookieOptions,
       maxAge: ONE_DAY,
-    });
-    const SEVEN_DAY = 7 * 24 * 60 * 60 * 1000;
-    res.cookie(BO_REFRESH_TOKEN, authResult.refreshToken, {
-      ...cookieOptions,
-      maxAge: SEVEN_DAY,
     });
   }
 }

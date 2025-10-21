@@ -19,7 +19,7 @@ import {
   UploadImageResponse
 } from '$/types';
 import { GetVehiclesFilters, GetVehiclesResponse } from '$/types/vehicles';
-import { BO_ACCESS_TOKEN, BO_REFRESH_TOKEN } from '@org/common';
+import { BO_ACCESS_TOKEN } from '@org/common';
 import Cookies from 'js-cookie';
 
 
@@ -149,12 +149,10 @@ class Api {
 
   setToken(accessToken: string, refreshToken: string) {
     localStorage.setItem(BO_ACCESS_TOKEN, accessToken);
-    localStorage.setItem(BO_ACCESS_TOKEN, refreshToken);
   }
 
   clearToken() {
     Cookies.remove(BO_ACCESS_TOKEN);
-    Cookies.remove(BO_REFRESH_TOKEN);
     // localStorage.removeItem(BO_ACCESS_TOKEN);
     // localStorage.removeItem(BO_REFRESH_TOKEN);
   }
