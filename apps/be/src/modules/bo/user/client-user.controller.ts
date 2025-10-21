@@ -11,24 +11,28 @@ import {
   Query,
   UseGuards,
 } from '@nestjs/common';
-import { UserService } from '$/modules/user/user.service';
 import { JwtAuthGuard } from '$/modules/bo/verification/jwt-auth.guard';
 import { RolesGuard } from '$/modules/bo/verification/roles.guard';
 import { Roles } from '$/modules/bo/verification/roles.decorator';
 import { BoRole, ClientUserUpdateDto } from '@org/types';
 import { MemberQueryFilters } from '$/modules/user/user.types';
+import { UserManagementService } from '$/modules/user/user-management.service';
+import { UserService } from '$/modules/user/user.service';
 
 @UseGuards(JwtAuthGuard, RolesGuard)
 @Controller('clients')
 export class ClientUserController {
   private logger = new Logger(this.constructor.name);
-  constructor(private readonly userService: UserService) {}
+  constructor(
+    private readonly userManagementService: UserManagementService,
+    private readonly userService: UserService,
+  ) {}
 
   @Roles(BoRole.ADMIN)
   @Post(':id/sync')
   syncUser(@Param('id') id: string): Promise<string> {
     try {
-      return this.userService.syncCRMByUserId(id);
+      return this.userManagementService.syncCRMByUserId(id);
     } catch (error) {
       throw new InternalServerErrorException(error);
     }
@@ -48,7 +52,7 @@ export class ClientUserController {
   @Patch(':id')
   async patchUser(@Param('id') id: string, @Body() dto: ClientUserUpdateDto) {
     try {
-      const updatedUser = await this.userService.updateUser(id, dto);
+      const updatedUser = await this.userManagementService.updateUser(id, dto);
       if (updatedUser !== null && updatedUser !== undefined) {
         return { affectedRows: 1 };
       }
@@ -61,6 +65,6 @@ export class ClientUserController {
   @Roles(BoRole.ADMIN)
   @Delete(':id')
   delete(@Param('id') id: string) {
-    return this.userService.delete(id);
+    return this.userManagementService.delete(id);
   }
 }

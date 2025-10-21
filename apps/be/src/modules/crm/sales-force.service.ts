@@ -122,12 +122,15 @@ export class SalesforceSyncService implements OnModuleInit{
 
   private useReAuthQuery(action: ActionFunctionType) {
     return async (payload: any | undefined) => {
-      let response = await action(payload);
-      if (response.status === 401) {
-        await this.authSalesforce();
-        response = await action(payload);
+      try {
+        return await action(payload);
+      } catch (e) {
+        if (e.status && e.status === 401) {
+          await this.authSalesforce();
+          return await action(payload);
+        }
+        throw e;
       }
-      return response;
     }
   }
 
@@ -142,7 +145,7 @@ export class SalesforceSyncService implements OnModuleInit{
       });
       const {data, status} = response;
       this.logger.debug(`patch user to salesforce successfully, status code: ${status}, message: ${JSON.stringify(data)}`);
-      return data.id;
+      return salesforceObjectId;
     } catch (error) {
       if (error.response)  {
         const { response } = error;

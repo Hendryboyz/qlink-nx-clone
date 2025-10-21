@@ -1,15 +1,21 @@
 import {
   BadRequestException,
+  Logger,
   Body,
   Controller,
-  Get, Logger, Param,
+  Get,
   Post,
-  Put, UploadedFile,
+  Put,
+  UploadedFile,
   UseGuards,
   UseInterceptors,
+  Delete,
+  HttpCode,
+  HttpStatus,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { AuthGuard } from '@nestjs/passport';
+import { ConfigService } from '@nestjs/config';
 import { UserId } from '$/decorators/userId.decorator';
 import { UserService } from './user.service';
 import { UserUpdateDto } from '@org/types';
@@ -19,8 +25,9 @@ import {
 } from '$/modules/utils/file-upload.util';
 import { TransformInterceptor } from '$/interceptors/response.interceptor';
 import { S3storageService } from '$/modules/upload/s3storage.service';
-import { ConfigService } from '@nestjs/config';
+import { UserManagementService } from '$/modules/user/user-management.service';
 
+@UseGuards(AuthGuard('jwt'))
 @Controller('user')
 export class UserController {
   private logger = new Logger(this.constructor.name);
@@ -28,6 +35,7 @@ export class UserController {
   private readonly cdnHostname: string;
   constructor(
     private userService: UserService,
+    private userManagementService: UserManagementService,
     private configService: ConfigService,
     private storageService: S3storageService
   ) {
@@ -37,12 +45,6 @@ export class UserController {
     );
   }
 
-  @Post('resync')
-  async reSyncCRM(): Promise<number> {
-    return await this.userService.reSyncCRM();
-  }
-
-  @UseGuards(AuthGuard('jwt'))
   @Get('/info')
   async getInfo(@UserId() userId: string) {
     const user = await this.userService.getUserInfo(userId);
@@ -55,13 +57,14 @@ export class UserController {
     return user;
   }
 
-  @UseGuards(AuthGuard('jwt'))
   @Put('/info')
-  async updateInfo(@UserId() userId: string, @Body() payload: UserUpdateDto) {
-    return this.userService.updateUser(userId, payload);
+  async updateInfo(
+    @UserId() userId: string,
+    @Body() payload: UserUpdateDto,
+  ) {
+    return this.userManagementService.updateUser(userId, payload);
   }
 
-  @UseGuards(AuthGuard('jwt'))
   @Post('/avatar')
   @UseInterceptors(
     FileInterceptor('avatar', {
@@ -99,6 +102,13 @@ export class UserController {
       this.logger.error('Error uploading to S3:', error);
       throw new Error('Failed to upload file');
     }
+  }
+
+  @UseGuards(AuthGuard('jwt'))
+  @Delete()
+  @HttpCode(HttpStatus.NO_CONTENT)
+  async deleteUser(@UserId() userId: string): Promise<void> {
+    await this.userManagementService.delete(userId);
   }
 }
 

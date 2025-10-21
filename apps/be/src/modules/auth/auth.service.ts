@@ -6,7 +6,6 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { UserService } from '../user/user.service';
 import {
   IdentifierType,
   OtpTypeEnum,
@@ -15,11 +14,13 @@ import {
   User,
   UserVO,
 } from '@org/types';
-
+import { ConfigService } from '@nestjs/config';
 import * as bcrypt from 'bcrypt';
 import { isNull, omit } from 'lodash';
 import axios from 'axios';
+
 import { OtpJwtPayload } from './otp.service';
+import { UserService } from '../user/user.service';
 import {
   CODE_SUCCESS,
   emailRegex,
@@ -27,8 +28,8 @@ import {
   passwordRegex,
   SignupSchema,
 } from '@org/common';
-import { ConfigService } from '@nestjs/config';
 import { hashPassword } from '$/modules/utils/auth.util';
+import { UserManagementService } from '$/modules/user/user-management.service';
 
 type AuthSuccessBO = {
   access_token: string;
@@ -43,6 +44,7 @@ export class AuthService {
   private logger = new Logger(this.constructor.name);
   constructor(
     private userService: UserService,
+    private userManagementService: UserManagementService,
     private jwtService: JwtService,
     private config: ConfigService,
   ) {}
@@ -82,7 +84,7 @@ export class AuthService {
     }
 
     const hashedPassword = await hashPassword(payload.password);
-    const userVO = await this.userService.create(payload, hashedPassword);
+    const userVO = await this.userManagementService.create(payload, hashedPassword);
     // 在實際應用中,您需要發送OTP給用戶(例如通過電子郵件或短信)
     return {
       access_token: this.signToken(userVO.email, verifiedPayload.identifierType, userVO.id),
