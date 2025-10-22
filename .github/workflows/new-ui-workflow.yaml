@@ -23,7 +23,7 @@ jobs:
       deploy-version: ${{ needs.Build-Client.outputs.imagetag }}
       ecr-repository: qapp-dev-demo-client
       task-definition: deployments/tasks/demo/demo-client.json
-      task-container-name: client-app
+      task-container-name: demo-client-app
       ecs-service: qapp-dev-demo-client-service
 #      dry-run: true
 
