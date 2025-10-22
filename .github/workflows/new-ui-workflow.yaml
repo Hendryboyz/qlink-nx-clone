@@ -13,7 +13,7 @@ jobs:
     with:
       build-env: demo
       dockerfile: deployments/dockerfiles/client.Dockerfile
-      ecr-repository: qapp-dev-client
+      ecr-repository: qapp-dev-demo-client
   Deploy-Client:
     needs: Build-Client
     uses: ./.github/workflows/cd.yaml
@@ -21,9 +21,9 @@ jobs:
     with:
       build-env: demo
       deploy-version: ${{ needs.Build-Client.outputs.imagetag }}
-      ecr-repository: qapp-dev-client
-      task-definition: deployments/tasks/demo/client.json
+      ecr-repository: qapp-dev-demo-client
+      task-definition: deployments/tasks/demo/demo-client.json
       task-container-name: client-app
-      ecs-service: qapp-dev-client-service
+      ecs-service: qapp-dev-demo-client-service
 #      dry-run: true
 
