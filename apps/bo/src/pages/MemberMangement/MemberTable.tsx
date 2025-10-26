@@ -165,29 +165,27 @@ export default function MemberTable() {
   ];
 
   return (
-    <>
-      <ProTable
-        columns={tableColumns}
-        dataSource={members}
-        rowKey="id"
-        beforeSearchSubmit={(params) => {
-          setFilterParams(params);
-        }}
-        search={{
-          labelWidth: 'auto',
-        }}
-        pagination={{
-          onChange: ((page, pageSize) => {
-            setPaging({page, pageSize});
-          }),
-          pageSize: paging.pageSize,
-          total: total,
-          showSizeChanger: true,
-          // showQuickJumper: true,
-        }}
-        scroll={{ x: 'max-content' }}
-        dateFormatter="string"
-      />
-    </>
+    <ProTable
+      columns={tableColumns}
+      dataSource={members}
+      rowKey="id"
+      beforeSearchSubmit={(params) => {
+        setFilterParams(params);
+      }}
+      search={{
+        labelWidth: 'auto',
+      }}
+      pagination={{
+        onChange: ((page, pageSize) => {
+          setPaging({page, pageSize});
+        }),
+        pageSize: paging.pageSize,
+        total: total,
+        showSizeChanger: true,
+        // showQuickJumper: true,
+      }}
+      scroll={{ x: 'max-content' }}
+      dateFormatter="string"
+    />
   );
 }
