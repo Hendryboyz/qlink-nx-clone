@@ -93,6 +93,7 @@ export class SalesforceSyncService implements OnModuleInit{
   private castSalesforceMemberCreationPayload(user: UserEntity) {
     return {
       "Member_Profile_External_ID__c": user.id,
+      "Name": user.memberId,
       "Member_ID__c": user.memberId,
       "First_Name__c": user.firstName,
       "Middle_Name__c": user.midName,
