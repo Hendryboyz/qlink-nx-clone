@@ -68,12 +68,10 @@ export class AuthService {
     payload: RegisterDto,
     token: string
   ): Promise<AuthSuccessBO & { user: UserVO }> {
-    // 1. verify token
     const verifiedPayload: OtpJwtPayload = this.jwtService.verify(token);
-    if (
-      verifiedPayload.type !== OtpTypeEnum.REGISTER ||
-      ! this.isValidEmailIdentifier(verifiedPayload, payload.email)
-    ) {
+    const isEmailRegistration = verifiedPayload.type === OtpTypeEnum.REGISTER &&
+      this.isValidEmailIdentifier(verifiedPayload, payload.email)
+    if (!isEmailRegistration) {
       throw new BadRequestException(`${verifiedPayload.identifier} is not matched.`);
     }
 
@@ -85,7 +83,7 @@ export class AuthService {
 
     const hashedPassword = await hashPassword(payload.password);
     const userVO = await this.userManagementService.create(payload, hashedPassword);
-    // 在實際應用中,您需要發送OTP給用戶(例如通過電子郵件或短信)
+
     return {
       access_token: this.signToken(userVO.email, verifiedPayload.identifierType, userVO.id),
       user_id: userVO.id,
@@ -109,12 +107,12 @@ export class AuthService {
     (message: string = '', type: string) =>
       new BadRequestException({ bizCode: INVALID_PAYLOAD, data: { error: {type, message}} });
 
-  async isPhoneExist(phone: string): Promise<boolean> {
+  public async isPhoneExist(phone: string): Promise<boolean> {
     const userEntity = await this.userService.findOne(phone)
     return !isNull(userEntity)
   }
 
-  refreshToken(userId: string, email: string) {
+  public refreshToken(userId: string, email: string) {
     return this.signToken(email, IdentifierType.EMAIL, userId)
   }
 

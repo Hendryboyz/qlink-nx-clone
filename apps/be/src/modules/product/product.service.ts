@@ -77,8 +77,10 @@ export class ProductService {
     try {
       await this.syncProductToCRM(productEntity);
     } catch(e) {
-      this.logger.error(`fail to sync vehicle to salesforce`, e);
-      this.logger.debug(productEntity);
+      this.logger.error(
+        `fail to sync CRM while vehicle[${productEntity.id}] created`,
+        productEntity,
+      );
     }
 
     return { img: '', ...productEntity };

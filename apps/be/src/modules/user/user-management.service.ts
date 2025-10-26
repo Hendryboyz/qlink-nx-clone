@@ -36,7 +36,11 @@ export class UserManagementService {
 
     this.logger.debug(`user[${userEntity.id}] created`, userEntity);
 
-    await this.syncUserToCRM(userEntity);
+    try {
+      await this.syncUserToCRM(userEntity);
+    } catch (error) {
+      this.logger.error(`fail to sync CRM after user[${userEntity.id}] created`);
+    }
 
     return {
       ...omit(userEntity, [
