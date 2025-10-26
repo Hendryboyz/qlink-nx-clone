@@ -93,8 +93,8 @@ const Sidebar: React.FC<SidebarProps> = ({ collapsed, setCollapsed }) => {
       hidden: true,
     },
     {
-      label: 'Advertisement Management',
-      link: '/advertisements',
+      label: 'Banner Management',
+      link: '/banners',
       icon: <NotificationOutlined />,
       hidden: true,
     },

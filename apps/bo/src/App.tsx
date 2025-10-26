@@ -8,20 +8,26 @@ import {
 } from 'react-router-dom';
 import { Layout, ConfigProvider } from 'antd';
 import enUS from 'antd/lib/locale/en_US';
+
+import { BoRole } from '@org/types';
 import Sidebar from './components/Sidebar';
 import PrivateRoute from './components/PrivateRoute';
-import Login from './pages/Login';
-import Unauthorized from './pages/Unauthorized';
-import Dashboard from './pages/Dashboard';
-import MemberManagement from './pages/MemberMangement';
-import PostManagement from './pages/PostManagement';
-import { BoRole } from '@org/types';
-import UsersManagement from '$/pages/UsersManagement';
+
+// the context
 import UserContextProvider from '$/pages/UsersManagement/UsersContext';
 import MemberContextProvider from '$/pages/MemberMangement/MemberContext';
 import VehiclesContextProvider from '$/pages/VehiclesManagement/VehiclesContext';
+
+// the pages
+import Login from './pages/Login';
+import Dashboard from './pages/Dashboard';
 import VehiclesManagement from '$/pages/VehiclesManagement';
+import UsersManagement from '$/pages/UsersManagement';
+import MemberManagement from './pages/MemberMangement';
+// import BannerManagement from '$/pages/BannerManagement';
+import PostManagement from './pages/PostManagement';
 import NotFound from '$/pages/NotFound';
+import Unauthorized from './pages/Unauthorized';
 
 const { Content } = Layout;
 
@@ -105,6 +111,14 @@ function App() {
               }
             />
             {/*<Route*/}
+            {/*  path="banners"*/}
+            {/*  element={*/}
+            {/*    <PrivateRoute allowedRoles={[BoRole.ADMIN, BoRole.VIEWER]}>*/}
+            {/*      <BannerManagement />*/}
+            {/*    </PrivateRoute>*/}
+            {/*  }*/}
+            {/*/>*/}
+            {/*<Route*/}
             {/*  path="dealers"*/}
             {/*  element={*/}
             {/*    <PrivateRoute allowedRoles={[BoRole.ADMIN]}>*/}
@@ -112,14 +126,7 @@ function App() {
             {/*    </PrivateRoute>*/}
             {/*  }*/}
             {/*/>*/}
-            {/*<Route*/}
-            {/*  path="advertisements"*/}
-            {/*  element={*/}
-            {/*    <PrivateRoute allowedRoles={[BoRole.ADMIN, BoRole.VIEWER]}>*/}
-            {/*      <AdvertisementManagement />*/}
-            {/*    </PrivateRoute>*/}
-            {/*  }*/}
-            {/*/>*/}
+
             {/*<Route*/}
             {/*  path="coupons"*/}
             {/*  element={*/}
