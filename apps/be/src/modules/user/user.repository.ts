@@ -148,8 +148,10 @@ export class UserRepository {
     }
   }
 
-  public delete(id: string): Promise<number> {
-    return this.knex('users').where({ id }).delete();
+  public async softDelete(id: string) {
+    await this.knex('users').where({ id }).update({
+      is_delete: true,
+    }, ['id']);
   }
 
   async isIdentifierExist(identifier: string, identifierType: IdentifierType): Promise<boolean> {

@@ -6,10 +6,16 @@ import { StorageModule } from '$/modules/upload/storage.module';
 import { CrmModule } from '$/modules/crm/crm.module';
 import { UserAnalysisService } from '$/modules/user/user-analysis.service';
 import { UserManagementService } from '$/modules/user/user-management.service';
+import { ProductModule } from '$/modules/product/product.module';
 
 @Module({
-  imports: [StorageModule, CrmModule],
-  providers: [UserService, UserManagementService, UserAnalysisService, UserRepository],
+  imports: [StorageModule, ProductModule, CrmModule],
+  providers: [
+    UserService,
+    UserManagementService,
+    UserAnalysisService,
+    UserRepository,
+  ],
   exports: [UserService, UserManagementService, UserAnalysisService],
   controllers: [UserController]
 })

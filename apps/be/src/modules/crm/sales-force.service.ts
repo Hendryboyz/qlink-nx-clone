@@ -189,6 +189,38 @@ export class SalesforceSyncService implements OnModuleInit{
     });
   }
 
+  public async deleteMember(salesforceId: string): Promise<void> {
+    try {
+      const syncAction = this.useReAuthQuery(this.requestMemberDeletion.bind(this));
+      const response = await syncAction({
+        memberObjectId: salesforceId,
+      });
+      const {data, status} = response;
+      this.logger.debug(`remove member from salesforce successfully, status code: ${status}, message: ${JSON.stringify(data)}`);
+    } catch (error) {
+      if (error.response)  {
+        const { response } = error;
+        this.logger.error(
+          `fail to delete member from salesforce, status code: ${response.status}, message:`, response.data);
+      } else {
+        this.logger.error('fail to delete member from salesforce, status code: 500', error)
+      }
+      throw error;
+    }
+  }
+
+  private requestMemberDeletion(request: {
+    memberObjectId: string,
+  }): Promise<AxiosResponse> {
+    const {memberObjectId} = request;
+    const deleteMemberUrl = `${this.apiResource.instanceUrl}/services/data/v49.0/sobjects/Member_Profile__c/${memberObjectId}`;
+    return axios.delete(deleteMemberUrl, {
+      headers: {
+        'Authorization': `Bearer ${this.apiResource.accessToken}`,
+      },
+    });
+  }
+
   public async syncVehicle(vehicleEntity: ProductEntity): Promise<VehicleSyncResult> {
     try {
       const payload = this.castSalesforceVehiclePayload(vehicleEntity);
@@ -362,9 +394,9 @@ export class SalesforceSyncService implements OnModuleInit{
     });
   }
 
-  private async isVehicleValid(salesforceVehicleId: string): Promise<boolean> {
+  private async isVehicleValid(vehicleObjectId: string): Promise<boolean> {
     const syncAction = this.useReAuthQuery(this.getVehicle.bind(this));
-    const response = await syncAction(salesforceVehicleId);
+    const response = await syncAction(vehicleObjectId);
 
     const {data, status} = response;
     if (status > 299) {
@@ -384,5 +416,37 @@ export class SalesforceSyncService implements OnModuleInit{
         'Authorization': `Bearer ${this.apiResource.accessToken}`,
       }
     });
+  }
+
+  public async deleteVehicle(salesforceId: string): Promise<void> {
+    try {
+      const syncAction = this.useReAuthQuery(this.requestVehicleDeletion.bind(this));
+      const response = await syncAction({
+        vehicleObjectId: salesforceId,
+      });
+      const {data, status} = response;
+      this.logger.debug(`remove vehicle from salesforce successfully, status code: ${status}, message: ${JSON.stringify(data)}`);
+    } catch (error) {
+      if (error.response)  {
+        const { response } = error;
+        this.logger.error(
+          `fail to delete vehicle from salesforce, status code: ${response.status}, message:`, response.data);
+      } else {
+        this.logger.error('fail to delete vehicle from salesforce, status code: 500', error)
+      }
+      throw error;
+    }
+  }
+
+  private async requestVehicleDeletion(request: {
+    vehicleObjectId: string,
+  }): Promise<AxiosResponse> {
+    const {vehicleObjectId} = request;
+    const deleteVehicleUrl = `${this.apiResource.instanceUrl}/services/data/v49.0/sobjects/Vehicle_Registration_Data__c/${vehicleObjectId}`;
+    return axios.delete(deleteVehicleUrl, {
+      headers: {
+        'Authorization': `Bearer ${this.apiResource.accessToken}`,
+      },
+    })
   }
 }

@@ -46,6 +46,7 @@ export class ProductRepository {
       is_verified, crm_id
     FROM product
     WHERE user_id = $1
+        AND is_delete = false
     ORDER BY purchase_date DESC
   `;
     const values = [userId];
@@ -68,6 +69,7 @@ export class ProductRepository {
       dealer_name, year, created_at, updated_at, crm_id
     FROM product
     WHERE id = $1
+        AND is_delete = false
   `;
     const values = [id];
 
@@ -95,6 +97,7 @@ export class ProductRepository {
   async findNotSyncCRM(): Promise<ProductEntity[] | null> {
     return this.knex('product')
       .whereNull('crm_id')
+      .andWhere('is_delete', false)
       .select([
         'id',
         'user_id',
@@ -115,6 +118,7 @@ export class ProductRepository {
     WHERE crm_id is not null
       and is_verified = false
       and verify_times <= $1
+      and is_delete = false
   `;
     const values = [verifiedLimit];
     try {
@@ -134,6 +138,7 @@ export class ProductRepository {
     page: number, limit: number, filters: VehicleQueryFilters = {}): Promise<ProductBoVO[]> {
     const offset = (page-1) * limit;
     const queryBuilder = this.knex<ProductEntity>('product')
+      .where('product.is_delete', false)
       .joinRaw('inner join users on users.id = product.user_id::uuid')
       .select('product.*', 'users.member_id')
       .orderBy('id').offset(offset).limit(limit);
@@ -171,7 +176,8 @@ export class ProductRepository {
   }
 
   async count(filters: VehicleQueryFilters = {}): Promise<number> {
-    const queryBuilder = this.knex<ProductEntity>('product');
+    const queryBuilder =
+      this.knex<ProductEntity>('product').where('is_delete', false);
     this.appendFilters(queryBuilder, filters);
 
     const [{ count }] = await queryBuilder.count('id', { as: 'count' });
@@ -179,7 +185,9 @@ export class ProductRepository {
   }
 
   private createCountQuery() {
-    return this.knex<ProductEntity>('product').count('id', { as: 'count' });
+    return this.knex<ProductEntity>('product')
+      .where('is_delete', false)
+      .count('id', { as: 'count' });
   }
 
   async countByField(field: string): Promise<CountProductFieldType[] | number> {
@@ -196,6 +204,7 @@ export class ProductRepository {
     const [{ count }] = await this.createCountQuery()
       .whereNotNull('crm_id')
       .andWhere('is_verified', false)
+      .andWhere('is_delete', false)
       .andWhere('verify_times', '>', 0);
     return +count;
   }
@@ -217,7 +226,7 @@ export class ProductRepository {
     return obj;
   }
 
-  remove(product: ProductEntity): Promise<number> {
+  public remove(product: ProductEntity): Promise<number> {
     // rowCount should be 1
     return this.buildQueryById(product.id)
       .andWhere('user_id', product.userId)
@@ -228,7 +237,14 @@ export class ProductRepository {
     return this.knex('product').where('id', productId);
   }
 
-  async removeById(productId: string) {
+  public removeById(productId: string): Promise<number> {
     return this.buildQueryById(productId).delete();
+  }
+
+  public async softDeleteProducts(userId: string, deletingProductIds: string[]): Promise<number> {
+    return this.knex('product')
+      .where('user_id', userId)
+      .whereIn('id', deletingProductIds)
+      .update('is_delete', true);
   }
 }

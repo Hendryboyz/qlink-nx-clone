@@ -1,4 +1,9 @@
-import { BadRequestException, Injectable, Logger } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  Logger,
+  NotFoundException,
+} from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { filterUserInfo } from '$/modules/user/user.utils';
 import { UserRepository } from '$/modules/user/user.repository';
@@ -10,6 +15,7 @@ import {
 } from '$/modules/utils/auth.util';
 import { omit } from 'lodash';
 import { SalesforceSyncService } from '$/modules/crm/sales-force.service';
+import { ProductService } from '$/modules/product/product.service';
 
 
 @Injectable()
@@ -20,6 +26,7 @@ export class UserManagementService {
   constructor(
     private readonly configService: ConfigService,
     private readonly syncCrmService: SalesforceSyncService,
+    private readonly productService: ProductService,
     private readonly userRepository: UserRepository,
   ) {
     const nodeEnv = this.configService.get<string>('NODE_ENV');
@@ -95,8 +102,16 @@ export class UserManagementService {
     return filterUserInfo(updatedUser);
   }
 
-  public delete(id: string): Promise<number> {
-    return this.userRepository.delete(id);
+  public async softDelete(id: string): Promise<void> {
+    const userEntity = await this.userRepository.findById(id);
+    if (!userEntity) {
+      throw new NotFoundException(`user[${id}] not found`);
+    }
+
+    const softDeletedRows = await this.productService.softDeleteAllOwnedProduct(userEntity.id);
+    this.logger.debug(`products owned by user[${userEntity.id}] soft deleted: ${softDeletedRows}`);
+
+    await this.userRepository.softDelete(id);
   }
 
   // logic to sync CRM

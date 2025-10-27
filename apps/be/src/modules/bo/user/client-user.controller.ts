@@ -3,6 +3,8 @@ import {
   Controller,
   Delete,
   Get,
+  HttpCode,
+  HttpStatus,
   InternalServerErrorException,
   Logger,
   Param,
@@ -64,7 +66,8 @@ export class ClientUserController {
 
   @Roles(BoRole.ADMIN)
   @Delete(':id')
-  delete(@Param('id') id: string) {
-    return this.userManagementService.delete(id);
+  @HttpCode(HttpStatus.NO_CONTENT)
+  async delete(@Param('id') id: string): Promise<void> {
+    await this.userManagementService.softDelete(id);
   }
 }

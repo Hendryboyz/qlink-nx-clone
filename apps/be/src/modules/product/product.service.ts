@@ -1,6 +1,7 @@
 import {
   ForbiddenException,
   Injectable,
+  InternalServerErrorException,
   Logger,
   NotFoundException,
 } from '@nestjs/common';
@@ -208,7 +209,26 @@ export class ProductService {
 
   async removeOwnedProduct(userId: string, productId: string): Promise<void> {
     const ownedProduct = await this.getOwnedProduct(userId, productId);
+    try {
+      await this.syncCrmService.deleteVehicle(ownedProduct.crmId);
+    } catch (error) {
+      this.logger.error(JSON.stringify(error));
+      if (error && error.status === 404) {
+        this.logger.warn(`the product with crm id: ${ownedProduct.crmId} not found in the CRM`)
+      } else {
+        throw new InternalServerErrorException(error);
+      }
+    }
     await this.productRepository.remove(ownedProduct);
+  }
+
+  async softDeleteAllOwnedProduct(userId: string): Promise<number> {
+    const ownedProducts = await this.findByUser(userId);
+    if (!ownedProducts || ownedProducts.length === 0) {
+      return 0;
+    }
+    const deletingProductIds = ownedProducts.map((product) => product.id);
+    return this.productRepository.softDeleteProducts(userId, deletingProductIds);
   }
 
   async removeById(productId: string): Promise<void> {
