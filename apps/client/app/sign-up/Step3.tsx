@@ -16,6 +16,7 @@ import DateField from '$/components/Fields/DateField';
 import { usePopup } from '$/hooks/PopupProvider';
 import { DEFAULT_ERROR_MSG } from 'common/src';
 import InputField from '$/components/Fields/InputField';
+import { signIn } from 'next-auth/react';
 
 interface FormData {
   phone: string;
@@ -71,6 +72,20 @@ const Step3 = (props: Props) => {
   //     return isNaN(Number(k)) && v !== UserSourceType.NONE
   //   })
   //   .map(([_, v]) => ({value: v, label: UserSourceDisplay[v]}))
+  function beforeOnSuccess(email: string, password: string): void {
+    signIn("credentials", {
+      redirect: false,
+      email: email,
+      password: password,
+      rememberMe: false,
+    }).then((res) => {
+      if (res && res.ok) {
+        return;
+      }
+      console.error(res);
+      showPopup({ title: 'authentication failed' });
+    });
+  }
 
   return (
     <Container title="Account detail" step={3}>
@@ -106,7 +121,12 @@ const Step3 = (props: Props) => {
             },
           })
             .then((res) => {
-              if (res.bizCode == CODE_SUCCESS) props.onSuccess();
+              if (res.bizCode == CODE_SUCCESS) {
+                if (email) {
+                  beforeOnSuccess(email, values.password);
+                }
+                props.onSuccess();
+              }
               else {
                 showPopup({ title: DEFAULT_ERROR_MSG });
               }
