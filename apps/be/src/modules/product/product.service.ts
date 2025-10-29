@@ -77,6 +77,7 @@ export class ProductService {
 
     try {
       await this.syncProductToCRM(productEntity);
+      await this.verifyWithCRM(productEntity);
     } catch(e) {
       this.logger.error(
         `fail to sync CRM while vehicle[${productEntity.id}] created`,
@@ -106,13 +107,13 @@ export class ProductService {
     if (!product.crmId) {
       return 1
     }
-    if (product.isVerified) {
-      return 0
-    }
-    if (!product.isVerified) {
-      return product.verifyTimes > 0 ? 2 : 1;
-    }
-    return 1;
+    // if (product.isVerified) {
+    //   return 0
+    // }
+    // if (!product.isVerified) {
+    //   return product.verifyTimes > 0 ? 2 : 1;
+    // }
+    return product.isVerified ? 0 : 2;
   }
 
   async list(
@@ -246,6 +247,7 @@ export class ProductService {
     for (const product of unSyncProducts) {
       try {
         await this.syncProductToCRM(product);
+        await this.verifyWithCRM(product);
         this.logger.debug('Resync user to CRM successfully', JSON.stringify(product));
         succeed++;
       } catch (e) {
