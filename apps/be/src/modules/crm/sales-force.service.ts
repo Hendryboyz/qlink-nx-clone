@@ -255,6 +255,7 @@ export class SalesforceSyncService implements OnModuleInit{
 
   private castSalesforceVehiclePayload(vehicle: ProductEntity) {
     return {
+      "Name": vehicle.id,
       "Vehicle_Reg_Data_External_ID__c": null,
       "Vehicle_Registration_ID__c": vehicle.id,
       "Model__r": {
