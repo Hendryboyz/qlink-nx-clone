@@ -5,7 +5,12 @@ import {
   Logger,
 } from '@nestjs/common';
 import { Pool } from 'pg';
-import { IdentifierType, UserDto, UserEntity, UserUpdateDto } from '@org/types';
+import {
+  IdentifierType,
+  UserDto,
+  UserEntity,
+  UserUpdateDto,
+} from '@org/types';
 import { KNEX_CONNECTION } from '$/database.module';
 import { Knex } from 'knex';
 import { isEmpty } from 'lodash';
@@ -20,16 +25,29 @@ export class UserRepository {
     @Inject(KNEX_CONNECTION) private readonly knex: Knex
   ) {}
 
-  async findByPhone(phone: string): Promise<UserEntity | null> {
+  public async create(userDto: UserDto): Promise<UserEntity> {
+    const userToInsert = Object.fromEntries(
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      Object.entries(userDto).filter(([_, v]) => v !== undefined && v != '')
+    );
+    if (isEmpty(userToInsert)) throw new BadRequestException('Empty payload');
+
+    const [obj] = await this.knex('users').insert(userToInsert).returning('id');
+
+    return await this.findById(obj.id);
+  }
+
+
+  public async findByPhone(phone: string): Promise<UserEntity | null> {
     return this.findWithType(phone, IdentifierType.PHONE);
   }
 
-  async findWithType(identifier: string, type: IdentifierType): Promise<UserEntity | null> {
+  public async findWithType(identifier: string, type: IdentifierType): Promise<UserEntity | null> {
     const filterField = type.toString().toLowerCase();
     return this.findOneByFilter(filterField, identifier);
   }
 
-  async findById(id: string): Promise<UserEntity | null> {
+  public async findById(id: string): Promise<UserEntity | null> {
     return this.findOneByFilter('id', id);
   }
 
@@ -48,33 +66,8 @@ export class UserRepository {
     }
   }
 
-  async isEmailExist(email: string): Promise<boolean> {
+  public async isEmailExist(email: string): Promise<boolean> {
     return this.isIdentifierExist(email, IdentifierType.EMAIL);
-  }
-
-  async create(userDto: UserDto): Promise<UserEntity> {
-    const userToInsert = Object.fromEntries(
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      Object.entries(userDto).filter(([_, v]) => v !== undefined && v != '')
-    );
-    if (isEmpty(userToInsert)) throw new BadRequestException('Empty payload');
-
-    const [obj] = await this.knex('users').insert(userToInsert).returning('id');
-
-    return await this.findById(obj.id);
-  }
-
-  async update(id: string, userUpdateDto: UserUpdateDto): Promise<UserEntity> {
-    const userToUpdate = buildUpdatingMap(userUpdateDto);
-    if (isEmpty(userToUpdate)) throw new BadRequestException('Empty payload');
-    if (isEmpty(id)) throw new BadRequestException('Empty payload');
-
-    const [obj] = await this.knex('users')
-      .where({ id })
-      .update(userToUpdate)
-      .returning('id');
-
-    return await this.findById(obj.id);
   }
 
   public async findByPage(page: number, limit: number, filters: MemberQueryFilters) {
@@ -148,13 +141,7 @@ export class UserRepository {
     }
   }
 
-  public async softDelete(id: string) {
-    await this.knex('users').where({ id }).update({
-      is_delete: true,
-    }, ['id']);
-  }
-
-  async isIdentifierExist(identifier: string, identifierType: IdentifierType): Promise<boolean> {
+  public async isIdentifierExist(identifier: string, identifierType: IdentifierType): Promise<boolean> {
     const filterField = identifierType.toString().toLowerCase();
     const query =
       `SELECT COUNT(*) FROM users WHERE ${filterField} = $1 AND is_delete = false`;
@@ -169,7 +156,7 @@ export class UserRepository {
     }
   }
 
-  async getMemberSequence(): Promise<number> {
+  public async getMemberSequence(): Promise<number> {
     const query =
       `SELECT nextval('member_seq') AS count`;
 
@@ -182,14 +169,14 @@ export class UserRepository {
     }
   }
 
-  async countByFilter(filters: MemberQueryFilters): Promise<number> {
+  public async countByFilter(filters: MemberQueryFilters): Promise<number> {
     const countBuilder = this.knex('users').count('id as count');
     this.appendFilters(countBuilder, filters);
     const [{ count }] = await countBuilder;
     return +count;
   }
 
-  async findNotSyncCRM(): Promise<UserEntity[] | null> {
+  public async findNotSyncCRM(): Promise<UserEntity[] | null> {
     return this.knex('users')
       .whereNull('crm_id')
       .andWhere({ is_delete: false })
@@ -210,5 +197,49 @@ export class UserRepository {
         'source',
         'created_at',
       ]);
+  }
+
+  public async findDeletingById(id: string): Promise<UserEntity | null> {
+    return this.knex<UserEntity>('users')
+      .where('id', id)
+      .andWhere('is_delete', true)
+      .select([
+        'id',
+        'crm_id',
+      ]);
+  }
+
+  public async getPendingDeleteUsers(): Promise<UserEntity[]> {
+    return this.knex<UserEntity>('users')
+      .where('is_delete', true)
+      .whereNotNull('crm_id')
+      .select([
+        'id',
+        'is_delete',
+        'crm_id',
+      ]);
+  }
+
+  public async update(id: string, userUpdateDto: UserUpdateDto): Promise<UserEntity> {
+    const userToUpdate = buildUpdatingMap(userUpdateDto);
+    if (isEmpty(userToUpdate)) throw new BadRequestException('Empty payload');
+    if (isEmpty(id)) throw new BadRequestException('Empty payload');
+
+    const [obj] = await this.knex('users')
+      .where({ id })
+      .update(userToUpdate)
+      .returning('id');
+
+    return await this.findById(obj.id);
+  }
+
+  public async softDelete(id: string) {
+    await this.knex('users').where({ id }).update({
+      is_delete: true,
+    }, ['id']);
+  }
+
+  public async removeById(id: string): Promise<number> {
+    return this.knex('users').where({ id }).del();
   }
 }

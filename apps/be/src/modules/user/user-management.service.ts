@@ -1,13 +1,19 @@
 import {
   BadRequestException,
   Injectable,
+  InternalServerErrorException,
   Logger,
   NotFoundException,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { filterUserInfo } from '$/modules/user/user.utils';
 import { UserRepository } from '$/modules/user/user.repository';
-import { UserEntity, RegisterDto, UserVO, UserUpdateDto } from '@org/types';
+import {
+  UserEntity,
+  RegisterDto,
+  UserVO,
+  UserUpdateDto,
+} from '@org/types';
 import {
   AppEnv,
   ENTITY_PREFIX,
@@ -81,6 +87,10 @@ export class UserManagementService {
     }
   }
 
+  public getPendingDeleteItems(): Promise<UserEntity[]> {
+    return this.userRepository.getPendingDeleteUsers()
+  }
+
   public async updateUser(userId: string, updateData: UserUpdateDto): Promise<UserVO> {
     if (updateData.password != null) throw new BadRequestException();
 
@@ -112,6 +122,25 @@ export class UserManagementService {
     this.logger.debug(`products owned by user[${userEntity.id}] soft deleted: ${softDeletedRows}`);
 
     await this.userRepository.softDelete(id);
+  }
+
+  public async removePendingDeleteById(id: string) {
+    const userEntity = await this.userRepository.findDeletingById(id);
+    await this.deleteMemberFromCRM(userEntity);
+    await this.userRepository.removeById(userEntity.id);
+  }
+
+  private async deleteMemberFromCRM(userEntity: UserEntity): Promise<void> {
+    try {
+      await this.syncCrmService.deleteMember(userEntity.crmId);
+    } catch (error) {
+      this.logger.error(JSON.stringify(error));
+      if (error && error.status === 404) {
+        this.logger.warn(`the member with crm id: ${userEntity.crmId} not found in the CRM`)
+      } else {
+        throw new InternalServerErrorException(error);
+      }
+    }
   }
 
   // logic to sync CRM

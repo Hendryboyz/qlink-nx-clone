@@ -17,7 +17,7 @@ export class ProductRepository {
     @Inject(KNEX_CONNECTION) private readonly knex: Knex
   ) {}
 
-  async create(userId: string, productDto: ProductDto): Promise<ProductEntity> {
+  public async create(userId: string, productDto: ProductDto): Promise<ProductEntity> {
     const productToInsert = Object.fromEntries(
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       Object.entries(productDto).filter(([_, v]) => v !== undefined && v != '')
@@ -36,7 +36,7 @@ export class ProductRepository {
     return await this.findById(obj.id);
   }
 
-  async findByUser(userId: string): Promise<ProductEntity[] | null> {
+  public async findByUser(userId: string): Promise<ProductEntity[] | null> {
     const query = `
     SELECT
       id, user_id, vin, engine_number, model,
@@ -60,7 +60,7 @@ export class ProductRepository {
     }
   }
 
-  async findById(id: string): Promise<ProductEntity | null> {
+  public async findById(id: string): Promise<ProductEntity | null> {
     const query = `
     SELECT
       id, user_id, vin, engine_number, model,
@@ -82,7 +82,19 @@ export class ProductRepository {
     }
   }
 
-  async getProductSequence(): Promise<number> {
+  public async findDeletingById(id: string): Promise<ProductEntity | null> {
+    return this.knex('product')
+      .where('id', id)
+      .andWhere('is_delete', true)
+      .select([
+        'id',
+        'user_id',
+        'crm_id',
+      ])
+      .first()
+  }
+
+  public async getProductSequence(): Promise<number> {
     const query =
       `SELECT nextval('vehicle_seq') AS count`;
     try {
@@ -94,8 +106,8 @@ export class ProductRepository {
     }
   }
 
-  async findNotSyncCRM(): Promise<ProductEntity[] | null> {
-    return this.knex('product')
+  public async findNotSyncCRM(): Promise<ProductEntity[] | null> {
+    return this.knex<ProductEntity>('product')
       .whereNull('crm_id')
       .andWhere('is_delete', false)
       .select([
@@ -111,7 +123,7 @@ export class ProductRepository {
       ]);
   }
 
-  async findAllowReVerifyProducts(verifiedLimit: number): Promise<ProductEntity[] | null> {
+  public async findAllowReVerifyProducts(verifiedLimit: number): Promise<ProductEntity[] | null> {
     const query = `
     SELECT *
     FROM product
@@ -130,11 +142,11 @@ export class ProductRepository {
     }
   }
 
-  async increaseVerifyTimes(productId: string): Promise<number> {
+  public async increaseVerifyTimes(productId: string): Promise<number> {
       return this.knex('product').where({id: productId}).increment('verify_times', 1);
   }
 
-  list(
+  public list(
     page: number, limit: number, filters: VehicleQueryFilters = {}): Promise<ProductBoVO[]> {
     const offset = (page-1) * limit;
     const queryBuilder = this.knex<ProductEntity>('product')
@@ -175,7 +187,7 @@ export class ProductRepository {
     }
   }
 
-  async count(filters: VehicleQueryFilters = {}): Promise<number> {
+  public async count(filters: VehicleQueryFilters = {}): Promise<number> {
     const queryBuilder =
       this.knex<ProductEntity>('product').where('is_delete', false);
     this.appendFilters(queryBuilder, filters);
@@ -190,7 +202,7 @@ export class ProductRepository {
       .count('id', { as: 'count' });
   }
 
-  async countByField(field: string): Promise<CountProductFieldType[] | number> {
+  public async countByField(field: string): Promise<CountProductFieldType[] | number> {
     const queryBuilder = this.createCountQuery();
     if (field) {
       return queryBuilder.groupBy(field).select(field);
@@ -200,7 +212,7 @@ export class ProductRepository {
     }
   }
 
-  async getVerifyFailedCount(): Promise<number> {
+  public async getVerifyFailedCount(): Promise<number> {
     const [{ count }] = await this.createCountQuery()
       .whereNotNull('crm_id')
       .andWhere('is_verified', false)
@@ -209,7 +221,13 @@ export class ProductRepository {
     return +count;
   }
 
-  async update(
+  public async getPendingDeleteProducts(): Promise<ProductEntity[]> {
+    return this.knex<ProductEntity>('product')
+      .where('is_delete', true)
+      .whereNotNull('crm_id');
+  }
+
+  public async update(
     id: string,
     productUpdateDto: UpdateProductData,
   ): Promise<ProductEntity> {

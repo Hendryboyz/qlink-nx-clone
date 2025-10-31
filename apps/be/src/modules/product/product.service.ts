@@ -210,17 +210,21 @@ export class ProductService {
 
   async removeOwnedProduct(userId: string, productId: string): Promise<void> {
     const ownedProduct = await this.getOwnedProduct(userId, productId);
+    await this.deleteProductFromCRM(ownedProduct);
+    await this.productRepository.remove(ownedProduct);
+  }
+
+  private async deleteProductFromCRM(productEntity: ProductEntity): Promise<void> {
     try {
-      await this.syncCrmService.deleteVehicle(ownedProduct.crmId);
+      await this.syncCrmService.deleteVehicle(productEntity.crmId);
     } catch (error) {
       this.logger.error(JSON.stringify(error));
       if (error && error.status === 404) {
-        this.logger.warn(`the product with crm id: ${ownedProduct.crmId} not found in the CRM`)
+        this.logger.warn(`the product with crm id: ${productEntity.crmId} not found in the CRM`)
       } else {
         throw new InternalServerErrorException(error);
       }
     }
-    await this.productRepository.remove(ownedProduct);
   }
 
   async softDeleteAllOwnedProduct(userId: string): Promise<number> {
@@ -233,7 +237,18 @@ export class ProductService {
   }
 
   async removeById(productId: string): Promise<void> {
-    await this.productRepository.removeById(productId);
+    const productEntity = await this.productRepository.findById(productId);
+    await this.purgeProduct(productEntity);
+  }
+
+  private async purgeProduct(product: ProductEntity): Promise<void> {
+    await this.deleteProductFromCRM(product);
+    await this.productRepository.removeById(product.id);
+  }
+
+  async removePendingDeleteById(productId: string): Promise<void> {
+    const deletingProduct = await this.productRepository.findDeletingById(productId);
+    await this.purgeProduct(deletingProduct);
   }
 
   public async reSyncCRM(): Promise<number> {
@@ -257,5 +272,9 @@ export class ProductService {
     }
     this.logger.log(`Re sync ${unSyncProducts.length} products to CRM, succeed: ${succeed}, failure: ${failure}`);
     return succeed;
+  }
+
+  getPendingDeleteItems(): Promise<ProductEntity[]> {
+    return this.productRepository.getPendingDeleteProducts()
   }
 }
