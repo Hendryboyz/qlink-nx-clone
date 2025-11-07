@@ -335,14 +335,7 @@ export class SalesforceSyncService implements OnModuleInit{
     if (vehicleEntity.isVerified === true) {
       return true
     }
-    this.logger.debug(vehicleEntity);
-    const isVinNumberValid =
-      await this.verifyVehicleField(vehicleEntity.crmId, 'VIN_Number', vehicleEntity.vin);
-    const isEngineNumberValid =
-      await this.verifyVehicleField(vehicleEntity.crmId, 'Engine_Serial_Number', vehicleEntity.engineNumber);
-    await this.verifyVehicleField(vehicleEntity.crmId, 'Dealer_Name', vehicleEntity.dealerName);
-
-    return isVinNumberValid && isEngineNumberValid
+    return this.isVehicleValid(vehicleEntity.crmId);
   }
 
   private async verifyVehicleField(vehicleId: string, fieldName: string, value: string): Promise<boolean> {
@@ -396,17 +389,21 @@ export class SalesforceSyncService implements OnModuleInit{
   }
 
   private async isVehicleValid(vehicleObjectId: string): Promise<boolean> {
-    const syncAction = this.useReAuthQuery(this.getVehicle.bind(this));
-    const response = await syncAction(vehicleObjectId);
-
-    const {data, status} = response;
-    if (status > 299) {
-      this.logger.warn(`fail to get vehicle object, status code: ${status}, message: ${data}`);
+    try {
+      const syncAction = this.useReAuthQuery(this.getVehicle.bind(this));
+      const response = await syncAction(vehicleObjectId);
+      const {data, status} = response;
+      const { Verification_Status__c } = data;
+      this.logger.debug(`try to valid vehicle successfully, status code: ${status}, message: ${data}`);
+      return Verification_Status__c === 'Verified';
+    } catch (error) {
+      if (error.response)  {
+        const { response } = error;
+        this.logger.error(`verify vehicle failed, status code ${response.status}, message `, response.data);
+      } else {
+        this.logger.error(`verify vehicle failed, status code 500, message `, error);
+      }
       return false;
-    } else {
-      this.logger.debug(`get vehicle successfully, status code: ${status}, message: ${data}`);
-      const { Engine_Serial_Number__c, VIN_Number__c, Model__c } = response.data;
-      return Engine_Serial_Number__c && VIN_Number__c && Model__c;
     }
   }
 
