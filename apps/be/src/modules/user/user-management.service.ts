@@ -87,13 +87,8 @@ export class UserManagementService {
     }
   }
 
-  public getPendingDeleteItems(): Promise<UserEntity[]> {
-    return this.userRepository.getPendingDeleteUsers()
-  }
-
   public async updateUser(userId: string, updateData: UserUpdateDto): Promise<UserVO> {
     if (updateData.password != null) throw new BadRequestException();
-
     const updatedUser = await this.userRepository.update(userId, updateData);
 
     this.logger.debug(`user[${updatedUser.id}] updated`, updatedUser);
@@ -112,7 +107,7 @@ export class UserManagementService {
     return filterUserInfo(updatedUser);
   }
 
-  public async softDelete(id: string): Promise<void> {
+  public async delete(id: string): Promise<void> {
     const userEntity = await this.userRepository.findById(id);
     if (!userEntity) {
       throw new NotFoundException(`user[${id}] not found`);
@@ -121,13 +116,8 @@ export class UserManagementService {
     const softDeletedRows = await this.productService.softDeleteAllOwnedProduct(userEntity.id);
     this.logger.debug(`products owned by user[${userEntity.id}] soft deleted: ${softDeletedRows}`);
 
-    await this.userRepository.softDelete(id);
-  }
-
-  public async removePendingDeleteById(id: string) {
-    const userEntity = await this.userRepository.findDeletingById(id);
     await this.deleteMemberFromCRM(userEntity);
-    await this.userRepository.removeById(userEntity.id);
+    await this.userRepository.removeById(id);
   }
 
   private async deleteMemberFromCRM(userEntity: UserEntity): Promise<void> {

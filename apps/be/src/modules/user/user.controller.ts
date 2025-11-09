@@ -108,7 +108,7 @@ export class UserController {
   @Delete()
   @HttpCode(HttpStatus.NO_CONTENT)
   async deleteUser(@UserId() userId: string): Promise<void> {
-    await this.userManagementService.softDelete(userId);
+    await this.userManagementService.delete(userId);
   }
 }
 

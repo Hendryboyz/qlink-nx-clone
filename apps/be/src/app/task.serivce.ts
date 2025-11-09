@@ -47,15 +47,4 @@ export class TaskService {
       await this.productService.removePendingDeleteById(product.id);
     }
   }
-
-  @Cron("0 0 * * *", {
-    name: 'job to remove pending delete products',
-    timeZone: 'Asia/Taipei',
-  })
-  async removePendingDeleteAccount() {
-    const deletingMembers = await this.userManagementService.getPendingDeleteItems();
-    for (const member of deletingMembers) {
-      await this.userManagementService.removePendingDeleteById(member.id);
-    }
-  }
 }
