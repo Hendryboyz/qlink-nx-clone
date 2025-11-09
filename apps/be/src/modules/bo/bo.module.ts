@@ -5,6 +5,7 @@ import { BoUserModule } from '$/modules/bo/user/bo-user.module';
 import { VehiclesModule } from '$/modules/bo/vehicles/vehicles.module';
 import { StatisticModule } from '$/modules/bo/statistic/statistic.module';
 import { RouterModule } from '@nestjs/core';
+import { BannersModule } from './banners/banners.module';
 
 @Module({
   imports: [
@@ -13,6 +14,7 @@ import { RouterModule } from '@nestjs/core';
     BoUserModule,
     VehiclesModule,
     StatisticModule,
+    BannersModule,
     RouterModule.register([
       {
         path: 'bo',
@@ -36,6 +38,10 @@ import { RouterModule } from '@nestjs/core';
           {
             path: 'statistic',
             module: StatisticModule,
+          },
+          {
+            path: 'banners',
+            module: BannersModule,
           },
         ],
       },

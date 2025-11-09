@@ -96,7 +96,7 @@ const Sidebar: React.FC<SidebarProps> = ({ collapsed, setCollapsed }) => {
       label: 'Banner Management',
       link: '/banners',
       icon: <NotificationOutlined />,
-      hidden: true,
+      hidden: false,
     },
     {
       label: 'Coupon Management',
