@@ -1,4 +1,5 @@
 import type { Preview } from '@storybook/react';
+import 'react-day-picker/style.css';
 import '../src/lib/styles.css';
 
 const preview: Preview = {

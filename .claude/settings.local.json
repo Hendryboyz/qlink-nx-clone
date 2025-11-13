@@ -11,7 +11,8 @@
       "Bash(nx g:*)",
       "Bash(npm install:*)",
       "Bash(nx build:*)",
-      "Bash(find:*)"
+      "Bash(find:*)",
+      "Bash(npm view:*)"
     ],
     "deny": [],
     "ask": []

@@ -10,5 +10,11 @@ export * from './lib/tailgrids/toast';
 export * from './lib/tailgrids/otp-input';
 export * from './lib/tailgrids/dropdown';
 
+// Shadcn UI Components
+export * from './lib/ui/button';
+export * from './lib/ui/calendar';
+export * from './lib/ui/popover';
+export * from './lib/ui/date-picker';
+
 // Styles
 import './lib/styles.css';
