@@ -1,0 +1,19 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(cat:*)",
+      "Bash(tree:*)",
+      "WebSearch",
+      "WebFetch(domain:ui.shadcn.com)",
+      "WebFetch(domain:github.com)",
+      "WebFetch(domain:storybook.js.org)",
+      "WebFetch(domain:nx.dev)",
+      "Bash(nx g:*)",
+      "Bash(npm install:*)",
+      "Bash(nx build:*)",
+      "Bash(find:*)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

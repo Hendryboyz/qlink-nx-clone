@@ -10,33 +10,17 @@
     "importHelpers": true,
     "target": "ESNext",
     "module": "esnext",
-    "lib": [
-      "es2020",
-      "dom"
-    ],
+    "lib": ["es2020", "dom"],
     "skipLibCheck": true,
     "skipDefaultLibCheck": true,
     "baseUrl": ".",
     "paths": {
-      "@org/common": [
-        "common/src/index.ts"
-      ],
-      "@org/types": [
-        "types/src/index.ts"
-      ]
+      "@org/common": ["common/src/index.ts"],
+      "@org/components": ["libs/components/src/index.ts"],
+      "@org/types": ["types/src/index.ts"]
     },
-    "typeRoots": [
-      "./node_modules/@types",
-      "./node_modules",
-      "./types/src"
-    ]
+    "typeRoots": ["./node_modules/@types", "./node_modules", "./types/src"]
   },
-  "include": [
-    "src/**/*.ts",
-    "src/**/*.tsx"
-  ],
-  "exclude": [
-    "node_modules",
-    "tmp"
-  ]
+  "include": ["src/**/*.ts", "src/**/*.tsx"],
+  "exclude": ["node_modules", "tmp"]
 }
