@@ -14,7 +14,8 @@
     "paths": {
       "$/*": ["./apps/client/*"],
       "@org/common": ["common/src/index.ts"],
-      "@org/types": ["types/src/index.ts"]
+      "@org/types": ["types/src/index.ts"],
+      "@org/components": ["libs/components/src/index.ts"]
     },
     "plugins": [
       {
