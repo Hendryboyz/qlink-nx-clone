@@ -54,7 +54,7 @@ export function TGToast({
   return (
     <div
       className={cn(
-        'flex items-start gap-4 p-4 rounded-lg border-2 shadow-lg max-w-md',
+        'flex items-start gap-4 p-4 rounded-lg border-2 shadow-lg max-w-md font-manrope',
         'animate-in slide-in-from-top-5 duration-300',
         typeStyles[type],
         className
@@ -64,7 +64,7 @@ export function TGToast({
       <div className={cn('flex-shrink-0 mt-0.5', iconStyles[type])}>
         {icons[type]}
       </div>
-      <div className="flex-1 min-w-0">
+      <div className="flex-1 min-w-0 font-manrope">
         {title && (
           <p className="font-semibold text-sm mb-1">{title}</p>
         )}
@@ -100,7 +100,7 @@ const positionStyles = {
 
 export function TGToastContainer({ position = 'top-right', children }: TGToastContainerProps) {
   return (
-    <div className={cn('fixed z-50 flex flex-col gap-2', positionStyles[position])}>
+    <div className={cn('fixed z-50 flex flex-col gap-2 font-manrope', positionStyles[position])}>
       {children}
     </div>
   );

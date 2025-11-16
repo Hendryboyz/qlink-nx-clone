@@ -79,9 +79,9 @@ export function TGDropdown({
   };
 
   return (
-    <div className={cn('relative', fullWidth && 'w-full')}>
+    <div className={cn('relative font-manrope', fullWidth && 'w-full')}>
       {label && (
-        <label className="block text-sm font-medium text-gray-700 mb-1.5">
+        <label className="block text-sm font-medium text-gray-700 mb-1.5 font-manrope">
           {label}
         </label>
       )}
@@ -92,7 +92,7 @@ export function TGDropdown({
           onKeyDown={handleKeyDown}
           disabled={disabled}
           className={cn(
-            'w-full flex items-center justify-between gap-2',
+            'w-full flex items-center justify-between gap-2 font-manrope',
             'px-4 py-2.5 rounded-lg border-2 border-gray-300',
             'bg-white text-sm text-left',
             'transition-colors',
@@ -133,7 +133,7 @@ export function TGDropdown({
                 onClick={() => handleSelect(option)}
                 disabled={option.disabled}
                 className={cn(
-                  'w-full flex items-center justify-between gap-2 px-4 py-2.5 text-sm text-left',
+                  'w-full flex items-center justify-between gap-2 px-4 py-2.5 text-sm text-left font-manrope',
                   'transition-colors',
                   'hover:bg-gray-50',
                   'disabled:opacity-50 disabled:cursor-not-allowed',

@@ -13,9 +13,10 @@ const nextConfig = {
     // See: https://github.com/gregberge/svgr
     svgr: false,
   },
+  transpilePackages: ['@org/components'],
   webpack: (config) => {
     config.resolve.alias['$'] = path.join(__dirname, 'apps/client');
-    config.resolve.alias['@org'] = path.join(__dirname, '');
+    config.resolve.alias['@org'] = path.join(__dirname, '../../');
     return config;
   },
   async rewrites() {

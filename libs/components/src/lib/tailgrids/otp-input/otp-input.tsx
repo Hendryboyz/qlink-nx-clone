@@ -90,7 +90,7 @@ export function TGOTPInput({
   };
 
   return (
-    <div className={cn('flex gap-2 justify-center', className)}>
+    <div className={cn('flex gap-2 justify-center font-manrope', className)}>
       {otp.map((digit, index) => (
         <input
           key={index}
@@ -105,7 +105,7 @@ export function TGOTPInput({
           onFocus={handleFocus}
           disabled={disabled}
           className={cn(
-            'w-12 h-14 text-center text-2xl font-semibold',
+            'w-12 h-14 text-center text-2xl font-semibold font-manrope',
             'rounded-lg border-2 border-gray-300',
             'bg-white text-gray-900',
             'transition-all',

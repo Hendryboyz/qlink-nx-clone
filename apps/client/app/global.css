@@ -58,6 +58,73 @@
   font-display: swap;
 }
 
+/* New Design System Fonts */
+/* Manrope - For UI elements */
+@font-face {
+  font-family: 'Manrope';
+  src: url('/fonts/Manrope-Regular.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Manrope';
+  src: url('/fonts/Manrope-Medium.ttf') format('truetype');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Manrope';
+  src: url('/fonts/Manrope-SemiBold.ttf') format('truetype');
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Manrope';
+  src: url('/fonts/Manrope-Bold.ttf') format('truetype');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* Poppins - For campaign/marketing content */
+@font-face {
+  font-family: 'Poppins';
+  src: url('/fonts/Poppins-Regular.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Poppins';
+  src: url('/fonts/Poppins-Medium.ttf') format('truetype');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Poppins';
+  src: url('/fonts/Poppins-SemiBold.ttf') format('truetype');
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Poppins';
+  src: url('/fonts/Poppins-Bold.ttf') format('truetype');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
 
 
 /*@font-face {*/
@@ -155,6 +222,29 @@ label {
 
 .react-datepicker__day:hover {
   background-color: #fee2e2 !important;
+}
+
+@layer components {
+  /* Design System Effects - Shadow Only */
+  .shadow-effect-card {
+    box-shadow: 0px 4px 3px 0px rgba(0, 0, 0, 0.25);
+  }
+
+  .shadow-effect-flag {
+    box-shadow: 0px 2px 2px 0px rgba(0, 0, 0, 0.25);
+  }
+
+  .shadow-effect-overlay {
+    box-shadow: 0px 4px 15px 0px rgba(0, 0, 0, 0.25);
+  }
+
+  .shadow-effect-overlay-strong {
+    box-shadow: 0px 4px 15px 0px rgba(0, 0, 0, 0.5);
+  }
+
+  .shadow-effect-button {
+    box-shadow: -2px -4px 4px 0px rgba(0, 0, 0, 0.25) inset;
+  }
 }
 
 @layer utilities {

@@ -43,9 +43,9 @@ export function DatePickerWithInput({
   };
 
   return (
-    <div className={cn('flex flex-col gap-1.5 w-full', className)}>
+    <div className={cn('flex flex-col gap-1.5 w-full font-manrope', className)}>
       {label && (
-        <label className="text-sm font-medium text-gray-700">
+        <label className="text-sm font-medium text-gray-700 font-manrope">
           {label}
         </label>
       )}
@@ -54,7 +54,7 @@ export function DatePickerWithInput({
           <Button
             variant="outline"
             className={cn(
-              'w-full justify-start text-left font-normal',
+              'w-full justify-start text-left font-normal font-manrope',
               !date && 'text-muted-foreground',
               error && 'border-red-500 focus:ring-red-500/20'
             )}

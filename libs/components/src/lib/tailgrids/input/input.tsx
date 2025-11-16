@@ -37,11 +37,11 @@ export const TGInput = React.forwardRef<HTMLInputElement, TGInputProps>(
     const inputType = isPassword && showPassword ? 'text' : type;
 
     return (
-      <div className={cn('flex flex-col gap-1.5', fullWidth && 'w-full', containerClassName)}>
+      <div className={cn('flex flex-col gap-1.5 font-manrope', fullWidth && 'w-full', containerClassName)}>
         {label && (
           <label
             htmlFor={inputId}
-            className="text-sm font-medium text-gray-700"
+            className="text-sm font-medium text-gray-700 font-manrope"
           >
             {label}
           </label>
@@ -58,7 +58,7 @@ export const TGInput = React.forwardRef<HTMLInputElement, TGInputProps>(
             type={inputType}
             className={cn(
               'w-full px-4 py-2.5 rounded-lg border-2 border-gray-300',
-              'bg-white text-gray-900 text-sm',
+              'bg-white text-gray-900 text-sm font-manrope',
               'placeholder:text-gray-400',
               'transition-colors',
               'focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20',

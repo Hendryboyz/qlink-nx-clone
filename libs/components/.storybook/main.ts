@@ -16,6 +16,12 @@ const config: StorybookConfig = {
   docs: {
     autodocs: 'tag',
   },
+  staticDirs: [
+    {
+      from: path.resolve(__dirname, '../../../apps/client/public'),
+      to: '/',
+    },
+  ],
   async viteFinal(config) {
     return mergeConfig(config, {
       plugins: [nxViteTsPaths()],

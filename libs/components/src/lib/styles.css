@@ -2,27 +2,136 @@
 @import 'tailwindcss/components';
 @import 'tailwindcss/utilities';
 
+/* Shared font declarations for Storybook builds */
+@font-face {
+  font-family: 'Manrope';
+  src: url('/fonts/Manrope-Regular.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Manrope';
+  src: url('/fonts/Manrope-Medium.ttf') format('truetype');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Manrope';
+  src: url('/fonts/Manrope-SemiBold.ttf') format('truetype');
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Manrope';
+  src: url('/fonts/Manrope-Bold.ttf') format('truetype');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Poppins';
+  src: url('/fonts/Poppins-Regular.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Poppins';
+  src: url('/fonts/Poppins-Medium.ttf') format('truetype');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Poppins';
+  src: url('/fonts/Poppins-SemiBold.ttf') format('truetype');
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Poppins';
+  src: url('/fonts/Poppins-Bold.ttf') format('truetype');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
 @layer base {
   :root {
-    --background: 100% 0 0;
-    --foreground: 0% 0 0;
-    --card: 100% 0 0;
-    --card-foreground: 0% 0 0;
-    --popover: 100% 0 0;
-    --popover-foreground: 0% 0 0;
-    --primary: 0.99 0.15 9.91;
-    --primary-foreground: 100% 0 0;
-    --secondary: 96.48% 0 0;
-    --secondary-foreground: 0% 0 0;
-    --muted: 96.48% 0 0;
-    --muted-foreground: 45.71% 0.01 256.35;
-    --accent: 96.48% 0 0;
-    --accent-foreground: 0% 0 0;
-    --destructive: 57.49% 0.24 25.38;
-    --destructive-foreground: 100% 0 0;
-    --border: 91.43% 0.01 256.35;
-    --input: 91.43% 0.01 256.35;
-    --ring: 0.99 0.15 9.91;
+    /* Design System Brand Colors (OKLCH format) */
+    --primary: 0.99 0.15 9.91;           /* #D70127 - Primary red */
+    --primary-foreground: 100% 0 0;      /* White for text on primary */
+    --secondary: 96.48% 0 0;             /* #F5F5F5 - Light gray background */
+    --secondary-foreground: 0% 0 0;      /* Black for text on secondary */
+    --tertiary: 24.71% 0 0;              /* #1A1A1A - Dark gray/black */
+    --tertiary-foreground: 100% 0 0;     /* White for text on tertiary */
+
+    /* Semantic Colors */
+    --error: 46.5% 0.19 27.5;            /* #CA0000 - Error red */
+    --error-foreground: 100% 0 0;        /* White for text on error */
+    --warning: 80% 0.16 85;              /* #FFB800 - Warning yellow */
+    --warning-foreground: 0% 0 0;        /* Black for text on warning */
+    --success: 62% 0.19 142;             /* #10B700 - Success green */
+    --success-foreground: 100% 0 0;      /* White for text on success */
+
+    /* Grayscale Colors */
+    --text-strong: 24.71% 0 0;           /* #1A1A1A - Strong text */
+    --text-weak: 31% 0 0;                /* #343434 - Weak text */
+    --stroke-strong: 52% 0 0;            /* #777777 - Strong stroke */
+    --stroke-weak: 71% 0.02 192;         /* #80BDBD - Weak stroke */
+    --bg: 96.48% 0 0;                    /* #F5F5F5 - Background */
+    --fill: 100% 0 0;                    /* #FFFFFF - Fill/white */
+
+    /* Component-specific colors (using design system) */
+    --background: 100% 0 0;              /* White */
+    --foreground: 24.71% 0 0;            /* #1A1A1A - Text strong */
+    --card: 100% 0 0;                    /* White */
+    --card-foreground: 24.71% 0 0;       /* #1A1A1A - Text strong */
+    --popover: 100% 0 0;                 /* White */
+    --popover-foreground: 24.71% 0 0;    /* #1A1A1A - Text strong */
+    --muted: 96.48% 0 0;                 /* #F5F5F5 - Background */
+    --muted-foreground: 52% 0 0;         /* #777777 - Stroke strong */
+    --accent: 96.48% 0 0;                /* #F5F5F5 - Background */
+    --accent-foreground: 24.71% 0 0;     /* #1A1A1A - Text strong */
+    --destructive: 46.5% 0.19 27.5;      /* #CA0000 - Error */
+    --destructive-foreground: 100% 0 0;  /* White */
+    --border: 91.43% 0.01 256.35;        /* Light gray border */
+    --input: 91.43% 0.01 256.35;         /* Light gray input border */
+    --ring: 0.99 0.15 9.91;              /* #D70127 - Primary for focus ring */
     --radius: 0.5rem;
+  }
+}
+
+@layer components {
+  /* Design System Effects - Shadow Only */
+  .shadow-effect-card {
+    box-shadow: 0px 4px 3px 0px rgba(0, 0, 0, 0.25);
+  }
+
+  .shadow-effect-flag {
+    box-shadow: 0px 2px 2px 0px rgba(0, 0, 0, 0.25);
+  }
+
+  .shadow-effect-overlay {
+    box-shadow: 0px 4px 15px 0px rgba(0, 0, 0, 0.25);
+  }
+
+  .shadow-effect-overlay-strong {
+    box-shadow: 0px 4px 15px 0px rgba(0, 0, 0, 0.5);
+  }
+
+  .shadow-effect-button {
+    box-shadow: -2px -4px 4px 0px rgba(0, 0, 0, 0.25) inset;
   }
 }

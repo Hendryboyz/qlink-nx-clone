@@ -16,7 +16,7 @@ export const TGCheckbox = React.forwardRef<HTMLInputElement, TGCheckboxProps>(
     const checkboxId = id || React.useId();
 
     return (
-      <div className={cn('flex items-center gap-3', containerClassName)}>
+      <div className={cn('flex items-center gap-3 font-manrope', containerClassName)}>
         <div className="relative flex items-center flex-shrink-0">
           <input
             type="checkbox"
@@ -46,7 +46,7 @@ export const TGCheckbox = React.forwardRef<HTMLInputElement, TGCheckboxProps>(
               <label
                 htmlFor={checkboxId}
                 className={cn(
-                  'block text-sm font-medium text-gray-900 cursor-pointer leading-5',
+                  'block text-sm font-medium text-gray-900 cursor-pointer leading-5 font-manrope',
                   props.disabled && 'cursor-not-allowed opacity-50'
                 )}
               >
