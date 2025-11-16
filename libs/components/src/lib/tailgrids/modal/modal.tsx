@@ -94,7 +94,7 @@ export function TGModal({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 font-manrope">
       {/* Backdrop */}
       <div
         className="absolute inset-0 bg-black/50 backdrop-blur-sm transition-opacity"
@@ -105,7 +105,7 @@ export function TGModal({
       {/* Modal */}
       <div
         className={cn(
-          'relative bg-white rounded-2xl shadow-2xl p-6 md:p-8 max-w-md w-full',
+          'relative bg-white rounded-2xl shadow-2xl p-6 md:p-8 max-w-md w-full font-manrope',
           'transform transition-all',
           className
         )}
