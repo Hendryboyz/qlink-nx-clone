@@ -29,7 +29,7 @@ const protectedRoutes = ['/member', '/garage'];
 
 const guestOnlyRoutes = ['/sign-in', '/sign-up', '/reset-password'];
 
-const publicRoutes = ['/', '/news', '/privacy-policy', '/terms-of-service'];
+const publicRoutes = ['/', '/news', '/privacy-policy', '/terms-of-service', '/ui-demo'];
 
 async function legacyMiddleware(request: NextRequest) {
   // 獲取 token，這裡假設它存儲在 cookie 中
