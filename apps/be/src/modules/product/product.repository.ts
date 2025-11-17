@@ -221,10 +221,16 @@ export class ProductRepository {
     return +count;
   }
 
-  public async getPendingDeleteProducts(): Promise<ProductEntity[]> {
+  public async findExisting(vin: string, engineNumber: string): Promise<string> {
     return this.knex<ProductEntity>('product')
-      .where('is_delete', true)
-      .whereNotNull('crm_id');
+      .where(function() {
+        this.whereNot('vin', '').andWhere('vin', vin)
+      })
+      .orWhere(function() {
+        this.whereNot('engine_number', '').andWhere('engine_number', engineNumber)
+      })
+      .limit(1)
+      .select('id');
   }
 
   public async update(
@@ -244,25 +250,28 @@ export class ProductRepository {
     return obj;
   }
 
-  public remove(product: ProductEntity): Promise<number> {
-    // rowCount should be 1
-    return this.buildQueryById(product.id)
-      .andWhere('user_id', product.userId)
-      .delete();
+  public removeById(productId: string): Promise<number> {
+    return this.buildQueryById(productId).delete();
   }
 
   private buildQueryById(productId: string) {
     return this.knex('product').where('id', productId);
   }
 
-  public removeById(productId: string): Promise<number> {
-    return this.buildQueryById(productId).delete();
+  public unlinkProduct(product: ProductEntity): Promise<number> {
+    // unlink single product
+    return this.buildQueryById(product.id)
+      .andWhere('user_id', product.userId)
+      .update({
+        'user_id': '',
+      });
   }
 
-  public async softDeleteProducts(userId: string, deletingProductIds: string[]): Promise<number> {
+  public unlinkProducts(userId: string, productIds: string[]): Promise<number> {
+    // unlink multiple products
     return this.knex('product')
       .where('user_id', userId)
-      .whereIn('id', deletingProductIds)
-      .update('is_delete', true);
+      .whereIn('id', productIds)
+      .update('user_id', '');
   }
 }

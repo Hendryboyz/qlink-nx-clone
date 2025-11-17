@@ -39,6 +39,6 @@ export class ProductController {
   @UseGuards(AuthGuard('jwt'))
   @Delete('/remove')
   async removeProduct(@UserId() userId: string, @Body() payload: ProductRemoveDto) {
-    return this.productService.removeOwnedProduct(userId, payload.id);
+    return this.productService.unlinkOwnedProduct(userId, payload.id);
   }
 }

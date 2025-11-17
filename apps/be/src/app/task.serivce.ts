@@ -36,15 +36,4 @@ export class TaskService {
   async resyncProducts() {
     await this.productService.reSyncCRM()
   }
-
-  @Cron("0 3/6 * * *", {
-    name: 'job to remove pending delete products',
-    timeZone: 'Asia/Taipei',
-  })
-  async removePendingDeleteProduct() {
-    const deletingProducts = await this.productService.getPendingDeleteItems();
-    for (const product of deletingProducts) {
-      await this.productService.removePendingDeleteById(product.id);
-    }
-  }
 }
