@@ -125,7 +125,8 @@ export class UserManagementService {
       await this.syncCrmService.deleteMember(userEntity.crmId);
     } catch (error) {
       this.logger.error(JSON.stringify(error));
-      if (error && error.status === 404) {
+      const { response } = error;
+      if (response && response.status === 404) {
         this.logger.warn(`the member with crm id: ${userEntity.crmId} not found in the CRM`)
       } else {
         throw new InternalServerErrorException(error);
