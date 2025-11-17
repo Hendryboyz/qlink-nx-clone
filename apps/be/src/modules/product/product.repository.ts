@@ -221,8 +221,8 @@ export class ProductRepository {
     return +count;
   }
 
-  public async findExisting(vin: string, engineNumber: string): Promise<string> {
-    return this.knex<ProductEntity>('product')
+  public async findExisting(vin: string, engineNumber: string): Promise<string | null> {
+    const ids = await this.knex<ProductEntity>('product')
       .where(function() {
         this.whereNot('vin', '').andWhere('vin', vin)
       })
@@ -231,6 +231,7 @@ export class ProductRepository {
       })
       .limit(1)
       .select('id');
+    return ids && ids.length > 0 ? ids[0].id : null;
   }
 
   public async update(

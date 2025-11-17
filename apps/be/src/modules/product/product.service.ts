@@ -91,7 +91,7 @@ export class ProductService {
 
   private async avoidRedundantMutation(vin: string, engineNumber: string): Promise<void> {
     const existingId = await this.productRepository.findExisting(vin, engineNumber);
-    if (existingId) {
+    if (existingId && existingId !== '') {
       throw new ConflictException(
         `vin: ${vin} or engine number: ${engineNumber} already exists`);
     }
@@ -151,7 +151,7 @@ export class ProductService {
 
   async updateProduct(payload: ProductUpdateDto): Promise<ProductEntity> {
     const {data: dto} = payload;
-    await this.avoidRedundantMutation(dto.vin, dto.engineNumber);
+    // await this.avoidRedundantMutation(dto.vin, dto.engineNumber);
     const existingProduct = await this.productRepository.findById(payload.id);
     if (existingProduct.vin !== dto.vin
       || existingProduct.engineNumber !== dto.engineNumber
@@ -167,6 +167,7 @@ export class ProductService {
 
     try {
       const syncError = await this.syncCrmService.updateVehicle(updatedProduct);
+      await this.verifyWithCRM(updatedProduct);
       if (syncError) {
         this.logger.error(`fail to sync vehicle to salesforce reason: ${syncError.message}`)
       }
@@ -194,14 +195,6 @@ export class ProductService {
     const result: VerifyResult[] = [];
     for (const product of unverifiedProducts) {
       const isVerified = await this.verifyWithCRM(product);
-      if (!isVerified) {
-        this.logger.warn(`fail to verify vehicle with id ${product.id} with salesforce`);
-        // await this.productRepository.increaseVerifyTimes(product.id);
-      } else {
-        await this.productRepository.update(product.id, {
-          isVerified: true,
-        });
-      }
       result.push({
         productId: product.id,
         isVerified: isVerified,
@@ -212,7 +205,16 @@ export class ProductService {
 
   private async verifyWithCRM(product: ProductEntity): Promise<boolean> {
     try {
-      return await this.syncCrmService.verifyVehicle(product);
+      const isVerified = await this.syncCrmService.verifyVehicle(product);
+      if (!isVerified) {
+        this.logger.warn(`fail to verify vehicle with id ${product.id} with salesforce`);
+        // await this.productRepository.increaseVerifyTimes(product.id);
+      } else {
+        await this.productRepository.update(product.id, {
+          isVerified: true,
+        });
+      }
+      return isVerified;
     } catch (e) {
       this.logger.error(`fail to verify vehicle with id ${product.id} with salesforce`, e);
       return false;

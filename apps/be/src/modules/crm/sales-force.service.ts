@@ -394,7 +394,7 @@ export class SalesforceSyncService implements OnModuleInit{
       const response = await syncAction(vehicleObjectId);
       const {data, status} = response;
       const { Verification_Status__c } = data;
-      this.logger.debug(`try to valid vehicle successfully, status code: ${status}, message: ${data}`);
+      this.logger.debug(`try to valid vehicle successfully, status code: ${status}, message: ${JSON.stringify(data)}`);
       return Verification_Status__c === 'Verified';
     } catch (error) {
       if (error.response)  {
