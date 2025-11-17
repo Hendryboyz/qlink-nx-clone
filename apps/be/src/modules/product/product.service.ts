@@ -235,11 +235,7 @@ export class ProductService {
 
   async removeById(productId: string): Promise<void> {
     const productEntity = await this.productRepository.findById(productId);
-    await this.purgeProduct(productEntity);
-  }
-
-  private async purgeProduct(product: ProductEntity): Promise<void> {
-    await this.productRepository.removeById(product.id);
+    await this.productRepository.unlinkProduct(productEntity);
   }
 
   public async reSyncCRM(): Promise<number> {

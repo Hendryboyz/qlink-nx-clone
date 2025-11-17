@@ -151,7 +151,7 @@ export class ProductRepository {
     const offset = (page-1) * limit;
     const queryBuilder = this.knex<ProductEntity>('product')
       .where('product.is_delete', false)
-      .joinRaw('inner join users on users.id = product.user_id::uuid')
+      .joinRaw('left join users on users.id::text = product.user_id')
       .select('product.*', 'users.member_id')
       .orderBy('id').offset(offset).limit(limit);
     this.appendFilters(queryBuilder, filters);

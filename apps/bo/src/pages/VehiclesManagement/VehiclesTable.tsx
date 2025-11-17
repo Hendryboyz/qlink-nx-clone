@@ -1,7 +1,7 @@
 import { ProColumns } from '@ant-design/pro-table/es/typing';
 import { dateTimeFormatter } from '$/utils/formatter';
 import { Button, message, Modal, Space, Tooltip } from 'antd';
-import React, { ReactElement, useContext, useRef, useState } from 'react';
+import React, { ReactElement, useContext, useState } from 'react';
 import { ProTable } from '@ant-design/pro-components';
 import { VehiclesContext } from '$/pages/VehiclesManagement/VehiclesContext';
 import { FileDoneOutlined, LoadingOutlined } from '@ant-design/icons';
@@ -177,7 +177,7 @@ export default function VehiclesTable(): ReactElement {
             danger
             onClick={() => handleDelete(record.id)}
           >
-            Delete
+            Unlink
           </Button>
         </Space>
       ),
