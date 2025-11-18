@@ -1,18 +1,23 @@
+export enum BannerAlignment {
+  TOP = 'top',
+  MIDDLE = 'middle',
+  BOTTOM = 'bottom',
+}
+
 export interface BannerEntity {
   id: string;
-
   order: number;
-  enabled: boolean;
 
-  mainTitle: string;
-  subtitle?: string;
   label?: string;
-  buttonText: string;
-  alignment: 'top' | 'bottom' | 'middle';
+  title: string;
+  subtitle?: string;
+  alignment: BannerAlignment;
+  button: string;
 
-  imageUrl?: string;
-  linkUrl?: string;
+  image?: string;
+  link?: string;
 
+  archived: boolean;
   createdAt: Date;
   updatedAt: Date;
 }

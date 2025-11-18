@@ -10,7 +10,7 @@ CREATE TABLE IF NOT EXISTS banners (
   button varchar(32) NOT NULL DEFAULT 'View Detail',
   link varchar(256) NULL,
   alignment BANNERS_ALIGNMENT DEFAULT 'middle'::BANNERS_ALIGNMENT NOT NULL,
-  is_archived boolean NOT NULL DEFAULT false,
+  archived boolean NOT NULL DEFAULT false,
   created_at timestamptz DEFAULT CURRENT_TIMESTAMP NULL,
   updated_at timestamptz DEFAULT CURRENT_TIMESTAMP NULL
 );
