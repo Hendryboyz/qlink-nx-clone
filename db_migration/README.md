@@ -15,14 +15,6 @@ other OS please reference the document on [GitHub](https://github.com/golang-mig
 
 ## Usage
 
-我們使用 Node.js 腳本來管理 Flyway 遷移。以下 npm 腳本可用：
-
-- `npm run migrate`: 運行所有待處理的遷移
-- `npm run clean`: 刪除配置的 schema 中的所有對象
-- `npm run info`: 打印所有遷移的詳細信息和狀態
-- `npm run validate`: 驗證已應用的遷移與可用的遷移
-- `npm run baseline`: 為現有數據庫設置基線
-- `npm run repair`: 修復 schema 歷史表
 ```bash
 # Create new migration files
 migrate create -ext sql -dir ./db_migration/scripts -seq monthly_consumption_totals
@@ -38,7 +30,6 @@ migrate -path ./db_migration/scripts -database "$MIGRATING_PG_CONFIG" up
 migrate -path ./db_migration/scripts -database "$MIGRATING_PG_CONFIG" down 1
 # Drop all migration
 migrate -path ./db_migration/scripts -database "$MIGRATING_PG_CONFIG" down
-
 ```
 
 

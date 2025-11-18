@@ -40,7 +40,7 @@ CREATE TABLE users (
   "type" varchar NOT NULL,
   avatar_s3uri varchar(256) NULL,
   member_id varchar(128) DEFAULT ''::character varying NOT NULL,
-  gender public.gender DEFAULT 'Male'::gender NOT NULL,
+  gender gender DEFAULT 'Male'::gender NOT NULL,
   crm_id varchar(64) NULL,
   CONSTRAINT users_email_key UNIQUE (email),
   CONSTRAINT users_phone_key UNIQUE (phone),
