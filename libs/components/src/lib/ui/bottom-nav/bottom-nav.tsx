@@ -39,12 +39,12 @@ type BottomNavProps = {
 
 const BottomNav: FC<BottomNavProps> = ({ onItemClick, activeItem }) => {
   return (
-    <nav className="bg-fill grid grid-cols-4 w-full border-t border-[#D7D7D7] py-4">
+    <nav className="bg-fill grid grid-cols-4 w-full border-t border-stroke-w py-4">
       {BottmItemList.map((item) => (
         <div
           key={item.label}
           className={twMerge(
-            'text-[#D7D7D7] cursor-pointer grid w-fit mx-auto grid-cols-1 justify-items-center',
+            'text-stroke-w cursor-pointer grid w-fit mx-auto grid-cols-1 justify-items-center',
             activeItem === item.label && 'text-primary'
           )}
           onClick={() => onItemClick(item.label)}

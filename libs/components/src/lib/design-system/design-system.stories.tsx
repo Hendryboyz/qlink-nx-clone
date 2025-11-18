@@ -263,7 +263,7 @@ export const AllColors: Story = {
           <ColorSwatch name="Text Strong" className="bg-text-str" hexCode="#1A1A1A" />
           <ColorSwatch name="Text Weak" className="bg-text-w" hexCode="#343434" />
           <ColorSwatch name="Stroke Strong" className="bg-stroke-s" hexCode="#777777" />
-          <ColorSwatch name="Stroke Weak" className="bg-stroke-w" hexCode="#80BDBD" />
+          <ColorSwatch name="Stroke Weak" className="bg-stroke-w" hexCode="#D7D7D7" />
           <ColorSwatch name="Background" className="bg-bg border" hexCode="#F5F5F5" />
           <ColorSwatch name="Fill" className="bg-fill border" hexCode="#FFFFFF" />
         </div>

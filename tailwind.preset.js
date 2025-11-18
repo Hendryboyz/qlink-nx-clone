@@ -69,7 +69,7 @@ module.exports = {
         'text-str': '#1A1A1A',    // Text Strong
         'text-w': '#343434',      // Text Weak
         'stroke-s': '#777777',    // Stroke Strong
-        'stroke-w': '#80BDBD',    // Stroke Weak
+        'stroke-w': '#D7D7D7',    // Stroke Weak
         bg: '#F5F5F5',            // Background
         fill: '#FFFFFF',          // Fill
 
