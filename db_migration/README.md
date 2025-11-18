@@ -1,37 +1,41 @@
-# Database Migration with Flyway
+# Database Migration with Go-Migrate
 
-本指南將幫助您在 macOS 上設置和使用 Flyway 進行數據庫遷移。
+this guide help you migrate database schema with [Go-Migrate]
 
-## 安裝
+
+
+## Installation
 
 ```bash
-brew install flyway
-flyway -v
+# MacOS
+brew install golang-migrate
+migrate --version        
+```
+other OS please reference the document on [GitHub](https://github.com/golang-migrate/migrate/tree/master/cmd/migrate#installation)
+
+## Usage
+
+```bash
+# Create new migration files
+migrate create -ext sql -dir ./db_migration/scripts -seq monthly_consumption_totals
+
+# Check current migrate version
+export MIGRATING_PG_CONFIG="postgresql://local:administrator@localhost:5433/qride?sslmode=disable"
+migrate -path ./db_migration/scripts -database "$MIGRATING_PG_CONFIG" version
+
+# Migrate to next version
+migrate -path ./db_migration/scripts -database "$MIGRATING_PG_CONFIG" up
+
+# Downgrade 1 version
+migrate -path ./db_migration/scripts -database "$MIGRATING_PG_CONFIG" down 1
+# Drop all migration
+migrate -path ./db_migration/scripts -database "$MIGRATING_PG_CONFIG" down
 ```
 
-## 使用
 
-我們使用 Node.js 腳本來管理 Flyway 遷移。以下 npm 腳本可用：
+## Directory
 
-- `npm run migrate`: 運行所有待處理的遷移
-- `npm run clean`: 刪除配置的 schema 中的所有對象
-- `npm run info`: 打印所有遷移的詳細信息和狀態
-- `npm run validate`: 驗證已應用的遷移與可用的遷移
-- `npm run baseline`: 為現有數據庫設置基線
-- `npm run repair`: 修復 schema 歷史表
-
-## 文件結構
-
-- `migrations/`: 包含 SQL 遷移文件
-- `seeds/`: 包含初始數據的 SQL 文件
-- `flyway.js`: 運行 Flyway 命令的 Node.js 腳本
-
-## 命名約定
-
-- 遷移文件: `V{version}__{description}.sql`
-  例如: `V1__Create_users_table.sql`
-- 種子文件: `R__{description}.sql`
-  例如: `R__Insert_initial_users.sql`
+- `scripts/`: includes the `.up` and `.down` sql files to migrate and downgrade the database
 
 ## 最佳實踐
 
@@ -58,3 +62,4 @@ flyway -v
 
 - `DATABASE_URL`: 數據庫連接字符串，例如 `jdbc:postgresql://localhost:5432/your_database`
 - `DATABASE_SCHEMA`: 數據庫 schema 名稱，通常是 `public`
+

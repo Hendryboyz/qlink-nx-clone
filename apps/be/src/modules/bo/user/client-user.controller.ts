@@ -68,6 +68,6 @@ export class ClientUserController {
   @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
   async delete(@Param('id') id: string): Promise<void> {
-    await this.userManagementService.softDelete(id);
+    await this.userManagementService.delete(id);
   }
 }

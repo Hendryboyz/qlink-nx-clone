@@ -199,27 +199,6 @@ export class UserRepository {
       ]);
   }
 
-  public async findDeletingById(id: string): Promise<UserEntity | null> {
-    return this.knex<UserEntity>('users')
-      .where('id', id)
-      .andWhere('is_delete', true)
-      .select([
-        'id',
-        'crm_id',
-      ]);
-  }
-
-  public async getPendingDeleteUsers(): Promise<UserEntity[]> {
-    return this.knex<UserEntity>('users')
-      .where('is_delete', true)
-      .whereNotNull('crm_id')
-      .select([
-        'id',
-        'is_delete',
-        'crm_id',
-      ]);
-  }
-
   public async update(id: string, userUpdateDto: UserUpdateDto): Promise<UserEntity> {
     const userToUpdate = buildUpdatingMap(userUpdateDto);
     if (isEmpty(userToUpdate)) throw new BadRequestException('Empty payload');

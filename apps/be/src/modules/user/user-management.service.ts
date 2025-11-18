@@ -87,13 +87,8 @@ export class UserManagementService {
     }
   }
 
-  public getPendingDeleteItems(): Promise<UserEntity[]> {
-    return this.userRepository.getPendingDeleteUsers()
-  }
-
   public async updateUser(userId: string, updateData: UserUpdateDto): Promise<UserVO> {
     if (updateData.password != null) throw new BadRequestException();
-
     const updatedUser = await this.userRepository.update(userId, updateData);
 
     this.logger.debug(`user[${updatedUser.id}] updated`, updatedUser);
@@ -112,22 +107,17 @@ export class UserManagementService {
     return filterUserInfo(updatedUser);
   }
 
-  public async softDelete(id: string): Promise<void> {
+  public async delete(id: string): Promise<void> {
     const userEntity = await this.userRepository.findById(id);
     if (!userEntity) {
       throw new NotFoundException(`user[${id}] not found`);
     }
 
-    const softDeletedRows = await this.productService.softDeleteAllOwnedProduct(userEntity.id);
-    this.logger.debug(`products owned by user[${userEntity.id}] soft deleted: ${softDeletedRows}`);
+    const unlinkedRows = await this.productService.unlinkAllOwnedProduct(userEntity.id);
+    this.logger.debug(`products owned by user[${userEntity.id}] soft deleted: ${unlinkedRows}`);
 
-    await this.userRepository.softDelete(id);
-  }
-
-  public async removePendingDeleteById(id: string) {
-    const userEntity = await this.userRepository.findDeletingById(id);
     await this.deleteMemberFromCRM(userEntity);
-    await this.userRepository.removeById(userEntity.id);
+    await this.userRepository.removeById(id);
   }
 
   private async deleteMemberFromCRM(userEntity: UserEntity): Promise<void> {
@@ -135,7 +125,8 @@ export class UserManagementService {
       await this.syncCrmService.deleteMember(userEntity.crmId);
     } catch (error) {
       this.logger.error(JSON.stringify(error));
-      if (error && error.status === 404) {
+      const { response } = error;
+      if (response && response.status === 404) {
         this.logger.warn(`the member with crm id: ${userEntity.crmId} not found in the CRM`)
       } else {
         throw new InternalServerErrorException(error);

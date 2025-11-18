@@ -102,6 +102,7 @@ export default function GarageAdd() {
         initialValues={initValue}
         validationSchema={CreateSchema}
         onSubmit={(values, { setSubmitting }) => {
+          setSubmitting(true);
           API.post('/product/save', {
             vin: values.vin,
             engineNumber: values.engineNumber,
@@ -144,7 +145,7 @@ export default function GarageAdd() {
             .catch((err) => {
               showPopup({ title: DEFAULT_ERROR_MSG });
               console.error(err);
-            });
+            }).finally(() => { setSubmitting(false); });
         }}
       >
         {({ values, isSubmitting, setFieldValue, handleSubmit, errors }) => (
