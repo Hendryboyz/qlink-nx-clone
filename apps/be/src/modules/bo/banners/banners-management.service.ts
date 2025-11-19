@@ -15,4 +15,20 @@ export class BannersManagementService {
     entity.order = 1 + (await this.bannersRepository.countActive());
     return this.bannersRepository.create(entity);
   }
+
+  public listActive(): Promise<BannerEntity[]> {
+    return this.bannersRepository.listActive();
+  }
+
+  public listArchived(page: number, limit: number): Promise<BannerEntity[]> {
+    return this.bannersRepository.listArchived(page, limit);
+  }
+
+  public active(bannerId: string) {
+    return this.bannersRepository.setArchived(bannerId, false);
+  }
+
+  public archive(bannerId: string) {
+    return this.bannersRepository.setArchived(bannerId, true);
+  }
 }

@@ -1,15 +1,22 @@
 import {
   Body,
   Controller,
+  Get,
+  HttpCode,
+  HttpStatus,
   Injectable,
   Logger,
+  Param,
   Post,
+  Put,
+  Query,
   UsePipes,
   ValidationPipe,
 } from '@nestjs/common';
 import { CreateBannerDto } from '$/modules/bo/banners/banners.dto';
 import { BannersManagementService } from '$/modules/bo/banners/banners-management.service';
 import { BannerEntity } from '@org/types';
+import { PagingParams } from '$/common/common.dto';
 
 @Injectable()
 @Controller()
@@ -41,4 +48,29 @@ export class BannersManagementController {
         archived: false,
       }
   }
+
+  @Get('active')
+  listActive() {
+    return this.bannersManagementService.listActive();
+  }
+
+  @Get('archived')
+  listArchived(@Query() pagingParams: PagingParams): Promise<BannerEntity[]> {
+    const { page, limit } = pagingParams;
+    return this.bannersManagementService.listArchived(page, limit);
+  }
+
+  @Put(':id/active')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  async activate(@Param('id') bannerId: string) {
+    await this.bannersManagementService.active(bannerId);
+  }
+
+  @Put(':id/archived')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  async archive(@Param('id') bannerId: string) {
+    await this.bannersManagementService.archive(bannerId);
+  }
+
+
 }
