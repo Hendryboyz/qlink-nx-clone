@@ -72,18 +72,21 @@ const Step3 = (props: Props) => {
   //     return isNaN(Number(k)) && v !== UserSourceType.NONE
   //   })
   //   .map(([_, v]) => ({value: v, label: UserSourceDisplay[v]}))
-  function beforeOnSuccess(email: string, password: string): void {
-    signIn("credentials", {
-      redirect: false,
-      email: email,
-      password: password,
-      rememberMe: false,
-    }).then((res) => {
-      if (res && res.ok) {
-        return;
-      }
-      console.error(res);
-      showPopup({ title: 'authentication failed' });
+  function beforeOnSuccess(email: string, password: string): Promise<any> {
+    return new Promise((resolve, _) => {
+      signIn("credentials", {
+        redirect: false,
+        email: email,
+        password: password,
+        rememberMe: false,
+      }).then((res) => {
+        if (res && res.ok) {
+          console.log(`login with email: ${email} successfully after sign up`);
+          resolve(res);
+          return;
+        }
+        resolve(res);
+      });
     });
   }
 
@@ -123,12 +126,17 @@ const Step3 = (props: Props) => {
             .then((res) => {
               if (res.bizCode == CODE_SUCCESS) {
                 if (email) {
-                  beforeOnSuccess(email, values.password);
+                  return beforeOnSuccess(email, values.password);
                 }
                 props.onSuccess();
               }
               else {
                 showPopup({ title: DEFAULT_ERROR_MSG });
+              }
+            })
+            .then((res) => {
+              if (res.ok) {
+                props.onSuccess();
               }
             })
             .catch((e) => {
