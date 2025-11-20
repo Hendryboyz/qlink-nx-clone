@@ -15,6 +15,7 @@ export * from './lib/ui/button';
 export * from './lib/ui/calendar';
 export * from './lib/ui/popover';
 export * from './lib/ui/date-picker';
+export * from './lib/ui/text-field-button';
 
 // Styles
 import './lib/styles.css';
