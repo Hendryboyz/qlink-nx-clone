@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from '@storybook/react';
 import { TextFieldButton } from './text-field-button';
 
 const meta: Meta<typeof TextFieldButton> = {
-  title: 'UI/TextFieldButton',
+  title: 'Shadcn/TextFieldButton',
   component: TextFieldButton,
   tags: ['autodocs'],
   argTypes: {

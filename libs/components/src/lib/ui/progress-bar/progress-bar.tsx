@@ -20,7 +20,7 @@ const Circle = ({
   switch (status) {
     case CircleStatus.Running:
       return (
-        <div className={twMerge(commonClassnames, 'bg-primary text-white')}>
+        <div className={twMerge(commonClassnames, 'bg-primary text-fill')}>
           {number}
         </div>
       );
@@ -37,7 +37,7 @@ const Circle = ({
       );
     case CircleStatus.Finished:
       return (
-        <div className={twMerge(commonClassnames, 'bg-stroke-w text-white')}>
+        <div className={twMerge(commonClassnames, 'bg-stroke-w text-fill')}>
           {number}
         </div>
       );
