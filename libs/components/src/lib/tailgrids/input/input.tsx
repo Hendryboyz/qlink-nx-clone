@@ -59,7 +59,7 @@ export const TGInput = React.forwardRef<HTMLInputElement, TGInputProps>(
             type={inputType}
             className={cn(
               'w-full px-4 py-2.5 rounded-lg border border-gray-200',
-              'bg-white text-gray-400 text-sm font-manrope',
+              'bg-white text-gray-400 text-base font-manrope',
               'placeholder:text-gray-200',
               'transition-colors',
               '!outline-0 focus:!outline-0 focus-visible:!outline-0',

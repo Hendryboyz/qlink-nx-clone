@@ -94,7 +94,7 @@ export function TGDropdown({
           className={cn(
             'w-full flex items-center justify-between gap-2 font-manrope',
             'px-4 py-2.5 rounded-lg border border-gray-200',
-            'bg-white text-sm text-left',
+            'bg-white text-base text-left',
             'transition-colors',
             '!outline-0 focus:!outline-0 focus-visible:!outline-0',
             'hover:border-gray-200',
@@ -133,7 +133,7 @@ export function TGDropdown({
                 onClick={() => handleSelect(option)}
                 disabled={option.disabled}
                 className={cn(
-                  'w-full flex items-center justify-between gap-2 px-4 py-2.5 text-sm text-left font-manrope',
+                  'w-full flex items-center justify-between gap-2 px-4 py-2.5 text-base text-left font-manrope',
                   'text-gray-400',
                   'transition-colors',
                   'hover:bg-gray-50',
