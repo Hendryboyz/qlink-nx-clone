@@ -9,6 +9,7 @@ export interface TGOTPInputProps {
   onChange?: (value: string) => void;
   onComplete?: (value: string) => void;
   error?: boolean;
+  errorMessage?: string;
   disabled?: boolean;
   className?: string;
 }
@@ -19,6 +20,7 @@ export function TGOTPInput({
   onChange,
   onComplete,
   error = false,
+  errorMessage,
   disabled = false,
   className,
 }: TGOTPInputProps) {
@@ -90,33 +92,43 @@ export function TGOTPInput({
   };
 
   return (
-    <div className={cn('flex gap-2 justify-center font-manrope', className)}>
-      {otp.map((digit, index) => (
-        <input
-          key={index}
-          ref={(el) => (inputRefs.current[index] = el)}
-          type="text"
-          inputMode="numeric"
-          maxLength={1}
-          value={digit}
-          onChange={(e) => handleChange(index, e.target.value)}
-          onKeyDown={(e) => handleKeyDown(index, e)}
-          onPaste={handlePaste}
-          onFocus={handleFocus}
-          disabled={disabled}
-          className={cn(
-            'w-12 h-14 text-center text-2xl font-semibold font-manrope',
-            'rounded-lg border-2 border-gray-300',
-            'bg-white text-gray-900',
-            'transition-all',
-            'focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20',
-            'hover:border-gray-400',
-            'disabled:bg-gray-100 disabled:cursor-not-allowed disabled:opacity-60',
-            error && 'border-red-500 focus:border-red-500 focus:ring-red-500/20'
-          )}
-          aria-label={`OTP digit ${index + 1}`}
-        />
-      ))}
+    <div className={cn('flex flex-col gap-2 items-center', className)}>
+      <div className="flex flex-col gap-2">
+        <div className="flex gap-2 font-manrope">
+          {otp.map((digit, index) => (
+            <input
+              key={index}
+              ref={(el) => (inputRefs.current[index] = el)}
+              type="text"
+              inputMode="numeric"
+              maxLength={1}
+              value={digit}
+              onChange={(e) => handleChange(index, e.target.value)}
+              onKeyDown={(e) => handleKeyDown(index, e)}
+              onPaste={handlePaste}
+              onFocus={handleFocus}
+              disabled={disabled}
+              className={cn(
+                'w-[2.5rem] h-[3.125rem] text-center text-2xl font-normal font-manrope',
+                'rounded-[0.5rem] border border-[#D0D0D0]',
+                'bg-white text-gray-400',
+                'transition-all',
+                '!outline-0 focus:!outline-0 focus-visible:!outline-0',
+                'focus:border-2 focus:border-[#5E5E5E] focus-visible:border-2 focus-visible:border-[#5E5E5E]',
+                'hover:border-[#D0D0D0]',
+                'disabled:bg-gray-100 disabled:cursor-not-allowed disabled:opacity-60',
+                error && '!border !border-[#D70127]'
+              )}
+              aria-label={`OTP digit ${index + 1}`}
+            />
+          ))}
+        </div>
+        {error && errorMessage && (
+          <p className="text-sm font-medium text-[#D70127] font-manrope">
+            {errorMessage}
+          </p>
+        )}
+      </div>
     </div>
   );
 }

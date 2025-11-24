@@ -272,11 +272,24 @@ export function ComponentsDemo() {
       <section>
         <h2 className="text-2xl font-poppins-bold text-text-str mb-6">TailGrids OTP Input</h2>
         <div className="bg-white p-8 rounded-lg shadow-effect-card">
-          <div className="max-w-md">
-            <label className="block font-manrope-semibold text-text-str mb-4">
-              Enter OTP Code
-            </label>
-            <TGOTPInput length={6} onComplete={(otp) => alert(`OTP: ${otp}`)} />
+          <div className="max-w-md space-y-8">
+            <div>
+              <label className="block font-manrope-semibold text-text-str mb-4">
+                Enter OTP Code (Default)
+              </label>
+              <TGOTPInput length={6} onComplete={(otp) => alert(`OTP: ${otp}`)} />
+            </div>
+            <div>
+              <label className="block font-manrope-semibold text-text-str mb-4">
+                Enter OTP Code (With Error)
+              </label>
+              <TGOTPInput
+                length={6}
+                error={true}
+                errorMessage="Error msg"
+                onComplete={(otp) => alert(`OTP: ${otp}`)}
+              />
+            </div>
           </div>
         </div>
       </section>
