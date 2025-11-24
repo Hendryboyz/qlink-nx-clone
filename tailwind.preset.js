@@ -66,12 +66,12 @@ module.exports = {
         },
 
         // Grayscale Colors (Design System)
-        'text-str': '#1A1A1A', // Text Strong
-        'text-w': '#343434', // Text Weak
-        'stroke-s': '#777777', // Stroke Strong
-        'stroke-w': '#80BDBD', // Stroke Weak
-        bg: '#F5F5F5', // Background
-        fill: '#FFFFFF', // Fill
+        'text-str': '#1A1A1A',    // Text Strong
+        'text-w': '#343434',      // Text Weak
+        'stroke-s': '#777777',    // Stroke Strong
+        'stroke-w': '#D7D7D7',    // Stroke Weak
+        bg: '#F5F5F5',            // Background
+        fill: '#FFFFFF',          // Fill
 
         gray: {
           200: '#C3C3C3',
