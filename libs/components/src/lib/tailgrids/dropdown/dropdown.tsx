@@ -2,7 +2,7 @@
 
 import * as React from 'react';
 import { cn } from '../../utils';
-import { ChevronDown, Check } from 'lucide-react';
+import { ChevronDown } from 'lucide-react';
 
 export interface DropdownOption {
   label: string;
@@ -93,25 +93,25 @@ export function TGDropdown({
           disabled={disabled}
           className={cn(
             'w-full flex items-center justify-between gap-2 font-manrope',
-            'px-4 py-2.5 rounded-lg border-2 border-gray-300',
+            'px-4 py-2.5 rounded-lg border border-gray-200',
             'bg-white text-sm text-left',
             'transition-colors',
-            'focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20',
-            'hover:border-gray-400',
+            '!outline-0 focus:!outline-0 focus-visible:!outline-0',
+            'hover:border-gray-200',
             'disabled:bg-gray-100 disabled:cursor-not-allowed disabled:opacity-60',
-            error && 'border-red-500 focus:border-red-500 focus:ring-red-500/20',
+            error && 'border-red-500',
             className
           )}
           aria-haspopup="listbox"
           aria-expanded={isOpen}
         >
-          <span className={cn('flex items-center gap-2 flex-1 min-w-0', !selectedOption && 'text-gray-400')}>
+          <span className={cn('flex items-center gap-2 flex-1 min-w-0', selectedOption ? 'text-gray-400' : 'text-gray-200')}>
             {selectedOption?.icon && <span className="flex-shrink-0">{selectedOption.icon}</span>}
             <span className="truncate">{selectedOption?.label || placeholder}</span>
           </span>
           <ChevronDown
             className={cn(
-              'w-5 h-5 text-gray-400 transition-transform flex-shrink-0',
+              'w-5 h-5 transition-transform flex-shrink-0 text-gray-300',
               isOpen && 'rotate-180'
             )}
           />
@@ -134,10 +134,11 @@ export function TGDropdown({
                 disabled={option.disabled}
                 className={cn(
                   'w-full flex items-center justify-between gap-2 px-4 py-2.5 text-sm text-left font-manrope',
+                  'text-gray-400',
                   'transition-colors',
                   'hover:bg-gray-50',
                   'disabled:opacity-50 disabled:cursor-not-allowed',
-                  value === option.value && 'bg-primary/5 text-primary font-medium'
+                  value === option.value && 'bg-gray-100'
                 )}
                 role="option"
                 aria-selected={value === option.value}
@@ -146,9 +147,6 @@ export function TGDropdown({
                   {option.icon && <span className="flex-shrink-0">{option.icon}</span>}
                   <span className="truncate">{option.label}</span>
                 </span>
-                {value === option.value && (
-                  <Check className="w-4 h-4 flex-shrink-0" />
-                )}
               </button>
             ))}
           </div>
