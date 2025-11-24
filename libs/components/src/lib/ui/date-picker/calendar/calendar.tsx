@@ -19,45 +19,72 @@ function Calendar({
   return (
     <DayPicker
       showOutsideDays={showOutsideDays}
+      captionLayout="dropdown"
+      fromYear={1900}
+      toYear={2100}
       className={cn('p-3 font-manrope', className)}
       classNames={{
-        months: 'flex flex-col sm:flex-row space-y-4 sm:space-x-4 sm:space-y-0',
-        month: 'space-y-4',
-        month_caption: 'flex justify-center pt-1 relative items-center',
-        caption_label: 'text-sm font-medium font-manrope',
-        nav: 'space-x-1 flex items-center',
+        months: cn('flex flex-col sm:flex-row gap-4 relative', defaultClassNames.months),
+        month: cn('flex flex-col w-full gap-4', defaultClassNames.month),
+        month_caption: cn(
+          'flex items-center justify-center h-9 w-full px-9',
+          defaultClassNames.month_caption
+        ),
+        caption_label: cn(
+          'text-sm font-medium font-manrope select-none',
+          'rounded-md pl-2 pr-1 flex items-center gap-1 h-8',
+          '[&>svg]:text-gray-400 [&>svg]:size-3.5',
+          defaultClassNames.caption_label
+        ),
+        dropdowns: cn(
+          'w-full flex items-center text-sm font-medium justify-center h-9 gap-1.5',
+          defaultClassNames.dropdowns
+        ),
+        dropdown_root: cn(
+          'relative border border-gray-200 rounded-md',
+          defaultClassNames.dropdown_root
+        ),
+        dropdown: cn('absolute inset-0 opacity-0 cursor-pointer', defaultClassNames.dropdown),
+        dropdown_month: 'w-auto',
+        dropdown_year: 'w-auto',
+        nav: cn(
+          'flex items-center gap-1 w-full absolute top-0 inset-x-0 justify-between',
+          defaultClassNames.nav
+        ),
         button_previous: cn(
-          buttonVariants({ variant: 'outline' }),
-          'h-7 w-7 bg-transparent p-0 opacity-50 hover:opacity-100 absolute left-1'
+          'h-7 w-7 bg-transparent p-0 hover:opacity-70 border-0 outline-none inline-flex items-center justify-center',
+          defaultClassNames.button_previous
         ),
         button_next: cn(
-          buttonVariants({ variant: 'outline' }),
-          'h-7 w-7 bg-transparent p-0 opacity-50 hover:opacity-100 absolute right-1'
+          'h-7 w-7 bg-transparent p-0 hover:opacity-70 border-0 outline-none inline-flex items-center justify-center',
+          defaultClassNames.button_next
         ),
         table: 'w-full border-collapse space-y-1',
         weekdays: cn('flex', defaultClassNames.weekdays),
         weekday: cn(
-          'text-muted-foreground rounded-md w-9 font-normal text-[0.8rem] font-manrope',
+          'text-gray-400 rounded-md w-9 font-normal text-xs font-manrope',
           defaultClassNames.weekday
         ),
         week: cn('flex w-full mt-2', defaultClassNames.week),
         day: cn(
-          'h-9 w-9 text-center text-sm p-0 relative [&:has([aria-selected].day-range-end)]:rounded-r-md [&:has([aria-selected].day-outside)]:bg-accent/50 [&:has([aria-selected])]:bg-accent first:[&:has([aria-selected])]:rounded-l-md last:[&:has([aria-selected])]:rounded-r-md focus-within:relative focus-within:z-20 font-manrope',
+          'h-9 w-9 text-center text-sm p-0 relative font-manrope',
           defaultClassNames.day
         ),
         day_button: cn(
-          buttonVariants({ variant: 'ghost' }),
-          'h-9 w-9 p-0 font-normal aria-selected:opacity-100 font-manrope'
+          'h-9 w-9 p-0 font-normal text-base font-manrope hover:bg-transparent',
+          'rounded-full transition-colors',
+          'aria-selected:bg-primary aria-selected:text-white aria-selected:font-bold',
+          'hover:aria-selected:bg-primary hover:aria-selected:text-white'
         ),
         range_end: 'day-range-end',
         selected:
-          'bg-primary text-primary-foreground hover:bg-primary hover:text-primary-foreground focus:bg-primary focus:text-primary-foreground',
-        today: 'bg-accent text-accent-foreground',
+          'bg-primary text-white rounded-full hover:bg-primary hover:text-white focus:bg-primary focus:text-white',
+        today: 'font-bold',
         outside:
-          'day-outside text-muted-foreground opacity-50 aria-selected:bg-accent/50 aria-selected:text-muted-foreground aria-selected:opacity-30',
-        disabled: 'text-muted-foreground opacity-50',
+          'day-outside text-gray-300 opacity-50',
+        disabled: 'text-gray-300 opacity-50 cursor-not-allowed',
         range_middle:
-          'aria-selected:bg-accent aria-selected:text-accent-foreground',
+          'aria-selected:bg-primary/10 aria-selected:text-gray-900',
         hidden: 'invisible',
         ...classNames,
       }}

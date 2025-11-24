@@ -14,35 +14,35 @@ type Story = StoryObj<typeof DatePickerWithInput>;
 
 export const Default: Story = {
   args: {
-    placeholder: '選擇日期',
+    placeholder: 'Select date',
   },
 };
 
 export const WithLabel: Story = {
   args: {
-    label: '出生日期',
-    placeholder: '請選擇出生日期',
+    label: 'Date of birth',
+    placeholder: 'Select date of birth',
   },
 };
 
 export const WithDefaultValue: Story = {
   args: {
-    label: '預設日期',
+    label: 'Default date',
     value: new Date(),
   },
 };
 
 export const WithError: Story = {
   args: {
-    label: '必填日期',
-    placeholder: '請選擇日期',
-    error: '此欄位為必填',
+    label: 'Required date',
+    placeholder: 'Select date',
+    error: 'This field is required',
   },
 };
 
 export const Disabled: Story = {
   args: {
-    label: '停用的日期選擇器',
+    label: 'Disabled date picker',
     value: new Date(),
     disabled: true,
   },
@@ -55,19 +55,19 @@ export const Controlled: Story = {
     return (
       <div className="space-y-4">
         <DatePickerWithInput
-          label="選擇日期"
+          label="Select date"
           value={date}
           onChange={setDate}
-          placeholder="請選擇日期"
+          placeholder="Choose a date"
         />
         <div className="text-sm text-gray-600">
-          選中的日期: {date ? date.toLocaleDateString('zh-TW') : '(未選擇)'}
+          Selected date: {date ? date.toLocaleDateString('en-US') : '(None)'}
         </div>
         <button
           onClick={() => setDate(undefined)}
           className="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300 text-sm"
         >
-          清除日期
+          Clear date
         </button>
       </div>
     );
@@ -78,7 +78,7 @@ export const WithDisabledDates: Story = {
   render: () => {
     const [date, setDate] = useState<Date | undefined>(undefined);
 
-    // 禁用過去的日期
+    // Disable past dates
     const disablePastDates = (date: Date) => {
       return date < subDays(new Date(), 1);
     };
@@ -86,14 +86,14 @@ export const WithDisabledDates: Story = {
     return (
       <div className="space-y-4">
         <DatePickerWithInput
-          label="選擇未來日期"
+          label="Select future date"
           value={date}
           onChange={setDate}
-          placeholder="只能選擇今天或未來的日期"
+          placeholder="Can only select today or future dates"
           disabledDates={disablePastDates}
         />
         <p className="text-sm text-gray-600">
-          過去的日期已被禁用
+          Past dates are disabled
         </p>
       </div>
     );
@@ -108,16 +108,16 @@ export const DateRange: Story = {
     return (
       <div className="space-y-4 max-w-md">
         <DatePickerWithInput
-          label="開始日期"
+          label="Start date"
           value={startDate}
           onChange={setStartDate}
-          placeholder="選擇開始日期"
+          placeholder="Select start date"
         />
         <DatePickerWithInput
-          label="結束日期"
+          label="End date"
           value={endDate}
           onChange={setEndDate}
-          placeholder="選擇結束日期"
+          placeholder="Select end date"
           disabledDates={(date) => {
             if (startDate) {
               return date < startDate;
@@ -127,13 +127,13 @@ export const DateRange: Story = {
         />
         {startDate && endDate && (
           <div className="p-4 bg-green-50 rounded-lg text-sm">
-            <p className="font-semibold text-green-800 mb-1">日期範圍:</p>
+            <p className="font-semibold text-green-800 mb-1">Date range:</p>
             <p className="text-green-700">
-              從 {startDate.toLocaleDateString('zh-TW')} 到{' '}
-              {endDate.toLocaleDateString('zh-TW')}
+              From {startDate.toLocaleDateString('en-US')} to{' '}
+              {endDate.toLocaleDateString('en-US')}
             </p>
             <p className="text-green-600 mt-1">
-              共 {Math.ceil((endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24))} 天
+              Total {Math.ceil((endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24))} days
             </p>
           </div>
         )}
@@ -149,30 +149,30 @@ export const WithValidation: Story = {
 
     const handleSubmit = () => {
       if (!date) {
-        setError('請選擇日期');
+        setError('Please select a date');
       } else {
         setError('');
-        alert(`已選擇: ${date.toLocaleDateString('zh-TW')}`);
+        alert(`Selected: ${date.toLocaleDateString('en-US')}`);
       }
     };
 
     return (
       <div className="space-y-4 max-w-md">
         <DatePickerWithInput
-          label="預約日期 *"
+          label="Appointment date *"
           value={date}
           onChange={(newDate) => {
             setDate(newDate);
             if (newDate) setError('');
           }}
-          placeholder="請選擇預約日期"
+          placeholder="Select appointment date"
           error={error}
         />
         <button
           onClick={handleSubmit}
           className="px-6 py-2 bg-primary text-white rounded-lg hover:bg-primary-500 transition-colors"
         >
-          確認預約
+          Confirm appointment
         </button>
       </div>
     );
@@ -186,25 +186,25 @@ export const DifferentFormats: Story = {
     return (
       <div className="space-y-4">
         <DatePickerWithInput
-          label="完整格式 (PPP)"
+          label="Full format (PPP)"
           value={date}
           onChange={setDate}
           dateFormat="PPP"
         />
         <DatePickerWithInput
-          label="短格式 (yyyy-MM-dd)"
+          label="Short format (yyyy-MM-dd)"
           value={date}
           onChange={setDate}
           dateFormat="yyyy-MM-dd"
         />
         <DatePickerWithInput
-          label="台灣格式 (yyyy年MM月dd日)"
+          label="US format (MM/dd/yyyy)"
           value={date}
           onChange={setDate}
-          dateFormat="yyyy年MM月dd日"
+          dateFormat="MM/dd/yyyy"
         />
         <DatePickerWithInput
-          label="含星期 (EEEE, PPP)"
+          label="With weekday (EEEE, PPP)"
           value={date}
           onChange={setDate}
           dateFormat="EEEE, PPP"

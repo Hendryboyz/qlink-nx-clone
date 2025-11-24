@@ -2,11 +2,10 @@
 
 import * as React from 'react';
 import { format } from 'date-fns';
-import { Calendar as CalendarIcon } from 'lucide-react';
 import { cn } from '../../utils';
-import { Button } from './button/button';
 import { Calendar } from './calendar/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '../popover/popover';
+import CalendarIcon from './assets/calendar.svg';
 
 export interface DatePickerWithInputProps {
   value?: Date;
@@ -23,7 +22,7 @@ export interface DatePickerWithInputProps {
 export function DatePickerWithInput({
   value,
   onChange,
-  placeholder = '選擇日期',
+  placeholder = 'Select date',
   disabled = false,
   className,
   dateFormat = 'PPP',
@@ -51,18 +50,25 @@ export function DatePickerWithInput({
       )}
       <Popover>
         <PopoverTrigger asChild>
-          <Button
-            variant="outline"
-            className={cn(
-              'w-full justify-start text-left font-normal font-manrope',
-              !date && 'text-muted-foreground',
-              error && 'border-red-500 focus:ring-red-500/20'
-            )}
+          <button
+            type="button"
             disabled={disabled}
+            className={cn(
+              'w-full px-4 py-2.5 rounded-lg border border-gray-200',
+              'bg-white text-base font-manrope',
+              'flex items-center justify-between text-left',
+              'transition-colors',
+              '!outline-0 focus:!outline-0 focus-visible:!outline-0',
+              'focus:border-gray-200 focus-visible:border-gray-200',
+              'hover:border-gray-200',
+              'disabled:bg-gray-100 disabled:cursor-not-allowed disabled:opacity-60',
+              date ? 'text-gray-400 font-bold' : 'text-gray-200 font-normal',
+              error && 'border-[rgba(242,48,48,1)]'
+            )}
           >
-            <CalendarIcon className="mr-2 h-4 w-4" />
-            {date ? format(date, dateFormat) : <span>{placeholder}</span>}
-          </Button>
+            <span>{date ? format(date, dateFormat) : placeholder}</span>
+            <img src={CalendarIcon} alt="Calendar" className="w-[13px] h-[15px] ml-2" />
+          </button>
         </PopoverTrigger>
         <PopoverContent className="w-auto p-0" align="start">
           <Calendar
@@ -74,7 +80,7 @@ export function DatePickerWithInput({
         </PopoverContent>
       </Popover>
       {error && (
-        <p className="text-xs text-red-500">{error}</p>
+        <p className="text-sm font-normal leading-[22px] text-[rgba(202,0,0,1)]">{error}</p>
       )}
     </div>
   );
