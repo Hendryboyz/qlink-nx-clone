@@ -4,8 +4,8 @@ import * as React from 'react';
 import { format } from 'date-fns';
 import { Calendar as CalendarIcon } from 'lucide-react';
 import { cn } from '../../utils';
-import { Button } from '../button/button';
-import { Calendar } from '../calendar/calendar';
+import { Button } from './button/button';
+import { Calendar } from './calendar/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '../popover/popover';
 
 export interface DatePickerWithInputProps {

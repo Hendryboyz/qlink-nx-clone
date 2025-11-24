@@ -12,8 +12,6 @@ export * from './lib/tailgrids/dropdown';
 export * from './lib/tailgrids/registerButton';
 
 // Shadcn UI Components
-export * from './lib/ui/button';
-export * from './lib/ui/calendar';
 export * from './lib/ui/popover';
 export * from './lib/ui/date-picker';
 export * from './lib/ui/text-field-button';
