@@ -170,7 +170,10 @@ export class UserRepository {
   }
 
   public async countByFilter(filters: MemberQueryFilters): Promise<number> {
-    const countBuilder = this.knex('users').count('id as count');
+    const countBuilder =
+      this.knex('users')
+        .where({ is_delete: false })
+        .count('id as count');
     this.appendFilters(countBuilder, filters);
     const [{ count }] = await countBuilder;
     return +count;
