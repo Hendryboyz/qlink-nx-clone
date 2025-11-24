@@ -57,14 +57,15 @@ export const TGInput = React.forwardRef<HTMLInputElement, TGInputProps>(
             id={inputId}
             type={inputType}
             className={cn(
-              'w-full px-4 py-2.5 rounded-lg border-2 border-gray-300',
+              'w-full px-4 py-2.5 rounded-lg border border-gray-200',
               'bg-white text-gray-900 text-sm font-manrope',
-              'placeholder:text-gray-400',
+              'placeholder:text-gray-200',
               'transition-colors',
-              'focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20',
-              'hover:border-gray-400',
+              '!outline-0 focus:!outline-0 focus-visible:!outline-0',
+              'focus:border-gray-200 focus-visible:border-gray-200',
+              'hover:border-gray-200',
               'disabled:bg-gray-100 disabled:cursor-not-allowed disabled:opacity-60',
-              error && 'border-red-500 focus:border-red-500 focus:ring-red-500/20',
+              error && 'border-red-500',
               leftIcon && 'pl-10',
               (rightIcon || isPassword) && 'pr-10',
               className
