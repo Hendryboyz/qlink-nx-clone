@@ -8,7 +8,6 @@ import {
   TGToast,
   TGOTPInput,
   TGDropdown,
-  Button,
   DatePickerWithInput,
   RegisterButton,
 } from '@org/components';
@@ -116,23 +115,7 @@ export function ComponentsDemo() {
         </div>
       </section>
 
-      {/* Shadcn UI Buttons */}
-      <section>
-        <h2 className="text-2xl font-poppins-bold text-text-str mb-6">Shadcn UI Buttons</h2>
-        <div className="bg-white p-8 rounded-lg shadow-effect-card">
-          <div className="flex flex-wrap gap-4">
-            <Button variant="default">Default</Button>
-            <Button variant="destructive">Destructive</Button>
-            <Button variant="outline">Outline</Button>
-            <Button variant="secondary">Secondary</Button>
-            <Button variant="ghost">Ghost</Button>
-            <Button variant="link">Link</Button>
-            <Button size="sm">Small</Button>
-            <Button size="lg">Large</Button>
-            <Button size="icon">🔍</Button>
-          </div>
-        </div>
-      </section>
+      {/* Shadcn UI Buttons - Removed (Button component is now internal to DatePicker) */}
 
       {/* TailGrids Input */}
       <section>

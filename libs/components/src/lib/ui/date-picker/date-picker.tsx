@@ -70,7 +70,7 @@ export function DatePickerWithInput({
             <img src={CalendarIcon} alt="Calendar" className="w-[13px] h-[15px] ml-2" />
           </button>
         </PopoverTrigger>
-        <PopoverContent className="w-auto p-0" align="start">
+        <PopoverContent className="w-auto p-0 bg-white shadow-effect-overlay" align="start">
           <Calendar
             mode="single"
             selected={date}

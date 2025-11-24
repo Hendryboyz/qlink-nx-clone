@@ -22,6 +22,11 @@ function Calendar({
       captionLayout="dropdown"
       fromYear={1900}
       toYear={2100}
+      formatters={{
+        formatMonthDropdown: (date) => {
+          return date.toLocaleString('en-US', { month: 'short' });
+        },
+      }}
       className={cn('p-3 font-manrope', className)}
       classNames={{
         months: cn('flex flex-col sm:flex-row gap-4 relative', defaultClassNames.months),
@@ -67,18 +72,18 @@ function Calendar({
         ),
         week: cn('flex w-full mt-2', defaultClassNames.week),
         day: cn(
-          'h-9 w-9 text-center text-sm p-0 relative font-manrope',
+          'h-9 w-9 text-center text-sm p-0 relative font-manrope flex items-center justify-center',
           defaultClassNames.day
         ),
         day_button: cn(
           'h-9 w-9 p-0 font-normal text-base font-manrope hover:bg-transparent',
-          'rounded-full transition-colors',
-          'aria-selected:bg-primary aria-selected:text-white aria-selected:font-bold',
-          'hover:aria-selected:bg-primary hover:aria-selected:text-white'
+          'rounded-md transition-colors',
+          'aria-selected:bg-[#D70127] aria-selected:text-white aria-selected:font-bold',
+          'hover:aria-selected:bg-[#D70127] hover:aria-selected:text-white'
         ),
         range_end: 'day-range-end',
         selected:
-          'bg-primary text-white rounded-full hover:bg-primary hover:text-white focus:bg-primary focus:text-white',
+          'bg-[#D70127] text-white rounded-md hover:bg-[#D70127] hover:text-white focus:bg-[#D70127] focus:text-white',
         today: 'font-bold',
         outside:
           'day-outside text-gray-300 opacity-50',
