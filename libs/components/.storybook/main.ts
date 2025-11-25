@@ -1,6 +1,7 @@
 import type { StorybookConfig } from '@storybook/react-vite';
 import { mergeConfig } from 'vite';
 import { nxViteTsPaths } from '@nx/vite/plugins/nx-tsconfig-paths.plugin';
+import svgr from 'vite-plugin-svgr';
 import * as path from 'path';
 
 const config: StorybookConfig = {
@@ -24,7 +25,18 @@ const config: StorybookConfig = {
   ],
   async viteFinal(config) {
     return mergeConfig(config, {
-      plugins: [nxViteTsPaths()],
+      plugins: [
+        svgr({
+          svgrOptions: {
+            exportType: 'named',
+            ref: true,
+            svgo: false,
+            titleProp: true,
+          },
+          include: '**/*.svg',
+        }),
+        nxViteTsPaths(),
+      ],
       css: {
         postcss: {
           plugins: [
