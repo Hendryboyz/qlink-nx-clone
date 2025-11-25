@@ -8,7 +8,6 @@ import {
   ModalFooter,
   ModalIcon,
 } from './modal';
-import { Button } from '../button';
 import { AlertTriangle } from 'lucide-react';
 import { TGButton } from '../../tailgrids/button';
 
@@ -29,9 +28,9 @@ export const DeleteProduct: Story = {
     const [isOpen, setIsOpen] = useState(false);
     return (
       <>
-        <Button className="text-fill" onClick={() => setIsOpen(true)}>
+        <TGButton size="md" variant="ghost" onClick={() => setIsOpen(true)}>
           Open Delete Product Modal
-        </Button>
+        </TGButton>
         <Modal {...args} isOpen={isOpen}>
           <ModalHeader>
             <ModalIcon>
@@ -66,9 +65,9 @@ export const CancelRegistration: Story = {
     const [isOpen, setIsOpen] = useState(false);
     return (
       <>
-        <Button className="text-fill" onClick={() => setIsOpen(true)}>
+        <TGButton size="md" variant="ghost" onClick={() => setIsOpen(true)}>
           Open Cancel Registration Modal
-        </Button>
+        </TGButton>
         <Modal {...args} isOpen={isOpen}>
           <ModalHeader>
             <ModalTitle className="mt-4">Cancel registration?</ModalTitle>
