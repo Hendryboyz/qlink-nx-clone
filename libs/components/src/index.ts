@@ -17,6 +17,7 @@ export * from './lib/ui/popover';
 export * from './lib/ui/date-picker';
 export * from './lib/ui/text-field-button';
 export * from './lib/ui/toast';
+export * from './lib/ui/checkbox';
 
 // Styles
 import './lib/styles.css';
