@@ -3,9 +3,6 @@ import React, { useState } from 'react';
 import {
   TGButton,
   TGInput,
-  TGCheckbox,
-  TGModal,
-  TGToast,
   TGOTPInput,
   TGDropdown,
   DatePickerWithInput,
@@ -13,9 +10,6 @@ import {
 } from '@org/components';
 
 export function ComponentsDemo() {
-  const [modalOpen, setModalOpen] = useState(false);
-  const [toastVisible, setToastVisible] = useState(false);
-  const [checkboxChecked, setCheckboxChecked] = useState(false);
   const [inputValue, setInputValue] = useState('');
   const [date, setDate] = useState<Date>();
 
@@ -148,23 +142,6 @@ export function ComponentsDemo() {
         </div>
       </section>
 
-      {/* TailGrids Checkbox */}
-      <section>
-        <h2 className="text-2xl font-poppins-bold text-text-str mb-6">TailGrids Checkbox</h2>
-        <div className="bg-white p-8 rounded-lg shadow-effect-card">
-          <div className="space-y-4">
-            <TGCheckbox
-              label="Accept terms and conditions"
-              checked={checkboxChecked}
-              onChange={(e) => setCheckboxChecked(e.target.checked)}
-            />
-            <TGCheckbox label="Subscribe to newsletter" />
-            <TGCheckbox label="Disabled checkbox" disabled />
-            <TGCheckbox label="Checked disabled" checked disabled />
-          </div>
-        </div>
-      </section>
-
       {/* TailGrids Dropdown */}
       <section>
         <h2 className="text-2xl font-poppins-bold text-text-str mb-6">TailGrids Dropdown</h2>
@@ -198,56 +175,6 @@ export function ComponentsDemo() {
               disabled
             />
           </div>
-        </div>
-      </section>
-
-      {/* TailGrids Modal */}
-      <section>
-        <h2 className="text-2xl font-poppins-bold text-text-str mb-6">TailGrids Modal</h2>
-        <div className="bg-white p-8 rounded-lg shadow-effect-card">
-          <TGButton variant="primary" onClick={() => setModalOpen(true)}>
-            Open Modal
-          </TGButton>
-          <TGModal
-            isOpen={modalOpen}
-            onClose={() => setModalOpen(false)}
-            title="Example Modal"
-          >
-            <div className="space-y-4">
-              <p className="font-manrope text-text-str">
-                This is a modal dialog built with TailGrids components.
-              </p>
-              <p className="font-manrope text-text-w text-sm">
-                You can put any content here, including forms, images, or other components.
-              </p>
-              <div className="flex justify-end gap-3 mt-6">
-                <TGButton variant="outline" onClick={() => setModalOpen(false)}>
-                  Cancel
-                </TGButton>
-                <TGButton variant="primary" onClick={() => setModalOpen(false)}>
-                  Confirm
-                </TGButton>
-              </div>
-            </div>
-          </TGModal>
-        </div>
-      </section>
-
-      {/* TailGrids Toast */}
-      <section>
-        <h2 className="text-2xl font-poppins-bold text-text-str mb-6">TailGrids Toast</h2>
-        <div className="bg-white p-8 rounded-lg shadow-effect-card">
-          <div className="flex gap-4 flex-wrap">
-            <TGButton variant="primary" onClick={() => setToastVisible(true)}>
-              Show Toast
-            </TGButton>
-          </div>
-          <TGToast
-            isVisible={toastVisible}
-            message="This is a toast notification!"
-            type="success"
-            onClose={() => setToastVisible(false)}
-          />
         </div>
       </section>
 
@@ -317,10 +244,6 @@ export function ComponentsDemo() {
               label="Birth Date"
               value={date}
               onChange={setDate}
-            />
-            <TGCheckbox
-              label="I agree to the terms and conditions"
-              required
             />
             <div className="flex gap-3">
               <TGButton type="submit" variant="primary">

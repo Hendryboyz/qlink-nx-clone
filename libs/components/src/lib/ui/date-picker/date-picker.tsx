@@ -5,7 +5,7 @@ import { format } from 'date-fns';
 import { cn } from '../../utils';
 import { Calendar } from './calendar/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '../popover/popover';
-import CalendarIcon from './assets/calendar.svg';
+import { ReactComponent as CalendarIcon } from './assets/calendar.svg';
 
 export interface DatePickerWithInputProps {
   value?: Date;
@@ -67,7 +67,7 @@ export function DatePickerWithInput({
             )}
           >
             <span>{date ? format(date, dateFormat) : placeholder}</span>
-            <img src={CalendarIcon} alt="Calendar" className="w-[13px] h-[15px] ml-2" />
+            <CalendarIcon className="w-[13px] h-[15px] ml-2 text-text-str" />
           </button>
         </PopoverTrigger>
         <PopoverContent className="w-auto p-0 bg-white shadow-effect-overlay" align="start">

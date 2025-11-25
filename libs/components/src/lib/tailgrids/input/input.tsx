@@ -2,8 +2,8 @@
 
 import * as React from 'react';
 import { cn } from '../../utils';
-import ViewIcon from './assets/view.svg';
-import ViewOffIcon from './assets/view-off.svg';
+import { ReactComponent as ViewIcon } from './assets/view.svg';
+import { ReactComponent as ViewOffIcon } from './assets/view-off.svg';
 
 export interface TGInputProps extends React.InputHTMLAttributes<HTMLInputElement> {
   label?: string;
@@ -81,9 +81,9 @@ export const TGInput = React.forwardRef<HTMLInputElement, TGInputProps>(
               tabIndex={-1}
             >
               {showPassword ? (
-                <img src={ViewOffIcon} alt="Hide password" className="w-5 h-5" />
+                <ViewOffIcon className="w-5 h-5" />
               ) : (
-                <img src={ViewIcon} alt="Show password" className="w-5 h-5" />
+                <ViewIcon className="w-5 h-5" />
               )}
             </button>
           )}
