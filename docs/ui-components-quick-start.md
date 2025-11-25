@@ -27,7 +27,7 @@ qlink-nx-clone/
 │   │   │   ├── utils.ts                 # ✅ cn() 工具函數
 │   │   │   ├── styles.css               # ✅ Tailwind + Shadcn CSS
 │   │   │   ├── ui/                      # Shadcn UI 組件 (未來)
-│   │   │   └── tailgrids/               # TailGrids 組件
+│   │   │   └── ui/                      # TailGrids 與 Shadcn 組件
 │   │   │       ├── button/              # ✅ TGButton
 │   │   │       ├── input/               # ✅ TGInput
 │   │   │       └── checkbox/            # ✅ TGCheckbox

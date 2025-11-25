@@ -219,7 +219,7 @@ qlink-nx-clone/
 │   │   ├── lib/
 │   │   │   ├── utils.ts                 # cn() 工具函數
 │   │   │   ├── styles.css               # Tailwind + CSS 變數
-│   │   │   └── tailgrids/
+│   │   │   └── ui/
 │   │   │       ├── button/              # ✅ TGButton
 │   │   │       ├── input/               # ✅ TGInput
 │   │   │       ├── checkbox/            # ✅ TGCheckbox
