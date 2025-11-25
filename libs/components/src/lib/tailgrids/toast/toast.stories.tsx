@@ -15,39 +15,14 @@ type Story = StoryObj<typeof TGToast>;
 export const Success: Story = {
   args: {
     type: 'success',
-    title: 'Success',
     message: 'Operation completed successfully!',
   },
 };
 
-export const Error: Story = {
+export const Failed: Story = {
   args: {
-    type: 'error',
-    title: 'Error',
+    type: 'failed',
     message: 'Operation failed. Please try again later.',
-  },
-};
-
-export const Warning: Story = {
-  args: {
-    type: 'warning',
-    title: 'Warning',
-    message: 'Your storage is almost full.',
-  },
-};
-
-export const Info: Story = {
-  args: {
-    type: 'info',
-    title: 'Info',
-    message: 'System maintenance in 5 minutes.',
-  },
-};
-
-export const WithoutTitle: Story = {
-  args: {
-    type: 'success',
-    message: 'File uploaded successfully',
   },
 };
 
@@ -63,8 +38,7 @@ export const Interactive: Story = {
           {show && (
             <TGToast
               type="success"
-              title="Success"
-              message="You can click X to close this message"
+              message="Operation completed successfully"
               onClose={() => setShow(false)}
               autoClose={false}
             />
@@ -102,8 +76,7 @@ export const AutoClose: Story = {
         <TGToastContainer>
           {show && (
             <TGToast
-              type="info"
-              title="Auto-close"
+              type="success"
               message={`This message will close in ${countdown} seconds`}
               onClose={() => setShow(false)}
             />
@@ -120,9 +93,7 @@ export const MultipleToasts: Story = {
 
     const messages = {
       success: 'Operation successful!',
-      error: 'An error occurred!',
-      warning: 'Please be careful!',
-      info: 'Information',
+      failed: 'An error occurred!',
     };
 
     const handleAddToast = (type: keyof typeof messages) => {
@@ -135,21 +106,15 @@ export const MultipleToasts: Story = {
           <TGButton onClick={() => handleAddToast('success')}>
             Success
           </TGButton>
-          <TGButton onClick={() => handleAddToast('error')}>
-            Error
-          </TGButton>
-          <TGButton onClick={() => handleAddToast('warning')}>
-            Warning
-          </TGButton>
-          <TGButton onClick={() => handleAddToast('info')}>
-            Info
+          <TGButton onClick={() => handleAddToast('failed')}>
+            Failed
           </TGButton>
         </div>
         <TGToastContainer>
           {toasts.map((type, index) => (
             <TGToast
               key={index}
-              type={type as 'success' | 'error' | 'warning' | 'info'}
+              type={type as 'success' | 'failed'}
               message={messages[type as keyof typeof messages]}
               onClose={() => setToasts(toasts.filter((_, i) => i !== index))}
             />
@@ -191,10 +156,8 @@ export const Positions: Story = {
 export const AllTypes: Story = {
   render: () => (
     <div className="flex flex-col gap-4">
-      <TGToast type="success" title="Success" message="Operation completed successfully" />
-      <TGToast type="error" title="Error" message="An error occurred, please try again later" />
-      <TGToast type="warning" title="Warning" message="Please be aware of the risks" />
-      <TGToast type="info" title="Information" message="This is an information message" />
+      <TGToast type="success" message="Operation completed successfully" />
+      <TGToast type="failed" message="An error occurred, please try again later" />
     </div>
   ),
 };

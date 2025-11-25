@@ -2,11 +2,11 @@
 
 import * as React from 'react';
 import { cn } from '../../utils';
-import { X, CheckCircle, AlertCircle, Info, XCircle } from 'lucide-react';
+import SuccessIcon from './assets/success.svg';
+import FailIcon from './assets/fail.svg';
 
 export interface TGToastProps {
-  type?: 'success' | 'error' | 'warning' | 'info';
-  title?: string;
+  type?: 'success' | 'failed';
   message: string;
   onClose?: () => void;
   autoClose?: boolean;
@@ -15,29 +15,22 @@ export interface TGToastProps {
 }
 
 const icons = {
-  success: <CheckCircle className="w-6 h-6" />,
-  error: <XCircle className="w-6 h-6" />,
-  warning: <AlertCircle className="w-6 h-6" />,
-  info: <Info className="w-6 h-6" />,
+  success: <img src={SuccessIcon} alt="Success" className="w-5 h-5" />,
+  failed: <img src={FailIcon} alt="Failed" className="w-5 h-5" />,
 };
 
 const typeStyles = {
-  success: 'bg-green-50 border-green-200 text-green-800',
-  error: 'bg-red-50 border-red-200 text-red-800',
-  warning: 'bg-orange-50 border-orange-200 text-orange-800',
-  info: 'bg-blue-50 border-blue-200 text-blue-800',
+  success: 'bg-[#DAF8E6] border-none shadow-[0px_2px_10px_0px_rgba(0,0,0,0.08)]',
+  failed: 'bg-[#FEF3F3] border-none shadow-[0px_2px_10px_0px_rgba(0,0,0,0.08)]',
 };
 
-const iconStyles = {
-  success: 'text-green-500',
-  error: 'text-red-500',
-  warning: 'text-orange-500',
-  info: 'text-blue-500',
+const textStyles = {
+  success: 'text-[#004434] text-base font-medium leading-6',
+  failed: 'text-[#8C1C21] text-sm font-medium leading-5',
 };
 
 export function TGToast({
   type = 'success',
-  title,
   message,
   onClose,
   autoClose = true,
@@ -54,31 +47,19 @@ export function TGToast({
   return (
     <div
       className={cn(
-        'flex items-start gap-4 p-4 rounded-lg border-2 shadow-lg max-w-md font-manrope',
+        'flex items-center gap-3 px-4 py-3 rounded-lg max-w-md font-manrope',
         'animate-in slide-in-from-top-5 duration-300',
         typeStyles[type],
         className
       )}
       role="alert"
     >
-      <div className={cn('flex-shrink-0 mt-0.5', iconStyles[type])}>
+      <div className="flex-shrink-0">
         {icons[type]}
       </div>
       <div className="flex-1 min-w-0 font-manrope">
-        {title && (
-          <p className="font-semibold text-sm mb-1">{title}</p>
-        )}
-        <p className="text-sm">{message}</p>
+        <p className={cn(textStyles[type])}>{message}</p>
       </div>
-      {onClose && (
-        <button
-          onClick={onClose}
-          className="flex-shrink-0 text-gray-400 hover:text-gray-600 transition-colors"
-          aria-label="Close"
-        >
-          <X className="w-5 h-5" />
-        </button>
-      )}
     </div>
   );
 }

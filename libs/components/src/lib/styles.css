@@ -1,6 +1,7 @@
 @import 'tailwindcss/base';
 @import 'tailwindcss/components';
 @import 'tailwindcss/utilities';
+@import 'react-day-picker/style.css';
 
 /* Shared font declarations for Storybook builds */
 @font-face {

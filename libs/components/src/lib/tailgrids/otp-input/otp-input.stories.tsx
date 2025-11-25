@@ -28,6 +28,7 @@ export const WithError: Story = {
   args: {
     length: 6,
     error: true,
+    errorMessage: 'Error msg',
   },
 };
 
@@ -113,13 +114,9 @@ export const WithValidation: Story = {
           onChange={handleChange}
           onComplete={handleComplete}
           error={error}
+          errorMessage={error ? 'Invalid OTP, please try again' : undefined}
         />
         <div className="text-center">
-          {error && (
-            <p className="text-sm text-red-600">
-              ✗ Invalid OTP, please try again
-            </p>
-          )}
           {success && (
             <p className="text-sm text-green-600 font-semibold">
               ✓ OTP verified successfully!
@@ -195,6 +192,7 @@ export const VerificationFlow: Story = {
           onChange={setValue}
           onComplete={handleComplete}
           error={step === 'error'}
+          errorMessage={step === 'error' ? 'Invalid code, please try again' : undefined}
           disabled={step === 'verifying' || step === 'success'}
         />
 
@@ -205,11 +203,6 @@ export const VerificationFlow: Story = {
           {step === 'success' && (
             <p className="text-sm text-green-600 font-semibold">
               ✓ Verification successful!
-            </p>
-          )}
-          {step === 'error' && (
-            <p className="text-sm text-red-600">
-              ✗ Invalid code, please try again
             </p>
           )}
           {step === 'input' && (

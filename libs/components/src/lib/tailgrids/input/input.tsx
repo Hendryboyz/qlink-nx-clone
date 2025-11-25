@@ -2,7 +2,8 @@
 
 import * as React from 'react';
 import { cn } from '../../utils';
-import { Eye, EyeOff } from 'lucide-react';
+import ViewIcon from './assets/view.svg';
+import ViewOffIcon from './assets/view-off.svg';
 
 export interface TGInputProps extends React.InputHTMLAttributes<HTMLInputElement> {
   label?: string;
@@ -57,14 +58,15 @@ export const TGInput = React.forwardRef<HTMLInputElement, TGInputProps>(
             id={inputId}
             type={inputType}
             className={cn(
-              'w-full px-4 py-2.5 rounded-lg border-2 border-gray-300',
-              'bg-white text-gray-900 text-sm font-manrope',
-              'placeholder:text-gray-400',
+              'w-full px-4 py-2.5 rounded-lg border border-gray-200',
+              'bg-white text-gray-400 text-base font-manrope',
+              'placeholder:text-gray-200',
               'transition-colors',
-              'focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20',
-              'hover:border-gray-400',
+              '!outline-0 focus:!outline-0 focus-visible:!outline-0',
+              'focus:border-gray-200 focus-visible:border-gray-200',
+              'hover:border-gray-200',
               'disabled:bg-gray-100 disabled:cursor-not-allowed disabled:opacity-60',
-              error && 'border-red-500 focus:border-red-500 focus:ring-red-500/20',
+              error && 'border-[rgba(242,48,48,1)]',
               leftIcon && 'pl-10',
               (rightIcon || isPassword) && 'pr-10',
               className
@@ -79,9 +81,9 @@ export const TGInput = React.forwardRef<HTMLInputElement, TGInputProps>(
               tabIndex={-1}
             >
               {showPassword ? (
-                <EyeOff className="w-5 h-5" />
+                <img src={ViewOffIcon} alt="Hide password" className="w-5 h-5" />
               ) : (
-                <Eye className="w-5 h-5" />
+                <img src={ViewIcon} alt="Show password" className="w-5 h-5" />
               )}
             </button>
           )}
@@ -92,7 +94,10 @@ export const TGInput = React.forwardRef<HTMLInputElement, TGInputProps>(
           )}
         </div>
         {(error || helperText) && (
-          <p className={cn('text-xs', error ? 'text-red-500' : 'text-gray-500')}>
+          <p className={cn(
+            'text-sm font-normal leading-[22px]',
+            error ? 'text-[rgba(202,0,0,1)]' : 'text-gray-500'
+          )}>
             {error || helperText}
           </p>
         )}
