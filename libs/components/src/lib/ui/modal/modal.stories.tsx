@@ -9,7 +9,7 @@ import {
   ModalIcon,
 } from './modal';
 import { AlertTriangle } from 'lucide-react';
-import { TGButton } from '../../tailgrids/button';
+import { TGButton } from '../button';
 
 const meta: Meta<typeof Modal> = {
   component: Modal,

@@ -114,7 +114,7 @@ qlink-nx-clone/
 │   │   │   │   │   ├── popover/    # Shadcn Popover (依賴)
 │   │   │   │   │   └── button/     # Shadcn Button (依賴)
 │   │   │   │   │
-│   │   │   │   ├── tailgrids/      # TailGrids 包裝組件
+│   │   │   │   ├── ui/             # TailGrids 與 Shadcn 組件
 │   │   │   │   │   ├── button/
 │   │   │   │   │   │   ├── button.tsx
 │   │   │   │   │   │   ├── button.stories.tsx
@@ -488,7 +488,7 @@ export function DatePickerWithInput({
 
 **來源**: https://tailgrids.com/components/buttons
 
-**檔案**: `libs/components/src/lib/tailgrids/button/button.tsx`
+**檔案**: `libs/components/src/lib/ui/button/button.tsx`
 
 ```typescript
 import * as React from 'react';
@@ -656,7 +656,7 @@ export const AllVariants: Story = {
 
 **來源**: https://tailgrids.com/components/toast
 
-**檔案**: `libs/components/src/lib/tailgrids/toast/toast.tsx`
+**檔案**: `libs/components/src/lib/ui/toast/toast.tsx`
 
 ```typescript
 'use client';
@@ -771,7 +771,7 @@ export function TGToastContainer({ position = 'top-right', children }: ToastCont
 
 **來源**: https://tailgrids.com/components/modals
 
-**檔案**: `libs/components/src/lib/tailgrids/modal/modal.tsx`
+**檔案**: `libs/components/src/lib/ui/modal/modal.tsx`
 
 ```typescript
 'use client';
@@ -934,7 +934,7 @@ export function TGModal({
 
 **來源**: https://tailgrids.com/components/checkbox
 
-**檔案**: `libs/components/src/lib/tailgrids/checkbox/checkbox.tsx`
+**檔案**: `libs/components/src/lib/ui/checkbox/checkbox.tsx`
 
 ```typescript
 'use client';
@@ -1012,7 +1012,7 @@ TGCheckbox.displayName = 'TGCheckbox';
 
 **來源**: https://tailgrids.com/components/form-elements
 
-**檔案**: `libs/components/src/lib/tailgrids/input/input.tsx`
+**檔案**: `libs/components/src/lib/ui/input/input.tsx`
 
 ```typescript
 'use client';
@@ -1125,7 +1125,7 @@ TGInput.displayName = 'TGInput';
 
 **來源**: https://tailgrids.com/components/verification-code-inputs
 
-**檔案**: `libs/components/src/lib/tailgrids/otp-input/otp-input.tsx`
+**檔案**: `libs/components/src/lib/ui/otp-input/otp-input.tsx`
 
 ```typescript
 'use client';
@@ -1251,7 +1251,7 @@ export function TGOTPInput({
 
 **來源**: https://tailgrids.com/components/dropdown-buttons
 
-**檔案**: `libs/components/src/lib/tailgrids/dropdown/dropdown.tsx`
+**檔案**: `libs/components/src/lib/ui/dropdown/dropdown.tsx`
 
 ```typescript
 'use client';

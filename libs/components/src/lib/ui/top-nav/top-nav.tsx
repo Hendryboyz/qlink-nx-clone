@@ -2,7 +2,7 @@ import { type FC, useState } from 'react';
 import { Menu, X } from 'lucide-react';
 
 import LogoPng from './assets/logo.png';
-import { TGButton } from '../../tailgrids/button';
+import { TGButton } from '../button';
 
 type TopNavProps = {
   onLogoClick?: () => void;
