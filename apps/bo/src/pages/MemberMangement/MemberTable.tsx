@@ -18,6 +18,7 @@ export default function MemberTable() {
     setEditingMember,
   } = useContext(MemberContext);
 
+
   const onDeleting = (clientId: string) => {
     const client = members.find(c => c.id === clientId);
     Modal.confirm({
@@ -32,6 +33,7 @@ export default function MemberTable() {
       },
     });
   };
+
 
   const tableColumns = [
     {
@@ -140,12 +142,6 @@ export default function MemberTable() {
         }
         return (<Space size="middle">{typeIndex ? UserSourceDisplay[source] : '-'}</Space>)
       }
-    },
-    {
-      title: 'Verification Status',
-      key: 'VerificationStatus',
-      search: false,
-      render: () => (<Space>Verified</Space>),
     },
     {
       title: 'Actions',

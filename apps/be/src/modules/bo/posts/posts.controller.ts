@@ -1,13 +1,13 @@
 import {
-  Controller,
-  Get,
-  Post,
   Body,
-  Patch,
-  Param,
+  Controller,
   Delete,
-  Query,
+  Get,
   Logger,
+  Param,
+  Patch,
+  Post,
+  Query,
   UseGuards,
 } from '@nestjs/common';
 import { PostsService } from '$/modules/posts/posts.service';
@@ -25,6 +25,7 @@ export class PostsController {
   constructor(private readonly postsService: PostsService) {}
 
   @Post()
+  @Roles(BoRole.ADMIN)
   create(@Body() createPostDto: CreatePostDto) {
     this.logger.debug(
       `Received create post request: ${JSON.stringify(createPostDto)}`
@@ -32,23 +33,26 @@ export class PostsController {
     return this.postsService.create(createPostDto);
   }
 
-  @Roles(BoRole.ADMIN)
+  @Roles(BoRole.ADMIN, BoRole.VIEWER)
   @Get()
   findAll(@Query('page') page: number = 1, @Query('limit') limit: number = 10) {
     return this.postsService.findAll(page, limit);
   }
 
   @Get(':id')
+  @Roles(BoRole.ADMIN, BoRole.VIEWER)
   findOne(@Param('id') id: string) {
     return this.postsService.findOne(id);
   }
 
   @Patch(':id')
+  @Roles(BoRole.ADMIN)
   update(@Param('id') id: string, @Body() updatePostDto: UpdatePostDto) {
     return this.postsService.update(id, updatePostDto);
   }
 
   @Delete(':id')
+  @Roles(BoRole.ADMIN)
   remove(@Param('id') id: string) {
     return this.postsService.remove(id);
   }

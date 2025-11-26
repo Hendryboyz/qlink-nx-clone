@@ -5,3 +5,7 @@ export type ListVehicleDto = {
   data: VehicleDTO[];
   total: number;
 }
+export type VerifyResult = {
+  productId: string;
+  isVerified: boolean;
+};

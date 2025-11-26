@@ -1,4 +1,5 @@
 import {
+  Body,
   Controller,
   Delete,
   Get,
@@ -7,20 +8,33 @@ import {
   InternalServerErrorException,
   Logger,
   Param,
-  Query
+  Post,
+  Put,
+  Query,
+  UseGuards,
 } from '@nestjs/common';
 import * as _ from 'lodash';
-import { BoRole, ListVehicleDto, ProductBoVO, VehicleDTO } from '@org/types';
+import {
+  BoRole,
+  ListVehicleDto,
+  ProductBoVO,
+  UpdateVehicleDTO,
+  VehicleDTO,
+  VerifyResult,
+} from '@org/types';
 import { Roles } from '$/modules/bo/verification/roles.decorator';
 import { ProductService } from '$/modules/product/product.service';
 import { VehicleQueryFilters } from '$/modules/bo/vehicles/vehicles.types';
+import { JwtAuthGuard } from '$/modules/bo/verification/jwt-auth.guard';
+import { RolesGuard } from '$/modules/bo/verification/roles.guard';
 
-@Controller('')
+@UseGuards(JwtAuthGuard, RolesGuard)
+@Controller()
 export class VehiclesController {
   private logger = new Logger(this.constructor.name);
   constructor(private productService: ProductService) {}
 
-  @Roles(BoRole.ADMIN)
+  @Roles(BoRole.ADMIN, BoRole.VIEWER)
   @Get()
   async listByPaging(
     @Query('page') page: number = 0,
@@ -51,9 +65,28 @@ export class VehiclesController {
   }
 
   @Roles(BoRole.ADMIN)
+  @Put(':id')
+  async updateVehicle(@Param('id') vehicleId: string, @Body() payload: UpdateVehicleDTO) {
+    this.logger.debug(`UpdateVehicleDto: ${vehicleId}`);
+    this.logger.debug(JSON.stringify(payload));
+    return this.productService.updateProduct({
+      id: vehicleId,
+      data: {
+        ...payload,
+      },
+    }) ;
+  }
+
+  @Roles(BoRole.ADMIN)
   @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
   async delete(@Param('id') vehicleId: string): Promise<void> {
     await this.productService.removeById(vehicleId);
+  }
+
+  @Roles(BoRole.ADMIN)
+  @Post('verification')
+  async verifyAllProductsInCRM(): Promise<VerifyResult[]> {
+    return this.productService.verifyAllProducts();
   }
 }

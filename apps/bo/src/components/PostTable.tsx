@@ -40,7 +40,6 @@ const PostTable: React.FC<PostTableProps> = ({
   onEdit,
   rowSelection,
 }) => {
-  console.log(posts);
   const columns = [
     { title: 'Title', dataIndex: 'title', key: 'title' },
     {

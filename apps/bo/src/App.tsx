@@ -8,25 +8,26 @@ import {
 } from 'react-router-dom';
 import { Layout, ConfigProvider } from 'antd';
 import enUS from 'antd/lib/locale/en_US';
+
+import { BoRole } from '@org/types';
 import Sidebar from './components/Sidebar';
 import PrivateRoute from './components/PrivateRoute';
-import Login from './pages/Login';
-import Unauthorized from './pages/Unauthorized';
-import Dashboard from './pages/Dashboard';
-import MemberManagement from './pages/MemberMangement';
-import DealerManagement from './pages/DealerManagement';
-import AdvertisementManagement from './pages/AdvertisementManagement';
-import CouponManagement from './pages/CouponManagement';
-import ReportData from './pages/ReportData';
-import PostManagement from './pages/PostManagement';
-import { BoRole } from '@org/types';
-import CreateUser from './pages/UsersManagement/CreateUser';
-import UsersManagement from '$/pages/UsersManagement';
+
+// the context
 import UserContextProvider from '$/pages/UsersManagement/UsersContext';
 import MemberContextProvider from '$/pages/MemberMangement/MemberContext';
 import VehiclesContextProvider from '$/pages/VehiclesManagement/VehiclesContext';
+
+// the pages
+import Login from './pages/Login';
+import Dashboard from './pages/Dashboard';
 import VehiclesManagement from '$/pages/VehiclesManagement';
+import UsersManagement from '$/pages/UsersManagement';
+import MemberManagement from './pages/MemberMangement';
+// import BannerManagement from '$/pages/BannerManagement';
+import PostManagement from './pages/PostManagement';
 import NotFound from '$/pages/NotFound';
+import Unauthorized from './pages/Unauthorized';
 
 const { Content } = Layout;
 
@@ -102,38 +103,6 @@ function App() {
               }
             />
             <Route
-              path="dealers"
-              element={
-                <PrivateRoute allowedRoles={[BoRole.ADMIN]}>
-                  <DealerManagement />
-                </PrivateRoute>
-              }
-            />
-            <Route
-              path="advertisements"
-              element={
-                <PrivateRoute allowedRoles={[BoRole.ADMIN, BoRole.VIEWER]}>
-                  <AdvertisementManagement />
-                </PrivateRoute>
-              }
-            />
-            <Route
-              path="coupons"
-              element={
-                <PrivateRoute allowedRoles={[BoRole.ADMIN, BoRole.VIEWER]}>
-                  <CouponManagement />
-                </PrivateRoute>
-              }
-            />
-            <Route
-              path="reports"
-              element={
-                <PrivateRoute allowedRoles={[BoRole.ADMIN]}>
-                  <ReportData />
-                </PrivateRoute>
-              }
-            />
-            <Route
               path="post-management"
               element={
                 <PrivateRoute allowedRoles={[BoRole.ADMIN, BoRole.VIEWER]}>
@@ -141,14 +110,39 @@ function App() {
                 </PrivateRoute>
               }
             />
-            <Route
-              path="create-user"
-              element={
-                <PrivateRoute allowedRoles={[BoRole.ADMIN]}>
-                  <CreateUser />
-                </PrivateRoute>
-              }
-            />
+            {/*<Route*/}
+            {/*  path="banners"*/}
+            {/*  element={*/}
+            {/*    <PrivateRoute allowedRoles={[BoRole.ADMIN, BoRole.VIEWER]}>*/}
+            {/*      <BannerManagement />*/}
+            {/*    </PrivateRoute>*/}
+            {/*  }*/}
+            {/*/>*/}
+            {/*<Route*/}
+            {/*  path="dealers"*/}
+            {/*  element={*/}
+            {/*    <PrivateRoute allowedRoles={[BoRole.ADMIN]}>*/}
+            {/*      <DealerManagement />*/}
+            {/*    </PrivateRoute>*/}
+            {/*  }*/}
+            {/*/>*/}
+
+            {/*<Route*/}
+            {/*  path="coupons"*/}
+            {/*  element={*/}
+            {/*    <PrivateRoute allowedRoles={[BoRole.ADMIN, BoRole.VIEWER]}>*/}
+            {/*      <CouponManagement />*/}
+            {/*    </PrivateRoute>*/}
+            {/*  }*/}
+            {/*/>*/}
+            {/*<Route*/}
+            {/*  path="reports"*/}
+            {/*  element={*/}
+            {/*    <PrivateRoute allowedRoles={[BoRole.ADMIN]}>*/}
+            {/*      <ReportData />*/}
+            {/*    </PrivateRoute>*/}
+            {/*  }*/}
+            {/*/>*/}
           </Route>
           <Route path="*" element={<NotFound />} />
         </Routes>

@@ -6,33 +6,30 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { UserService } from '../user/user.service';
 import {
   IdentifierType,
   OtpTypeEnum,
   RegisterDto,
   ResetPasswordDto,
   User,
-  UserSourceType,
-  UserType,
   UserVO,
 } from '@org/types';
-
+import { ConfigService } from '@nestjs/config';
 import * as bcrypt from 'bcrypt';
 import { isNull, omit } from 'lodash';
 import axios from 'axios';
+
 import { OtpJwtPayload } from './otp.service';
+import { UserService } from '../user/user.service';
 import {
-  alphaMax50Regex,
-  birthdayRegex,
   CODE_SUCCESS,
   emailRegex,
   INVALID_PAYLOAD,
   passwordRegex,
-  phoneRegex,
+  SignupSchema,
 } from '@org/common';
-import { ConfigService } from '@nestjs/config';
 import { hashPassword } from '$/modules/utils/auth.util';
+import { UserManagementService } from '$/modules/user/user-management.service';
 
 type AuthSuccessBO = {
   access_token: string;
@@ -47,6 +44,7 @@ export class AuthService {
   private logger = new Logger(this.constructor.name);
   constructor(
     private userService: UserService,
+    private userManagementService: UserManagementService,
     private jwtService: JwtService,
     private config: ConfigService,
   ) {}
@@ -70,12 +68,10 @@ export class AuthService {
     payload: RegisterDto,
     token: string
   ): Promise<AuthSuccessBO & { user: UserVO }> {
-    // 1. verify token
     const verifiedPayload: OtpJwtPayload = this.jwtService.verify(token);
-    if (
-      verifiedPayload.type !== OtpTypeEnum.REGISTER ||
-      ! this.isValidEmailIdentifier(verifiedPayload, payload.email)
-    ) {
+    const isEmailRegistration = verifiedPayload.type === OtpTypeEnum.REGISTER &&
+      this.isValidEmailIdentifier(verifiedPayload, payload.email)
+    if (!isEmailRegistration) {
       throw new BadRequestException(`${verifiedPayload.identifier} is not matched.`);
     }
 
@@ -86,8 +82,8 @@ export class AuthService {
     }
 
     const hashedPassword = await hashPassword(payload.password);
-    const userVO = await this.userService.create(payload, hashedPassword);
-    // 在實際應用中,您需要發送OTP給用戶(例如通過電子郵件或短信)
+    const userVO = await this.userManagementService.create(payload, hashedPassword);
+
     return {
       access_token: this.signToken(userVO.email, verifiedPayload.identifierType, userVO.id),
       user_id: userVO.id,
@@ -111,12 +107,12 @@ export class AuthService {
     (message: string = '', type: string) =>
       new BadRequestException({ bizCode: INVALID_PAYLOAD, data: { error: {type, message}} });
 
-  async isPhoneExist(phone: string): Promise<boolean> {
+  public async isPhoneExist(phone: string): Promise<boolean> {
     const userEntity = await this.userService.findOne(phone)
     return !isNull(userEntity)
   }
 
-  refreshToken(userId: string, email: string) {
+  public refreshToken(userId: string, email: string) {
     return this.signToken(email, IdentifierType.EMAIL, userId)
   }
 
@@ -183,59 +179,13 @@ export class AuthService {
     }
     return null;
   }
+
   private validateRegisterPayload(payload: RegisterDto) {
-    const {
-      phone,
-      type,
-      password,
-      rePassword,
-      firstName: first_name,
-      midName: mid_name = '',
-      lastName: last_name,
-      addressCity: address_city,
-      addressState: address_state,
-      addressDetail: address_detail = '',
-      birthday = '',
-      source = NaN,
-      email = '',
-      // whatsapp = '',
-      // facebook = '',
-    } = payload;
-
-    if (!phoneRegex.test(phone)) throw this.generateBadRequest('Invalid phone', 'phone');
-    if (!Object.values(UserType).includes(type)) throw this.generateBadRequest('Invalid user-type', 'type');
-    if (!passwordRegex.test(password)) throw this.generateBadRequest('Invalid password', 'password');
-    if (password !== rePassword) throw this.generateBadRequest('Unconfirmed password', 're_password');
-
-    // ! need improvement
-    if (
-      !alphaMax50Regex.test(first_name)
-      ||!alphaMax50Regex.test(last_name)
-      ||(mid_name !== '' && !alphaMax50Regex.test(mid_name))
-    )
-      throw this.generateBadRequest('Invalid name', 'first_name');
-
-    if (
-      !alphaMax50Regex.test(address_city) ||
-      !alphaMax50Regex.test(address_state) ||
-      (address_detail !== '' && !alphaMax50Regex.test(address_detail))
-    )
-      throw this.generateBadRequest('Invalid address', 'address_city');
-
-    if (birthday != '' && !birthdayRegex.test(birthday))
-      throw this.generateBadRequest('Invalid birthday', 'birthday');
-
-    this.logger.debug(source, Object.values(UserSourceType).includes(source));
-    if (
-      !Number.isNaN(source) &&
-      !Object.values(UserSourceType).includes(source)
-    )
-      throw this.generateBadRequest('Invalid source', 'source');
-
-    if (email != '' && !emailRegex.test(email))
+    SignupSchema.validateSync(payload);
+    const { email = '' } = payload;
+    if (email != '' && !emailRegex.test(email)) {
       throw this.generateBadRequest('Invalid email', 'email');
-    // whatsapp
-    // facebook
+    }
   }
 
   private signToken(identifier: string, identifierType: IdentifierType, id: string): string {

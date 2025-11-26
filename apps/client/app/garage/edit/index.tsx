@@ -15,7 +15,7 @@ import { usePopup } from '$/hooks/PopupProvider';
 import { DEFAULT_ERROR_MSG } from '@org/common';
 import Editable from '$/components/Fields/Editable';
 import Button from '$/components/Button';
-import { DEFAULT_MODELS } from '$/utils';
+import { DEFAULT_MODELS } from 'common/src';
 import { IconButton } from '@radix-ui/themes';
 import { CheckIcon, Cross2Icon } from '@radix-ui/react-icons';
 

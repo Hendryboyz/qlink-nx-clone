@@ -1,6 +1,7 @@
 import { SetMetadata } from '@nestjs/common';
 import { BoRole } from '@org/types';
 
-export const Roles = (...roles: BoRole[]) => SetMetadata('roles', roles);
+export const ROLES_KEY = 'roles';
+export const Roles = (...roles: BoRole[]) => SetMetadata(ROLES_KEY, roles);
 export const AllAuthenticated = () =>
-  SetMetadata('roles', Object.values(BoRole));
+  SetMetadata(ROLES_KEY, Object.values(BoRole));

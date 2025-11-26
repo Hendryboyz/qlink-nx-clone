@@ -250,3 +250,20 @@ label {
     height: auto !important;
   }
 }
+
+/* Restore default styles for Quill editor content */
+/* Counteract Tailwind's CSS reset that breaks Quill's default styling */
+.ql-editor h1,
+.ql-editor h2,
+.ql-editor h3,
+.ql-editor h4,
+.ql-editor h5,
+.ql-editor h6 {
+  font-size: revert !important;
+  font-weight: revert !important;
+}
+
+.ql-editor a {
+  color: revert !important;
+  text-decoration: revert !important;
+}

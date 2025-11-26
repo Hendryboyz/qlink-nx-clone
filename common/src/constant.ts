@@ -6,3 +6,4 @@ export const GENDER = [
   'Male',
   'Female',
 ];
+export const BO_ACCESS_TOKEN = 'access_token';

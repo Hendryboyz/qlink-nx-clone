@@ -1,73 +1,22 @@
 import React, { Fragment, useState } from 'react';
 import Container from './Container';
 import { Formik, ErrorMessage, Field } from 'formik';
-import * as Yup from 'yup';
 import API from '$/utils/fetch';
 import { GenderType, RegisterDto, UserType } from 'types/src';
 import { usePayload } from '$/store/payload';
 import {
-  alphaWithSpacesMax50Regex, clientPhoneRegex,
+  SignupSchema,
   CODE_SUCCESS,
   GENDER,
   HEADER_PRE_TOKEN,
-  passwordRegex,
   STATES,
 } from '@org/common';
 import SubmitButton from '$/components/Button/SubmitButton';
 import DateField from '$/components/Fields/DateField';
-import DropdownField from '$/components/Dropdown';
 import { usePopup } from '$/hooks/PopupProvider';
 import { DEFAULT_ERROR_MSG } from 'common/src';
 import InputField from '$/components/Fields/InputField';
-
-const SignupSchema = Yup.object().shape({
-  firstName: Yup.string()
-    .max(50, 'At most 50 characters long.')
-    .required('Required.'),
-
-  midName: Yup.string()
-    .max(50, 'At most 50 characters long.'),
-
-  lastName: Yup.string()
-    .max(50, 'At most 50 characters long.')
-    .required('Required.'),
-
-  password: Yup.string()
-    .min(6, 'Must be at least 6 characters long.')
-    .matches(
-      passwordRegex,
-      'Must include letter and number.'
-    )
-    .required('Password is required.'),
-
-  rePassword: Yup.string()
-    .oneOf([Yup.ref('password')], 'Passwords do not match.')
-    .required('Confirm your password.'),
-
-  birthday: Yup.string()
-    .matches(/^\d{4}-\d{2}-\d{2}$/, 'Must be in YYYY-MM-DD format.')
-    .nullable(),
-
-  // source: Yup.number().nullable(),
-
-  gender: Yup.string().required('Required.'),
-
-  phone: Yup.string()
-    .matches(clientPhoneRegex, 'Invalid phone format')
-    .required('Phone is required.'),
-
-  addressCity: Yup.string()
-    .matches(alphaWithSpacesMax50Regex, 'Only allow letter(a-z, A-Z and space)')
-    .required('Required.'),
-
-  addressState: Yup.string().required('Required.'),
-
-  whatsapp: Yup.string().nullable(),
-
-  facebook: Yup.string().nullable(),
-
-  addressDetail: Yup.string().nullable(),
-});
+import { signIn } from 'next-auth/react';
 
 interface FormData {
   phone: string;
@@ -123,6 +72,23 @@ const Step3 = (props: Props) => {
   //     return isNaN(Number(k)) && v !== UserSourceType.NONE
   //   })
   //   .map(([_, v]) => ({value: v, label: UserSourceDisplay[v]}))
+  function beforeOnSuccess(email: string, password: string): Promise<any> {
+    return new Promise((resolve, _) => {
+      signIn("credentials", {
+        redirect: false,
+        email: email,
+        password: password,
+        rememberMe: false,
+      }).then((res) => {
+        if (res && res.ok) {
+          console.log(`login with email: ${email} successfully after sign up`);
+          resolve(res);
+          return;
+        }
+        resolve(res);
+      });
+    });
+  }
 
   return (
     <Container title="Account detail" step={3}>
@@ -158,9 +124,19 @@ const Step3 = (props: Props) => {
             },
           })
             .then((res) => {
-              if (res.bizCode == CODE_SUCCESS) props.onSuccess();
+              if (res.bizCode == CODE_SUCCESS) {
+                if (email) {
+                  return beforeOnSuccess(email, values.password);
+                }
+                props.onSuccess();
+              }
               else {
                 showPopup({ title: DEFAULT_ERROR_MSG });
+              }
+            })
+            .then((res) => {
+              if (res.ok) {
+                props.onSuccess();
               }
             })
             .catch((e) => {

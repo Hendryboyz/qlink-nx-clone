@@ -1,0 +1,71 @@
+.ql-editor {
+  overflow-y: scroll;
+  resize: vertical;
+  min-height: 320px;
+  max-height: 960px;
+}
+
+.ql-snow .ql-picker.ql-line-height {
+  width: calc(100% + 20px);
+}
+
+/* Style the dropdown items */
+.ql-line-height .ql-picker-item::before {
+  content: attr(data-value) !important;
+  text-align: center;
+  width: 100%;
+  padding-right: 10px;
+}
+
+.ql-line-height .ql-picker-item:hover {
+  color: #06c;
+}
+
+/* Selected item in dropdown */
+.ql-line-height .ql-picker-item.ql-selected {
+  color: #06c;
+  font-weight: bold;
+}
+
+  .ql-line-height .ql-picker-item[data-value="1.0"]::before {
+    content: '1.0';
+  }
+
+  .ql-line-height .ql-picker-item[data-value="1.2"]::before {
+    content: '1.2';
+  }
+  .ql-line-height .ql-picker-item[data-value="1.5"]::before {
+    content: '1.5';
+  }
+  .ql-line-height .ql-picker-item[data-value="1.8"]::before {
+    content: '1.8';
+  }
+  .ql-line-height .ql-picker-item[data-value="2.0"]::before {
+    content: '2.0';
+  }
+
+  /* Style the active line height in the dropdown */
+
+.ql-line-height .ql-picker-label::before {
+  content: 'Line Height' !important;
+}
+  .ql-line-height .ql-active.ql-picker-label[data-value="1.0"]::before,
+  .ql-line-height .ql-picker-item[data-value="1.0"]::before {
+    content: '1.0' !important;
+  }
+  .ql-line-height .ql-active.ql-picker-label[data-value="1.2"]::before,
+  .ql-line-height .ql-picker-item[data-value="1.2"]::before {
+    content: '1.2' !important;
+  }
+  .ql-line-height .ql-active.ql-picker-label[data-value="1.5"]::before,
+  .ql-line-height .ql-picker-item[data-value="1.5"]::before {
+    content: '1.5' !important;
+  }
+  .ql-line-height .ql-active.ql-picker-label[data-value="1.8"]::before,
+  .ql-line-height .ql-picker-item[data-value="1.8"]::before {
+    content: '1.8' !important;
+  }
+  .ql-line-height .ql-active.ql-picker-label[data-value="2.0"]::before,
+  .ql-line-height .ql-picker-item[data-value="2.0"]::before {
+    content: '2.0' !important;
+  }

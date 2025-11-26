@@ -8,6 +8,11 @@ import { CreateProductRequest, ProductDto, ProductRemoveDto, ProductUpdateDto } 
 export class ProductController {
   constructor(private productService: ProductService) {}
 
+  @Post('verify')
+  async verifyAllProductsInCRM(): Promise<void> {
+    await this.productService.verifyAllProducts();
+  }
+
   @UseGuards(AuthGuard('jwt'))
   @Get('/list')
   async getProducts(@UserId() userId: string) {
@@ -28,11 +33,12 @@ export class ProductController {
   @UseGuards(AuthGuard('jwt'))
   @Put('/save')
   async updateProduct(@UserId() userId: string, @Body() payload: ProductUpdateDto) {
-    return this.productService.update(userId, payload);
+    return this.productService.updateOwnedProduct(userId, payload);
   }
+
   @UseGuards(AuthGuard('jwt'))
   @Delete('/remove')
   async removeProduct(@UserId() userId: string, @Body() payload: ProductRemoveDto) {
-    return this.productService.removeOwnedProduct(userId, payload.id);
+    return this.productService.unlinkOwnedProduct(userId, payload.id);
   }
 }

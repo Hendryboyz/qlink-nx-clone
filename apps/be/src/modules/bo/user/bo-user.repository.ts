@@ -1,6 +1,6 @@
 import { Inject, Injectable, Logger } from '@nestjs/common';
 import { KNEX_CONNECTION } from '$/database.module';
-import knex, { Knex } from 'knex';
+import { Knex } from 'knex';
 import { BoUser, BoUserEntity, CreateBoUserDto } from '@org/types';
 
 @Injectable()

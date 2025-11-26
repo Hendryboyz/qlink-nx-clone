@@ -8,7 +8,7 @@ import { useRouter } from 'next/navigation';
 import API from '$/utils/fetch';
 import GarageEdit from './edit';
 import defaultMotorImage from '$/public/assets/vehicles/default_model.png';
-import { DEFAULT_MODELS } from '$/utils';
+import { DEFAULT_MODELS } from 'common/src';
 import { getStatusConfig } from '$/utils/statusConfig';
 
 export default function Garage() {
@@ -27,6 +27,7 @@ export default function Garage() {
     registrationDate: '',
     dealerName: '',
     model: '',
+    isDelete: false,
   });
   const handleFetch = useCallback(() => {
     API.get<ProductVO[]>('/product/list').then((res) => {
@@ -66,7 +67,7 @@ export default function Garage() {
               return (
                 <div
                   key={product.id}
-                  className="flex flex-col max-w-[320px] w-full rounded-2xl overflow-hidden shadow-lg"
+                  className="flex flex-col w-full rounded-2xl overflow-hidden shadow-lg"
                   onClick={() => {
                     setCurrentProduct(product);
                     setIsModalOpen(true);

@@ -40,7 +40,6 @@ import { OtpService } from './otp.service';
 import { AuthGuard } from '@nestjs/passport';
 import { RequestWithUser } from '$/types';
 import process from 'node:process';
-import { UserService } from '$/modules/user/user.service';
 
 const oneMonth = 30 * 24 * 60 * 60 * 1000;
 let isProd = false;
@@ -49,7 +48,6 @@ export class AuthController {
   private logger = new Logger(this.constructor.name);
   constructor(
     private authService: AuthService,
-    private userService: UserService,
     private otpService: OtpService
   ) {
     isProd = process.env.NODE_ENV !== 'development';

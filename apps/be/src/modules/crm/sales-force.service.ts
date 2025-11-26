@@ -3,7 +3,7 @@ import { ConfigService } from '@nestjs/config';
 import axios, { AxiosResponse } from 'axios';
 import { URLSearchParams } from 'next/dist/compiled/@edge-runtime/primitives';
 import { ProductEntity, UserEntity } from '@org/types';
-import { UserSourceDisplay } from '@org/common';
+import { UserSourceDisplay, DEFAULT_MODELS } from '@org/common';
 
 type SalesForceCredentials = {
   clientId: string;
@@ -71,22 +71,29 @@ export class SalesforceSyncService implements OnModuleInit{
   }
 
   public async createMember(clientUser: UserEntity): Promise<string | undefined> {
-    const payload = this.castSalesforceMemberCreationPayload(clientUser);
-    const syncAction = this.useReAuthQuery(this.postMember.bind(this));
-    const response = await syncAction(payload);
-    const {data, status} = response;
-    if (status > 299) {
-      this.logger.error(`fail to sync user to salesforce, status code: ${status}, message: ${JSON.stringify(data)}`);
-      return undefined;
-    } else {
+    try {
+      const payload = this.castSalesforceMemberCreationPayload(clientUser);
+      const syncAction = this.useReAuthQuery(this.postMember.bind(this));
+      const response = await syncAction(payload);
+      const {data, status} = response;
       this.logger.debug(`sync user to salesforce successfully, status code: ${status}, message: ${JSON.stringify(data)}`);
       return data.id;
+    } catch (error) {
+      if (error.response)  {
+        const { response } = error;
+        this.logger.error(
+          `fail to sync user to salesforce, status code: ${response.status}, message:`, response.data);
+      } else {
+        this.logger.error('fail to sync user to salesforce, status code: 500', error)
+      }
+      throw error;
     }
   }
 
   private castSalesforceMemberCreationPayload(user: UserEntity) {
     return {
       "Member_Profile_External_ID__c": user.id,
+      "Name": user.memberId,
       "Member_ID__c": user.memberId,
       "First_Name__c": user.firstName,
       "Middle_Name__c": user.midName,
@@ -116,31 +123,41 @@ export class SalesforceSyncService implements OnModuleInit{
 
   private useReAuthQuery(action: ActionFunctionType) {
     return async (payload: any | undefined) => {
-      let response = await action(payload);
-      if (response.status === 401) {
-        await this.authSalesforce();
-        response = await action(payload);
+      try {
+        return await action(payload);
+      } catch (e) {
+        if (e.status && e.status === 401) {
+          await this.authSalesforce();
+          return await action(payload);
+        }
+        throw e;
       }
-      return response;
     }
   }
 
   public async updateMember(updatedUser: UserEntity): Promise<string | undefined> {
-    const payload = this.castSalesforceMemberMutationPayload(updatedUser);
-    const salesforceObjectId = updatedUser.crmId;
-    const syncAction = this.useReAuthQuery(this.patchMember.bind(this));
-    const response = await syncAction({
-      memberObjectId: salesforceObjectId,
-      payload,
-    });
-    const {data, status} = response;
-    if (status > 299) {
-      this.logger.error(`fail to patch user to salesforce, status code: ${status}, message: ${JSON.stringify(data)}`);
-      return undefined;
-    } else {
+    try {
+      const payload = this.castSalesforceMemberMutationPayload(updatedUser);
+      const salesforceObjectId = updatedUser.crmId;
+      const syncAction = this.useReAuthQuery(this.patchMember.bind(this));
+      const response = await syncAction({
+        memberObjectId: salesforceObjectId,
+        payload,
+      });
+      const {data, status} = response;
       this.logger.debug(`patch user to salesforce successfully, status code: ${status}, message: ${JSON.stringify(data)}`);
-      return data.id;
+      return salesforceObjectId;
+    } catch (error) {
+      if (error.response)  {
+        const { response } = error;
+        this.logger.error(
+          `fail to patch user to salesforce, status code: ${response.status}, message:`, response.data);
+      } else {
+        this.logger.error('fail to patch user to salesforce, status code: 500', error)
+      }
+      throw error;
     }
+
   }
 
   private castSalesforceMemberMutationPayload(user: UserEntity) {
@@ -172,23 +189,58 @@ export class SalesforceSyncService implements OnModuleInit{
     });
   }
 
-  public async syncVehicle(vehicleEntity: ProductEntity): Promise<VehicleSyncResult> {
-    const payload = this.castSalesforceVehiclePayload(vehicleEntity);
-    const syncAction = this.useReAuthQuery(this.postVehicle.bind(this));
-    const response = await syncAction(payload);
-    const {data, status} = response;
-    if (status > 299) {
-      this.logger.warn(`fail to sync vehicle to salesforce, status code: ${status}, message: ${data}`);
-      return {
-        vehicleId: undefined,
-        isVerified: false,
+  public async deleteMember(salesforceId: string): Promise<void> {
+    try {
+      const syncAction = this.useReAuthQuery(this.requestMemberDeletion.bind(this));
+      const response = await syncAction({
+        memberObjectId: salesforceId,
+      });
+      const {data, status} = response;
+      this.logger.debug(`remove member from salesforce successfully, status code: ${status}, message: ${JSON.stringify(data)}`);
+    } catch (error) {
+      if (error.response)  {
+        const { response } = error;
+        this.logger.error(
+          `fail to delete member from salesforce, status code: ${response.status}, message:`, response.data);
+      } else {
+        this.logger.error('fail to delete member from salesforce, status code: 500', error)
       }
-    } else {
+      throw error;
+    }
+  }
+
+  private requestMemberDeletion(request: {
+    memberObjectId: string,
+  }): Promise<AxiosResponse> {
+    const {memberObjectId} = request;
+    const deleteMemberUrl = `${this.apiResource.instanceUrl}/services/data/v49.0/sobjects/Member_Profile__c/${memberObjectId}`;
+    return axios.delete(deleteMemberUrl, {
+      headers: {
+        'Authorization': `Bearer ${this.apiResource.accessToken}`,
+      },
+    });
+  }
+
+  public async syncVehicle(vehicleEntity: ProductEntity): Promise<VehicleSyncResult> {
+    try {
+      const payload = this.castSalesforceVehiclePayload(vehicleEntity);
+      const syncAction = this.useReAuthQuery(this.postVehicle.bind(this));
+      const response = await syncAction(payload);
+      const {data, status} = response;
       this.logger.debug(`sync vehicle to salesforce successfully, status code: ${status}, message: ${data}`);
       return {
         vehicleId: data.id,
         isVerified: false,
       }
+    } catch (error) {
+      if (error.response)  {
+        const { response } = error;
+        this.logger.error(
+          `fail to sync vehicle to salesforce, status code: ${response.status}, message:`, JSON.stringify(response.data));
+      } else {
+        this.logger.error('fail to sync vehicle to salesforce, status code: 500', error)
+      }
+      throw error;
     }
   }
 
@@ -203,10 +255,11 @@ export class SalesforceSyncService implements OnModuleInit{
 
   private castSalesforceVehiclePayload(vehicle: ProductEntity) {
     return {
+      "Name": vehicle.id,
       "Vehicle_Reg_Data_External_ID__c": null,
       "Vehicle_Registration_ID__c": vehicle.id,
       "Model__r": {
-        "Model_EID__c": vehicle.model
+        "Model_EID__c": this.convertToModelTitle(vehicle.model),
       },
       "Year__c": vehicle.year,
       "VIN_Number_Check__c": vehicle.vin,
@@ -221,37 +274,53 @@ export class SalesforceSyncService implements OnModuleInit{
     }
   }
 
+  private convertToModelTitle(modelId: string): string {
+    return DEFAULT_MODELS.find(m => m.id.toString() === modelId).title
+  }
+
   public async updateVehicle(vehicleEntity: ProductEntity): Promise<null | SalesForceErrorMessage> {
-    const payload = this.castPatchVehiclePayload(vehicleEntity);
-    const syncAction = this.useReAuthQuery(this.patchVehicle.bind(this));
-    const response = await syncAction({vehicleObjectId: vehicleEntity.crmId, payload});
-    const {data, status} = response;
-    if (status > 299) {
-      this.logger.warn(`fail to patch vehicle to salesforce, status code: ${status}, message: ${data}`);
-      if (!data || data.length === 0) {
+    try {
+      const payload = this.castPatchVehiclePayload(vehicleEntity);
+      const syncAction = this.useReAuthQuery(this.patchVehicle.bind(this));
+      const response = await syncAction({vehicleObjectId: vehicleEntity.crmId, payload});
+      const {data, status} = response;
+      this.logger.debug(`patch vehicle to salesforce successfully, status code: ${status}, message: ${data}`);
+      return null;
+    } catch (error) {
+      if (error.response)  {
+        const { response } = error;
+        if (!response.data || response.data.length === 0) {
+          return {
+            message: '',
+            errorCode: '',
+            fields: [],
+          }
+        }
+
+        const errorContent = response.data[0]
+        const patchErrorDetail = {
+          message: errorContent['message'],
+          errorCode: errorContent['errorCode'],
+          fields: errorContent['fields'],
+        }
+
+        this.logger.error(`fail to patch vehicle to salesforce, status code: ${response.status}, message: ${patchErrorDetail}`);
+        return patchErrorDetail;
+      } else {
+        this.logger.error('fail to patch vehicle to salesforce, status code: 500', error)
         return {
           message: '',
           errorCode: '',
           fields: [],
         }
-      } else {
-        const error = data[0]
-        return {
-          message: error['message'],
-          errorCode: error['errorCode'],
-          fields: error['fields'],
-        }
       }
-    } else {
-      this.logger.debug(`patch vehicle to salesforce successfully, status code: ${status}, message: ${data}`);
-      return null;
     }
   }
 
   private castPatchVehiclePayload(vehicle: ProductEntity) {
     return {
       "Model__r": {
-        "Model_EID__c": vehicle.model
+        "Model_EID__c": this.convertToModelTitle(vehicle.model),
       },
       "Year__c": vehicle.year,
       "Purchase_Date__c": vehicle.purchaseDate,
@@ -266,34 +335,27 @@ export class SalesforceSyncService implements OnModuleInit{
     if (vehicleEntity.isVerified === true) {
       return true
     }
-    this.logger.debug(vehicleEntity);
-    const isVinNumberValid =
-      await this.verifyVehicleField(vehicleEntity.crmId, 'VIN_Number', vehicleEntity.vin);
-    const isEngineNumberValid =
-      await this.verifyVehicleField(vehicleEntity.crmId, 'Engine_Serial_Number', vehicleEntity.engineNumber);
-    await this.verifyVehicleField(vehicleEntity.crmId, 'Dealer_Name', vehicleEntity.dealerName);
-
-    return isVinNumberValid && isEngineNumberValid
+    return this.isVehicleValid(vehicleEntity.crmId);
   }
 
   private async verifyVehicleField(vehicleId: string, fieldName: string, value: string): Promise<boolean> {
     if (!fieldName || !value) {
       return false;
     }
-    const payload = this.castPatchVerifyVehicleFieldPayload(fieldName, value);
-    const syncAction = this.useReAuthQuery(this.patchVehicle.bind(this));
     try {
+      const payload = this.castPatchVerifyVehicleFieldPayload(fieldName, value);
+      const syncAction = this.useReAuthQuery(this.patchVehicle.bind(this));
       const response = await syncAction({vehicleObjectId: vehicleId, payload});
       const {data, status} = response;
-      if (status > 299) {
-        this.logger.warn(`fail to verify vehicle ${fieldName}, status code: ${status}, message: ${data}`);
-        return false
+      this.logger.debug(`valid vehicle ${fieldName} successfully, status code: ${status}, message: ${data}`);
+      return true
+    } catch (error) {
+      if (error.response)  {
+        const { response } = error;
+        this.logger.error(`verify vehicle ${fieldName} field failed, status code ${response.status}, message `, response.data);
       } else {
-        this.logger.debug(`valid vehicle ${fieldName} successfully, status code: ${status}, message: ${data}`);
-        return true
+        this.logger.error(`verify vehicle ${fieldName} field failed, status code 500, message `, error);
       }
-    } catch (e) {
-      this.logger.error(`verify vehicle ${fieldName} field failed: ${e}`);
       return false;
     }
   }
@@ -326,18 +388,22 @@ export class SalesforceSyncService implements OnModuleInit{
     });
   }
 
-  private async isVehicleValid(salesforceVehicleId: string): Promise<boolean> {
-    const syncAction = this.useReAuthQuery(this.getVehicle.bind(this));
-    const response = await syncAction(salesforceVehicleId);
-
-    const {data, status} = response;
-    if (status > 299) {
-      this.logger.warn(`fail to get vehicle object, status code: ${status}, message: ${data}`);
+  private async isVehicleValid(vehicleObjectId: string): Promise<boolean> {
+    try {
+      const syncAction = this.useReAuthQuery(this.getVehicle.bind(this));
+      const response = await syncAction(vehicleObjectId);
+      const {data, status} = response;
+      const { Verification_Status__c } = data;
+      this.logger.debug(`try to valid vehicle successfully, status code: ${status}, message: ${JSON.stringify(data)}`);
+      return Verification_Status__c === 'Verified';
+    } catch (error) {
+      if (error.response)  {
+        const { response } = error;
+        this.logger.error(`verify vehicle failed, status code ${response.status}, message `, response.data);
+      } else {
+        this.logger.error(`verify vehicle failed, status code 500, message `, error);
+      }
       return false;
-    } else {
-      this.logger.debug(`get vehicle successfully, status code: ${status}, message: ${data}`);
-      const { Engine_Serial_Number__c, VIN_Number__c, Model__c } = response.data;
-      return Engine_Serial_Number__c && VIN_Number__c && Model__c;
     }
   }
 
@@ -348,5 +414,37 @@ export class SalesforceSyncService implements OnModuleInit{
         'Authorization': `Bearer ${this.apiResource.accessToken}`,
       }
     });
+  }
+
+  public async deleteVehicle(salesforceId: string): Promise<void> {
+    try {
+      const syncAction = this.useReAuthQuery(this.requestVehicleDeletion.bind(this));
+      const response = await syncAction({
+        vehicleObjectId: salesforceId,
+      });
+      const {data, status} = response;
+      this.logger.debug(`remove vehicle from salesforce successfully, status code: ${status}, message: ${JSON.stringify(data)}`);
+    } catch (error) {
+      if (error.response)  {
+        const { response } = error;
+        this.logger.error(
+          `fail to delete vehicle from salesforce, status code: ${response.status}, message:`, response.data);
+      } else {
+        this.logger.error('fail to delete vehicle from salesforce, status code: 500', error)
+      }
+      throw error;
+    }
+  }
+
+  private async requestVehicleDeletion(request: {
+    vehicleObjectId: string,
+  }): Promise<AxiosResponse> {
+    const {vehicleObjectId} = request;
+    const deleteVehicleUrl = `${this.apiResource.instanceUrl}/services/data/v49.0/sobjects/Vehicle_Registration_Data__c/${vehicleObjectId}`;
+    return axios.delete(deleteVehicleUrl, {
+      headers: {
+        'Authorization': `Bearer ${this.apiResource.accessToken}`,
+      },
+    })
   }
 }

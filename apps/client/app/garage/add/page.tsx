@@ -11,7 +11,7 @@ import { usePopup } from '$/hooks/PopupProvider';
 import { DEFAULT_ERROR_MSG } from '@org/common';
 import DateField from '$/components/Fields/DateField';
 import Button from '$/components/Button';
-import { DEFAULT_MODELS } from '$/utils';
+import { DEFAULT_MODELS } from 'common/src';
 const CreateSchema = Yup.object().shape({
   model: Yup.string().required('Required'),
   year: Yup.number().required('Required').typeError("Required"),
@@ -102,6 +102,7 @@ export default function GarageAdd() {
         initialValues={initValue}
         validationSchema={CreateSchema}
         onSubmit={(values, { setSubmitting }) => {
+          setSubmitting(true);
           API.post('/product/save', {
             vin: values.vin,
             engineNumber: values.engineNumber,
@@ -144,7 +145,7 @@ export default function GarageAdd() {
             .catch((err) => {
               showPopup({ title: DEFAULT_ERROR_MSG });
               console.error(err);
-            });
+            }).finally(() => { setSubmitting(false); });
         }}
       >
         {({ values, isSubmitting, setFieldValue, handleSubmit, errors }) => (
@@ -155,7 +156,12 @@ export default function GarageAdd() {
               customBtn={
                 <img
                   src="/assets/save.svg"
-                  onClick={() => handleSubmit()}
+                  onClick={() => {
+                    if (isSubmitting) {
+                      return;
+                    }
+                    handleSubmit();
+                  }}
                 />
               }
               customBackAction={() => { router.push('/garage'); }}

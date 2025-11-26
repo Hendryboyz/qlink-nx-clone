@@ -1,12 +1,33 @@
 import { ProColumns } from '@ant-design/pro-table/es/typing';
 import { dateTimeFormatter } from '$/utils/formatter';
 import { Button, message, Modal, Space, Tooltip } from 'antd';
-import React, { ReactElement, useContext } from 'react';
+import React, { ReactElement, useContext, useState } from 'react';
 import { ProTable } from '@ant-design/pro-components';
 import { VehiclesContext } from '$/pages/VehiclesManagement/VehiclesContext';
-import { FileDoneOutlined, LoadingOutlined } from '@ant-design/icons';
+import { FileDoneOutlined, FileExclamationOutlined } from '@ant-design/icons';
 import { VehicleDTO } from '@org/types';
 import API from '$/utils/fetch';
+import { DEFAULT_MODELS } from '@org/common';
+import { TooltipPlacement } from 'antd/lib/tooltip';
+
+type VehiclesTableProps = {
+  statusText: string;
+  tooltipPlacement: TooltipPlacement;
+  tooltipContent?: string;
+  statusColor: string
+};
+
+const VehicleStatus = ({statusText, tooltipPlacement, tooltipContent, statusColor}: VehiclesTableProps) => {
+  return (
+    <Tooltip placement={tooltipPlacement} title={tooltipContent}>
+      <div className="flex">
+        <span style={{ paddingRight: '5px', color: statusColor }}>
+          {statusText}
+        </span>
+      </div>
+    </Tooltip>
+  );
+};
 
 export default function VehiclesTable(): ReactElement {
   const {
@@ -16,8 +37,30 @@ export default function VehiclesTable(): ReactElement {
     paging,
     setPaging,
     setFilterParams,
+    setEditingVehicle,
+    reloadVehicles,
   } = useContext(VehiclesContext);
   const [messageApi, contextHolder] = message.useMessage();
+  const [verifying, setVerifying] = useState(false);
+
+  async function handleReVerify() {
+    try {
+      setVerifying(true);
+      const syncResults = await API.verifyAllVehicles();
+      const successCount = syncResults.reduce((count: number, result) =>
+        count + (result.isVerified ? 1 : 0), 0);
+      const failureCount = syncResults.length - successCount;
+      message.info(
+        `try to re-sync ${syncResults.length} products: success: ${successCount}, failure: ${failureCount}`,
+        5,
+        );
+      reloadVehicles();
+    } catch(e) {
+      message.error('something unexpected error while re-verify vehicles');
+    } finally {
+      setVerifying(false);
+    }
+  }
 
   function handleDelete(vehicleId: string) {
     Modal.confirm({
@@ -53,6 +96,10 @@ export default function VehiclesTable(): ReactElement {
       title: 'Model',
       dataIndex: 'model',
       key: 'model',
+      render: (data, _) => {
+        const definedModel = DEFAULT_MODELS.find(m => m.id.toString() === data);
+        return <span>{definedModel.title}</span>;
+      }
     },
     {
       title: 'Year',
@@ -105,36 +152,32 @@ export default function VehiclesTable(): ReactElement {
       key: 'dealerName',
     },
     {
-      title: 'Verification Status',
+      title: 'Status',
       dataIndex: 'isVerified',
       key: 'isVerified',
       search: false,
       render: (isVerified, record) => {
-        let autoVerifyStatus = (
-          <Tooltip placement="right" title={"wait for verified process"}>
-            <LoadingOutlined />
-          </Tooltip>
-        );
-        if (record.isAutoVerified) {
-          autoVerifyStatus = (
-            <Tooltip placement="bottom" title={"verify done, update vehicle info to trigger again"}>
-              <FileDoneOutlined />
-            </Tooltip>
-          )
-        }
         if (isVerified) {
           return (
-            <div className="flex">
-              <span style={{paddingRight: '5px', color: 'green'}}>Success</span>
-              {autoVerifyStatus}
-            </div>
+            <VehicleStatus
+              statusText={'Verified'}
+              statusColor={'#2DC100'}
+              tooltipContent={
+                'verify successfully'
+              }
+              tooltipPlacement={'bottom'}
+            />
           );
         } else {
           return (
-            <div>
-              <span style={{paddingRight: '5px', color: 'red'}}>Fail</span>
-              {autoVerifyStatus}
-            </div>
+            <VehicleStatus
+              statusText={'Error'}
+              statusColor={'red'}
+              tooltipContent={
+                'something went wrong, please contact administrator'
+              }
+              tooltipPlacement={'right'}
+            />
           );
         }
       },
@@ -145,11 +188,12 @@ export default function VehiclesTable(): ReactElement {
       search: false,
       render: (_: unknown, record: VehicleDTO) => (
         <Space size="middle">
+          <Button onClick={() => { setEditingVehicle(record) }}>Edit</Button>
           <Button
             danger
             onClick={() => handleDelete(record.id)}
           >
-            Delete
+            Unlink
           </Button>
         </Space>
       ),
@@ -186,7 +230,17 @@ export default function VehiclesTable(): ReactElement {
         }}
         scroll={{ x: 'max-content' }}
         dateFormatter="string"
-        toolBarRender={undefined}
+        toolBarRender={() => [
+          <Button
+            key="button"
+            type="primary"
+            onClick={handleReVerify}
+            disabled={verifying}
+            loading={verifying}
+          >
+            ReVerify
+          </Button>,
+        ]}
       />
     </>
   );

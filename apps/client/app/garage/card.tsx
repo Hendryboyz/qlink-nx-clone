@@ -3,11 +3,11 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { ProductVO } from '@org/types';
 import { css } from '@emotion/css';
-import { DEFAULT_MODELS } from '$/utils';
+import { DEFAULT_MODELS } from 'common/src';
 import { usePopup } from '$/hooks/PopupProvider';
 import Button from '$/components/Button';
 import defaultMotorImage from '$/public/assets/vehicles/default_model.png';
-import { STATUS_CONFIG, getStatusConfig } from '$/utils/statusConfig';
+import { getStatusConfig } from '$/utils/statusConfig';
 
 const rowCss = css`
 & > div:not(:last-child)  {

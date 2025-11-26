@@ -10,6 +10,7 @@ export type ProductEntity = {
   model: string; // mapping to DB
   crmId?: string;
   isVerified: boolean;
+  isDelete: boolean;
   verifyTimes: number
 }
 
@@ -44,6 +45,18 @@ export type UpdateProductData =
     'verifyTimes'
   >>;
 
+export type UpdateVehicleDTO =
+  Partial<Pick<ProductEntity,
+    'model' |
+    'vin' |
+    'engineNumber' |
+    'dealerName' |
+    'year'|
+    'purchaseDate' |
+    'registrationDate'
+  >>;
+
 export type ProductRemoveDto = {
-    id: string
+  userId: string;
+  id: string
 }
