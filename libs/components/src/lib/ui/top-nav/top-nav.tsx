@@ -1,27 +1,32 @@
-import { type FC, useState } from 'react';
+import { forwardRef, useState } from 'react';
 import { Menu, X } from 'lucide-react';
 
-import LogoPng from './assets/logo.png';
 import { TGButton } from '../button';
 
 type TopNavProps = {
+  imgSrc: string;
   onLogoClick?: () => void;
   onMenuOpen?: () => void;
   onMenuClose?: () => void;
   isSignedIn?: boolean;
+  isOpen?: boolean;
 };
 
-const TopNav: FC<TopNavProps> = ({
+const TopNav = forwardRef<HTMLElement, TopNavProps>(({
   onLogoClick,
   onMenuOpen,
   onMenuClose,
   isSignedIn,
-}) => {
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  imgSrc,
+  isOpen,
+}, ref) => {
+  const [internalIsOpen, setInternalIsOpen] = useState(false);
+  const isMenuOpen = isOpen !== undefined ? isOpen : internalIsOpen;
+
   return (
-    <nav className="w-full px-6 py-3 flex items-center justify-between border-b bg-fill border-stroke-w">
+    <nav className="w-full px-6 py-3 flex items-center justify-between border-b bg-fill border-stroke-w" ref={ref}>
       <img
-        src={LogoPng}
+        src={imgSrc}
         alt="Logo"
         className="size-[30px]"
         onClick={() => onLogoClick?.()}
@@ -32,7 +37,7 @@ const TopNav: FC<TopNavProps> = ({
           <X
             className="size-6 text-stroke-s"
             onClick={() => {
-              setIsMenuOpen(false);
+              if (isOpen === undefined) setInternalIsOpen(false);
               onMenuClose?.();
             }}
           />
@@ -41,7 +46,7 @@ const TopNav: FC<TopNavProps> = ({
           <Menu
             className="size-6 text-stroke-s"
             onClick={() => {
-              setIsMenuOpen(true);
+              if (isOpen === undefined) setInternalIsOpen(true);
               onMenuOpen?.();
             }}
           />
@@ -49,6 +54,6 @@ const TopNav: FC<TopNavProps> = ({
       </div>
     </nav>
   );
-};
+});
 
 export default TopNav;

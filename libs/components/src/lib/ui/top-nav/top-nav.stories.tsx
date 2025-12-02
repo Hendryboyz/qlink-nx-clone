@@ -12,12 +12,12 @@ type Story = StoryObj<typeof TopNav>;
 
 export const Default: Story = {
   render: () => {
-    return <TopNav />;
+    return <TopNav imgSrc='' />;
   },
 };
 
 export const SignedIn: Story = {
   render: () => {
-    return <TopNav isSignedIn={true} />;
+    return <TopNav imgSrc='' isSignedIn={true} />;
   },
 };

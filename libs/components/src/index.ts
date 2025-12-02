@@ -12,6 +12,9 @@ export * from './lib/ui/date-picker';
 export * from './lib/ui/text-field-button';
 export * from './lib/ui/toast';
 export * from './lib/ui/checkbox';
+export * from './lib/ui/top-nav';
+export * from './lib/ui/footer';
+export * from './lib/ui/bottom-nav';
 
 // Styles
 import './lib/styles.css';
