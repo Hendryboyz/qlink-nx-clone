@@ -1,32 +1,26 @@
 'use client';
 
-import React, { Fragment, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
-import { Formik, FormikErrors, Field, ErrorMessage, FieldProps } from 'formik';
+import { Formik, FormikErrors, ErrorMessage, Field, FieldProps } from 'formik';
 import { signIn } from 'next-auth/react';
-
-import Banner from '$/components/Banner';
-import { ColorBackground } from '$/components/Background';
-import SubmitButton from '$/components/Button/SubmitButton';
-import { NOOP } from '$/utils';
-import { usePopup } from '$/hooks/PopupProvider';
-import { Cross2Icon } from '@radix-ui/react-icons';
+import { ChevronLeftIcon } from '@radix-ui/react-icons';
 import { emailRegex } from '@org/common';
-import InputField from '$/components/Fields/InputField';
+import { usePopup } from '$/hooks/PopupProvider';
+import { TGButton, TGInput } from '@org/components';
 
 interface FormData {
   email: string;
   password: string;
-  rememberMe: boolean;
+  agreedToTerms: boolean;
 }
 
 function SignInForm() {
-  const initValue: FormData = { email: '', password: '', rememberMe: false };
+  const initValue: FormData = { email: '', password: '', agreedToTerms: false };
   const searchParams = useSearchParams();
   const signInCallback = searchParams.get('callbackUrl') ?? '/';
-
   const { showPopup } = usePopup();
+
   return (
     <Formik
       initialValues={initValue}
@@ -37,127 +31,138 @@ function SignInForm() {
         } else if (!emailRegex.test(values.email)) {
           errors.email = 'Invalid email format';
         }
+        if (!values.password) {
+          errors.password = 'Required';
+        }
+        if (!values.agreedToTerms) {
+          errors.agreedToTerms = 'You must agree to the terms';
+        }
         return errors;
       }}
       onSubmit={async (values, { setSubmitting }) => {
         setSubmitting(true);
-        signIn("credentials", {
+        signIn('credentials', {
           redirect: false,
           email: values.email,
           password: values.password,
-          rememberMe: values.rememberMe,
           callbackUrl: signInCallback,
-        }).then((res) => {
-          if (res && res.ok) {
-            const callbackUrl = res.url ? res.url : '/';
-            window.location.replace(`${callbackUrl}`);
-            return;
-          }
-          console.error(res);
-          showPopup({ title: 'Incorrect Credentials' });
-        }).finally(() => setSubmitting(false));
+        })
+          .then((res) => {
+            if (res && res.ok) {
+              const callbackUrl = res.url ? res.url : '/';
+              window.location.replace(`${callbackUrl}`);
+              return;
+            }
+            console.error(res);
+            showPopup({ title: 'Incorrect Credentials' });
+          })
+          .finally(() => setSubmitting(false));
       }}
     >
       {({
-          values,
-          errors,
-          touched,
-          handleChange,
-          handleBlur,
-          handleSubmit,
-          isSubmitting,
-          setFieldValue,
-          isValid,
-        }) => (
-        <Fragment>
-          <div className="py-20">
+        values,
+        handleSubmit,
+        isSubmitting,
+        setFieldValue,
+      }) => (
+        <form onSubmit={handleSubmit} className="flex flex-col flex-1 h-full">
+          <div className="flex-grow">
+            {/* Email Field */}
+            <div className="mb-6">
+              <div className="block text-sm font-medium text-text-strong mb-2">
+                <span>Email</span>
+                <span className="font-bold ml-1">(*Required)</span>
+              </div>
+              <Field name="email">
+                {({ field, meta }: FieldProps) => (
+                  <TGInput
+                    {...field}
+                    type="text"
+                    placeholder=""
+                    className="text-text-str font-bold"
+                    error={meta.touched && meta.error ? meta.error : undefined}
+                  />
+                )}
+              </Field>
+            </div>
+
+            {/* Password Field */}
+            <div className="mb-6">
+              <div className="block text-sm font-medium text-text-strong mb-2">
+                <span>Password</span>
+                <span className="font-bold ml-1">(*Required)</span>
+              </div>
+              <Field name="password">
+                {({ field, meta }: FieldProps) => (
+                  <TGInput
+                    {...field}
+                    type="password"
+                    placeholder=""
+                    className="text-text-str font-bold"
+                    error={meta.touched && meta.error ? meta.error : undefined}
+                  />
+                )}
+              </Field>
+            </div>
+
+            {/* Forgot Password */}
             <div>
-              <InputField
-                type="text"
-                name="email"
-                placeholder="Email"
-                headIconSource="assets/user2.svg"
-                autoComplete={true}
-                customClassName="border-white"
-              />
-              <ErrorMessage
-                name="email"
-                className="text-[#E19500] absolute pl-10 text-sm font-gilroy-medium mt-1"
-                component="span"
-              />
-            </div>
-            <div className="mt-6">
-              <InputField
-                name="password"
-                type="password"
-                placeholder="Password"
-                headIconSource="assets/lock2.svg"
-                customClassName="border-white"
-              />
-              <ErrorMessage
-                name="password"
-                className="text-[#E19500] absolute pl-10 text-sm font-gilroy-medium"
-                component="span"
-              />
-            </div>
-            <div className="flex mt-7 justify-between items-center text-xs font-gilroy-medium">
-              <label
-                htmlFor="rememberMe"
-                className="flex items-center cursor-pointer pl-[13px]"
+              <Link
+                href="/reset-password"
+                className="text-error text-sm font-medium"
               >
-                <Field name="rememberMe">
-                  {({ field }: FieldProps) => (
-                    <div className="relative">
-                      <input
-                        id="rememberMe"
-                        type="checkbox"
-                        checked={values.rememberMe}
-                        onChange={() => {
-                          setFieldValue('rememberMe', !values.rememberMe);
-                        }}
-                        className="sr-only"
-                      />
-                      <div
-                        className={`
-                              w-4 h-4 border-2 border-white rounded-sm flex items-center justify-center transition-all duration-200
-                              ${values.rememberMe
-                          ? 'bg-primary border-primary'
-                          : 'bg-transparent border-white'
-                        }
-                            `}
-                      >
-                        {values.rememberMe && (
-                          <img
-                            src="/assets/checked.svg"
-                            alt="checked"
-                            className="w-2.5 h-1.5"
-                          />
-                        )}
-                      </div>
-                    </div>
-                  )}
-                </Field>
-                <span className="ml-1 text-white text-xs font-gilroy-medium">
-                      Remember Me
-                    </span>
-              </label>
-              <Link href="/reset-password" className="pr-3">
-                    <span className="text-red-300 text-xs font-gilroy-medium">
-                      Forgot password?
-                    </span>
+                Forgot password?
               </Link>
-            </div>
-            <div className="flex justify-end items-center mt-8">
-              <SubmitButton
-                buttonColor="beige"
-                text="Sign In"
-                onClick={() => (isValid ? handleSubmit() : NOOP())}
-                isLoading={isSubmitting}
-              />
             </div>
           </div>
 
-        </Fragment>
+          {/* Bottom Section */}
+          <div className="mt-auto pb-8">
+            {/* Terms Checkbox */}
+            <div className="flex items-center mb-6">
+              <div className="flex items-center h-5">
+                <input
+                  id="agreedToTerms"
+                  name="agreedToTerms"
+                  type="checkbox"
+                  checked={values.agreedToTerms}
+                  onChange={(e) =>
+                    setFieldValue('agreedToTerms', e.target.checked)
+                  }
+                  className="w-5 h-5 border-gray-300 rounded"
+                />
+              </div>
+              <div className="ml-3 text-sm text-text-str">
+                <label htmlFor="agreedToTerms">
+                  <span>{"I agree to the Qlink Rider Club's "}</span>
+                  <Link href="/terms-of-service" className="text-primary underline font-bold">
+                    Terms of Service
+                  </Link>
+                  <span>{` and `}</span>
+                  <Link href="/privacy-policy" className="text-primary underline font-bold">
+                    Privacy Policy
+                  </Link>
+                  <span>{'. The service is for Nigeria only.'}</span>
+                </label>
+                <ErrorMessage
+                  name="agreedToTerms"
+                  className="text-error text-xs mt-1 block"
+                  component="div"
+                />
+              </div>
+            </div>
+
+            <TGButton
+              type="submit"
+              disabled={isSubmitting}
+              fullWidth
+              size="xl"
+              variant="primary"
+            >
+              {isSubmitting ? 'Signing In...' : 'Continue'}
+            </TGButton>
+          </div>
+        </form>
       )}
     </Formik>
   );
@@ -165,31 +170,19 @@ function SignInForm() {
 
 export default function SignIn() {
   const router = useRouter();
-  function onClose() {
-    router.push('/')
-  }
 
   return (
-    <ColorBackground color="#D70127">
-      <div className="w-full py-32 px-12 flex flex-col min-h-screen">
-        <div className="absolute top-[24px] right-[24px]" onClick={onClose}>
-          <Cross2Icon
-            height={24}
-            width={24}
-            color="white"
-            className="justify-self-end cursor-pointer"
-          />
-        </div>
-        <div className="flex flex-col w-full">
-          <Banner />
-          <Suspense>
-            <SignInForm />
-          </Suspense>
-          <Link href="/sign-up" className="text-center text-sm text-red-300 -mt-12 font-gilroy-medium">
-            <h4>Don&apos;t have account? Sign up</h4>
-          </Link>
-        </div>
+    <div className="w-full h-screen bg-secondary flex flex-col px-6 pt-6">
+      {/* Header */}
+      <div className="flex items-center mb-8 flex-none">
+        <button onClick={() => router.back()} className="p-2 -ml-2">
+          <ChevronLeftIcon className="w-8 h-8 text-stroke-s" />
+        </button>
+        <h4 className="text-xl font-bold text-text-str ml-1">
+          Log in to QLINK Rider Club
+        </h4>
       </div>
-    </ColorBackground>
+      <SignInForm />
+    </div>
   );
 }

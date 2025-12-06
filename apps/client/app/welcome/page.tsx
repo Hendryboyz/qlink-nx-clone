@@ -1,9 +1,7 @@
 'use client';
 
-import React from 'react';
 import Carousel from '$/components/Carousel';
 import { TGButton } from '@org/components';
-import Link from 'next/link';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 
@@ -38,18 +36,31 @@ export default function Welcome() {
     arrows: false,
     autoplay: true,
     autoplaySpeed: 3000,
-    // Override default Carousel settings to use standard dots structure which we style with CSS
-    appendDots: (dots: React.ReactNode) => <ul>{dots}</ul>,
-    customPaging: (i: number) => <button>{i + 1}</button>,
+    appendDots: (dots: React.ReactNode) => (
+      <div
+        style={{
+          position: 'relative',
+          bottom: '0',
+          width: '100%',
+          display: 'flex',
+          justifyContent: 'center',
+          marginTop: '32px',
+        }}
+      >
+        <ul className="flex items-center m-0 p-0 list-none [&>li]:!w-auto [&>li]:!h-auto [&>li]:mx-1">
+          {dots}
+        </ul>
+      </div>
+    ),
+    customPaging: () => (
+      <div className="w-2 h-2 mt-8 rounded-full bg-gray-200 group-[.slick-active]:bg-primary" />
+    ),
   };
 
   return (
-    <div className="flex flex-col size-full bg-white">
+    <div className="flex flex-col size-full min-h-screen bg-secondary">
       <div className="flex-1 flex flex-col">
-        <Carousel
-          settings={settings}
-          className="welcome-slider flex-1 pb-8"
-        >
+        <Carousel settings={settings} className="welcome-slider flex-1 pb-8">
           {slides.map((slide, index) => (
             <div key={index} className="outline-none h-full">
               <div className="relative w-full aspect-[375/480]">
@@ -62,9 +73,9 @@ export default function Welcome() {
                 />
               </div>
               <div className="mt-8 px-8 text-center">
-                <h2 className="text-lg font-bold text-gray-900 font-manrope leading-tight">
+                <h4 className="text-xl font-bold text-black font-manrope">
                   {slide.title}
-                </h2>
+                </h4>
               </div>
             </div>
           ))}
@@ -83,43 +94,15 @@ export default function Welcome() {
           </TGButton>
         </div>
 
-        <Link
-          href="/login"
-          className="text-primary font-bold text-base hover:underline font-manrope"
+        <TGButton
+          fullWidth
+          size="xl"
+          variant="ghost"
+          onClick={() => router.push('/sign-in')}
         >
           Log In
-        </Link>
+        </TGButton>
       </div>
-
-      <style jsx global>{`
-        .welcome-slider .slick-dots {
-          bottom: -10px;
-          position: relative;
-          margin-top: 20px;
-        }
-        .welcome-slider .slick-dots li {
-          margin: 0 3px;
-          width: 6px;
-          height: 6px;
-        }
-        .welcome-slider .slick-dots li button {
-          width: 6px;
-          height: 6px;
-          padding: 0;
-        }
-        .welcome-slider .slick-dots li button:before {
-          font-size: 6px;
-          color: #e5e7eb;
-          opacity: 1;
-          width: 6px;
-          height: 6px;
-          line-height: 6px;
-          content: '•';
-        }
-        .welcome-slider .slick-dots li.slick-active button:before {
-          color: #d70127;
-        }
-      `}</style>
     </div>
   );
 }
