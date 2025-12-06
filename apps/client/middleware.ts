@@ -27,7 +27,7 @@ async function validateToken(token: string | undefined): Promise<boolean> {
 // 這個函數可以是異步的，如果您需要等待 API 響應
 const protectedRoutes = ['/member', '/garage'];
 
-const guestOnlyRoutes = ['/sign-in', '/sign-up', '/reset-password'];
+const guestOnlyRoutes = ['/sign-in', '/sign-up', '/reset-password', '/welcome'];
 
 const publicRoutes = ['/', '/news', '/privacy-policy', '/terms-of-service', '/ui-demo'];
 

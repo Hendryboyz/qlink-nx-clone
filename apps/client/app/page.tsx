@@ -37,12 +37,12 @@ const mediaLinks = [
   },
   {
     name: 'Facebook',
-    href: '',
+    href: 'https://www.facebook.com/share/1Da4LHfKBJ/?mibextid=wwXIfr',
     imgSrc: '/assets/v2/fb.png',
   },
   {
     name: 'Instagram',
-    href: '',
+    href: 'https://www.instagram.com/qlink_motorcycle',
     imgSrc: '/assets/v2/ig.png',
   },
 ];
@@ -57,6 +57,7 @@ const CarouselItems = [
     src: '/assets/v2/Banner01.png',
     alt: '',
     buttonText: 'Sign Up Now',
+    link: '/welcome',
   },
   {
     src: '/assets/v2/Banner02.png',
@@ -129,7 +130,7 @@ export default function Index() {
           isOpen={isMenuOpen}
           onMenuOpen={() => setIsMenuOpen(true)}
           onMenuClose={() => setIsMenuOpen(false)}
-          onSignInClick={() => router?.push('/signin')}
+          onSignInClick={() => router?.push('/welcome')}
           isSignedIn={isSignedIn}
         />
       </div>
@@ -184,7 +185,7 @@ export default function Index() {
             ))}
             <button
               className="flex items-center gap-2 text-base font-bold text-text-s justify-end"
-              onClick={() => signOut({ callbackUrl: '/sign-in' })}
+              onClick={() => signOut({ callbackUrl: '/' })}
             >
               <LogOut className="size-4" />
               <span>Log out</span>
@@ -196,7 +197,43 @@ export default function Index() {
       <span className="p-4 bg-primary text-sm font-manrope text-fill flex items-center py-4 justify-center">
         Exclusive Member Test Ride See details
       </span>
-      <Carousel items={CarouselItems} />
+      <Carousel>
+        {CarouselItems.map((item, index) => (
+          <div
+            key={index}
+            className="relative w-full h-[600px] md:h-[800px] outline-none"
+          >
+            <div className="absolute inset-0 bg-black">
+              {item.src && (
+                <Image
+                  src={item.src}
+                  alt={item.alt}
+                  fill
+                  className="object-cover opacity-90"
+                  priority={index === 0}
+                  unoptimized={item.src.startsWith('http')}
+                />
+              )}
+            </div>
+            <div className="absolute z-10 bottom-20 flex flex-col items-center w-full">
+              {item.buttonText && (
+                <TGButton
+                  variant="primary"
+                  size="md"
+                  className="w-auto"
+                  onClick={() => {
+                    if (item.link) {
+                      router?.push(item.link);
+                    }
+                  }}
+                >
+                  {item.buttonText}
+                </TGButton>
+              )}
+            </div>
+          </div>
+        ))}
+      </Carousel>
       <div
         className="p-6 grid place-items-center text-center w-full"
         style={{
@@ -222,7 +259,8 @@ export default function Index() {
                   <span
                     className="py-1 px-4"
                     style={{
-                      backgroundColor: newsItems[index % newsItems.length].categoryBgColor,
+                      backgroundColor:
+                        newsItems[index % newsItems.length].categoryBgColor,
                       color: newsItems[index % newsItems.length].categoryColor,
                     }}
                   >
@@ -234,7 +272,9 @@ export default function Index() {
             </div>
           ))}
         </div>
-        <TGButton variant="outline" size="md" className="w-auto mt-6">
+        <TGButton variant="outline" size="md" className="w-auto mt-6" onClick={() => {
+          router?.push('/news')
+        }}>
           View More News
         </TGButton>
       </div>
