@@ -8,16 +8,18 @@ type TopNavProps = {
   onLogoClick?: () => void;
   onMenuOpen?: () => void;
   onMenuClose?: () => void;
+  onSignInClick?: () => void;
   isSignedIn?: boolean;
   isOpen?: boolean;
 };
 
 const TopNav = forwardRef<HTMLElement, TopNavProps>(({
+  imgSrc,
   onLogoClick,
   onMenuOpen,
   onMenuClose,
+  onSignInClick,
   isSignedIn,
-  imgSrc,
   isOpen,
 }, ref) => {
   const [internalIsOpen, setInternalIsOpen] = useState(false);
@@ -32,7 +34,7 @@ const TopNav = forwardRef<HTMLElement, TopNavProps>(({
         onClick={() => onLogoClick?.()}
       />
       <div className="flex items-center gap-2">
-        {!isSignedIn && <TGButton size="sm">Sign In</TGButton>}
+        {!isSignedIn && <TGButton size="sm" onClick={() => onSignInClick?.()}>Sign In</TGButton>}
         {isMenuOpen && (
           <X
             className="size-6 text-stroke-s"

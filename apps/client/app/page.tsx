@@ -6,20 +6,25 @@ import { LogOut } from 'lucide-react';
 import { TopNav, Footer, TGButton, BottomNav } from '@org/components';
 import Carousel from '$/components/Carousel';
 import { twMerge } from 'tailwind-merge';
+import { useRouter } from 'next/navigation';
+import { useSession, signOut } from 'next-auth/react';
+import API from '$/utils/fetch';
+import { PostEntity } from 'types/src/posts';
+import dayjs from 'dayjs';
 
 const SignedInLinks = [
   { name: 'Home', href: '/' },
-  { name: 'Member', href: '' },
-  { name: 'My Garage', href: '' },
+  { name: 'Member', href: '/member' },
+  { name: 'My Garage', href: '/garage' },
   { name: 'Coupons', href: '' },
-  { name: 'News', href: '' },
+  { name: 'News', href: '/news' },
   { name: 'Promotion', href: '' },
   { name: 'Contact Us', href: '' },
 ];
 
 const guestLinks = [
-  { name: 'Home', href: '' },
-  { name: 'News', href: '' },
+  { name: 'Home', href: '/' },
+  { name: 'News', href: '/news' },
   { name: 'Promotion', href: '' },
   { name: 'Contact Us', href: '' },
 ];
@@ -43,8 +48,8 @@ const mediaLinks = [
 ];
 
 const termLinks = [
-  { name: 'Privacy Policy', href: '' },
-  { name: 'Terms Of Service', href: '' },
+  { name: 'Privacy Policy', href: '/privacy-policy' },
+  { name: 'Terms Of Service', href: '/terms-of-service' },
 ];
 
 const CarouselItems = [
@@ -72,51 +77,39 @@ const CarouselItems = [
 
 const newsItems = [
   {
-    src: '/assets/v2/news-01.jpg',
-    alt: 'news',
-    title:
-      'New Model Release! 2024 Vintage Motorcycle Series Now Available for Pre-Order',
-    category: 'News',
     categoryColor: '#8F021B',
     categoryBgColor: '#FFEAEA',
-    date: '2024/7/12',
   },
   {
-    src: '/assets/v2/news-02.jpg',
-    alt: 'promo',
-    title: 'Summer Maintenance Specials, Limited Time Discounts Starting Soon',
-    category: 'Promo',
     categoryColor: '#934200',
     categoryBgColor: '#FFF6E7',
-    date: '2024/7/1',
   },
   {
-    src: '/assets/v2/news-03.jpg',
-    alt: 'event',
-    title:
-      'Exclusive Member Test Ride Event: Experience the Latest Motorcycle Models',
-    category: 'Event',
     categoryColor: '#026900',
     categoryBgColor: '#ECFFE9',
-    date: '2024/6/10',
   },
   {
-    src: '/assets/v2/news-04.jpg',
-    alt: 'media',
-    title: 'Latest Maintenance Tips to Keep Your Bike in Top Condition',
-    category: 'Media',
     categoryColor: '#0D1BB7',
     categoryBgColor: '#E8F0FF',
-    date: '2024/6/08',
   },
 ];
 
 export default function Index() {
-  const isSignedIn = false;
   const navRef = useRef<HTMLElement>(null);
   const [activeItem, setActiveItem] = useState<string>();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [navHeight, setNavHeight] = useState(55);
+  const router = useRouter();
+  const { status } = useSession();
+  const isSignedIn = status !== 'unauthenticated';
+
+  const [posts, setPosts] = useState<PostEntity[]>([]);
+
+  useEffect(() => {
+    API.get<PostEntity[]>('/posts').then((res) => {
+      setPosts(res);
+    });
+  }, []);
 
   useEffect(() => {
     if (navRef.current) {
@@ -126,7 +119,7 @@ export default function Index() {
 
   return (
     <div
-      className="size-full relative"
+      className="size-full relative bg-secondary"
       style={{ paddingTop: `${navHeight}px` }}
     >
       <div className="fixed top-0 left-0 w-full z-50">
@@ -136,6 +129,8 @@ export default function Index() {
           isOpen={isMenuOpen}
           onMenuOpen={() => setIsMenuOpen(true)}
           onMenuClose={() => setIsMenuOpen(false)}
+          onSignInClick={() => router?.push('/signin')}
+          isSignedIn={isSignedIn}
         />
       </div>
 
@@ -158,24 +153,26 @@ export default function Index() {
       >
         <div className="flex-1 overflow-y-auto px-4 flex flex-col text-right items-end">
           <div className="flex flex-col">
-            {!isSignedIn && guestLinks.map((link) => (
-              <a
-                key={link.name}
-                href={link.href}
-                className="text-base font-bold text-text-s py-4"
-              >
-                {link.name}
-              </a>
-            ))}
-            {isSignedIn && SignedInLinks.map((link) => (
-              <a
-                key={link.name}
-                href={link.href}
-                className="text-base font-bold text-text-s py-4"
-              >
-                {link.name}
-              </a>
-            ))}
+            {!isSignedIn &&
+              guestLinks.map((link) => (
+                <a
+                  key={link.name}
+                  href={link.href}
+                  className="text-base font-bold text-text-s py-4"
+                >
+                  {link.name}
+                </a>
+              ))}
+            {isSignedIn &&
+              SignedInLinks.map((link) => (
+                <a
+                  key={link.name}
+                  href={link.href}
+                  className="text-base font-bold text-text-s py-4"
+                >
+                  {link.name}
+                </a>
+              ))}
             {termLinks.map((link) => (
               <a
                 key={link.name}
@@ -185,7 +182,10 @@ export default function Index() {
                 {link.name}
               </a>
             ))}
-            <button className="flex items-center gap-2 text-base font-bold text-text-s justify-end">
+            <button
+              className="flex items-center gap-2 text-base font-bold text-text-s justify-end"
+              onClick={() => signOut({ callbackUrl: '/sign-in' })}
+            >
               <LogOut className="size-4" />
               <span>Log out</span>
             </button>
@@ -198,37 +198,37 @@ export default function Index() {
       </span>
       <Carousel items={CarouselItems} />
       <div
-        className="p-6 grid place-items-center text-center"
+        className="p-6 grid place-items-center text-center w-full"
         style={{
           marginTop: '-6px',
         }}
       >
         <h3 className="font-bold text-text-s text-2xl">LATEST NEWS</h3>
         <div className="grid grid-1 mt-6 gap-4">
-          {newsItems.map((item, index) => (
-            <div key={item.src} className="grid grid-cols-[120px,1fr] gap-4">
+          {posts.map((item, index) => (
+            <div key={item.id} className="grid grid-cols-[120px,1fr] gap-4">
               <Image
-                src={item.src}
-                alt={item.alt}
+                src={item.coverImage || '/assets/v2/news-01.jpg'}
+                alt={item.title}
                 width={120}
                 height={120}
                 className="object-cover w-[120px] h-[120px]"
               />
               <div className="flex flex-col justify-between text-left rounded">
-                <h4 className="text-base mb-2 font-bold text-text-s">
+                <h4 className="text-base font-bold text-text-s mb-0">
                   {item.title}
                 </h4>
                 <div className="flex items-center justify-between">
                   <span
                     className="py-1 px-4"
                     style={{
-                      backgroundColor: item.categoryBgColor,
-                      color: item.categoryColor,
+                      backgroundColor: newsItems[index % newsItems.length].categoryBgColor,
+                      color: newsItems[index % newsItems.length].categoryColor,
                     }}
                   >
                     {item.category}
                   </span>
-                  <span>{item.date}</span>
+                  <span>{dayjs(item.updatedAt).format('YYYY/M/DD')}</span>
                 </div>
               </div>
             </div>
