@@ -4,10 +4,30 @@ import { Button, message, Modal, Space, Tooltip } from 'antd';
 import React, { ReactElement, useContext, useState } from 'react';
 import { ProTable } from '@ant-design/pro-components';
 import { VehiclesContext } from '$/pages/VehiclesManagement/VehiclesContext';
-import { FileDoneOutlined, LoadingOutlined } from '@ant-design/icons';
+import { FileDoneOutlined, FileExclamationOutlined } from '@ant-design/icons';
 import { VehicleDTO } from '@org/types';
 import API from '$/utils/fetch';
 import { DEFAULT_MODELS } from '@org/common';
+import { TooltipPlacement } from 'antd/lib/tooltip';
+
+type VehiclesTableProps = {
+  statusText: string;
+  tooltipPlacement: TooltipPlacement;
+  tooltipContent?: string;
+  statusColor: string
+};
+
+const VehicleStatus = ({statusText, tooltipPlacement, tooltipContent, statusColor}: VehiclesTableProps) => {
+  return (
+    <Tooltip placement={tooltipPlacement} title={tooltipContent}>
+      <div className="flex">
+        <span style={{ paddingRight: '5px', color: statusColor }}>
+          {statusText}
+        </span>
+      </div>
+    </Tooltip>
+  );
+};
 
 export default function VehiclesTable(): ReactElement {
   const {
@@ -132,36 +152,32 @@ export default function VehiclesTable(): ReactElement {
       key: 'dealerName',
     },
     {
-      title: 'Verification Status',
+      title: 'Status',
       dataIndex: 'isVerified',
       key: 'isVerified',
       search: false,
       render: (isVerified, record) => {
-        let autoVerifyStatus = (
-          <Tooltip placement="right" title={"wait for verified process"}>
-            <LoadingOutlined />
-          </Tooltip>
-        );
-        if (isVerified) {
-          autoVerifyStatus = (
-            <Tooltip placement="bottom" title={"verify done, update vehicle info to trigger again"}>
-              <FileDoneOutlined style={{ color: '#2DC100' }} />
-            </Tooltip>
-          )
-        }
         if (isVerified) {
           return (
-            <div className="flex">
-              <span style={{paddingRight: '5px', color: '#2DC100'}}>Success</span>
-              {autoVerifyStatus}
-            </div>
+            <VehicleStatus
+              statusText={'Verified'}
+              statusColor={'#2DC100'}
+              tooltipContent={
+                'verify successfully'
+              }
+              tooltipPlacement={'bottom'}
+            />
           );
         } else {
           return (
-            <div>
-              <span style={{paddingRight: '5px', color: '#EFB700'}}>Pending</span>
-              {autoVerifyStatus}
-            </div>
+            <VehicleStatus
+              statusText={'Error'}
+              statusColor={'red'}
+              tooltipContent={
+                'something went wrong, please contact administrator'
+              }
+              tooltipPlacement={'right'}
+            />
           );
         }
       },

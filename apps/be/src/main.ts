@@ -6,6 +6,20 @@ import { NestExpressApplication } from '@nestjs/platform-express';
 import { AllExceptionsFilter } from './common/filters/all-exceptions.filter';
 import * as bodyParser from 'body-parser';
 import { ConfigService } from '@nestjs/config';
+import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+
+function setSwaggerDocuments(app: NestExpressApplication, enableSwaggerUI: boolean) {
+  const config = new DocumentBuilder()
+    .setTitle('QRC Backend API')
+    .addBearerAuth()
+    .build();
+
+    const documentFactory = () => SwaggerModule.createDocument(app, config);
+    SwaggerModule.setup('docs', app, documentFactory, {
+      useGlobalPrefix: true,
+      swaggerUiEnabled: enableSwaggerUI,
+    });
+}
 
 async function bootstrap() {
   const app =
@@ -27,7 +41,7 @@ async function bootstrap() {
         callback(new Error('Not allowed by CORS'));
       }
     },
-    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
+    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
     credentials: true,
     allowedHeaders: ['Content-Type', 'Authorization', 'pre-token'],
   });
@@ -43,6 +57,12 @@ async function bootstrap() {
   });
 
   app.useGlobalFilters(new AllExceptionsFilter());
+
+  const isProduction =
+    configService.get<string>('NODE_ENV', 'development') == 'production';
+
+  setSwaggerDocuments(app, !isProduction);
+
 
   const port = configService.get<number>('PORT', 3000);
   await app.listen(port);

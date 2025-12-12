@@ -88,7 +88,7 @@ export class UserManagementService {
   }
 
   public async updateUser(userId: string, updateData: UserUpdateDto): Promise<UserVO> {
-    if (updateData.password != null) throw new BadRequestException();
+    if (updateData.password !== null) throw new BadRequestException();
     const updatedUser = await this.userRepository.update(userId, updateData);
 
     this.logger.debug(`user[${updatedUser.id}] updated`, updatedUser);

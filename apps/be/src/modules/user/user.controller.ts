@@ -104,7 +104,6 @@ export class UserController {
     }
   }
 
-  @UseGuards(AuthGuard('jwt'))
   @Delete()
   @HttpCode(HttpStatus.NO_CONTENT)
   async deleteUser(@UserId() userId: string): Promise<void> {

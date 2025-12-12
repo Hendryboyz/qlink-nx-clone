@@ -35,7 +35,7 @@ export class UserService {
   }> {
     const {data, total} =
       await this.userRepository.findByPage(page, limit, filters);
-    return {data, total, page, limit };
+    return {data, total, page, limit};
   }
 
   public async getUserInfo(userId: string): Promise<UserVO | undefined> {
