@@ -1,5 +1,3 @@
-import { ApiProperty } from '@nestjs/swagger';
-
 export interface UserEntity {
   id: string;
   phone: string;
@@ -35,41 +33,20 @@ export type UserDto = Omit<User, 'id' | 'createdAt' | 'updatedAt' | 'isDelete' |
   birthday?: string;
 }
 
-export class ClientUserUpdateDto {
-  @ApiProperty()
+export interface ClientUserUpdateDto {
   firstName?: string;
-
-  @ApiProperty()
   midName?: string;
-
-  @ApiProperty()
   lastName?: string;
-
-  @ApiProperty()
   birthday?: string;
-
-  @ApiProperty()
   email?: string;
-
-  @ApiProperty()
   phone?: string;
-
-  @ApiProperty()
   addressCity?: string;
-
-  @ApiProperty()
   addressState?: string;
-
-  @ApiProperty()
   facebook?: string;
-
-  @ApiProperty()
   whatsapp?: string;
-
-  @ApiProperty()
   source?: number;
 }
-export class UserUpdateDto extends ClientUserUpdateDto {
+export interface UserUpdateDto extends ClientUserUpdateDto {
   addressDetail?: string
   password?: string;
   isDelete?: boolean;
