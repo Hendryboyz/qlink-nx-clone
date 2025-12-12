@@ -157,7 +157,6 @@ const disabledTableColumns: ProColumns[] = [
   },
 ];
 
-
 const disabledData = [5, 6, 7, 8, 9, 10, 11].map((num: number) => (
   {
     id: num.toString(),
@@ -168,7 +167,11 @@ const disabledData = [5, 6, 7, 8, 9, 10, 11].map((num: number) => (
   }
 ));
 
-function BannersTable() {
+type BannersTableProps = {
+  setEditingBanner: (value: any) => void;
+}
+
+function BannersTable({ setEditingBanner }: BannersTableProps) {
   const [dataSource, setDataSource] = useState(enabledData);
   const handleDragSortEnd = (
     beforeIndex: number,
@@ -201,9 +204,15 @@ function BannersTable() {
         columns={enabledTableColumns}
         dataSource={dataSource}
         rowKey="id"
-        // search={{
-        //   labelWidth: 'auto',
-        // }}
+        toolBarRender={() => [
+          <Button
+            key="button"
+            type="primary"
+            onClick={() => {  setEditingBanner(null); }}
+          >
+            New Banner
+          </Button>,
+        ]}
         dragSortKey='sort'
         search={false}
         pagination={false}
@@ -221,9 +230,6 @@ function BannersTable() {
         columns={disabledTableColumns}
         dataSource={disabledData}
         rowKey="id"
-        // search={{
-        //   labelWidth: 'auto',
-        // }}
         search={false}
         pagination={false}
       />
