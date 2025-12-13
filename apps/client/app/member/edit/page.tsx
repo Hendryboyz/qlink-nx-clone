@@ -1,0 +1,350 @@
+'use client';
+
+import { useEffect, useState } from 'react';
+import { UserVO, ClientUserUpdateDto, GenderType } from '@org/types';
+import {
+  DatePickerWithInput,
+  Modal,
+  ModalDescription,
+  ModalFooter,
+  ModalHeader,
+  ModalTitle,
+  TGButton,
+  TGDropdown,
+  TGInput,
+  TextFieldButton,
+} from '@org/components';
+import { STATES } from '@org/common';
+import API from '$/utils/fetch';
+import { useRouter } from 'next/navigation';
+import { ChevronLeft, Trash2 } from 'lucide-react';
+import Image from 'next/image';
+import PersonIcon from '../assets/person.svg';
+import { format } from 'date-fns';
+import { Upload, UploadProps } from 'antd';
+
+const GENDER_OPTIONS = ['Male', 'Female', 'Other'];
+const CITY_OPTIONS = ['Lagos', 'Abuja', 'Port Harcourt', 'Ibadan', 'Kano'];
+const GENDER_DROPDOWN_OPTIONS = GENDER_OPTIONS.map((option) => ({ label: option, value: option }));
+const CITY_DROPDOWN_OPTIONS = CITY_OPTIONS.map((option) => ({ label: option, value: option }));
+const STATE_DROPDOWN_OPTIONS = STATES.map((state) => ({ label: state, value: state }));
+const INPUT_TEXT_CLASS = '!text-text-str !font-bold placeholder:!font-normal';
+const DROPDOWN_TEXT_CLASS = '!text-text-str font-bold [&_span]:!text-text-str [&_span]:!font-bold';
+const DATE_PICKER_TEXT_CLASS =
+  '[&_button]:!text-text-str [&_button]:!font-bold [&_button>span]:!text-text-str [&_button>span]:!font-bold';
+
+// Section Header component
+// Font: Manrope Bold 700, 16px, line-height 140%, color #1A1A1A
+// Background: #F5F5F5
+function SectionHeader({ title }: { title: string }) {
+  return (
+    <div className="w-full px-6 py-6 bg-secondary">
+      <span className="font-manrope font-bold text-base leading-[140%] text-text-str">
+        {title}
+      </span>
+    </div>
+  );
+}
+
+function Line() {
+  return <div className="border-t border-stroke-w mx-6" />;
+}
+
+export default function MemberEdit() {
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [avatarUrl, setAvatarUrl] = useState<string>('');
+  const [coverUrl, setCoverUrl] = useState<string>('');
+  const [uploading, setUploading] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [birthday, setBirthday] = useState<Date | undefined>(undefined);
+
+  // Form state
+  const [formData, setFormData] = useState<ClientUserUpdateDto>({});
+  const [gender, setGender] = useState<GenderType | ''>('');
+
+  const router = useRouter();
+
+  useEffect(() => {
+    const fetchUserInfo = async () => {
+      try {
+        setLoading(true);
+        const data = await API.get<UserVO>('/user/info');
+        setAvatarUrl(data.avatarImageUrl || '');
+        setGender(data.gender || '');
+        const parsedBirthday = data.birthday ? new Date(data.birthday) : undefined;
+        setBirthday(parsedBirthday && !Number.isNaN(parsedBirthday.getTime()) ? parsedBirthday : undefined);
+        setFormData({
+          firstName: data.firstName || '',
+          lastName: data.lastName || '',
+          email: data.email || '',
+          phone: data.phone || '',
+          birthday: data.birthday || '',
+          addressCity: data.addressCity || '',
+          addressState: data.addressState || '',
+          whatsapp: data.whatsapp || '',
+          facebook: data.facebook || '',
+        });
+      } catch (err) {
+        console.error('Error fetching user info:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchUserInfo();
+  }, []);
+
+  const handleFieldChange = (field: keyof ClientUserUpdateDto, value: string) => {
+    setFormData((prev) => ({ ...prev, [field]: value }));
+  };
+
+  const handleSave = async () => {
+    try {
+      setSaving(true);
+      await API.put<UserVO>('/user/info', formData);
+      router.push('/member');
+    } catch (err) {
+      console.error('Error saving user info:', err);
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleAvatarUpload: UploadProps['customRequest'] = async ({ file }) => {
+    const formDataUpload = new FormData();
+    formDataUpload.append('avatar', file as File);
+    try {
+      setUploading(true);
+      const res = await API.post('/user/avatar', formDataUpload, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+      });
+      const result = await res.data;
+      setAvatarUrl(result.imageUrl);
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  const fullName = [formData.firstName, formData.lastName].filter(Boolean).join(' ');
+
+  const handleNameChange = (value: string) => {
+    const parts = value.split(' ');
+    handleFieldChange('firstName', parts[0] || '');
+    handleFieldChange('lastName', parts.slice(1).join(' ') || '');
+  };
+
+  const handleBirthdayChange = (value?: Date) => {
+    setBirthday(value);
+    handleFieldChange('birthday', value ? format(value, 'yyyy-MM-dd') : '');
+  };
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-screen bg-secondary">
+        <div className="text-text-str">Loading...</div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="w-full min-h-screen bg-secondary">
+      {/* Header */}
+      <header className="w-full px-6 py-5 bg-secondary">
+        <button
+          onClick={() => router.back()}
+          className="flex items-center gap-1 text-text-str"
+        >
+          <ChevronLeft className="w-5 h-5" />
+          <span className="font-manrope font-bold text-[1.25rem] text-base leading-[140%]">Edit Profile</span>
+        </button>
+      </header>
+      <Line />
+      {/* Profile Photo Section */}
+      <section className="w-full px-6 py-6 bg-secondary">
+        <p className="font-manrope font-bold text-base leading-[140%] text-text-str mb-4">
+          Profile Photo
+        </p>
+        <div className="flex justify-center">
+          <Upload
+            name="avatar"
+            showUploadList={false}
+            disabled={uploading}
+            customRequest={handleAvatarUpload}
+          >
+            <div className="relative cursor-pointer">
+              {avatarUrl ? (
+                <img
+                  src={avatarUrl}
+                  className="w-24 h-24 rounded-full border-2 border-stroke-w bg-secondary object-cover"
+                  alt="avatar"
+                />
+              ) : (
+                <div className="w-24 h-24 rounded-full border-2 border-stroke-w bg-stroke-w flex items-center justify-center">
+                  <Image src={PersonIcon} alt="avatar" width={64} height={64} />
+                </div>
+              )}
+              {uploading && (
+                <div className="absolute inset-0 flex items-center justify-center bg-black/50 rounded-full">
+                  <span className="text-white text-xs">Uploading...</span>
+                </div>
+              )}
+            </div>
+          </Upload>
+        </div>
+      </section>
+      <Line />
+
+      {/* Cover Image Section */}
+      <section className="w-full px-6 py-6 bg-secondary">
+        <p className="font-manrope font-bold text-base leading-[140%] text-text-str mb-4">
+          Cover Image
+        </p>
+        <div className="w-full flex justify-center">
+          {coverUrl ? (
+            <img
+              src={coverUrl}
+              className="w-[22.5rem] h-[8.75rem] object-cover"
+              alt="cover"
+            />
+          ) : (
+            <div className="w-[22.5rem] h-[8.75rem] bg-stroke-w" />
+          )}
+        </div>
+      </section>
+      <Line />
+      {/* Account Section */}
+      <SectionHeader title="Account" />
+      <div className="w-full px-6 bg-secondary space-y-3 mb-6">
+        <TextFieldButton label="Change Email" />
+        <TextFieldButton label="Change Password" />
+      </div>
+      <Line />
+      {/* Personal Info Section */}
+      <SectionHeader title="Personal Info" />
+      <div className="w-full px-6 bg-secondary space-y-4 mb-6">
+        <TGInput
+          label="Name"
+          value={fullName}
+          onChange={(e) => handleNameChange(e.target.value)}
+          placeholder="Enter your name"
+          className={INPUT_TEXT_CLASS}
+        />
+        <DatePickerWithInput
+          label="Birthday"
+          value={birthday}
+          onChange={handleBirthdayChange}
+          placeholder="yyyy / mm / dd"
+          dateFormat="yyyy / MM / dd"
+          className={DATE_PICKER_TEXT_CLASS}
+        />
+        <TGDropdown
+          label="Gender"
+          value={gender}
+          onChange={(value) => setGender(value as GenderType)}
+          options={GENDER_DROPDOWN_OPTIONS}
+          placeholder="Select gender"
+          className={DROPDOWN_TEXT_CLASS}
+        />
+        <TGDropdown
+          label="City/Town"
+          value={formData.addressCity || ''}
+          onChange={(value) => handleFieldChange('addressCity', value)}
+          options={CITY_DROPDOWN_OPTIONS}
+          placeholder="Select city"
+          className={DROPDOWN_TEXT_CLASS}
+        />
+        <TGDropdown
+          label="State"
+          value={formData.addressState || ''}
+          onChange={(value) => handleFieldChange('addressState', value)}
+          options={STATE_DROPDOWN_OPTIONS}
+          placeholder="Select state"
+          className={DROPDOWN_TEXT_CLASS}
+        />
+      </div>
+      <Line />
+      {/* Contact Info Section */}
+      <SectionHeader title="Contact Info" />
+      <div className="w-full px-6 bg-secondary space-y-4 mb-6">
+        <TGInput
+          label="Mobile Number"
+          value={formData.phone || ''}
+          onChange={(e) => handleFieldChange('phone', e.target.value)}
+          placeholder="0000-000-0000"
+          type="tel"
+          className={INPUT_TEXT_CLASS}
+        />
+        <TGInput
+          label="Whatsapp ID"
+          value={formData.whatsapp || ''}
+          onChange={(e) => handleFieldChange('whatsapp', e.target.value)}
+          placeholder="0000-000-0000"
+          className={INPUT_TEXT_CLASS}
+        />
+        <TGInput
+          label="Facebook ID"
+          value={formData.facebook || ''}
+          onChange={(e) => handleFieldChange('facebook', e.target.value)}
+          placeholder="XXXXXXXXXX"
+          className={INPUT_TEXT_CLASS}
+        />
+      </div>
+      <Line />
+
+      {/* Actions */}
+      <div className="w-full px-6 py-4 bg-secondary">
+        <TGButton
+          fullWidth
+          size="xl"
+          onClick={handleSave}
+          loading={saving}
+        >
+          Save
+        </TGButton>
+      </div>
+      <Line />
+      <div className="w-full px-6 py-1 bg-secondary">
+        <TGButton
+          variant="ghost"
+          fullWidth
+          className="gap-2 text-stroke-s hover:text-text-str"
+          onClick={() => setShowDeleteModal(true)}
+        >
+          <Trash2 className="w-4 h-4" />
+          <span className="font-manrope font-bold text-base leading-[140%] text-stroke-s">Delete Account</span>
+        </TGButton>
+      </div>
+      <Line />
+      <div className="w-full mb-6"></div>
+
+      {/* Delete Account Confirmation Modal */}
+      <Modal isOpen={showDeleteModal}>
+        <ModalHeader>
+          <ModalTitle>Delete Account</ModalTitle>
+          <ModalDescription>
+            Are you sure you want to delete your account? This action cannot be undone.
+          </ModalDescription>
+        </ModalHeader>
+        <ModalFooter>
+          <TGButton
+            variant="outline"
+            fullWidth
+            onClick={() => setShowDeleteModal(false)}
+          >
+            Cancel
+          </TGButton>
+          <TGButton
+            variant="primary"
+            fullWidth
+            onClick={() => setShowDeleteModal(false)}
+          >
+            Delete
+          </TGButton>
+        </ModalFooter>
+      </Modal>
+    </div>
+  );
+}
