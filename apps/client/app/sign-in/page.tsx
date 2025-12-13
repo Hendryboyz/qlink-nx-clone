@@ -159,7 +159,7 @@ function SignInForm() {
               size="xl"
               variant="primary"
             >
-              {isSubmitting ? 'Signing In...' : 'Continue'}
+              Continue
             </TGButton>
           </div>
         </form>
@@ -174,7 +174,7 @@ export default function SignIn() {
   return (
     <div className="w-full h-screen bg-secondary flex flex-col px-6 pt-6">
       {/* Header */}
-      <div className="flex items-center mb-8 flex-none">
+      <div className="flex items-center mb-6 flex-none">
         <button onClick={() => router.back()} className="p-2 -ml-2">
           <ChevronLeftIcon className="w-8 h-8 text-stroke-s" />
         </button>
