@@ -1,48 +1,56 @@
 'use client';
-
-import { useCallback, useMemo, useState } from 'react';
-import { ColorBackground } from '../../components/Background';
-import Step1 from './Step1';
-import Step2 from './Step2';
-import Step3 from './Step3';
-import { PayloadProvider } from '$/store/payload';
-import { Cross2Icon } from '@radix-ui/react-icons';
+import { useState } from 'react';
+import { ChevronLeftIcon } from '@radix-ui/react-icons';
 import { useRouter } from 'next/navigation';
+import ResetPasswordStep1, { ResetPasswordStep1Title } from './step-1';
+import ResetPasswordStep2, { ResetPasswordStep2Title } from './step-2';
+import ResetPasswordStep3, { ResetPasswordStep3Title } from './step-3';
 
-export default function SignUp() {
+type SHARED = { email?: string; sessionId?: string };
+
+export default function ResetPassword() {
   const router = useRouter();
-  const onClose = () => router.push('/')
-  const [step, handleChangeStep] = useState(1);
-  const goNextStep = useCallback(() => {
-    handleChangeStep(pre => pre+1)
-  }, [])
-
-  const goFirstStep = useCallback(() => {
-    handleChangeStep(1)
-  }, [])
-  const children = useMemo(() => {
-    switch (step) {
-      case 1:
-        return <Step1 onSuccess={goNextStep} />;
-      case 2:
-        return <Step2 onSuccess={goNextStep} goBack={goFirstStep} />;
-      case 3:
-        return <Step3 />;
-    }
-  }, [step, goNextStep, goFirstStep])
+  const [step, setStep] = useState(1);
+  const [shared, setShared] = useState<SHARED>({});
 
   return (
-    <PayloadProvider>
-    <div className="absolute top-[24px] right-[24px] text-[#FFF0D3]" onClick={onClose}>
-      <Cross2Icon
-        height={24}
-        width={24}
-        className="justify-self-end cursor-pointer"
-      />
+    <div className="w-full h-screen bg-secondary flex flex-col p-6">
+      <div className="flex items-center mb-6 flex-none">
+        <button onClick={() => {
+          if(step === 1) {
+            router.back();
+          } else {
+            setStep(step - 1);
+          }
+        }} className="p-2 -ml-2">
+          <ChevronLeftIcon className="w-8 h-8 text-stroke-s" />
+        </button>
+        {step === 1 && <ResetPasswordStep1Title />}
+        {step === 2 && <ResetPasswordStep2Title />}
+        {step === 3 && <ResetPasswordStep3Title />}
+      </div>
+      {step === 1 && (
+        <ResetPasswordStep1
+          onSuccess={({ email, sessionId }) => {
+            setShared({ email, sessionId });
+            setStep(2);
+          }}
+        />
+      )}
+      {step === 2 && (
+        <ResetPasswordStep2
+          email={shared.email!}
+          sessionId={shared.sessionId!}
+          onSuccess={() => {
+            setStep(3);
+          }}
+        />
+      )}
+      {step === 3 && (
+        <ResetPasswordStep3
+          token=""
+        />
+      )}
     </div>
-    <ColorBackground color="#D70127">
-      {children}
-    </ColorBackground>
-    </PayloadProvider>
   );
 }
