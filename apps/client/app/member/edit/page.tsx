@@ -244,8 +244,8 @@ export default function MemberEdit() {
       {/* Account Section */}
       <SectionHeader title="Account" />
       <div className="w-full px-6 bg-secondary space-y-3 mb-6">
-        <TextFieldButton label="Change Email" />
-        <TextFieldButton label="Change Password" />
+        <TextFieldButton label="Change Email" onClick={() => router.push('/member/change-email')} />
+        <TextFieldButton label="Change Password" onClick={() => router.push('/member/change-password')} />
       </div>
       <Line />
       {/* Personal Info Section */}
