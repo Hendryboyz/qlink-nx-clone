@@ -14,7 +14,7 @@ import { ChevronLeftIcon } from '@radix-ui/react-icons';
 import Image from 'next/image';
 import API from '$/utils/fetch';
 import { CODE_SUCCESS, INVALID_PAYLOAD } from '@org/common';
-import PwdAlertIcon from '../assets/pwd-alert.png';
+import PwdAlertIcon from '../assets/pwd-alert.svg';
 
 // Error icon component
 function ErrorIcon() {
