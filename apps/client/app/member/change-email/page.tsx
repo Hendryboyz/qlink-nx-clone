@@ -17,6 +17,7 @@ import {
 } from '@org/components';
 import Image from 'next/image';
 import WarningIcon from '../assets/warning.svg';
+import PwdAlertIcon from '../assets/pwd-alert.svg';
 import { CODE_SUCCESS, emailRegex } from '@org/common';
 import API from '$/utils/fetch';
 import { IdentifierType, OtpTypeEnum } from '@org/types';
@@ -27,6 +28,19 @@ interface SharedData {
   currentEmail: string;
   newEmail: string;
   sessionId: string;
+}
+
+function ErrorIcon() {
+  return <Image src={PwdAlertIcon} alt="error" width={10} height={9} className="shrink-0" />;
+}
+
+function ErrorMessage({ message }: { message: string }) {
+  return (
+    <div className="flex items-center gap-1.5 px-1 mt-1">
+      <ErrorIcon />
+      <span className="text-xs font-normal text-error leading-[140%]">{message}</span>
+    </div>
+  );
 }
 
 export default function ChangeEmail() {
@@ -233,9 +247,9 @@ function Step1VerifyEmail({ onSuccess }: Step1Props) {
               value={email}
               onChange={handleEmailChange}
               placeholder=""
-              className="text-text-str font-bold"
-              error={emailError}
+              className={emailError ? 'text-text-str font-bold !border-[rgba(242,48,48,1)]' : 'text-text-str font-bold'}
             />
+            {emailError && <ErrorMessage message={emailError} />}
           </div>
 
           <div id="email-input-container">
@@ -385,11 +399,11 @@ function Step2VerifyOTP({ email, sessionId, onSuccess }: Step2Props) {
             value={otp}
             onChange={setOtp}
             error={!!error}
-            errorMessage={error || undefined}
             disabled={isSubmitting}
             className="!items-start gap-4"
             onComplete={handleVerify}
           />
+          {error && <ErrorMessage message={error} />}
         </div>
 
         <div className="text-left text-sm mt-4 w-full">
@@ -513,9 +527,9 @@ function Step3EnterNewEmail({ onSuccess }: Step3Props) {
               value={newEmail}
               onChange={handleEmailChange}
               placeholder="Enter your new email"
-              className="text-text-str font-bold"
-              error={emailError}
+              className={emailError ? 'text-text-str font-bold !border-[rgba(242,48,48,1)]' : 'text-text-str font-bold'}
             />
+            {emailError && <ErrorMessage message={emailError} />}
           </div>
 
           <div id="new-email-input-container">
@@ -665,11 +679,11 @@ function Step4VerifyNewEmailOTP({ email, sessionId, onSuccess }: Step4Props) {
             value={otp}
             onChange={setOtp}
             error={!!error}
-            errorMessage={error || undefined}
             disabled={isSubmitting}
             className="!items-start gap-4"
             onComplete={handleVerify}
           />
+          {error && <ErrorMessage message={error} />}
         </div>
 
         <div className="text-left text-sm mt-4 w-full">
