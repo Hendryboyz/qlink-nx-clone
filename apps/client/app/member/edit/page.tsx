@@ -17,7 +17,8 @@ import {
 import { STATES } from '@org/common';
 import API from '$/utils/fetch';
 import { useRouter } from 'next/navigation';
-import { ChevronLeft, Trash2 } from 'lucide-react';
+import { ChevronLeftIcon } from '@radix-ui/react-icons';
+import TrashIcon from '../assets/trash.svg';
 import Image from 'next/image';
 import PersonIcon from '../assets/person.svg';
 import { format } from 'date-fns';
@@ -143,7 +144,7 @@ export default function MemberEdit() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center h-screen bg-secondary">
+      <div className="w-full min-h-screen flex items-center justify-center bg-secondary">
         <div className="text-text-str">Loading...</div>
       </div>
     );
@@ -157,7 +158,7 @@ export default function MemberEdit() {
           onClick={() => router.back()}
           className="flex items-center gap-1 text-text-str"
         >
-          <ChevronLeft className="w-5 h-5" />
+          <ChevronLeftIcon className="w-8 h-8 text-stroke-s" />
           <span className="font-manrope font-bold text-[1.25rem] text-base leading-[140%]">Edit Profile</span>
         </button>
       </header>
@@ -310,11 +311,11 @@ export default function MemberEdit() {
         <TGButton
           variant="ghost"
           fullWidth
-          className="gap-2 text-stroke-s hover:text-text-str"
+          className="gap-2 text-text-str hover:text-text-str"
           onClick={() => setShowDeleteModal(true)}
         >
-          <Trash2 className="w-4 h-4" />
-          <span className="font-manrope font-bold text-base leading-[140%] text-stroke-s">Delete Account</span>
+          <Image src={TrashIcon} alt="trash" width={16} height={16} className="w-4 h-4" />
+          <span className="font-manrope font-bold text-base leading-[140%] text-text-str">Delete Account</span>
         </TGButton>
       </div>
       <Line />
