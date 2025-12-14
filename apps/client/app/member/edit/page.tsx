@@ -8,6 +8,7 @@ import {
   ModalDescription,
   ModalFooter,
   ModalHeader,
+  ModalIcon,
   ModalTitle,
   TGButton,
   TGDropdown,
@@ -15,14 +16,17 @@ import {
   TextFieldButton,
 } from '@org/components';
 import { STATES } from '@org/common';
-import API from '$/utils/fetch';
 import { useRouter } from 'next/navigation';
 import { ChevronLeftIcon } from '@radix-ui/react-icons';
 import TrashIcon from '../assets/trash.svg';
+import WarningIcon from '../assets/warning.svg';
 import Image from 'next/image';
 import PersonIcon from '../assets/person.svg';
 import { format } from 'date-fns';
 import { Upload, UploadProps } from 'antd';
+import Cookies from 'js-cookie';
+import { BO_ACCESS_TOKEN } from '@org/common';
+import { signOut } from 'next-auth/react';
 
 const GENDER_OPTIONS = ['Male', 'Female', 'Other'];
 const CITY_OPTIONS = ['Lagos', 'Abuja', 'Port Harcourt', 'Ibadan', 'Kano'];
@@ -58,6 +62,8 @@ export default function MemberEdit() {
   const [coverUrl, setCoverUrl] = useState<string>('');
   const [uploading, setUploading] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [showDeleteSuccess, setShowDeleteSuccess] = useState(false);
+  const [deleting, setDeleting] = useState(false);
   const [birthday, setBirthday] = useState<Date | undefined>(undefined);
 
   // Form state
@@ -98,6 +104,25 @@ export default function MemberEdit() {
 
   const handleFieldChange = (field: keyof ClientUserUpdateDto, value: string) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
+  };
+
+  const handleLogout = async () => {
+    localStorage.removeItem('user');
+    Cookies.remove(BO_ACCESS_TOKEN);
+  };
+
+  const handleDeleteAccount = async () => {
+    try {
+      setDeleting(true);
+      // todo: add response check?
+      // await API.delete('/backend/api/user');
+      setShowDeleteModal(false);
+      setShowDeleteSuccess(true);
+    } catch (err) {
+      console.error('Error deleting account:', err);
+    } finally {
+      setDeleting(false);
+    }
   };
 
   const handleSave = async () => {
@@ -324,25 +349,53 @@ export default function MemberEdit() {
       {/* Delete Account Confirmation Modal */}
       <Modal isOpen={showDeleteModal}>
         <ModalHeader>
-          <ModalTitle>Delete Account</ModalTitle>
-          <ModalDescription>
-            Are you sure you want to delete your account? This action cannot be undone.
+          <ModalIcon>
+            <Image src={WarningIcon} alt="warning" width={20} height={18} className="w-8 h-8" />
+          </ModalIcon>
+          <ModalTitle className="text-base leading-[140%] text-text-str font-bold">
+            Delete your member account?
+          </ModalTitle>
+          <ModalDescription className="text-[12px] leading-[140%] text-text-str font-medium text-center">
+            Once you delete your account, your data will be deleted and cannot be restored.
           </ModalDescription>
         </ModalHeader>
         <ModalFooter>
           <TGButton
-            variant="outline"
+            variant="ghost"
             fullWidth
-            onClick={() => setShowDeleteModal(false)}
+            className="font-manrope font-bold text-base leading-[140%]"
+            onClick={handleDeleteAccount}
+            loading={deleting}
           >
-            Cancel
+            <span className="text-[#D70127]">Continue deleting account</span>
           </TGButton>
           <TGButton
             variant="primary"
             fullWidth
             onClick={() => setShowDeleteModal(false)}
           >
-            Delete
+            Cancel
+          </TGButton>
+        </ModalFooter>
+      </Modal>
+
+      {/* Delete Success Modal */}
+      <Modal isOpen={showDeleteSuccess}>
+        <ModalHeader>
+          <ModalTitle className="text-base leading-[140%] text-text-str font-bold">
+            Account has been deleted
+          </ModalTitle>
+          <ModalDescription className="text-[12px] leading-[140%] text-text-str font-medium text-center">
+            You will be directed to the home page
+          </ModalDescription>
+        </ModalHeader>
+        <ModalFooter>
+          <TGButton
+            variant="primary"
+            fullWidth
+            onClick={async () => await signOut({ callbackUrl: '/' })}
+          >
+            OK
           </TGButton>
         </ModalFooter>
       </Modal>
