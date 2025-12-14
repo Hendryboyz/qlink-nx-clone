@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { UserVO, ClientUserUpdateDto, GenderType } from '@org/types';
 import {
   DatePickerWithInput,
@@ -27,12 +27,24 @@ import { Upload, UploadProps } from 'antd';
 import Cookies from 'js-cookie';
 import { BO_ACCESS_TOKEN } from '@org/common';
 import { signOut } from 'next-auth/react';
+import API from '$/utils/fetch';
 
 const GENDER_OPTIONS = ['Male', 'Female', 'Other'];
 const CITY_OPTIONS = ['Lagos', 'Abuja', 'Port Harcourt', 'Ibadan', 'Kano'];
 const GENDER_DROPDOWN_OPTIONS = GENDER_OPTIONS.map((option) => ({ label: option, value: option }));
 const CITY_DROPDOWN_OPTIONS = CITY_OPTIONS.map((option) => ({ label: option, value: option }));
 const STATE_DROPDOWN_OPTIONS = STATES.map((state) => ({ label: state, value: state }));
+const DEFAULT_FORM_DATA: ClientUserUpdateDto = {
+  firstName: '',
+  lastName: '',
+  email: '',
+  phone: '',
+  birthday: '',
+  addressCity: '',
+  addressState: '',
+  whatsapp: '',
+  facebook: '',
+};
 const INPUT_TEXT_CLASS = '!text-text-str !font-bold placeholder:!font-normal';
 const DROPDOWN_TEXT_CLASS = '!text-text-str font-bold [&_span]:!text-text-str [&_span]:!font-bold';
 const DATE_PICKER_TEXT_CLASS =
@@ -67,8 +79,10 @@ export default function MemberEdit() {
   const [birthday, setBirthday] = useState<Date | undefined>(undefined);
 
   // Form state
-  const [formData, setFormData] = useState<ClientUserUpdateDto>({});
+  const [formData, setFormData] = useState<ClientUserUpdateDto>(DEFAULT_FORM_DATA);
+  const [initialFormData, setInitialFormData] = useState<ClientUserUpdateDto>(DEFAULT_FORM_DATA);
   const [gender, setGender] = useState<GenderType | ''>('');
+  const [initialGender, setInitialGender] = useState<GenderType | ''>('');
 
   const router = useRouter();
 
@@ -79,9 +93,10 @@ export default function MemberEdit() {
         const data = await API.get<UserVO>('/user/info');
         setAvatarUrl(data.avatarImageUrl || '');
         setGender(data.gender || '');
+        setInitialGender(data.gender || '');
         const parsedBirthday = data.birthday ? new Date(data.birthday) : undefined;
         setBirthday(parsedBirthday && !Number.isNaN(parsedBirthday.getTime()) ? parsedBirthday : undefined);
-        setFormData({
+        const normalizedData: ClientUserUpdateDto = {
           firstName: data.firstName || '',
           lastName: data.lastName || '',
           email: data.email || '',
@@ -91,7 +106,9 @@ export default function MemberEdit() {
           addressState: data.addressState || '',
           whatsapp: data.whatsapp || '',
           facebook: data.facebook || '',
-        });
+        };
+        setFormData(normalizedData);
+        setInitialFormData({ ...normalizedData });
       } catch (err) {
         console.error('Error fetching user info:', err);
       } finally {
@@ -166,6 +183,18 @@ export default function MemberEdit() {
     setBirthday(value);
     handleFieldChange('birthday', value ? format(value, 'yyyy-MM-dd') : '');
   };
+
+  const isEdited = useMemo(() => {
+    const keys = new Set<keyof ClientUserUpdateDto>([
+      ...Object.keys(initialFormData),
+      ...Object.keys(formData),
+    ] as (keyof ClientUserUpdateDto)[]);
+    const formChanged = Array.from(keys).some(
+      (key) => (formData[key] ?? '') !== (initialFormData[key] ?? ''),
+    );
+    const genderChanged = gender !== initialGender;
+    return formChanged || genderChanged;
+  }, [formData, gender, initialFormData, initialGender]);
 
   if (loading) {
     return (
@@ -327,6 +356,7 @@ export default function MemberEdit() {
           size="xl"
           onClick={handleSave}
           loading={saving}
+          disabled={!isEdited || saving}
         >
           Save
         </TGButton>
