@@ -83,6 +83,7 @@ export default function MemberEdit() {
   const [initialFormData, setInitialFormData] = useState<ClientUserUpdateDto>(DEFAULT_FORM_DATA);
   const [gender, setGender] = useState<GenderType | ''>('');
   const [initialGender, setInitialGender] = useState<GenderType | ''>('');
+  const [showUpdateSuccess, setShowUpdateSuccess] = useState(false);
 
   const router = useRouter();
 
@@ -146,7 +147,7 @@ export default function MemberEdit() {
     try {
       setSaving(true);
       await API.put<UserVO>('/user/info', formData);
-      router.push('/member');
+      setShowUpdateSuccess(true);
     } catch (err) {
       console.error('Error saving user info:', err);
     } finally {
@@ -426,6 +427,28 @@ export default function MemberEdit() {
             onClick={async () => await signOut({ callbackUrl: '/' })}
           >
             OK
+          </TGButton>
+        </ModalFooter>
+      </Modal>
+
+      {/* Update Success Modal */}
+      <Modal isOpen={showUpdateSuccess}>
+        <ModalHeader>
+          <ModalTitle className="text-base leading-[140%] text-text-str font-bold text-center">
+            Information has been updated
+          </ModalTitle>
+        </ModalHeader>
+        <ModalFooter>
+          <TGButton
+            variant="primary"
+            fullWidth
+            className="bg-[#D70127] hover:bg-[#b50021]"
+            onClick={() => {
+              setShowUpdateSuccess(false);
+              router.push('/member');
+            }}
+          >
+            Go back to profile
           </TGButton>
         </ModalFooter>
       </Modal>
