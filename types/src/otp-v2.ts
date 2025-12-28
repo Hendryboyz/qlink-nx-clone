@@ -30,6 +30,13 @@ export type StartOtpReqDto = OtpReqDto & { recaptchaToken?: string };
 
 export type ResendOtpReqDto = OtpReqDto;
 
+export interface ChangeEmailOtpReqDto {
+  recaptchaToken?: string;
+  emailConfirmSessionId: string;
+  identifier: string;
+  identifierType: IdentifierType;
+}
+
 export class GeneralOtpDto {
   @IsNotEmpty()
   identifier!: string;

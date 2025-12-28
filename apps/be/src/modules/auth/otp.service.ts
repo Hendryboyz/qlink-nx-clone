@@ -109,7 +109,7 @@ export class OtpService {
       identifier,
       identifierType
     );
-    if (OtpTypeEnum.RESET_PASSWORD == type) {
+    if (OtpTypeEnum.RESET_PASSWORD == type || OtpTypeEnum.EMAIL_CONFIRM) {
       if (_.isEmpty(user)) {
         throw new NotFoundException(`${identifierType} not found`);
       }
@@ -280,5 +280,9 @@ export class OtpService {
       throw new BadRequestException('Invalid token');
     }
     return false;
+  }
+
+  public async isEmailChangeStarted(emailConfirmSessionId: string): Promise<boolean> {
+    return this.generalOtpRepository.isSessionValidated(OtpTypeEnum.EMAIL_CONFIRM, emailConfirmSessionId)
   }
 }

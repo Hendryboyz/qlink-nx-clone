@@ -3,6 +3,8 @@ import { OtpTypeEnum } from '@org/types';
 export const OTP_TTL: Record<OtpTypeEnum, string> = {
   [OtpTypeEnum.REGISTER]: '10m',
   [OtpTypeEnum.RESET_PASSWORD]: '10m',
+  [OtpTypeEnum.EMAIL_CONFIRM]: '10m',
+  [OtpTypeEnum.EMAIL_CHANGE]: '10m',
 };
 
 export const RESEND_OTP_TIME_SPAN: string = '10m';

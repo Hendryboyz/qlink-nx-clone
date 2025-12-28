@@ -46,6 +46,8 @@ export interface ResetPasswordDto {
 export enum OtpTypeEnum {
   REGISTER = 'register',
   RESET_PASSWORD = 'reset-password',
+  EMAIL_CONFIRM = 'email-confirm',
+  EMAIL_CHANGE = 'email-change',
 }
 
 export type OtpEntity = {

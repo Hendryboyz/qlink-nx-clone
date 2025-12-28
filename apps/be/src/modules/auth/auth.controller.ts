@@ -25,6 +25,7 @@ import {
 import { AuthService } from './auth.service';
 import { CookieOptions, Response } from 'express';
 import {
+  ChangeEmailOtpReqDto,
   IdentifierType,
   LoginDto, OtpReqDto,
   OtpTypeEnum,
@@ -207,7 +208,11 @@ export class AuthController {
     }
   }
 
-  private async isAllowedSendOTP(type: OtpTypeEnum, identifier: string, identifierType: IdentifierType): Promise<string | null> {
+  private async isAllowedSendOTP(
+    type: OtpTypeEnum,
+    identifier: string,
+    identifierType: IdentifierType,
+  ): Promise<string | null> {
     try {
       await this.otpService.isLegalOTPRequest(identifier, identifierType, type);
       return null
@@ -226,6 +231,16 @@ export class AuthController {
       throw new ForbiddenException(`not allow to resend ${type} OTP to ${identifierType}: ${identifier}`);
     }
     return await this.sendOtpV2(body);
+  }
+
+  @Version('2')
+  @UseGuards(AuthGuard('jwt'))
+  @Post('otp/email_change')
+  @UsePipes(new ValidationPipe())
+  async emailChangeOTP(@Body() body: ChangeEmailOtpReqDto) {
+    if (!await this.otpService.isEmailChangeStarted(body.emailConfirmSessionId)) {
+      throw new ForbiddenException('please start change email session before sending this OTP');
+    }
   }
 
   @Post('otp/verify')
@@ -266,7 +281,6 @@ export class AuthController {
     }
   }
 
-  @UseGuards(AuthGuard('jwt'))
   @Post('verify')
   async verifyToken(@Req() req: RequestWithUser, @Res({ passthrough: true }) res: Response) {
     const { userId, email } = req.user;

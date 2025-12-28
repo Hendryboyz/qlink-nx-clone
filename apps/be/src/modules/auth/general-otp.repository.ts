@@ -86,4 +86,13 @@ export class GeneralOtpRepository {
       expiredAt: patchingFields.expired_at,
     }
   }
+
+  public async isSessionValidated(type: OtpTypeEnum, emailConfirmSessionId: string): Promise<boolean> {
+    const query = {
+      text: `SELECT * FROM general_otp WHERE session_id = $1 AND type = $2 AND is_verified = true ORDER BY created_at DESC LIMIT 1`,
+      values: [emailConfirmSessionId, type],
+    };
+    const otpSession = await this.queryOTP(query);
+    return otpSession !== null;
+  }
 }
