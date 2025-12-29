@@ -1,10 +1,13 @@
 import {
   BadRequestException,
   Body,
-  Controller, ForbiddenException,
+  Controller,
+  ForbiddenException,
   Headers,
+  HttpCode,
   InternalServerErrorException,
   Logger,
+  Patch,
   Post,
   Req,
   Res,
@@ -12,7 +15,7 @@ import {
   UseGuards,
   UsePipes,
   ValidationPipe,
-  Version
+  Version,
 } from '@nestjs/common';
 import {
   ACCESS_TOKEN,
@@ -27,20 +30,25 @@ import { CookieOptions, Response } from 'express';
 import {
   ChangeEmailOtpReqDto,
   IdentifierType,
-  LoginDto, OtpReqDto,
+  LoginDto,
+  OtpReqDto,
   OtpTypeEnum,
   OtpVerificationRequestDto,
+  PatchUserEmailDto,
   RegisterDto,
   ResendOtpReqDto,
   ResetPasswordDto,
   SendOtpDto,
   StartOtpReqDto,
-  VerifyOtpDto
+  VerifyOtpDto,
 } from '@org/types';
 import { OtpService } from './otp.service';
 import { AuthGuard } from '@nestjs/passport';
 import { RequestWithUser } from '$/types';
 import process from 'node:process';
+import { ApiBody } from '@nestjs/swagger';
+import { UserId } from '$/decorators/userId.decorator';
+import { HttpStatusCode } from 'axios';
 
 const oneMonth = 30 * 24 * 60 * 60 * 1000;
 let isProd = false;
@@ -166,12 +174,7 @@ export class AuthController {
   @Post('otp')
   @UsePipes(new ValidationPipe())
   async startOTPV2(@Body() body: StartOtpReqDto) {
-    const isHuman = await this.authService.verifyRecaptcha(body.recaptchaToken);
-    if (!isHuman) {
-      this.logger.error('fail to verify recaptcha token');
-      throw new UnauthorizedException('fail to verify recaptcha token');
-    }
-
+    await this.validateRecaptcha(body.recaptchaToken);
     return await this.sendOtpV2(body);
   }
 
@@ -195,7 +198,8 @@ export class AuthController {
     }
 
     try {
-      const otpSession = await this.otpService.generateOtpV2(identifier, identifierType, type, dto.sessionId);
+      const otpSession = await this.otpService.generateOtpV2(
+        identifier, identifierType, type, dto.sessionId);
       return {
         bizCode: CODE_SUCCESS,
         data: {
@@ -236,10 +240,27 @@ export class AuthController {
   @Version('2')
   @UseGuards(AuthGuard('jwt'))
   @Post('otp/email_change')
+  @ApiBody({type: ChangeEmailOtpReqDto, description: 'payload to send email change OTP'})
   @UsePipes(new ValidationPipe())
   async emailChangeOTP(@Body() body: ChangeEmailOtpReqDto) {
+    await this.validateRecaptcha(body.recaptchaToken);
     if (!await this.otpService.isEmailChangeStarted(body.emailConfirmSessionId)) {
       throw new ForbiddenException('please start change email session before sending this OTP');
+    }
+
+    return await this.sendOtpV2({
+      identifier: body.newEmail,
+      identifierType: IdentifierType.EMAIL,
+      sessionId: body.emailConfirmSessionId,
+      type: OtpTypeEnum.EMAIL_CHANGE,
+    });
+  }
+
+  private async validateRecaptcha(recaptchaToken: string): Promise<void> {
+    const isHuman = await this.authService.verifyRecaptcha(recaptchaToken);
+    if (!isHuman) {
+      this.logger.error('fail to verify recaptcha token');
+      throw new UnauthorizedException('fail to verify recaptcha token');
     }
   }
 
@@ -301,5 +322,15 @@ export class AuthController {
 
     res.cookie(ACCESS_TOKEN, token, cookieOptions);
     res.cookie(HEADER_USER_ID, userId, cookieOptions);
+  }
+
+  @Patch('/email')
+  @ApiBody({ type: PatchUserEmailDto, description: 'the session and code from new email address' })
+  @HttpCode(HttpStatusCode.NoContent)
+  public async patchUserEmail(
+    @UserId() userId: string,
+    @Body() payload: PatchUserEmailDto,
+  ): Promise<void> {
+    await this.authService.changeLoginEmail(userId, payload)
   }
 }

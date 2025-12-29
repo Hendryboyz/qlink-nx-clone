@@ -9,6 +9,7 @@ import { JwtService } from '@nestjs/jwt';
 import {
   IdentifierType,
   OtpTypeEnum,
+  PatchUserEmailDto,
   RegisterDto,
   ResetPasswordDto,
   User,
@@ -19,7 +20,7 @@ import * as bcrypt from 'bcrypt';
 import { isNull, omit } from 'lodash';
 import axios from 'axios';
 
-import { OtpJwtPayload } from './otp.service';
+import { OtpJwtPayload, OtpService } from './otp.service';
 import { UserService } from '../user/user.service';
 import {
   CODE_SUCCESS,
@@ -45,6 +46,7 @@ export class AuthService {
   constructor(
     private userService: UserService,
     private userManagementService: UserManagementService,
+    private otpService: OtpService,
     private jwtService: JwtService,
     private config: ConfigService,
   ) {}
@@ -191,5 +193,11 @@ export class AuthService {
   private signToken(identifier: string, identifierType: IdentifierType, id: string): string {
     const payload = { sub: id, identifier, identifierType };
     return this.jwtService.sign(payload);
+  }
+
+  public async changeLoginEmail(userId: string, payload: PatchUserEmailDto): Promise<UserVO> {
+    const { sessionId, code, type } = payload;
+    const newEmail: string = await this.otpService.verifyChangeEmailOtp(type, sessionId, code);
+    return this.userManagementService.patchUserEmail(userId, newEmail)
   }
 }

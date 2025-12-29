@@ -1,4 +1,5 @@
 import { GenderType, UserSourceType, UserType } from './user';
+import { IsEnum, IsNotEmpty } from 'class-validator';
 
 export interface RegisterDto {
   email: string;
@@ -61,3 +62,14 @@ export type OtpEntity = {
 }
 
 export type OtpCreateDto = VerifyOtpDto;
+
+export class PatchUserEmailDto {
+  @IsNotEmpty()
+  sessionId!: string;
+
+  @IsNotEmpty()
+  code!: string;
+
+  @IsEnum(OtpTypeEnum)
+  type!: OtpTypeEnum;
+}

@@ -168,6 +168,7 @@ export class SalesforceSyncService implements OnModuleInit{
       "Birthdate__c": user.birthday,
       "Gender__c": user.gender,
       "Mobile__c": user.phone,
+      "Email__c": user.email,
       "State__c": user.addressState,
       "City__c": user.addressCity,
       "WhatsApp_ID__c": user.whatsapp,

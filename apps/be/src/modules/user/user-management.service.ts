@@ -23,7 +23,6 @@ import { omit } from 'lodash';
 import { SalesforceSyncService } from '$/modules/crm/sales-force.service';
 import { ProductService } from '$/modules/product/product.service';
 
-
 @Injectable()
 export class UserManagementService {
   private logger = new Logger(this.constructor.name);
@@ -107,6 +106,10 @@ export class UserManagementService {
     return filterUserInfo(updatedUser);
   }
 
+  public async patchUserEmail(userId: string, newUserEmail: string): Promise<UserVO> {
+    return await this.updateUser(userId, { email: newUserEmail });
+  }
+
   public async delete(id: string): Promise<void> {
     const userEntity = await this.userRepository.findById(id);
     if (!userEntity) {
@@ -139,6 +142,7 @@ export class UserManagementService {
     const unSyncUsers = await this.userRepository.findNotSyncCRM();
     if (!unSyncUsers || unSyncUsers.length < 1) {
       return 0;
+
     }
 
     let succeed = 0,

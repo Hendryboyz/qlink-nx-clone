@@ -4,6 +4,7 @@ import {
   Injectable,
   Logger,
   NotFoundException,
+  UnprocessableEntityException,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { GeneralOtpEntity, IdentifierType, OtpTypeEnum } from '@org/types';
@@ -20,8 +21,8 @@ export type OtpJwtPayload = {
   identifier: string;
   identifierType: IdentifierType;
   verified: boolean;
-  type: OtpTypeEnum
-}
+  type: OtpTypeEnum;
+};
 
 const OTP_DIGIT: number = 4;
 
@@ -90,7 +91,6 @@ export class OtpService {
     type: OtpTypeEnum,
     sessionId: string = undefined,
   ) {
-    await this.isLegalOTPRequest(identifier, identifierType, type);
     const session = await this.getOtpSession(identifier, identifierType, type, sessionId);
     await this.sendOTP(type, identifier, IdentifierType.EMAIL, session.code);
     return session;
@@ -126,13 +126,21 @@ export class OtpService {
     type: OtpTypeEnum,
     sessionId: string | undefined
   ): Promise<OTPSession> {
-    if (sessionId) {
-      const otp = await this.generalOtpRepository.findAvailableSession(sessionId, type)
-      if (this.isOTPAlive(otp)) {
-        return this.extendOTPSession(otp);
-      }
+    if (!sessionId) {
+      return this.createNewOtpSession(identifier, identifierType, type, undefined);
     }
-    return this.createNewOtpSession(identifier, identifierType, type);
+
+    const otp = await this.generalOtpRepository.findAvailableSession(sessionId, type)
+    if (!otp) {
+      // some action require multiple OTP verification share the same session id (ex. change QRC client email)
+      return this.createNewOtpSession(identifier, identifierType, type, sessionId);
+    }
+
+    if (this.isOTPAlive(otp)) {
+      return this.extendOTPSession(otp);
+    } else {
+      return this.createNewOtpSession(identifier, identifierType, type, undefined);
+    }
   }
 
   private isOTPAlive(otp: GeneralOtpEntity): boolean {
@@ -164,6 +172,7 @@ export class OtpService {
     identifier: string,
     identifierType: IdentifierType,
     type: OtpTypeEnum,
+    sessionId: string | undefined,
   ): Promise<OTPSession> {
     const code = this.generateNDigitOtp(OTP_DIGIT);
     const otpExpiredTime = this.getOTPExpiredTime(type);
@@ -172,9 +181,9 @@ export class OtpService {
       identifierType,
       type,
       code,
+      sessionId,
       expiredAt: otpExpiredTime
     });
-    this.logger.debug(newOTPSession);
     this.logger.debug(`${identifier}[${identifierType}] generate the new code: ${code}`);
     return {
       code,
@@ -263,26 +272,31 @@ export class OtpService {
 
     const otp =
       await this.generalOtpRepository.findWithCode(sessionId, code);
+    await this.trySettingOTPVerified(otp)
+    return this.generateJWT(type, payload);
+  }
+
+  private async trySettingOTPVerified(otp: GeneralOtpEntity) {
     if (!otp || _.isEmpty(otp) || !this.isOTPAlive(otp)) {
       throw new BadRequestException('Invalid code');
     }
     await this.generalOtpRepository.verify(otp.id); // seems not important
-    return this.generateJWT(type, payload);
-  }
-
-  async verifyToken(token: string, type: OtpTypeEnum): Promise<boolean> {
-    try {
-      const payload: OtpJwtPayload = this.jwtService.verify(token);
-      if (payload.verified && payload.type == type) {
-        return true;
-      }
-    } catch (error) {
-      throw new BadRequestException('Invalid token');
-    }
-    return false;
   }
 
   public async isEmailChangeStarted(emailConfirmSessionId: string): Promise<boolean> {
     return this.generalOtpRepository.isSessionValidated(OtpTypeEnum.EMAIL_CONFIRM, emailConfirmSessionId)
+  }
+
+  async verifyChangeEmailOtp(type: OtpTypeEnum, sessionId: string, code: string) {
+    if (type !== OtpTypeEnum.EMAIL_CHANGE) {
+      throw new UnprocessableEntityException('not a change email otp type')
+    }
+
+    const otp =
+      await this.generalOtpRepository.findChangeEmailOTPWithCode(sessionId, code);
+
+    await this.trySettingOTPVerified(otp)
+
+    return otp.identifier;
   }
 }
