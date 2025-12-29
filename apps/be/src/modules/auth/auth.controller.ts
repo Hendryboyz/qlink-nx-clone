@@ -174,6 +174,9 @@ export class AuthController {
   @Post('otp')
   @UsePipes(new ValidationPipe())
   async startOTPV2(@Body() body: StartOtpReqDto) {
+    if (body.type === OtpTypeEnum.EMAIL_CHANGE) {
+      throw new BadRequestException('wrong API to change email, please use v2/auth/otp/email_change');
+    }
     await this.validateRecaptcha(body.recaptchaToken);
     return await this.sendOtpV2(body);
   }
