@@ -196,8 +196,8 @@ export class AuthService {
   }
 
   public async changeLoginEmail(userId: string, payload: PatchUserEmailDto): Promise<UserVO> {
-    const { sessionId, code, type } = payload;
-    const newEmail: string = await this.otpService.verifyChangeEmailOtp(type, sessionId, code);
+    const { sessionId, code } = payload;
+    const newEmail: string = await this.otpService.verifyChangeEmailOtp(OtpTypeEnum.EMAIL_CHANGE, sessionId, code);
     return this.userManagementService.patchUserEmail(userId, newEmail)
   }
 }

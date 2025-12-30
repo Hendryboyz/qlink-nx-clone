@@ -69,7 +69,4 @@ export class PatchUserEmailDto {
 
   @IsNotEmpty()
   code!: string;
-
-  @IsEnum(OtpTypeEnum)
-  type!: OtpTypeEnum;
 }

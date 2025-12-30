@@ -4,7 +4,7 @@ import {
   Injectable,
   Logger,
   NotFoundException,
-  UnprocessableEntityException,
+  UnprocessableEntityException
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { GeneralOtpEntity, IdentifierType, OtpTypeEnum } from '@org/types';
@@ -109,7 +109,8 @@ export class OtpService {
       identifier,
       identifierType
     );
-    if (OtpTypeEnum.RESET_PASSWORD == type || OtpTypeEnum.EMAIL_CONFIRM) {
+
+    if (OtpTypeEnum.RESET_PASSWORD === type || OtpTypeEnum.EMAIL_CONFIRM === type) {
       if (_.isEmpty(user)) {
         throw new NotFoundException(`${identifierType} not found`);
       }
@@ -226,7 +227,22 @@ export class OtpService {
         code,
       };
       return {messageTemplate, payload};
+    } else if (type === OtpTypeEnum.EMAIL_CONFIRM) {
+      const messageTemplate = MSG_TEMPLATE.SIGNUP_OTP;
+      const payload = {
+        receiver: identifier,
+        code,
+      }
+      return {messageTemplate, payload};
+    } else if (type === OtpTypeEnum.EMAIL_CHANGE) {
+      const messageTemplate = MSG_TEMPLATE.SIGNUP_OTP;
+      const payload = {
+        receiver: identifier,
+        code,
+      }
+      return {messageTemplate, payload};
     }
+
   }
 
   async verifyOtp(
@@ -284,7 +300,11 @@ export class OtpService {
   }
 
   public async isEmailChangeStarted(emailConfirmSessionId: string): Promise<boolean> {
-    return this.generalOtpRepository.isSessionValidated(OtpTypeEnum.EMAIL_CONFIRM, emailConfirmSessionId)
+    const session = await this.generalOtpRepository.fetchValidatedSession(OtpTypeEnum.EMAIL_CONFIRM, emailConfirmSessionId)
+    if (!session) {
+      return false;
+    }
+    return this.isOTPAlive(session);
   }
 
   async verifyChangeEmailOtp(type: OtpTypeEnum, sessionId: string, code: string) {
