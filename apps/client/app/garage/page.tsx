@@ -17,7 +17,7 @@ export default function Garage() {
   const [isEditMode, setIsEditMode] = useState<boolean>(false);
   const [editData, setEditData] = useState<ProductVO | null>(null);
   const [products, setProducts] = useState<ProductVO[]>([]);
-  const [currentProduct, setCurrentProduct] = useState<ProductVO>({
+  const [currentProduct, setCurrentProduct] = useState<any>({
     id: '',
     userId: '',
     vin: '',

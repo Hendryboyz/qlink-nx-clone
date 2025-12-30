@@ -1,5 +1,6 @@
 'use client';
 
+import { Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { Formik, FormikErrors, Field, FieldProps } from 'formik';
@@ -147,7 +148,9 @@ export default function SignIn() {
           Log in to QLINK Rider Club
         </h4>
       </div>
-      <SignInForm />
+      <Suspense fallback={<div>Loading...</div>}>
+        <SignInForm />
+      </Suspense>
     </div>
   );
 }
