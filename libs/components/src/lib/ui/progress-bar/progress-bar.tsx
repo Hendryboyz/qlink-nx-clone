@@ -51,7 +51,7 @@ type ProgressBarProps = {
   runningIndex?: number;
 };
 
-const ProgressBar: FC<ProgressBarProps> = ({ list, runningIndex = 0 }) => {
+export const ProgressBar: FC<ProgressBarProps> = ({ list, runningIndex = 0 }) => {
   return (
     <div className="flex w-full items-center justify-between">
       {list.map((item, index) => (
@@ -79,5 +79,3 @@ const ProgressBar: FC<ProgressBarProps> = ({ list, runningIndex = 0 }) => {
     </div>
   );
 };
-
-export default ProgressBar;

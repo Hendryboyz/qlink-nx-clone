@@ -1,54 +1,78 @@
 'use client';
-
-import { ColorBackground } from '../../components/Background';
-import { useCallback, useMemo, useState } from 'react';
-import Step1 from './Setp1';
-import Step2 from './Step2';
-import Step3 from './Step3';
-import Success from './Success';
-import { PayloadProvider } from '$/store/payload';
-import { Cross2Icon } from '@radix-ui/react-icons';
+import { useState } from 'react';
+import { ChevronLeftIcon } from '@radix-ui/react-icons';
 import { useRouter } from 'next/navigation';
+import SignUpStep1, { SignUpStep1Title } from './step-1';
+import SignUpStep2, { SignUpStep2Title } from './step-2';
+import SignUpStep3, { SignUpStep3Title } from './step-3';
+import SignUpSuccess from './success';
+import { ProgressBar } from '@org/components';
 
-const SignUp = () => {
+type SHARED = { email?: string; sessionId?: string; token?: string };
+
+export default function SignUp() {
   const router = useRouter();
-  const [step, handleChangeStep] = useState(1);
-  const goNextStep = useCallback(() => {
-    handleChangeStep(pre => pre+1)
-  }, [handleChangeStep]);
+  const [step, setStep] = useState(1);
+  const [shared, setShared] = useState<SHARED>({});
 
-  const goFirstStep = useCallback(() => {
-    handleChangeStep(1)
-  }, [handleChangeStep]);
+  if (step === 4) {
+    return <SignUpSuccess />;
+  }
 
-  const children = useMemo(() => {
-    switch (step) {
-      case 1:
-        return <Step1 onSuccess={goNextStep} />;
-      case 2:
-        return <Step2 onSuccess={goNextStep} goBack={goFirstStep} />;
-      case 3:
-        return <Step3 onSuccess={goNextStep} goBack={goFirstStep} />;
-      case 4:
-        return <Success />;
-    }
-  }, [step, goNextStep])
-
-  const onClose = () => router.push('/')
-
-  return <PayloadProvider>
-    {step !== 4 && (
-      <div className="absolute top-[24px] right-[24px] text-primary" onClick={onClose}>
-        <Cross2Icon
-          height={24}
-          width={24}
-          className="justify-self-end cursor-pointer"
-        />
+  return (
+    <div className="w-full h-screen bg-secondary flex flex-col p-6">
+      <div className="flex items-center justify-start flex-none">
+        <button
+          onClick={() => {
+            if (step === 1) {
+              router.back();
+            } else {
+              setStep(step - 1);
+            }
+          }}
+          className="p-2 -ml-2"
+        >
+          <ChevronLeftIcon className="w-8 h-8 text-stroke-s" />
+        </button>
       </div>
-    )}
-    <ColorBackground color="#FFF0D3">{children}</ColorBackground>
-  </PayloadProvider>;
-};
+      <div className='my-6'>
+        <ProgressBar list={['1', '2', '3']} runningIndex={step - 1} />
+      </div>
 
+      {step === 1 && <SignUpStep1Title />}
+      {step === 2 && <SignUpStep2Title />}
+      {step === 3 && <SignUpStep3Title />}
 
-export default SignUp;
+      {step === 1 && (
+        <SignUpStep1
+          onSuccess={({ email, sessionId }) => {
+            setShared({ email, sessionId });
+            setStep(2);
+          }}
+        />
+      )}
+      {step === 2 && (
+        <SignUpStep2
+          email={shared.email || ''}
+          sessionId={shared.sessionId || ''}
+          onSuccess={({ token }) => {
+            setShared({ ...shared, token });
+            setStep(3);
+          }}
+          onResendSuccess={(sessionId) => {
+            setShared({ ...shared, sessionId });
+          }}
+        />
+      )}
+      {step === 3 && (
+        <SignUpStep3
+          email={shared.email || ''}
+          token={shared.token || ''}
+          onSuccess={() => {
+            setStep(4);
+          }}
+        />
+      )}
+    </div>
+  );
+}

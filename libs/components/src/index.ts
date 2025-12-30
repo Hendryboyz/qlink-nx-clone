@@ -15,6 +15,7 @@ export * from './lib/ui/checkbox';
 export * from './lib/ui/top-nav';
 export * from './lib/ui/footer';
 export * from './lib/ui/bottom-nav';
+export * from './lib/ui/progress-bar';
 
 // Styles
 import './lib/styles.css';

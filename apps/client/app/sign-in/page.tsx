@@ -2,12 +2,13 @@
 
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
-import { Formik, FormikErrors, ErrorMessage, Field, FieldProps } from 'formik';
+import { Formik, FormikErrors, Field, FieldProps } from 'formik';
 import { signIn } from 'next-auth/react';
 import { ChevronLeftIcon } from '@radix-ui/react-icons';
 import { emailRegex } from '@org/common';
 import { usePopup } from '$/hooks/PopupProvider';
 import { TGButton, TGInput } from '@org/components';
+import AgreeTerm from './agree-term';
 
 interface FormData {
   email: string;
@@ -59,12 +60,7 @@ function SignInForm() {
           .finally(() => setSubmitting(false));
       }}
     >
-      {({
-        values,
-        handleSubmit,
-        isSubmitting,
-        setFieldValue,
-      }) => (
+      {({ values, handleSubmit, isSubmitting, setFieldValue }) => (
         <form onSubmit={handleSubmit} className="flex flex-col flex-1 h-full">
           <div className="flex-grow">
             {/* Email Field */}
@@ -119,38 +115,7 @@ function SignInForm() {
           {/* Bottom Section */}
           <div className="mt-auto pb-8">
             {/* Terms Checkbox */}
-            <div className="flex items-center mb-6">
-              <div className="flex items-center h-5">
-                <input
-                  id="agreedToTerms"
-                  name="agreedToTerms"
-                  type="checkbox"
-                  checked={values.agreedToTerms}
-                  onChange={(e) =>
-                    setFieldValue('agreedToTerms', e.target.checked)
-                  }
-                  className="w-5 h-5 border-gray-300 rounded"
-                />
-              </div>
-              <div className="ml-3 text-sm text-text-str">
-                <label htmlFor="agreedToTerms">
-                  <span>{"I agree to the Qlink Rider Club's "}</span>
-                  <Link href="/terms-of-service" className="text-primary underline font-bold">
-                    Terms of Service
-                  </Link>
-                  <span>{` and `}</span>
-                  <Link href="/privacy-policy" className="text-primary underline font-bold">
-                    Privacy Policy
-                  </Link>
-                  <span>{'. The service is for Nigeria only.'}</span>
-                </label>
-                <ErrorMessage
-                  name="agreedToTerms"
-                  className="text-error text-xs mt-1 block"
-                  component="div"
-                />
-              </div>
-            </div>
+            <AgreeTerm checked={values.agreedToTerms} onChange={(val) => setFieldValue('agreedToTerms', val)} />
 
             <TGButton
               type="submit"
