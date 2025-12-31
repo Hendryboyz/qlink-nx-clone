@@ -45,7 +45,8 @@ export class GeneralOtpDto {
 }
 
 export class CreateGeneralOtpDto extends GeneralOtpDto {
-  // ! is definite assignment assertion to announce a property without initialization, but it will be assign in runtime
+  // ! is definite assignment assertion to announce a property without initialization, but it will be assign in runtime\
+  sessionId?: string;
   expiredAt!: Date;
 }
 

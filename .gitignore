@@ -60,3 +60,5 @@ deployments/local-dockerfiles/
 
 *123
 *.secret
+_command.sh
+
