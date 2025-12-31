@@ -195,9 +195,16 @@ export class AuthService {
     return this.jwtService.sign(payload);
   }
 
-  public async changeLoginEmail(userId: string, payload: PatchUserEmailDto): Promise<UserVO> {
+  public async changeLoginEmail(userId: string, payload: PatchUserEmailDto): Promise<AuthSuccessBO> {
     const { sessionId, code } = payload;
     const newEmail: string = await this.otpService.verifyChangeEmailOtp(OtpTypeEnum.EMAIL_CHANGE, sessionId, code);
-    return this.userManagementService.patchUserEmail(userId, newEmail)
+    const user = await this.userManagementService.patchUserEmail(userId, newEmail)
+    return {
+      access_token: this.signToken(newEmail, IdentifierType.EMAIL, user.id),
+      user_id: user.id,
+      id: user.id,
+      email: newEmail,
+      name: `${user.lastName} ${user.firstName}`
+    };
   }
 }

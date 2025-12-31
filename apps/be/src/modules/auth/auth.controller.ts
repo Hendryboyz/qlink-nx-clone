@@ -400,9 +400,13 @@ export class AuthController {
   @HttpCode(HttpStatusCode.NoContent)
   public async patchUserEmail(
     @UserId() userId: string,
-    @Body() payload: PatchUserEmailDto
-  ): Promise<void> {
-    await this.authService.changeLoginEmail(userId, payload);
-    // TODO: update user login session with new email identifier
+    @Body() payload: PatchUserEmailDto,
+    @Res({ passthrough: true }) res: Response
+  ) {
+    const authSuccess = await this.authService.changeLoginEmail(userId, payload);
+    const { access_token, user_id, id, email, name } = authSuccess;
+
+    this.setToken(res, access_token, user_id);
+    return { access_token, user_id, id, email, name };
   }
 }
