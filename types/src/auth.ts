@@ -1,5 +1,5 @@
 import { GenderType, UserSourceType, UserType } from './user';
-import { IsEnum, IsNotEmpty } from 'class-validator';
+
 
 export interface RegisterDto {
   email: string;
@@ -31,6 +31,12 @@ export interface SendOtpDto {
   type: OtpTypeEnum;
   recaptchaToken?: string;
   resend?: boolean;
+}
+
+export interface ChangeEmailOtpRequestDto {
+  recaptchaToken?: string;
+  newEmail: string;
+  emailConfirmSessionId: string;
 }
 
 export interface VerifyOtpDto {

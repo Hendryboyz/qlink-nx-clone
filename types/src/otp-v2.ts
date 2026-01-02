@@ -26,7 +26,9 @@ export interface OtpReqDto {
   sessionId?: string;
 }
 
-export type StartOtpReqDto = OtpReqDto & { recaptchaToken?: string };
+export interface StartOtpReqDto extends OtpReqDto {
+  recaptchaToken?: string
+}
 
 export type ResendOtpReqDto = OtpReqDto;
 

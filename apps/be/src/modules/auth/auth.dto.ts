@@ -1,12 +1,71 @@
 import {
+  ChangeEmailOtpRequestDto,
   ChangePasswordRequestDto,
+  IdentifierType,
+  OtpTypeEnum,
   PasswordVerificationResponseDto,
   PasswordVerificationResultDto,
   PatchUserEmailDto,
+  StartOtpReqDto,
   VerifyPasswordRequestDto,
 } from '@org/types';
-import { ApiProperty, ApiResponseProperty } from '@nestjs/swagger';
-import { IsNotEmpty, IsString } from 'class-validator';
+import {
+  ApiProperty,
+  ApiPropertyOptional,
+  ApiResponseProperty,
+} from '@nestjs/swagger';
+import { IsEnum, IsNotEmpty, IsString } from 'class-validator';
+
+export class StartOtpRequest implements StartOtpReqDto {
+  @ApiProperty()
+  @IsNotEmpty()
+  identifier: string;
+  @ApiProperty({
+    enum: IdentifierType
+  })
+  @IsEnum(IdentifierType)
+  identifierType: IdentifierType;
+  @ApiPropertyOptional()
+  @IsNotEmpty()
+  recaptchaToken?: string;
+  @ApiPropertyOptional()
+  @IsNotEmpty()
+  sessionId?: string;
+  @ApiProperty({
+    enum: OtpTypeEnum
+  })
+  @IsEnum(OtpTypeEnum)
+  type: OtpTypeEnum;
+}
+
+class OtpSessionId {
+  @ApiResponseProperty()
+  sessionId?: string;
+}
+
+export class SendOtpResponse {
+  @ApiResponseProperty()
+  bizCode: number;
+  @ApiResponseProperty()
+  message?: string;
+  @ApiResponseProperty()
+  data?: OtpSessionId;
+}
+
+export class ChangeEmailOtpRequest implements ChangeEmailOtpRequestDto {
+  @ApiPropertyOptional()
+  recaptchaToken?: string;
+
+  @ApiProperty()
+  @IsString()
+  @IsNotEmpty()
+  emailConfirmSessionId: string;
+
+  @ApiProperty()
+  @IsString()
+  @IsNotEmpty()
+  newEmail: string;
+}
 
 export class PatchUserEmailRequest implements PatchUserEmailDto {
   @ApiProperty()

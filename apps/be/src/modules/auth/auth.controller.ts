@@ -22,10 +22,9 @@ import process from 'node:process';
 import { AuthGuard } from '@nestjs/passport';
 import {
   ApiBody,
+  ApiCreatedResponse,
   ApiNoContentResponse,
   ApiOkResponse,
-  ApiProperty,
-  ApiPropertyOptional,
   ApiResponse,
 } from '@nestjs/swagger';
 import { CookieOptions, Response } from 'express';
@@ -49,28 +48,21 @@ import {
   ResendOtpReqDto,
   ResetPasswordDto,
   SendOtpDto,
-  StartOtpReqDto,
   VerifyOtpDto,
 } from '@org/types';
 import { OtpService } from './otp.service';
 import { RequestWithUser } from '$/types';
 import { UserId } from '$/decorators/userId.decorator';
 import {
+  ChangeEmailOtpRequest,
   ChangePasswordRequest,
   PasswordVerificationResponse,
   PatchUserEmailRequest,
+  SendOtpResponse,
+  StartOtpRequest,
   VerifyPasswordRequest,
 } from '$/modules/auth/auth.dto';
 import { ErrorResponse } from '$/types/dto';
-
-class ChangeEmailOtpReqDto {
-  @ApiPropertyOptional()
-  recaptchaToken?: string;
-  @ApiProperty()
-  newEmail!: string;
-  @ApiProperty()
-  emailConfirmSessionId!: string;
-}
 
 const oneMonth = 30 * 24 * 60 * 60 * 1000;
 let isProd = false;
@@ -196,11 +188,13 @@ export class AuthController {
   @Version('2')
   @Post('otp')
   @UsePipes(new ValidationPipe())
+  @ApiBody({type: StartOtpRequest})
+  @ApiCreatedResponse({type: SendOtpResponse})
   async startOTPV2(
     @Headers() headers,
-    @Body() body: StartOtpReqDto,
+    @Body() body: StartOtpRequest,
     @Res({ passthrough: true }) resp: Response,
-  ) {
+  ): Promise<SendOtpResponse> {
     if (body.type === OtpTypeEnum.EMAIL_CHANGE) {
       throw new BadRequestException(
         'wrong API to change email, please use v2/auth/otp/email_change'
@@ -233,7 +227,7 @@ export class AuthController {
       this.logger.log(`otp disabled, response directly`);
       return {
         bizCode: CODE_SUCCESS,
-        data: true,
+        data: { },
       };
     }
 
@@ -290,13 +284,14 @@ export class AuthController {
   @UseGuards(AuthGuard('jwt'))
   @Post('otp/email_change')
   @ApiBody({
-    type: ChangeEmailOtpReqDto,
+    type: ChangeEmailOtpRequest,
     description: 'payload to send email change OTP',
   })
   @UsePipes(new ValidationPipe())
+  @ApiCreatedResponse({})
   async emailChangeOTP(
     @Headers() headers,
-    @Body() body: ChangeEmailOtpReqDto,
+    @Body() body: ChangeEmailOtpRequest,
     @Res({ passthrough: true }) resp: Response,
     ) {
     await this.validateRecaptcha(headers, body.recaptchaToken);
@@ -316,6 +311,8 @@ export class AuthController {
     });
     if (response.bizCode === INVALID) {
       resp.status(HttpStatus.UNPROCESSABLE_ENTITY);
+    } else {
+      resp.status(HttpStatus.CREATED);
     }
     return response;
   }
