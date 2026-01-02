@@ -41,8 +41,12 @@ export class UserService {
   }
 
   public async getUserInfo(userId: string): Promise<UserVO | undefined> {
-    const user = await this.userRepository.findById(userId);
+    const user = await this.findById(userId);
     return filterUserInfo(user);
+  }
+
+  public findById(userId: string): Promise<UserEntity> {
+    return this.userRepository.findById(userId);
   }
 
   public isEmailExist(email: string): Promise<boolean> {

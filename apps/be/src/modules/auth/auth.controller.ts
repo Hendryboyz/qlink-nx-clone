@@ -20,7 +20,12 @@ import {
 } from '@nestjs/common';
 import process from 'node:process';
 import { AuthGuard } from '@nestjs/passport';
-import { ApiBody, ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import {
+  ApiBody,
+  ApiOkResponse,
+  ApiProperty,
+  ApiPropertyOptional,
+} from '@nestjs/swagger';
 import { CookieOptions, Response } from 'express';
 import { HttpStatusCode } from 'axios';
 import {
@@ -45,10 +50,15 @@ import {
   SendOtpDto,
   StartOtpReqDto,
   VerifyOtpDto,
+  VerifyPasswordRequestDto,
 } from '@org/types';
 import { OtpService } from './otp.service';
 import { RequestWithUser } from '$/types';
 import { UserId } from '$/decorators/userId.decorator';
+import {
+  PasswordVerificationResponse,
+  VerifyPasswordRequest,
+} from '$/modules/auth/auth.dto';
 
 class ChangeEmailOtpReqDto {
   @ApiPropertyOptional()
@@ -361,6 +371,27 @@ export class AuthController {
     }
   }
 
+  @UseGuards(AuthGuard('jwt'))
+  @Post('password/verification')
+  @ApiBody({ type: VerifyPasswordRequest })
+  @ApiOkResponse({ type: PasswordVerificationResponse })
+  async verifyPassword(
+    @UserId() userId: string,
+    @Body() dto: VerifyPasswordRequest,
+  ) {
+    try {
+      await this.authService.verifyPassword(userId, dto.password);
+      return { bizCode: CODE_SUCCESS, data: {
+          userId: userId,
+          isMatched: true,
+        }
+      };
+    } catch (e) {
+      this.logger.error(`validate user: ${userId} password fail`, e);
+      return { bizCode: INVALID, message: 'Invalid password' };
+    }
+  }
+
   @Post('verify')
   async verifyToken(
     @Req() req: RequestWithUser,
@@ -408,5 +439,15 @@ export class AuthController {
 
     this.setToken(res, access_token, user_id);
     return { access_token, user_id, id, email, name };
+  }
+
+  @UseGuards(AuthGuard('jwt'))
+  @Patch('/password')
+  @HttpCode(HttpStatusCode.NoContent)
+  public async changeUserPassword(
+    @UserId() userId: string,
+    @Res({ passthrough: true }) res: Response,
+  ) {
+
   }
 }

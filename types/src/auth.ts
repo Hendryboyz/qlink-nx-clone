@@ -44,6 +44,20 @@ export interface ResetPasswordDto {
   rePassword: string;
 }
 
+export interface VerifyPasswordRequestDto {
+  password: string;
+}
+
+export interface PasswordVerificationResultDto {
+  userId: string;
+  isMatched: boolean;
+}
+
+export interface PasswordVerificationResponseDto {
+  bizCode: number;
+  data: PasswordVerificationResultDto;
+}
+
 export enum OtpTypeEnum {
   REGISTER = 'register',
   RESET_PASSWORD = 'reset-password',
