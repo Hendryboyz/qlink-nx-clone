@@ -4,6 +4,7 @@ import {
   Logger,
   NotFoundException,
   UnauthorizedException,
+  UnprocessableEntityException,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import {
@@ -129,8 +130,8 @@ export class AuthService {
     )
       throw new UnauthorizedException();
 
-    const { password, rePassword: re_password } = payload;
-    if (password != re_password || !passwordRegex.test(password)) {
+    const { password, rePassword } = payload;
+    if (!this.isMatchedPassword(password, rePassword)) {
       return {
         bizCode: INVALID_PAYLOAD,
         data: {
@@ -151,6 +152,10 @@ export class AuthService {
       bizCode: CODE_SUCCESS,
       data: true
     };
+  }
+
+  private isMatchedPassword(password: string, rePassword: string): boolean {
+    return password === rePassword && passwordRegex.test(password)
   }
 
   async verifyRecaptcha(recaptchaToken: string): Promise<boolean> {
@@ -216,5 +221,17 @@ export class AuthService {
       email: newEmail,
       name: `${user.lastName} ${user.firstName}`
     };
+  }
+
+  async changeLoginPassword(
+    userId: string,
+    newPassword: string,
+    rePassword: string,
+  ): Promise<UserVO> {
+    if (!this.isMatchedPassword(newPassword, rePassword)) {
+      throw new UnprocessableEntityException('invalid password');
+    }
+
+    return this.userService.updatePassword(userId, newPassword);
   }
 }

@@ -22,9 +22,11 @@ import process from 'node:process';
 import { AuthGuard } from '@nestjs/passport';
 import {
   ApiBody,
+  ApiNoContentResponse,
   ApiOkResponse,
   ApiProperty,
   ApiPropertyOptional,
+  ApiResponse,
 } from '@nestjs/swagger';
 import { CookieOptions, Response } from 'express';
 import { HttpStatusCode } from 'axios';
@@ -43,22 +45,23 @@ import {
   OtpReqDto,
   OtpTypeEnum,
   OtpVerificationRequestDto,
-  PatchUserEmailDto,
   RegisterDto,
   ResendOtpReqDto,
   ResetPasswordDto,
   SendOtpDto,
   StartOtpReqDto,
   VerifyOtpDto,
-  VerifyPasswordRequestDto,
 } from '@org/types';
 import { OtpService } from './otp.service';
 import { RequestWithUser } from '$/types';
 import { UserId } from '$/decorators/userId.decorator';
 import {
+  ChangePasswordRequest,
   PasswordVerificationResponse,
+  PatchUserEmailRequest,
   VerifyPasswordRequest,
 } from '$/modules/auth/auth.dto';
+import { ErrorResponse } from '$/types/dto';
 
 class ChangeEmailOtpReqDto {
   @ApiPropertyOptional()
@@ -425,13 +428,13 @@ export class AuthController {
   @UseGuards(AuthGuard('jwt'))
   @Patch('/email')
   @ApiBody({
-    type: PatchUserEmailDto,
+    type: PatchUserEmailRequest,
     description: 'the session and code from new email address',
   })
   @HttpCode(HttpStatusCode.NoContent)
   public async patchUserEmail(
     @UserId() userId: string,
-    @Body() payload: PatchUserEmailDto,
+    @Body() payload: PatchUserEmailRequest,
     @Res({ passthrough: true }) res: Response
   ) {
     const authSuccess = await this.authService.changeLoginEmail(userId, payload);
@@ -443,11 +446,25 @@ export class AuthController {
 
   @UseGuards(AuthGuard('jwt'))
   @Patch('/password')
+  @ApiBody({ type: ChangePasswordRequest })
   @HttpCode(HttpStatusCode.NoContent)
+  @ApiNoContentResponse()
+  @ApiResponse({ status: HttpStatus.UNPROCESSABLE_ENTITY, type: ErrorResponse })
   public async changeUserPassword(
     @UserId() userId: string,
-    @Res({ passthrough: true }) res: Response,
-  ) {
-
+    @Body() dto: ChangePasswordRequest,
+    @Res({ passthrough: true }) resp: Response,
+  ): Promise<void | ErrorResponse> {
+    try {
+      await this.authService.changeLoginPassword(userId, dto.newPassword, dto.rePassword);
+      resp.status(HttpStatus.NO_CONTENT);
+    } catch (e) {
+      this.logger.error(e);
+      resp.status(HttpStatus.UNPROCESSABLE_ENTITY);
+      return {
+        bizCode: INVALID,
+        message: 'invalid password'
+      };
+    }
   }
 }

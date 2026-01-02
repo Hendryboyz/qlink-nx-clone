@@ -5,7 +5,7 @@ import axios, {
   AxiosResponse,
 } from 'axios';
 import { ACCESS_TOKEN } from '@org/common';
-import { ApiResponse, Error } from '@org/types';
+import { ApiResponse, ErrorDto } from '@org/types';
 import Cookies from 'js-cookie';
 
 class Api {
@@ -37,7 +37,7 @@ class Api {
     // 添加響應攔截器
     this.instance.interceptors.response.use(
       (response: AxiosResponse<ApiResponse>) => response,
-      (error: AxiosError<Error>) => {
+      (error: AxiosError<ErrorDto>) => {
         throw error.response?.data;
       }
     );

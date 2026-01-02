@@ -44,6 +44,11 @@ export interface ResetPasswordDto {
   rePassword: string;
 }
 
+export interface ChangePasswordRequestDto {
+  newPassword: string;
+  rePassword: string;
+}
+
 export interface VerifyPasswordRequestDto {
   password: string;
 }
@@ -77,10 +82,7 @@ export type OtpEntity = {
 
 export type OtpCreateDto = VerifyOtpDto;
 
-export class PatchUserEmailDto {
-  @IsNotEmpty()
-  sessionId!: string;
-
-  @IsNotEmpty()
-  code!: string;
+export interface PatchUserEmailDto {
+  sessionId: string;
+  code: string;
 }
