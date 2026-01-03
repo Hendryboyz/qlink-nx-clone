@@ -107,7 +107,7 @@ const SignUpStep1: FC<SignUpStep1Props> = ({ onSuccess }) => {
                   ref={recaptchaRef}
                   recaptchaToken={values.recaptchaToken}
                   recaptchaError={errors.recaptchaToken}
-                  setFieldValue={setFieldValue}
+                  setFieldValue={(val) => setFieldValue('recaptchaToken', val)}
                   targetElementId="email-input-container"
                 />
               </div>
@@ -130,8 +130,10 @@ const SignUpStep1: FC<SignUpStep1Props> = ({ onSuccess }) => {
               <TGButton
                 type="submit"
                 disabled={
-                  isSubmitting || !values.agreed || !values.email
-                  // !values.recaptchaToken
+                  isSubmitting ||
+                  !values.agreed ||
+                  !values.email ||
+                  !values.recaptchaToken
                 }
                 fullWidth
                 size="xl"
