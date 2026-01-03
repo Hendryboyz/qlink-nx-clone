@@ -107,7 +107,7 @@ const SignUpStep1: FC<SignUpStep1Props> = ({ onSuccess }) => {
                   ref={recaptchaRef}
                   recaptchaToken={values.recaptchaToken}
                   recaptchaError={errors.recaptchaToken}
-                  setFieldValue={(val) => setFieldValue('recaptchaToken', val)}
+                  setFieldValue={setFieldValue}
                   targetElementId="email-input-container"
                 />
               </div>
