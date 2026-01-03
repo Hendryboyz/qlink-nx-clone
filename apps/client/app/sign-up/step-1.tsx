@@ -57,7 +57,7 @@ const SignUpStep1: FC<SignUpStep1Props> = ({ onSuccess }) => {
             identifier: email,
             identifierType: IdentifierType.EMAIL,
             type: OtpTypeEnum.REGISTER,
-            // recaptchaToken: values.recaptchaToken,
+            recaptchaToken: values.recaptchaToken,
           };
           API.post('/v2/auth/otp', payload)
             .then((res) => {
