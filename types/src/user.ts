@@ -24,13 +24,13 @@ export interface UserEntity {
   isDelete: boolean;
 }
 
-export type User = Omit<UserEntity, 'createdAt' | 'updatedAt' | 'isDelete'>;
+export interface User extends Omit<UserEntity, 'createdAt' | 'updatedAt' | 'isDelete'> {}
 
-export type UserVO = Omit<User, 'password' | 'birthday'> & {
-  birthday?: string;
+export interface UserVO extends Omit<User, 'password' | 'type'> {
   avatarImageUrl?: string;
   coverImageUrl?: string;
 }
+
 export type UserDto = Omit<User, 'id' | 'createdAt' | 'updatedAt' | 'isDelete' | 'birthday'> & {
   birthday?: string;
 }

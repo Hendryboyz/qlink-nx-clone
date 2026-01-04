@@ -282,6 +282,7 @@ export class AuthController {
     return await this.sendOtpV2(body);
   }
 
+  @ApiBearerAuth()
   @Version('2')
   @UseGuards(AuthGuard('jwt'))
   @Post('otp/email_change')

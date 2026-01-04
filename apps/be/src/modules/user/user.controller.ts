@@ -27,7 +27,8 @@ import {
 import { TransformInterceptor } from '$/interceptors/response.interceptor';
 import { S3storageService } from '$/modules/upload/s3storage.service';
 import { UserManagementService } from '$/modules/user/user-management.service';
-import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { GetUserProfileResponse } from '$/modules/user/user.dto';
 
 type UploadS3Response = {
   s3Uri: string;
@@ -54,6 +55,7 @@ export class UserController {
     );
   }
 
+  @ApiResponse({status: HttpStatus.OK, type: GetUserProfileResponse})
   @Get('/info')
   async getInfo(@UserId() userId: string) {
     const user = await this.userService.getUserInfo(userId);
