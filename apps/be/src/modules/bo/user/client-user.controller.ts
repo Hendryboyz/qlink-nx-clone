@@ -20,7 +20,9 @@ import { BoRole, ClientUserUpdateDto } from '@org/types';
 import { MemberQueryFilters } from '$/modules/user/user.types';
 import { UserManagementService } from '$/modules/user/user-management.service';
 import { UserService } from '$/modules/user/user.service';
+import { ApiTags } from '@nestjs/swagger';
 
+@ApiTags("Bo QRC User Management")
 @UseGuards(JwtAuthGuard, RolesGuard)
 @Controller('clients')
 export class ClientUserController {

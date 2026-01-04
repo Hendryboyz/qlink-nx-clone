@@ -3,7 +3,9 @@ import { AuthGuard } from '@nestjs/passport';
 import { UserId } from '$/decorators/userId.decorator';
 import { ProductService } from './product.service';
 import { CreateProductRequest, ProductDto, ProductRemoveDto, ProductUpdateDto } from '@org/types';
+import { ApiTags } from '@nestjs/swagger';
 
+@ApiTags("QRC Products")
 @Controller('product')
 export class ProductController {
   constructor(private productService: ProductService) {}

@@ -21,11 +21,12 @@ import {
 import process from 'node:process';
 import { AuthGuard } from '@nestjs/passport';
 import {
+  ApiBearerAuth,
   ApiBody,
   ApiCreatedResponse,
   ApiNoContentResponse,
   ApiOkResponse,
-  ApiResponse,
+  ApiResponse, ApiTags
 } from '@nestjs/swagger';
 import { CookieOptions, Response } from 'express';
 import { HttpStatusCode } from 'axios';
@@ -66,6 +67,7 @@ import { ErrorResponse } from '$/types/dto';
 
 const oneMonth = 30 * 24 * 60 * 60 * 1000;
 let isProd = false;
+@ApiTags("QRC Auth")
 @Controller('auth')
 export class AuthController {
   private logger = new Logger(this.constructor.name);
@@ -373,6 +375,7 @@ export class AuthController {
 
   @UseGuards(AuthGuard('jwt'))
   @Post('password/verification')
+  @ApiBearerAuth()
   @ApiBody({ type: VerifyPasswordRequest })
   @ApiOkResponse({ type: PasswordVerificationResponse })
   async verifyPassword(
@@ -424,6 +427,7 @@ export class AuthController {
 
   @UseGuards(AuthGuard('jwt'))
   @Patch('/email')
+  @ApiBearerAuth()
   @ApiBody({
     type: PatchUserEmailRequest,
     description: 'the session and code from new email address',
@@ -443,6 +447,7 @@ export class AuthController {
 
   @UseGuards(AuthGuard('jwt'))
   @Patch('/password')
+  @ApiBearerAuth()
   @ApiBody({ type: ChangePasswordRequest })
   @HttpCode(HttpStatusCode.NoContent)
   @ApiNoContentResponse()

@@ -27,12 +27,15 @@ import {
 import { TransformInterceptor } from '$/interceptors/response.interceptor';
 import { S3storageService } from '$/modules/upload/s3storage.service';
 import { UserManagementService } from '$/modules/user/user-management.service';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 
 type UploadS3Response = {
   s3Uri: string;
   imageUrl: string;
 };
 
+@ApiTags("QRC User")
+@ApiBearerAuth()
 @UseGuards(AuthGuard('jwt'))
 @Controller('user')
 export class UserController {
