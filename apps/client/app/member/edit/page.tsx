@@ -15,7 +15,7 @@ import {
   TGInput,
   TextFieldButton,
 } from '@org/components';
-import { STATES } from '@org/common';
+import { STATES, CODE_SUCCESS } from '@org/common';
 import { useRouter } from 'next/navigation';
 import { ChevronLeftIcon } from '@radix-ui/react-icons';
 import TrashIcon from '../assets/trash.svg';
@@ -75,6 +75,7 @@ export default function MemberEdit() {
   const [uploading, setUploading] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [showDeleteSuccess, setShowDeleteSuccess] = useState(false);
+  const [showDeleteError, setShowDeleteError] = useState(false);
   const [deleting, setDeleting] = useState(false);
   const [birthday, setBirthday] = useState<Date | undefined>(undefined);
 
@@ -132,12 +133,17 @@ export default function MemberEdit() {
   const handleDeleteAccount = async () => {
     try {
       setDeleting(true);
-      // todo: add response check?
-      // await API.delete('/backend/api/user');
+      const response = await API.delete('/user');
+      if (response.bizCode !== CODE_SUCCESS) {
+        throw new Error('Delete account failed');
+      }
+
       setShowDeleteModal(false);
       setShowDeleteSuccess(true);
     } catch (err) {
       console.error('Error deleting account:', err);
+      setShowDeleteModal(false);
+      setShowDeleteError(true);
     } finally {
       setDeleting(false);
     }
@@ -425,6 +431,30 @@ export default function MemberEdit() {
             variant="primary"
             fullWidth
             onClick={async () => await signOut({ callbackUrl: '/' })}
+          >
+            OK
+          </TGButton>
+        </ModalFooter>
+      </Modal>
+
+      {/* Delete Error Modal */}
+      <Modal isOpen={showDeleteError}>
+        <ModalHeader>
+          <ModalIcon>
+            <Image src={WarningIcon} alt="warning" width={20} height={18} className="w-8 h-8" />
+          </ModalIcon>
+          <ModalTitle className="text-base leading-[140%] text-text-str font-bold">
+            Failed to delete account
+          </ModalTitle>
+          <ModalDescription className="text-[12px] leading-[140%] text-text-str font-medium text-center">
+            Something went wrong. Please try again later.
+          </ModalDescription>
+        </ModalHeader>
+        <ModalFooter>
+          <TGButton
+            variant="primary"
+            fullWidth
+            onClick={() => setShowDeleteError(false)}
           >
             OK
           </TGButton>
