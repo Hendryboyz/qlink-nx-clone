@@ -98,6 +98,20 @@ class Api {
     const response: AxiosResponse<T> = await this.instance.delete(url, config);
     return response.data;
   }
+
+  // PATCH 請求
+  async patch<T = ApiResponse>(
+    url: string,
+    data?: any,
+    config?: AxiosRequestConfig
+  ): Promise<T> {
+    const response: AxiosResponse<T> = await this.instance.patch(
+      url,
+      data,
+      config
+    );
+    return response.data;
+  }
 }
 
 // 創建並導出 API 實例

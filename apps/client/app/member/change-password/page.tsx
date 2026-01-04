@@ -13,7 +13,7 @@ import { useRouter } from 'next/navigation';
 import { ChevronLeftIcon } from '@radix-ui/react-icons';
 import Image from 'next/image';
 import API from '$/utils/fetch';
-import { CODE_SUCCESS, INVALID_PAYLOAD } from '@org/common';
+import { CODE_SUCCESS } from '@org/common';
 import PwdAlertIcon from '../assets/pwd-alert.svg';
 
 // Error icon component
@@ -75,35 +75,36 @@ export default function ChangePassword() {
       setErrors({});
       setShowConfirmModal(false);
 
-      // TODO: Replace with actual API call
-      // const response = await API.put<{
-      //   bizCode: string;
-      //   data: boolean | { error: { type: string; message: string } };
-      // }>('/user/change-password', {
-      //   currentPassword,
-      //   newPassword,
-      //   reNewPassword,
-      // });
+      // Step 1: Verify current password
+      const verifyResponse = await API.post<{
+        bizCode: number;
+        data: { isMatched: boolean; userId: string };
+      }>('/auth/password/verification', {
+        password: currentPassword,
+      });
 
-      // Mock API call
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-      const response = { bizCode: CODE_SUCCESS, data: true };
+      if (!verifyResponse.data?.isMatched) {
+        setErrors({ currentPassword: 'Current password is incorrect' });
+        return;
+      }
 
-      if (response.bizCode === CODE_SUCCESS) {
-        setShowSuccessModal(true);
-      } else if (response.bizCode === INVALID_PAYLOAD) {
-        const errorData = response.data as { error: { type: string; message: string } };
-        if (errorData?.error) {
-          setErrors({
-            [errorData.error.type]: errorData.error.message,
-          });
+      // Step 2: Change password
+      const changeResponse = await API.patch<{ bizCode: number; message?: string }>(
+        '/auth/password',
+        {
+          newPassword,
+          rePassword: reNewPassword,
         }
+      );
+
+      if (changeResponse.bizCode === CODE_SUCCESS) {
+        setShowSuccessModal(true);
+      } else {
+        setErrors({ newPassword: changeResponse.message || 'Failed to change password' });
       }
     } catch (err) {
       console.error('Error changing password:', err);
-      setErrors({
-        currentPassword: 'An error occurred. Please try again.',
-      });
+      setErrors({ currentPassword: 'An error occurred. Please try again.' });
     } finally {
       setLoading(false);
     }
