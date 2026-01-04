@@ -29,7 +29,6 @@ export class StartOtpRequest implements StartOtpReqDto {
   @IsNotEmpty()
   recaptchaToken?: string;
   @ApiPropertyOptional()
-  @IsNotEmpty()
   sessionId?: string;
   @ApiProperty({
     enum: OtpTypeEnum

@@ -26,7 +26,7 @@ export interface UserEntity {
 
 export interface User extends Omit<UserEntity, 'createdAt' | 'updatedAt' | 'isDelete'> {}
 
-export interface UserVO extends Omit<User, 'password' | 'type'> {
+export interface UserVO extends Omit<User, 'password'> {
   avatarImageUrl?: string;
   coverImageUrl?: string;
 }
