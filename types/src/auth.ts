@@ -1,5 +1,5 @@
 import { GenderType, UserSourceType, UserType } from './user';
-import { IsEnum, IsNotEmpty } from 'class-validator';
+
 
 export interface RegisterDto {
   email: string;
@@ -33,6 +33,12 @@ export interface SendOtpDto {
   resend?: boolean;
 }
 
+export interface ChangeEmailOtpRequestDto {
+  recaptchaToken?: string;
+  newEmail: string;
+  emailConfirmSessionId: string;
+}
+
 export interface VerifyOtpDto {
   phone: string;
   code: string;
@@ -42,6 +48,25 @@ export interface VerifyOtpDto {
 export interface ResetPasswordDto {
   password: string;
   rePassword: string;
+}
+
+export interface ChangePasswordRequestDto {
+  newPassword: string;
+  rePassword: string;
+}
+
+export interface VerifyPasswordRequestDto {
+  password: string;
+}
+
+export interface PasswordVerificationResultDto {
+  userId: string;
+  isMatched: boolean;
+}
+
+export interface PasswordVerificationResponseDto {
+  bizCode: number;
+  data: PasswordVerificationResultDto;
 }
 
 export enum OtpTypeEnum {
@@ -63,10 +88,7 @@ export type OtpEntity = {
 
 export type OtpCreateDto = VerifyOtpDto;
 
-export class PatchUserEmailDto {
-  @IsNotEmpty()
-  sessionId!: string;
-
-  @IsNotEmpty()
-  code!: string;
+export interface PatchUserEmailDto {
+  sessionId: string;
+  code: string;
 }

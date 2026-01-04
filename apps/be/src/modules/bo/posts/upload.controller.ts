@@ -9,7 +9,9 @@ import { ConfigService } from '@nestjs/config';
 import { S3storageService } from '$/modules/upload/s3storage.service';
 import { TransformInterceptor } from '$/interceptors/response.interceptor';
 import { imageFileFilter, imageStorage } from '$/modules/utils/file-upload.util';
+import { ApiTags } from '@nestjs/swagger';
 
+@ApiTags("Bo Posts")
 @Controller('upload')
 export class UploadController {
   private readonly logger: Logger = new Logger(this.constructor.name);

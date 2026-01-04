@@ -20,7 +20,14 @@ import {
 } from '@nestjs/common';
 import process from 'node:process';
 import { AuthGuard } from '@nestjs/passport';
-import { ApiBody, ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiBody,
+  ApiCreatedResponse,
+  ApiNoContentResponse,
+  ApiOkResponse,
+  ApiResponse, ApiTags
+} from '@nestjs/swagger';
 import { CookieOptions, Response } from 'express';
 import { HttpStatusCode } from 'axios';
 import {
@@ -38,29 +45,29 @@ import {
   OtpReqDto,
   OtpTypeEnum,
   OtpVerificationRequestDto,
-  PatchUserEmailDto,
   RegisterDto,
   ResendOtpReqDto,
   ResetPasswordDto,
   SendOtpDto,
-  StartOtpReqDto,
   VerifyOtpDto,
 } from '@org/types';
 import { OtpService } from './otp.service';
 import { RequestWithUser } from '$/types';
 import { UserId } from '$/decorators/userId.decorator';
-
-class ChangeEmailOtpReqDto {
-  @ApiPropertyOptional()
-  recaptchaToken?: string;
-  @ApiProperty()
-  newEmail!: string;
-  @ApiProperty()
-  emailConfirmSessionId!: string;
-}
+import {
+  ChangeEmailOtpRequest,
+  ChangePasswordRequest,
+  PasswordVerificationResponse,
+  PatchUserEmailRequest,
+  SendOtpResponse,
+  StartOtpRequest,
+  VerifyPasswordRequest,
+} from '$/modules/auth/auth.dto';
+import { ErrorResponse } from '$/types/dto';
 
 const oneMonth = 30 * 24 * 60 * 60 * 1000;
 let isProd = false;
+@ApiTags("QRC Auth")
 @Controller('auth')
 export class AuthController {
   private logger = new Logger(this.constructor.name);
@@ -183,11 +190,13 @@ export class AuthController {
   @Version('2')
   @Post('otp')
   @UsePipes(new ValidationPipe())
+  @ApiBody({type: StartOtpRequest})
+  @ApiCreatedResponse({type: SendOtpResponse})
   async startOTPV2(
     @Headers() headers,
-    @Body() body: StartOtpReqDto,
+    @Body() body: StartOtpRequest,
     @Res({ passthrough: true }) resp: Response,
-  ) {
+  ): Promise<SendOtpResponse> {
     if (body.type === OtpTypeEnum.EMAIL_CHANGE) {
       throw new BadRequestException(
         'wrong API to change email, please use v2/auth/otp/email_change'
@@ -220,7 +229,7 @@ export class AuthController {
       this.logger.log(`otp disabled, response directly`);
       return {
         bizCode: CODE_SUCCESS,
-        data: true,
+        data: { },
       };
     }
 
@@ -273,17 +282,19 @@ export class AuthController {
     return await this.sendOtpV2(body);
   }
 
+  @ApiBearerAuth()
   @Version('2')
   @UseGuards(AuthGuard('jwt'))
   @Post('otp/email_change')
   @ApiBody({
-    type: ChangeEmailOtpReqDto,
+    type: ChangeEmailOtpRequest,
     description: 'payload to send email change OTP',
   })
   @UsePipes(new ValidationPipe())
+  @ApiCreatedResponse({})
   async emailChangeOTP(
     @Headers() headers,
-    @Body() body: ChangeEmailOtpReqDto,
+    @Body() body: ChangeEmailOtpRequest,
     @Res({ passthrough: true }) resp: Response,
     ) {
     await this.validateRecaptcha(headers, body.recaptchaToken);
@@ -303,6 +314,8 @@ export class AuthController {
     });
     if (response.bizCode === INVALID) {
       resp.status(HttpStatus.UNPROCESSABLE_ENTITY);
+    } else {
+      resp.status(HttpStatus.CREATED);
     }
     return response;
   }
@@ -361,6 +374,28 @@ export class AuthController {
     }
   }
 
+  @UseGuards(AuthGuard('jwt'))
+  @Post('password/verification')
+  @ApiBearerAuth()
+  @ApiBody({ type: VerifyPasswordRequest })
+  @ApiOkResponse({ type: PasswordVerificationResponse })
+  async verifyPassword(
+    @UserId() userId: string,
+    @Body() dto: VerifyPasswordRequest,
+  ) {
+    try {
+      await this.authService.verifyPassword(userId, dto.password);
+      return { bizCode: CODE_SUCCESS, data: {
+          userId: userId,
+          isMatched: true,
+        }
+      };
+    } catch (e) {
+      this.logger.error(`validate user: ${userId} password fail`, e);
+      return { bizCode: INVALID, message: 'Invalid password' };
+    }
+  }
+
   @Post('verify')
   async verifyToken(
     @Req() req: RequestWithUser,
@@ -393,14 +428,15 @@ export class AuthController {
 
   @UseGuards(AuthGuard('jwt'))
   @Patch('/email')
+  @ApiBearerAuth()
   @ApiBody({
-    type: PatchUserEmailDto,
+    type: PatchUserEmailRequest,
     description: 'the session and code from new email address',
   })
   @HttpCode(HttpStatusCode.NoContent)
   public async patchUserEmail(
     @UserId() userId: string,
-    @Body() payload: PatchUserEmailDto,
+    @Body() payload: PatchUserEmailRequest,
     @Res({ passthrough: true }) res: Response
   ) {
     const authSuccess = await this.authService.changeLoginEmail(userId, payload);
@@ -408,5 +444,30 @@ export class AuthController {
 
     this.setToken(res, access_token, user_id);
     return { access_token, user_id, id, email, name };
+  }
+
+  @UseGuards(AuthGuard('jwt'))
+  @Patch('/password')
+  @ApiBearerAuth()
+  @ApiBody({ type: ChangePasswordRequest })
+  @HttpCode(HttpStatusCode.NoContent)
+  @ApiNoContentResponse()
+  @ApiResponse({ status: HttpStatus.UNPROCESSABLE_ENTITY, type: ErrorResponse })
+  public async changeUserPassword(
+    @UserId() userId: string,
+    @Body() dto: ChangePasswordRequest,
+    @Res({ passthrough: true }) resp: Response,
+  ): Promise<void | ErrorResponse> {
+    try {
+      await this.authService.changeLoginPassword(userId, dto.newPassword, dto.rePassword);
+      resp.status(HttpStatus.NO_CONTENT);
+    } catch (e) {
+      this.logger.error(e);
+      resp.status(HttpStatus.UNPROCESSABLE_ENTITY);
+      return {
+        bizCode: INVALID,
+        message: 'invalid password'
+      };
+    }
   }
 }

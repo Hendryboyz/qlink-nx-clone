@@ -9,7 +9,9 @@ import { RolesGuard } from '$/modules/bo/verification/roles.guard';
 import { Roles } from '$/modules/bo/verification/roles.decorator';
 import { BoRole } from '@org/types';
 import { JwtAuthGuard } from '$/modules/bo/verification/jwt-auth.guard';
+import { ApiTags } from '@nestjs/swagger';
 
+@ApiTags("Bo Dashboard")
 @UseGuards(JwtAuthGuard, RolesGuard)
 @Controller()
 @Roles(BoRole.ADMIN, BoRole.VIEWER)

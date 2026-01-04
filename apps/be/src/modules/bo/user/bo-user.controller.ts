@@ -21,7 +21,9 @@ import {
 import { BoUserService } from '$/modules/bo/user/bo-user.service';
 import { JwtAuthGuard } from '$/modules/bo/verification/jwt-auth.guard';
 import { RolesGuard } from '$/modules/bo/verification/roles.guard';
+import { ApiTags } from '@nestjs/swagger';
 
+@ApiTags("Bo User")
 @UseGuards(JwtAuthGuard, RolesGuard)
 @Controller()
 export class BoUserController {
