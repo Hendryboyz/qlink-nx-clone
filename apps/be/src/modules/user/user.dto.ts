@@ -1,7 +1,8 @@
-import { GenderType, UserVO } from '@org/types';
+import { GenderType, UserType, UserVO } from '@org/types';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
 export class GetUserProfileResponse implements UserVO {
+  birthday?: string;
   @ApiProperty()
   id: string;
   @ApiProperty()
@@ -18,6 +19,10 @@ export class GetUserProfileResponse implements UserVO {
   lastName: string;
   @ApiProperty()
   gender: GenderType;
+  @ApiProperty({
+    enum: UserType,
+  })
+  type: UserType;
 
   @ApiPropertyOptional()
   avatarS3Uri?: string;
@@ -40,7 +45,7 @@ export class GetUserProfileResponse implements UserVO {
   facebook?: string;
 
   @ApiPropertyOptional()
-  source?: number
+  source?: number;
   @ApiPropertyOptional()
   crmId?: string;
 }
