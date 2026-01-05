@@ -16,7 +16,9 @@ import { JwtAuthGuard } from '$/modules/bo/verification/jwt-auth.guard';
 import { RolesGuard } from '$/modules/bo/verification/roles.guard';
 import { Roles } from '$/modules/bo/verification/roles.decorator';
 import { BoRole } from '@org/types';
+import { ApiTags } from '@nestjs/swagger';
 
+@ApiTags("Bo Posts")
 @UseGuards(JwtAuthGuard, RolesGuard)
 @Controller()
 export class PostsController {

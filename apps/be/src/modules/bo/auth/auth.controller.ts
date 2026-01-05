@@ -20,7 +20,9 @@ import { CookieOptions, Request, Response } from 'express';
 import { ConfigService } from '@nestjs/config';
 import { BO_ACCESS_TOKEN } from '@org/common';
 import { HttpStatusCode } from 'axios';
+import { ApiTags } from '@nestjs/swagger';
 
+@ApiTags("Bo Auth")
 @Controller()
 export class BoAuthController {
   private readonly logger = new Logger(BoAuthController.name);

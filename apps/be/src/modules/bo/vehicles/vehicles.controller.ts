@@ -27,7 +27,9 @@ import { ProductService } from '$/modules/product/product.service';
 import { VehicleQueryFilters } from '$/modules/bo/vehicles/vehicles.types';
 import { JwtAuthGuard } from '$/modules/bo/verification/jwt-auth.guard';
 import { RolesGuard } from '$/modules/bo/verification/roles.guard';
+import { ApiTags } from '@nestjs/swagger';
 
+@ApiTags("Bo Vehicles(Product)")
 @UseGuards(JwtAuthGuard, RolesGuard)
 @Controller()
 export class VehiclesController {

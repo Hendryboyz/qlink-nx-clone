@@ -1,5 +1,7 @@
 import {
   BadRequestException,
+  InternalServerErrorException,
+  HttpStatus,
   Logger,
   Body,
   Controller,
@@ -11,7 +13,6 @@ import {
   UseInterceptors,
   Delete,
   HttpCode,
-  HttpStatus,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { AuthGuard } from '@nestjs/passport';
@@ -26,7 +27,16 @@ import {
 import { TransformInterceptor } from '$/interceptors/response.interceptor';
 import { S3storageService } from '$/modules/upload/s3storage.service';
 import { UserManagementService } from '$/modules/user/user-management.service';
+import { ApiBearerAuth, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { GetUserProfileResponse } from '$/modules/user/user.dto';
 
+type UploadS3Response = {
+  s3Uri: string;
+  imageUrl: string;
+};
+
+@ApiTags("QRC User")
+@ApiBearerAuth()
 @UseGuards(AuthGuard('jwt'))
 @Controller('user')
 export class UserController {
@@ -45,15 +55,21 @@ export class UserController {
     );
   }
 
+  @ApiResponse({status: HttpStatus.OK, type: GetUserProfileResponse})
   @Get('/info')
   async getInfo(@UserId() userId: string) {
     const user = await this.userService.getUserInfo(userId);
-    const { avatarS3Uri } = user;
-    if (user.avatarS3Uri) {
+    const { avatarS3Uri, coverImageS3Uri } = user;
+    if (avatarS3Uri) {
       user.avatarImageUrl =
         `${this.cdnHostname}/` + avatarS3Uri.slice(`${this.bucketName}/`.length);
-      this.logger.debug(user.avatarImageUrl);
     }
+
+    if (coverImageS3Uri) {
+      user.coverImageUrl =
+        `${this.cdnHostname}/` + coverImageS3Uri.slice(`${this.bucketName}/`.length);
+    }
+
     return user;
   }
 
@@ -76,32 +92,75 @@ export class UserController {
   async uploadAvatar(
     @UserId() userId: string,
     @UploadedFile() avatar: Express.Multer.File
-  ) {
+  ): Promise<UploadS3Response> {
     if (!avatar) {
       throw new BadRequestException('No file uploaded');
     }
 
+    const s3Key: string = await this.uploadS3(userId, avatar);
+
+    await this.userService.updateUserMediaFile(
+      userId,
+      {
+        avatar: `${this.bucketName}/${s3Key}`,
+      },
+    );
+
+    return this.buildUploadS3Response(s3Key);
+  }
+
+  private uploadS3(userId: string, media: Express.Multer.File) {
     try {
-      const s3Key: string = await this.storageService.putObject(
+      return this.storageService.putObject(
         userId,
-        avatar.path,
-        avatar.filename,
-        avatar.mimetype
+        media.path,
+        media.filename,
+        media.mimetype
       );
-
-      await this.userService.updateUserAvatar(
-        userId,
-        `${this.bucketName}/${s3Key}`
-      );
-
-      return {
-        s3Uri: `s3://${this.bucketName}/${s3Key}`,
-        imageUrl: `${this.cdnHostname}/${s3Key}`,
-      };
     } catch (error) {
       this.logger.error('Error uploading to S3:', error);
-      throw new Error('Failed to upload file');
+      throw new InternalServerErrorException('Failed to upload file');
     }
+  }
+
+  private buildUploadS3Response(s3Key: string): UploadS3Response {
+    return {
+      s3Uri: `s3://${this.bucketName}/${s3Key}`,
+      imageUrl: `${this.cdnHostname}/${s3Key}`,
+    };
+  }
+
+  @Post('/cover')
+  @UseInterceptors(
+    FileInterceptor('cover', {
+      storage: imageStorage,
+      fileFilter: imageFileFilter,
+    }),
+    TransformInterceptor
+  )
+  async uploadCover(
+    @UserId() userId: string,
+    @UploadedFile() cover: Express.Multer.File
+  ): Promise<UploadS3Response> {
+    if (!cover) {
+      throw new BadRequestException('No file uploaded');
+    }
+
+    const s3Key: string = await this.storageService.putObject(
+      userId,
+      cover.path,
+      cover.filename,
+      cover.mimetype
+    );
+
+    await this.userService.updateUserMediaFile(
+      userId,
+      {
+        cover: `${this.bucketName}/${s3Key}`,
+      },
+    );
+
+    return this.buildUploadS3Response(s3Key);
   }
 
   @Delete()

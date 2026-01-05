@@ -1,4 +1,4 @@
-export type ProductEntity = {
+export interface ProductEntity {
   id: string;  // Vehicle Registration ID
   userId: string;
   vin: string;
@@ -14,7 +14,7 @@ export type ProductEntity = {
   verifyTimes: number
 }
 
-export type ProductVO = Omit<ProductEntity, 'crmId' | 'isVerified' | 'verifyTimes' > & {
+export interface ProductVO extends Omit<ProductEntity, 'crmId' | 'isVerified' | 'verifyTimes' > {
   verifyStatus?: number,
   img?: string;
 }

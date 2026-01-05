@@ -26,7 +26,9 @@ export interface OtpReqDto {
   sessionId?: string;
 }
 
-export type StartOtpReqDto = OtpReqDto & { recaptchaToken?: string };
+export interface StartOtpReqDto extends OtpReqDto {
+  recaptchaToken?: string
+}
 
 export type ResendOtpReqDto = OtpReqDto;
 
@@ -45,7 +47,8 @@ export class GeneralOtpDto {
 }
 
 export class CreateGeneralOtpDto extends GeneralOtpDto {
-  // ! is definite assignment assertion to announce a property without initialization, but it will be assign in runtime
+  // ! is definite assignment assertion to announce a property without initialization, but it will be assign in runtime\
+  sessionId?: string;
   expiredAt!: Date;
 }
 

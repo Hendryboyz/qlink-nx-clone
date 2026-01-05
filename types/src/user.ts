@@ -9,6 +9,7 @@ export interface UserEntity {
   midName?: string;
   lastName: string;
   gender: GenderType;
+  coverImageS3Uri?: string;
   avatarS3Uri?: string;
   addressState: string;
   addressCity: string;
@@ -23,12 +24,13 @@ export interface UserEntity {
   isDelete: boolean;
 }
 
-export type User = Omit<UserEntity, 'createdAt' | 'updatedAt' | 'isDelete'>;
+export interface User extends Omit<UserEntity, 'createdAt' | 'updatedAt' | 'isDelete'> {}
 
-export type UserVO = Omit<User, 'password' | 'birthday'> & {
-  birthday?: string;
+export interface UserVO extends Omit<User, 'password'> {
   avatarImageUrl?: string;
+  coverImageUrl?: string;
 }
+
 export type UserDto = Omit<User, 'id' | 'createdAt' | 'updatedAt' | 'isDelete' | 'birthday'> & {
   birthday?: string;
 }
@@ -51,6 +53,7 @@ export interface UserUpdateDto extends ClientUserUpdateDto {
   password?: string;
   isDelete?: boolean;
   avatarS3uri?: string;
+  coverImageS3Uri?: string;
   crmId?: string;
 }
 

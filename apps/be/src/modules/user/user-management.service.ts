@@ -23,7 +23,6 @@ import { omit } from 'lodash';
 import { SalesforceSyncService } from '$/modules/crm/sales-force.service';
 import { ProductService } from '$/modules/product/product.service';
 
-
 @Injectable()
 export class UserManagementService {
   private logger = new Logger(this.constructor.name);
@@ -88,7 +87,10 @@ export class UserManagementService {
   }
 
   public async updateUser(userId: string, updateData: UserUpdateDto): Promise<UserVO> {
-    if (updateData.password !== null) throw new BadRequestException();
+    this.logger.debug(`user[${userId}] updating`, updateData);
+    if (updateData.password) {
+      throw new BadRequestException('not allow to update password with user profile');
+    }
     const updatedUser = await this.userRepository.update(userId, updateData);
 
     this.logger.debug(`user[${updatedUser.id}] updated`, updatedUser);
@@ -105,6 +107,10 @@ export class UserManagementService {
     }
 
     return filterUserInfo(updatedUser);
+  }
+
+  public async patchUserEmail(userId: string, newUserEmail: string): Promise<UserVO> {
+    return await this.updateUser(userId, { email: newUserEmail });
   }
 
   public async delete(id: string): Promise<void> {
@@ -139,6 +145,7 @@ export class UserManagementService {
     const unSyncUsers = await this.userRepository.findNotSyncCRM();
     if (!unSyncUsers || unSyncUsers.length < 1) {
       return 0;
+
     }
 
     let succeed = 0,

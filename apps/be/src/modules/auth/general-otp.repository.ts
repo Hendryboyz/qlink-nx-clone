@@ -42,7 +42,10 @@ export class GeneralOtpRepository {
     text: string;
   }): Promise<GeneralOtpEntity | null> {
     const result: QueryResult<GeneralOtpEntity> = await this.pool.query(query);
-    return result.rows[0] || null;
+    if (!result.rows || result.rows.length === 0) {
+      return null;
+    }
+    return result.rows[0];
   }
 
   async verify(id: number) {
@@ -62,6 +65,17 @@ export class GeneralOtpRepository {
       values: [sessionId, code],
     };
     return await this.queryOTP(query);
+  }
+
+  public async findChangeEmailOTPWithCode(sessionId: string, code: string): Promise<GeneralOtpEntity | null> {
+    const query = {
+      text: `SELECT * FROM general_otp
+         WHERE session_id = $1 AND code = $2 AND type = $3 AND is_verified = false
+         ORDER BY created_at DESC
+         LIMIT 1`,
+      values: [sessionId, code, OtpTypeEnum.EMAIL_CHANGE],
+    };
+    return this.queryOTP(query);
   }
 
   async findAvailableSession(sessionId: string, type: OtpTypeEnum): Promise<GeneralOtpEntity | null> {
@@ -85,5 +99,13 @@ export class GeneralOtpRepository {
       sessionId: otpSession.sessionId,
       expiredAt: patchingFields.expired_at,
     }
+  }
+
+  public async fetchValidatedSession(type: OtpTypeEnum, sessionId: string): Promise<GeneralOtpEntity | null> {
+    const query = {
+      text: `SELECT * FROM general_otp WHERE session_id = $1 AND type = $2 AND is_verified = true ORDER BY created_at DESC LIMIT 1`,
+      values: [sessionId, type],
+    };
+    return await this.queryOTP(query);
   }
 }

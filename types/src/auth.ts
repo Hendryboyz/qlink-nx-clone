@@ -1,5 +1,6 @@
 import { GenderType, UserSourceType, UserType } from './user';
 
+
 export interface RegisterDto {
   email: string;
   firstName: string;
@@ -32,6 +33,12 @@ export interface SendOtpDto {
   resend?: boolean;
 }
 
+export interface ChangeEmailOtpRequestDto {
+  recaptchaToken?: string;
+  newEmail: string;
+  emailConfirmSessionId: string;
+}
+
 export interface VerifyOtpDto {
   phone: string;
   code: string;
@@ -43,9 +50,30 @@ export interface ResetPasswordDto {
   rePassword: string;
 }
 
+export interface ChangePasswordRequestDto {
+  newPassword: string;
+  rePassword: string;
+}
+
+export interface VerifyPasswordRequestDto {
+  password: string;
+}
+
+export interface PasswordVerificationResultDto {
+  userId: string;
+  isMatched: boolean;
+}
+
+export interface PasswordVerificationResponseDto {
+  bizCode: number;
+  data: PasswordVerificationResultDto;
+}
+
 export enum OtpTypeEnum {
   REGISTER = 'register',
   RESET_PASSWORD = 'reset-password',
+  EMAIL_CONFIRM = 'email-confirm',
+  EMAIL_CHANGE = 'email-change',
 }
 
 export type OtpEntity = {
@@ -59,3 +87,8 @@ export type OtpEntity = {
 }
 
 export type OtpCreateDto = VerifyOtpDto;
+
+export interface PatchUserEmailDto {
+  sessionId: string;
+  code: string;
+}

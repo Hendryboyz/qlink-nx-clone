@@ -8,7 +8,7 @@ export * from './moto'
 export * from './bo/index'
 export * from './banners'
 
-export interface Error {
+export interface ErrorDto {
     bizCode: number;
     message?: string;
 }

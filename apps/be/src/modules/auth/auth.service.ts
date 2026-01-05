@@ -4,14 +4,17 @@ import {
   Logger,
   NotFoundException,
   UnauthorizedException,
+  UnprocessableEntityException,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import {
   IdentifierType,
   OtpTypeEnum,
+  PatchUserEmailDto,
   RegisterDto,
   ResetPasswordDto,
   User,
+  UserEntity,
   UserVO,
 } from '@org/types';
 import { ConfigService } from '@nestjs/config';
@@ -19,7 +22,7 @@ import * as bcrypt from 'bcrypt';
 import { isNull, omit } from 'lodash';
 import axios from 'axios';
 
-import { OtpJwtPayload } from './otp.service';
+import { OtpJwtPayload, OtpService } from './otp.service';
 import { UserService } from '../user/user.service';
 import {
   CODE_SUCCESS,
@@ -45,22 +48,24 @@ export class AuthService {
   constructor(
     private userService: UserService,
     private userManagementService: UserManagementService,
+    private otpService: OtpService,
     private jwtService: JwtService,
     private config: ConfigService,
   ) {}
 
   async login(email: string, password: string): Promise<AuthSuccessBO> {
-    const user = await this.validateUser(email, password);
-    if (!user) {
+    const user = await this.userService.findOneWithType(email, IdentifierType.EMAIL);
+    const legalUser = await this.validateUserPassword(user, password);
+    if (!legalUser) {
       throw new UnauthorizedException(`wrong credentials`);
     }
 
     return {
-      access_token: this.signToken(email, IdentifierType.EMAIL, user.id),
-      user_id: user.id,
-      id: user.id,
-      email: user.email,
-      name: `${user.lastName} ${user.firstName}`
+      access_token: this.signToken(email, IdentifierType.EMAIL, legalUser.id),
+      user_id: legalUser.id,
+      id: legalUser.id,
+      email: legalUser.email,
+      name: `${legalUser.lastName} ${legalUser.firstName}`
     };
   }
 
@@ -125,8 +130,8 @@ export class AuthService {
     )
       throw new UnauthorizedException();
 
-    const { password, rePassword: re_password } = payload;
-    if (password != re_password || !passwordRegex.test(password)) {
+    const { password, rePassword } = payload;
+    if (!this.isMatchedPassword(password, rePassword)) {
       return {
         bizCode: INVALID_PAYLOAD,
         data: {
@@ -149,6 +154,10 @@ export class AuthService {
     };
   }
 
+  private isMatchedPassword(password: string, rePassword: string): boolean {
+    return password === rePassword && passwordRegex.test(password)
+  }
+
   async verifyRecaptcha(recaptchaToken: string): Promise<boolean> {
     const secretKey = this.config.get<string>('RECAPTCHA_SECRET_KEY');
     const verifyUrl = 'https://www.google.com/recaptcha/api/siteverify';
@@ -168,11 +177,19 @@ export class AuthService {
     }
   }
 
-  private async validateUser(
-    email: string,
+  public async verifyPassword(userId: string, password: string): Promise<UserVO> {
+    const user = await this.userService.findById(userId);
+    const legalUser = await this.validateUserPassword(user, password);
+    if (!legalUser) {
+      throw new UnauthorizedException('password not match');
+    }
+    return this.userService.updatePassword(userId, password);
+  }
+
+  private async validateUserPassword(
+    user: UserEntity,
     password: string
   ): Promise<Partial<User> | undefined> {
-    const user = await this.userService.findOneWithType(email, IdentifierType.EMAIL);
     const isPasswordCorrect = await bcrypt.compare(password, user.password);
     if (user && isPasswordCorrect) {
       return omit(user, 'password');
@@ -191,5 +208,30 @@ export class AuthService {
   private signToken(identifier: string, identifierType: IdentifierType, id: string): string {
     const payload = { sub: id, identifier, identifierType };
     return this.jwtService.sign(payload);
+  }
+
+  public async changeLoginEmail(userId: string, payload: PatchUserEmailDto): Promise<AuthSuccessBO> {
+    const { sessionId, code } = payload;
+    const newEmail: string = await this.otpService.verifyChangeEmailOtp(OtpTypeEnum.EMAIL_CHANGE, sessionId, code);
+    const user = await this.userManagementService.patchUserEmail(userId, newEmail)
+    return {
+      access_token: this.signToken(newEmail, IdentifierType.EMAIL, user.id),
+      user_id: user.id,
+      id: user.id,
+      email: newEmail,
+      name: `${user.lastName} ${user.firstName}`
+    };
+  }
+
+  async changeLoginPassword(
+    userId: string,
+    newPassword: string,
+    rePassword: string,
+  ): Promise<UserVO> {
+    if (!this.isMatchedPassword(newPassword, rePassword)) {
+      throw new UnprocessableEntityException('invalid password');
+    }
+
+    return this.userService.updatePassword(userId, newPassword);
   }
 }
