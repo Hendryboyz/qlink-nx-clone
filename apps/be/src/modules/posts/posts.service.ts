@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PostEntity } from '@org/types';
-import {  CreatePostDto, UpdatePostDto } from '$/modules/bo/posts/posts.dto'
+import {  CreatePostRequest, UpdatePostRequest } from '$/modules/bo/posts/posts.dto'
 import { PostRepository } from './posts.repository';
 import * as cheerio from 'cheerio';
 import { S3storageService } from '$/modules/upload/s3storage.service';
@@ -12,7 +12,7 @@ export class PostsService {
     private readonly storageService: S3storageService,
     ) {}
 
-  async create(createPostDto: CreatePostDto): Promise<PostEntity> {
+  async create(createPostDto: CreatePostRequest): Promise<PostEntity> {
     createPostDto.coverImage = await this.tryPersistImage(createPostDto.coverImage);
     createPostDto.content = await this.persistContentImages(createPostDto.content);
 
@@ -81,7 +81,7 @@ export class PostsService {
     return this.postRepository.getHighlightPosts();
   }
 
-  async update(id: string, updatePostDto: UpdatePostDto): Promise<PostEntity> {
+  async update(id: string, updatePostDto: UpdatePostRequest): Promise<PostEntity> {
     const coverImage = updatePostDto.coverImage;
     updatePostDto.coverImage = await this.tryPersistImage(coverImage);
     updatePostDto.content = await this.persistContentImages(updatePostDto.content);

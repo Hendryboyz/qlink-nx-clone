@@ -11,7 +11,7 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { PostsService } from '$/modules/posts/posts.service';
-import { CreatePostDto, UpdatePostDto } from './posts.dto';
+import { CreatePostRequest, UpdatePostRequest } from './posts.dto';
 import { JwtAuthGuard } from '$/modules/bo/verification/jwt-auth.guard';
 import { RolesGuard } from '$/modules/bo/verification/roles.guard';
 import { Roles } from '$/modules/bo/verification/roles.decorator';
@@ -28,7 +28,7 @@ export class PostsController {
 
   @Post()
   @Roles(BoRole.ADMIN)
-  create(@Body() createPostDto: CreatePostDto) {
+  create(@Body() createPostDto: CreatePostRequest) {
     this.logger.debug(
       `Received create post request: ${JSON.stringify(createPostDto)}`
     );
@@ -49,7 +49,7 @@ export class PostsController {
 
   @Patch(':id')
   @Roles(BoRole.ADMIN)
-  update(@Param('id') id: string, @Body() updatePostDto: UpdatePostDto) {
+  update(@Param('id') id: string, @Body() updatePostDto: UpdatePostRequest) {
     return this.postsService.update(id, updatePostDto);
   }
 

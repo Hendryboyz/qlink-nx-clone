@@ -5,39 +5,52 @@ import {
     IsOptional,
   } from 'class-validator';
 import { PartialType } from '@nestjs/mapped-types';
-import { PostCategoryEnum, ICreatePost } from '@org/types'
 
-  export class CreatePostDto implements ICreatePost {
-    @IsString()
-    title: string;
+import { PostCategoryEnum, CreatePostDto } from '@org/types'
+import { ApiProperty, ApiPropertyOptional, ApiResponseProperty } from '@nestjs/swagger';
 
-    @IsEnum(PostCategoryEnum)
-    category: PostCategoryEnum;
+export class CreatePostRequest implements CreatePostDto {
+  @ApiProperty()
+  @IsString()
+  title: string;
 
-    @IsString()
-    content: string;
+  @ApiProperty()
+  @IsEnum(PostCategoryEnum)
+  category: PostCategoryEnum;
 
-    @IsString()
-    @IsOptional()
-    coverImage?: string;
+  @ApiProperty()
+  @IsString()
+  content: string;
 
-    @IsBoolean()
-    isActive: boolean;
+  @ApiPropertyOptional()
+  @IsString()
+  @IsOptional()
+  coverImage?: string;
 
-    @IsBoolean()
-    isHighlight: boolean;
-  }
+  @ApiProperty()
+  @IsBoolean()
+  isActive: boolean;
 
-  export class UpdatePostDto extends PartialType(CreatePostDto) {
-    @IsEnum(PostCategoryEnum)
-    @IsOptional()
-    override category?: PostCategoryEnum;
+  @ApiProperty()
+  @IsBoolean()
+  isHighlight: boolean;
+}
 
-    @IsBoolean()
-    @IsOptional()
-    isActive?: boolean;
+export class UpdatePostRequest extends PartialType(CreatePostRequest) {
+  @ApiPropertyOptional({
+    enum: PostCategoryEnum,
+  })
+  @IsEnum(PostCategoryEnum)
+  @IsOptional()
+  override category?: PostCategoryEnum;
 
-    @IsBoolean()
-    @IsOptional()
-    isHighlight?: boolean;
-  }
+  @ApiPropertyOptional()
+  @IsBoolean()
+  @IsOptional()
+  isActive?: boolean;
+
+  @IsBoolean()
+  @IsOptional()
+  isHighlight?: boolean;
+}
+

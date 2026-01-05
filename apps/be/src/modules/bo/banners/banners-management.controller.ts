@@ -17,7 +17,9 @@ import { CreateBannerDto } from '$/modules/bo/banners/banners.dto';
 import { BannersManagementService } from '$/modules/bo/banners/banners-management.service';
 import { BannerEntity } from '@org/types';
 import { PagingParams } from '$/common/common.dto';
+import { ApiTags } from '@nestjs/swagger';
 
+@ApiTags('Bo Banners')
 @Injectable()
 @Controller()
 export class BannersManagementController {
