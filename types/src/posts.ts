@@ -17,7 +17,7 @@ export interface PostEntity {
 }
 
 
-export interface ICreatePost {
+export interface CreatePostDto {
   title: string;
   category: PostCategoryEnum;
   content: string;
@@ -25,4 +25,4 @@ export interface ICreatePost {
   isActive: boolean;
   isHighlight: boolean;
 }
-export interface IUpdatePost extends ICreatePost {}
+export interface UpdatePostDto extends CreatePostDto {}
