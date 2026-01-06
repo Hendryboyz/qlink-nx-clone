@@ -9,7 +9,8 @@ import {
   ResetBoUserPasswordDto,
   ClientUserUpdateDto,
   VerifyResult,
-  UpdateVehicleDTO
+  UpdateVehicleDTO,
+  CreateBannerDto,
 } from '@org/types';
 import {
   GetPostsResponse,
@@ -244,10 +245,24 @@ class Api {
     await this.delete(`/posts/${id}`);
   }
 
-  async uploadImage(file: File | Blob): Promise<ApiResponse<UploadImageResponse>> {
+  async uploadPostImage(file: File | Blob): Promise<ApiResponse<UploadImageResponse>> {
     const formData = new FormData();
     formData.append('image', file);
     return this.post('/posts/upload/image', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
+  }
+
+  async createBanner(postData: CreateBannerDto) {
+    return this.post('/banners', postData);
+  }
+
+  async uploadBannerImage(file: File | Blob): Promise<ApiResponse<UploadImageResponse>> {
+    const formData = new FormData();
+    formData.append('image', file);
+    return this.post('/banners/upload/image', formData, {
       headers: {
         'Content-Type': 'multipart/form-data',
       },

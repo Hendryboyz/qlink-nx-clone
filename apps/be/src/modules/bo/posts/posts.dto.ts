@@ -7,7 +7,7 @@ import {
 import { PartialType } from '@nestjs/mapped-types';
 
 import { PostCategoryEnum, CreatePostDto } from '@org/types'
-import { ApiProperty, ApiPropertyOptional, ApiResponseProperty } from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
 export class CreatePostRequest implements CreatePostDto {
   @ApiProperty()

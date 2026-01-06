@@ -1,4 +1,4 @@
-import { BannerAlignment } from '@org/types';
+import { BannerAlignment, CreateBannerDto, CreateBannerResponseDto } from '@org/types';
 import {
   IsEnum,
   IsNotEmpty,
@@ -7,34 +7,57 @@ import {
   IsUrl,
   MaxLength,
 } from 'class-validator';
+import {
+  ApiProperty,
+  ApiPropertyOptional,
+  ApiResponseProperty,
+} from '@nestjs/swagger';
 
-export class CreateBannerDto {
+export class CreateBannerRequest implements CreateBannerDto {
+  @ApiProperty()
   @IsString()
   @MaxLength(64)
   @IsNotEmpty()
-  mainTitle: string;
+  title: string;
 
+  @ApiPropertyOptional()
   @IsString()
   @IsOptional()
   subtitle?: string;
 
+  @ApiPropertyOptional()
   @IsString()
   @IsOptional()
   label?: string;
 
+  @ApiProperty()
   @IsString()
   @MaxLength(32)
   @IsNotEmpty()
-  buttonText: string;
+  button: string;
 
+  @ApiProperty({
+    enum: BannerAlignment,
+  })
   @IsEnum(BannerAlignment)
   alignment: BannerAlignment;
 
+  @ApiPropertyOptional()
   @IsUrl()
   @IsOptional()
-  imageUrl?: string;
+  image?: string;
 
+  @ApiPropertyOptional()
   @IsUrl()
   @IsOptional()
-  linkUrl?: string;
+  link?: string;
+}
+
+export class CreateBannerResponse implements CreateBannerResponseDto {
+  @ApiResponseProperty()
+  id: string;
+  @ApiResponseProperty()
+  order: number;
+  @ApiResponseProperty()
+  createdAt: Date;
 }

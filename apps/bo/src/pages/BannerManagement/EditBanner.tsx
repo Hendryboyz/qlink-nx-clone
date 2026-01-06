@@ -3,22 +3,47 @@ import { Button, Form, Input, Space, Card, Radio, Upload, message } from 'antd';
 import * as Yup from 'yup';
 import { PlusOutlined } from '@ant-design/icons';
 import { UploadChangeParam, UploadFile } from 'antd/es/upload/interface';
-import { useCallback, useEffect, useState } from 'react';
-import { BannerEntity } from '@org/types';
+import React, { useCallback, useEffect, useState } from 'react';
+import API from '$/utils/fetch';
+import { CODE_SUCCESS } from '@org/common';
+import { BannerAlignment, BannerDto } from '@org/types';
 
 type EditBannerProps = {
   // * null initialValues to add a new banner
   // * defined initialValues to update banner
-  initialValues?: BannerEntity;
+  initialValues?: BannerDto;
   onCancel: () => void;
 };
 
 const validationSchema = Yup.object().shape({
-  title: Yup.string().required('Please enter ad title'),
-  content: Yup.string().required('Please enter ad content'),
-  startDate: Yup.date().required('Please select start date'),
-  endDate: Yup.date().required('Please select end date'),
+  label: Yup.string(),
+  title: Yup.string().required('please enter title'),
+  subtitle: Yup.string(),
+  alignment: Yup.mixed<BannerAlignment>().oneOf(Object.values(BannerAlignment)).required(),
+  button: Yup.string().required('please enter button text'),
+  image: Yup.string().url().nullable(),
+  link: Yup
+    .string()
+    .url()
+    .min(6, 'link require at least 6 characters')
+    .required('please provide link address'),
 });
+
+const emptyBannerValues: BannerDto = {
+  id: '',
+  order: 0,
+
+  label: '',
+  title: '',
+  subtitle: '',
+  alignment: BannerAlignment.TOP,
+  button: 'View',
+
+  image: null,
+  link: '',
+
+  archived: false,
+}
 
 function EditBannerPage({ initialValues, onCancel }: EditBannerProps) {
   const [previewImage, setPreviewImage] = useState<string>(initialValues?.image || null);
@@ -29,8 +54,27 @@ function EditBannerPage({ initialValues, onCancel }: EditBannerProps) {
     }
   }, []);
 
+  const uploadImage = useCallback(async (file: File | Blob) => {
+    return API.uploadBannerImage(file)
+      .then((res) => {
+        if (res.bizCode !== CODE_SUCCESS) {
+          message.error('Upload failed: ' + (res.message || 'Unknown error'));
+          return { imageUrl: '' };
+        }
+        const { imageUrl, s3Uri } = res.data;
+
+        return { imageUrl, s3Uri };
+      })
+      .catch((error) => {
+        message.error(
+          'Upload failed: ' + (error.response.data.message || 'Unknown error')
+        );
+        return { imageUrl: '' , s3Uri: ''};
+      });
+  }, []);
+
   const onBackgroundImageUpload = useCallback(
-    (info: UploadChangeParam<UploadFile<File>>)=> {
+    async (info: UploadChangeParam<UploadFile<File>>)=> {
       const { file } = info;
       let fileToUpload: File | Blob | undefined;
 
@@ -41,6 +85,7 @@ function EditBannerPage({ initialValues, onCancel }: EditBannerProps) {
       } else if (file.originFileObj) {
         fileToUpload = file.originFileObj;
       } else if (file.url) {
+        setPreviewImage(file.url);
         return;
       } else {
         console.warn(`Unsupported file type: ${file.name}`);
@@ -51,8 +96,9 @@ function EditBannerPage({ initialValues, onCancel }: EditBannerProps) {
       }
 
       if (fileToUpload) {
-        // const { imageUrl } = await uploadImage(fileToUpload);
-        console.log(fileToUpload);
+        const { imageUrl } = await uploadImage(fileToUpload);
+        setPreviewImage(imageUrl);
+        console.log(fileToUpload, imageUrl);
       } else {
         message.error(`Can't handle ${file.name}.`);
       }
@@ -63,15 +109,12 @@ function EditBannerPage({ initialValues, onCancel }: EditBannerProps) {
   return (
     <Card style={{ width: 640 }}>
       <Formik
-        initialValues={{
-          label: '',
-          title: '',
-          subtitle: '',
-          buttonText: '',
-        }}
+        initialValues={initialValues || emptyBannerValues}
         validationSchema={validationSchema}
         onSubmit={(values, { setSubmitting }) => {
           // Handle form submission logic
+          setSubmitting(true);
+          console.log(values)
           setSubmitting(false);
         }}
       >
@@ -84,6 +127,7 @@ function EditBannerPage({ initialValues, onCancel }: EditBannerProps) {
           handleSubmit,
           isSubmitting,
           setFieldValue,
+          isValid,
         }) => (
           <Form onFinish={handleSubmit} layout="vertical">
             <Form.Item
@@ -97,6 +141,7 @@ function EditBannerPage({ initialValues, onCancel }: EditBannerProps) {
                 onChange={handleChange}
                 onBlur={handleBlur}
                 value={values.label}
+                defaultValue={values.label}
               />
             </Form.Item>
 
@@ -131,21 +176,62 @@ function EditBannerPage({ initialValues, onCancel }: EditBannerProps) {
               />
             </Form.Item>
 
-            <Form.Item name="alignment" label="Alignment">
-              <Radio.Group>
-                <Radio.Button value="top">Top</Radio.Button>
-                <Radio.Button value="middle">Middle</Radio.Button>
-                <Radio.Button value="bottom">Bottom</Radio.Button>
+            <Form.Item
+              name="alignment"
+              label="Alignment"
+            >
+              <Radio.Group
+                name="alignment"
+                value={values.alignment}
+                onChange={handleChange}
+                onBlur={handleBlur}
+                defaultValue={values.alignment}
+              >
+                {Object.values(BannerAlignment).map((alignment) => (
+                  <Radio.Button
+                    key={alignment}
+                    name="alignment"
+                    value={alignment}
+                    style={{ textTransform: 'capitalize' }}
+                  >
+                    {alignment.toString()}
+                  </Radio.Button>
+                ))}
               </Radio.Group>
             </Form.Item>
 
-            <Form.Item name="buttonText">
+            <Form.Item
+              name="link"
+              label="URL"
+              validateStatus={
+                errors.link && touched.link ? 'error' : ''
+              }
+              help={errors.link && touched.link ? errors.link : ''}
+            >
               <Input
-                name="buttonText"
+                name="link"
+                placeholder="page url"
+                onChange={handleChange}
+                onBlur={handleBlur}
+                value={values.link}
+                defaultValue={values.link}
+              />
+            </Form.Item>
+
+            <Form.Item
+              name="button"
+              validateStatus={
+                errors.button && touched.button ? 'error' : ''
+              }
+              help={errors.button && touched.button ? errors.button : ''}
+            >
+              <Input
+                name="button"
                 placeholder="Button Text"
                 onChange={handleChange}
                 onBlur={handleBlur}
-                value={values.buttonText}
+                defaultValue={values.button}
+                value={values.button}
               />
             </Form.Item>
 
@@ -156,16 +242,20 @@ function EditBannerPage({ initialValues, onCancel }: EditBannerProps) {
                 showUploadList={false}
                 maxCount={1}
               >
-                <Button
-                  style={{
-                    color: 'inherit',
-                    cursor: 'inherit',
-                    border: 0,
-                    background: 'none',
-                  }}
-                >
-                  <PlusOutlined /> Image
-                </Button>
+                {previewImage ? (
+                  <img src={previewImage} alt="Background Image" style={{ width: '100%' }} />
+                ) : (
+                  <Button
+                    style={{
+                      color: 'inherit',
+                      cursor: 'inherit',
+                      border: 0,
+                      background: 'none',
+                    }}
+                  >
+                    <PlusOutlined /> Image
+                  </Button>
+                )}
               </Upload>
             </Form.Item>
 

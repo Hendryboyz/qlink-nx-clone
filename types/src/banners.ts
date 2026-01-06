@@ -21,3 +21,4 @@ export interface BannerEntity {
   createdAt: Date;
   updatedAt: Date;
 }
+
