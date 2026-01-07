@@ -6,7 +6,7 @@ import { UploadChangeParam, UploadFile } from 'antd/es/upload/interface';
 import React, { useCallback, useEffect, useState } from 'react';
 import API from '$/utils/fetch';
 import { CODE_SUCCESS } from '@org/common';
-import { BannerAlignment, BannerDto } from '@org/types';
+import { BannerAlignment, BannerDto, CreateBannerDto } from '@org/types';
 
 type EditBannerProps = {
   // * null initialValues to add a new banner
@@ -49,7 +49,12 @@ function EditBannerPage({ initialValues, onCancel }: EditBannerProps) {
   const [fileList, setFileList] = useState<UploadFile[]>([]);
   useEffect(() => {
     if (initialValues) {
-
+      setFileList([{
+        uid: '-1',
+        name: 'bgi',
+        status: 'done',
+        url: initialValues.image,
+      }]);
     }
   }, []);
 
@@ -128,10 +133,19 @@ function EditBannerPage({ initialValues, onCancel }: EditBannerProps) {
         onSubmit={(values, { setSubmitting }) => {
           // Handle form submission logic
           setSubmitting(true);
-          console.log(values)
-          console.log(fileList);
-
-          setSubmitting(false);
+          const dto: CreateBannerDto = {
+            ...values,
+          }
+          API.createBanner(dto)
+            .then((res) => {
+              console.debug(res);
+              onCancel();
+            })
+            .catch((error) => {
+              message.error(`create banner failed: ${error}.`);
+              console.error(error);
+            })
+            .finally(() => setSubmitting(false));
         }}
       >
         {({
