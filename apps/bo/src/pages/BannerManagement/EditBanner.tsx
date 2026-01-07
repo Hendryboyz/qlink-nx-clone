@@ -46,8 +46,7 @@ const emptyBannerValues: BannerDto = {
 }
 
 function EditBannerPage({ initialValues, onCancel }: EditBannerProps) {
-  const [previewImage, setPreviewImage] = useState<string>(initialValues?.image || null);
-
+  const [fileList, setFileList] = useState<UploadFile[]>([]);
   useEffect(() => {
     if (initialValues) {
 
@@ -77,7 +76,6 @@ function EditBannerPage({ initialValues, onCancel }: EditBannerProps) {
     async (info: UploadChangeParam<UploadFile<File>>)=> {
       const { file } = info;
       let fileToUpload: File | Blob | undefined;
-
       if (file instanceof File) {
         fileToUpload = file;
       } else if (file instanceof Blob) {
@@ -85,8 +83,7 @@ function EditBannerPage({ initialValues, onCancel }: EditBannerProps) {
       } else if (file.originFileObj) {
         fileToUpload = file.originFileObj;
       } else if (file.url) {
-        setPreviewImage(file.url);
-        return;
+        return file.url;
       } else {
         console.warn(`Unsupported file type: ${file.name}`);
         message.warning(
@@ -97,13 +94,30 @@ function EditBannerPage({ initialValues, onCancel }: EditBannerProps) {
 
       if (fileToUpload) {
         const { imageUrl } = await uploadImage(fileToUpload);
-        setPreviewImage(imageUrl);
-        console.log(fileToUpload, imageUrl);
+        if (!imageUrl) {
+          return undefined;
+        }
+        setFileList(() => [
+          {
+            uid: info.file.uid,
+            name: info.file.name,
+            status: "done",
+            url: imageUrl,
+          }
+        ]);
+        return imageUrl;
       } else {
         message.error(`Can't handle ${file.name}.`);
       }
     },
     [],
+  );
+
+  const uploadButton = (
+    <button style={{ border: 0, background: "none" }} type="button">
+      <PlusOutlined />
+      <div style={{ marginTop: 8 }}>Upload</div>
+    </button>
   );
 
   return (
@@ -115,6 +129,8 @@ function EditBannerPage({ initialValues, onCancel }: EditBannerProps) {
           // Handle form submission logic
           setSubmitting(true);
           console.log(values)
+          console.log(fileList);
+
           setSubmitting(false);
         }}
       >
@@ -219,6 +235,7 @@ function EditBannerPage({ initialValues, onCancel }: EditBannerProps) {
             </Form.Item>
 
             <Form.Item
+              label='Button Text'
               name="button"
               validateStatus={
                 errors.button && touched.button ? 'error' : ''
@@ -235,27 +252,30 @@ function EditBannerPage({ initialValues, onCancel }: EditBannerProps) {
               />
             </Form.Item>
 
-            <Form.Item valuePropName="fileList" getValueFromEvent={null}>
+            <Form.Item
+              label="Banner Image"
+              validateStatus={errors.image && touched.image ? 'error' : ''}
+              help={errors.image && touched.image ? errors.image : ''}
+            >
               <Upload
-                onChange={onBackgroundImageUpload}
+                action={async (info) => {
+                  const { imageUrl } = await uploadImage(info);
+                  return imageUrl;
+                }}
+                directory={false}
+                onChange={async (info) => {
+                  const imageUrl = await onBackgroundImageUpload(info);
+                  setFieldValue('image', imageUrl);
+                }}
+                onRemove={() => {
+                  setFileList([]);
+                  setFieldValue('image', undefined);
+                }}
                 listType="picture-card"
-                showUploadList={false}
+                fileList={fileList}
                 maxCount={1}
               >
-                {previewImage ? (
-                  <img src={previewImage} alt="Background Image" style={{ width: '100%' }} />
-                ) : (
-                  <Button
-                    style={{
-                      color: 'inherit',
-                      cursor: 'inherit',
-                      border: 0,
-                      background: 'none',
-                    }}
-                  >
-                    <PlusOutlined /> Image
-                  </Button>
-                )}
+                {fileList.length >= 1 ? null : uploadButton}
               </Upload>
             </Form.Item>
 
