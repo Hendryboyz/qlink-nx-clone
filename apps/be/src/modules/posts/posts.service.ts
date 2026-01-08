@@ -30,18 +30,8 @@ export class PostsService {
     return $.html()
   }
 
-  private async tryPersistImage(imageUrl: string): Promise<string> {
-    if (!imageUrl) return '';
-    const tempPrefix = 'tmp/';
-    const isNewImage: boolean = imageUrl.includes(tempPrefix)
-    if (!isNewImage) return imageUrl;
-
-    const imagePrefix = 'images/';
-    const [cdnHostname, objectPath] = imageUrl.split(tempPrefix);
-    const destinationPath = `${imagePrefix}${objectPath}`;
-    await this.storageService.moveObject(`${tempPrefix}${objectPath}`, destinationPath);
-
-    return `${cdnHostname}${destinationPath}`;
+  private tryPersistImage(imageUrl: string): Promise<string> {
+    return this.storageService.tryPersistImage(imageUrl, 'images/');
   }
 
   async findAll(

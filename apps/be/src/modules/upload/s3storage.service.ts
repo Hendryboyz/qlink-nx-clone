@@ -106,4 +106,18 @@ export class S3storageService {
       throw error;
     }
   }
+
+  public async tryPersistImage(imageUrl: string, perpetualPrefix: string): Promise<string> {
+    if (!imageUrl) return '';
+    const tempPrefix = 'tmp/';
+    const isNewImage: boolean = imageUrl.includes(tempPrefix)
+    if (!isNewImage) return imageUrl;
+
+    const imagePrefix = perpetualPrefix;
+    const [cdnHostname, objectPath] = imageUrl.split(tempPrefix);
+    const destinationPath = `${imagePrefix}${objectPath}`;
+    await this.moveObject(`${tempPrefix}${objectPath}`, destinationPath);
+
+    return `${cdnHostname}${destinationPath}`;
+  }
 }
