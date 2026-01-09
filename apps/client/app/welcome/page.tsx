@@ -83,16 +83,14 @@ export default function Welcome() {
       </div>
 
       <div className="px-6 pb-10 pt-2 flex flex-col gap-6 items-center w-full">
-        <div className="w-full">
-          <TGButton
-            fullWidth
-            size="xl"
-            variant="primary"
-            onClick={() => router.push('/sign-up')}
-          >
-            Join the club
-          </TGButton>
-        </div>
+        <TGButton
+          fullWidth
+          size="xl"
+          variant="primary"
+          onClick={() => router.push('/sign-up')}
+        >
+          Join the club
+        </TGButton>
 
         <TGButton
           fullWidth

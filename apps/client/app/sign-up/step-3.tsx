@@ -98,15 +98,61 @@ const SignUpStep3: FC<SignUpStep3Props> = ({ email, token, onSuccess }) => {
       initialValues={initValue}
       validate={(values) => {
         const errors: FormikErrors<FormData> = {};
-        if (!values.password) errors.password = 'Required';
-        if (!values.rePassword) errors.rePassword = 'Required';
-        if (values.password !== values.rePassword)
+
+        // Password validation
+        if (!values.password) {
+          errors.password = 'Required';
+        } else {
+          if (values.password.length < 8) {
+            errors.password = 'At least 8 characters';
+          }
+          if (!/[a-zA-Z]/.test(values.password)) {
+            errors.password = 'At least 1 English letter (a-z or A-Z)';
+          }
+          if (!/[0-9]/.test(values.password)) {
+            errors.password = 'At least 1 digit (0-9)';
+          }
+        }
+
+        if (!values.rePassword) {
+          errors.rePassword = 'Required';
+        } else if (values.password !== values.rePassword) {
           errors.rePassword = 'Passwords must match';
-        if (!values.firstName) errors.firstName = 'Required';
-        if (!values.lastName) errors.lastName = 'Required';
-        if (!values.phone) errors.phone = 'Required';
-        if (!values.addressCity) errors.addressCity = 'Required';
-        if (!values.addressState) errors.addressState = 'Required';
+        }
+
+        // First Name validation
+        if (!values.firstName) {
+          errors.firstName = 'Required';
+        }
+
+        // Last Name validation
+        if (!values.lastName) {
+          errors.lastName = 'Required';
+        }
+
+        // Phone validation
+        if (!values.phone) {
+          errors.phone = 'Required';
+        }
+
+        // Address City validation
+        if (!values.addressCity) {
+          errors.addressCity = 'Required';
+        }
+
+        // Address State validation
+        if (!values.addressState) {
+          errors.addressState = 'Required';
+        }
+
+        // Birthday validation (if provided, should be YYYY-MM-DD format)
+        if (values.birthday) {
+          const birthdayString = format(values.birthday, 'yyyy-MM-dd');
+          if (!/^\d{4}-\d{2}-\d{2}$/.test(birthdayString)) {
+            errors.birthday = 'Birthday format should be YYYY-MM-DD';
+          }
+        }
+
         return errors;
       }}
       onSubmit={(values, { setSubmitting, setFieldError }) => {
