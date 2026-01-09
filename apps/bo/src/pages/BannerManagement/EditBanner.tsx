@@ -187,6 +187,7 @@ function EditBannerPage({ initialValues, onCancel }: EditBannerProps) {
                 onChange={handleChange}
                 onBlur={handleBlur}
                 value={values.title}
+                defaultValue={values.title}
               />
             </Form.Item>
 
@@ -203,6 +204,7 @@ function EditBannerPage({ initialValues, onCancel }: EditBannerProps) {
                 onChange={handleChange}
                 onBlur={handleBlur}
                 value={values.subtitle}
+                defaultValue={values.subtitle}
               />
             </Form.Item>
 

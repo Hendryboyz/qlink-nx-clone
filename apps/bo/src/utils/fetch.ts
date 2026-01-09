@@ -10,7 +10,7 @@ import {
   ClientUserUpdateDto,
   VerifyResult,
   UpdateVehicleDTO,
-  CreateBannerDto,
+  CreateBannerDto, CreateBannerResponseDto, BannerDto,
 } from '@org/types';
 import {
   GetPostsResponse,
@@ -255,7 +255,7 @@ class Api {
     });
   }
 
-  async createBanner(postData: CreateBannerDto) {
+  async createBanner(postData: CreateBannerDto): Promise<ApiResponse<CreateBannerResponseDto>> {
     return this.post('/banners', postData);
   }
 
@@ -267,6 +267,22 @@ class Api {
         'Content-Type': 'multipart/form-data',
       },
     });
+  }
+
+  async listActiveBanners(): Promise<ApiResponse<BannerDto[]>> {
+    return this.get('/banners/active');
+  }
+
+  async listArchivedBanners(): Promise<ApiResponse<BannerDto[]>> {
+    return this.get('/banners/archived');
+  }
+
+  async activateBanner(id: string): Promise<void> {
+    return this.put(`/banners/${id}/active`);
+  }
+
+  async archiveBanner(id: string): Promise<void> {
+    return this.put(`/banners/${id}/archived`);
   }
 
   logout() {

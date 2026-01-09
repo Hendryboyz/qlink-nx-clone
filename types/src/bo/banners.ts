@@ -2,6 +2,13 @@ import { BannerEntity } from '../banners';
 
 export interface BannerDto extends Omit<BannerEntity, 'createdAt' | 'updatedAt'> {}
 
+export interface ReorderBannerDto {
+  list: {
+    id: string,
+    order: number,
+  }[]
+}
+
 export interface CreateBannerDto extends Omit<BannerDto, 'id' | 'archived' | 'order'> {}
 
 export interface CreateBannerResponseDto {
@@ -9,3 +16,4 @@ export interface CreateBannerResponseDto {
   order: number;
   createdAt: Date;
 }
+

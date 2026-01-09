@@ -1,105 +1,79 @@
-import React, { useState } from 'react';
-import { ProColumns, ProTable } from '@ant-design/pro-components';
-import { DragSortTable } from '@ant-design/pro-components';
-import { Button, message, Space } from 'antd';
-import { UserVO } from '@org/types';
-import { EditOutlined, StopOutlined } from '@ant-design/icons';
+import React from 'react';
+import { DragSortTable, ProColumns, ProTable } from '@ant-design/pro-components';
+import { Button, message, Space, Tooltip } from 'antd';
+import { BannerDto } from '@org/types';
+import { EditOutlined } from '@ant-design/icons';
+import { MdOutlineArchive } from "react-icons/md";
 
-
-const enabledTableColumns: ProColumns[] = [
-  {
-    title: 'order',
-    dataIndex: 'sort',
-    width: 60,
-    className: 'drag-visible',
-  },
-  {
-    dataIndex: 'id',
-    key: 'id',
-    hideInTable: true,
-    search: false,
-  },
-  {
-    dataIndex: 'order',
-    key: 'order',
-    hideInTable: true,
-    search: false,
-  },
-  {
-    title: 'Title',
-    dataIndex: 'title',
-    key: 'title',
-  },
-  {
-    title: 'Subtitle',
-    dataIndex: 'subtitle',
-    key: 'subtitle',
-  },
-  {
-    title: 'Image',
-    dataIndex: 'image',
-    key: 'image',
-  },
-  {
-    title: 'Link URL',
-    dataIndex: 'url',
-    key: 'url',
-  },
-  {
-    title: 'Actions',
-    key: 'actions',
-    search: false,
-    render: (_: unknown, record: UserVO) => (
-      <Space size="middle">
-        <Button
-          variant='link'
-          color='default'
-          onClick={() => {}}>
-          <EditOutlined style={{ fontSize: 16 }} />
-        </Button>
-        <Button
-          variant='link'
-          color='danger'
-          onClick={() => {}}
-        >
-          <StopOutlined style={{ fontSize: 16 }} />
-        </Button>
-      </Space>
-    ),
-  },
-];
-
-const enabledData = [
-  {
-    id: '1',
-    order: 0,
-    title: 'title 1',
-    subtitle: 'subtitle 1',
-    enabled: true,
-  },
-  {
-    id: '2',
-    order: 1,
-    title: 'title 2',
-    subtitle: 'subtitle 2',
-    enabled: true,
-  },
-  {
-    id: '3',
-    order: 2,
-    title: 'title 3',
-    subtitle: 'subtitle 3',
-    enabled: true,
-  },
-  {
-    id: '4',
-    order: NaN,
-    title: 'title 4',
-    subtitle: 'subtitle 4',
-    enabled: true,
-  },
-];
-
+const generateEnabledTableColumns = (
+  setEditingBanner: (value: any) => void,
+  archiveBanner: (recordId: string) => void,
+): ProColumns[] => {
+  return [
+    {
+      title: 'order',
+      dataIndex: 'sort',
+      width: 60,
+      className: 'drag-visible',
+    },
+    {
+      dataIndex: 'id',
+      key: 'id',
+      hideInTable: true,
+      search: false,
+    },
+    {
+      dataIndex: 'order',
+      key: 'order',
+      hideInTable: true,
+      search: false,
+    },
+    {
+      title: 'Label',
+      dataIndex: 'label',
+      key: 'label',
+    },
+    {
+      title: 'Title',
+      dataIndex: 'title',
+      key: 'title',
+    },
+    {
+      title: 'Subtitle',
+      dataIndex: 'subtitle',
+      key: 'subtitle',
+    },
+    {
+      title: 'Image',
+      dataIndex: 'image',
+      key: 'image',
+    },
+    {
+      title: 'Link URL',
+      dataIndex: 'url',
+      key: 'url',
+    },
+    {
+      title: 'Actions',
+      key: 'actions',
+      search: false,
+      render: (_: unknown, record: BannerDto) => (
+        <Space size="middle">
+          <Button variant="link" color="default" onClick={() => setEditingBanner(record)}>
+            <Tooltip title="update">
+              <EditOutlined style={{ fontSize: 16 }} />
+            </Tooltip>
+          </Button>
+          <Button variant="link" color="danger" onClick={() => archiveBanner(record.id)}>
+            <Tooltip title="archive">
+              <MdOutlineArchive style={{ fontSize: 18 }} />
+            </Tooltip>
+          </Button>
+        </Space>
+      ),
+    },
+  ];
+};
 const disabledTableColumns: ProColumns[] = [
   {
     dataIndex: 'id',
@@ -137,7 +111,7 @@ const disabledTableColumns: ProColumns[] = [
     title: 'Actions',
     key: 'actions',
     search: false,
-    render: (_: unknown, record: UserVO) => (
+    render: (_: unknown, record: BannerDto) => (
       <Space size="middle">
         <Button
           color="primary"
@@ -156,34 +130,24 @@ const disabledTableColumns: ProColumns[] = [
     ),
   },
 ];
-
-const disabledData = [5, 6, 7, 8, 9, 10, 11].map((num: number) => (
-  {
-    id: num.toString(),
-    order: num,
-    title: `title ${num}`,
-    subtitle: `subtitle ${num}`,
-    enabled: true,
-  }
-));
-
 type BannersTableProps = {
+  activeBanners: BannerDto[];
+  archivedBanners: BannerDto[];
   setEditingBanner: (value: any) => void;
 }
 
-function BannersTable({ setEditingBanner }: BannersTableProps) {
-  const [dataSource, setDataSource] = useState(enabledData);
+function BannersTable({ activeBanners, archivedBanners, setEditingBanner }: BannersTableProps) {
+
+  const archiveBanner = (recordId: string) => {}
   const handleDragSortEnd = (
     beforeIndex: number,
     afterIndex: number,
     newDataSource: any[],
   ) => {
-    console.debug('sorted data', newDataSource);
     newDataSource = newDataSource.map((data, idx) => ({
       ...data,
       order: idx,
     }));
-    setDataSource(newDataSource);
     const orderUpdatedPayload = newDataSource.map(item => ({
       id: item.id,
       order: item.order,
@@ -200,9 +164,9 @@ function BannersTable({ setEditingBanner }: BannersTableProps) {
           density: false,
           setting: false,
         }}
-        headerTitle="Enabled Items"
-        columns={enabledTableColumns}
-        dataSource={dataSource}
+        headerTitle="Active Banners"
+        columns={generateEnabledTableColumns(setEditingBanner, archiveBanner)}
+        dataSource={activeBanners}
         rowKey="id"
         toolBarRender={() => [
           <Button
@@ -226,9 +190,9 @@ function BannersTable({ setEditingBanner }: BannersTableProps) {
           density: false,
           setting: false,
         }}
-        headerTitle="Disabled Items"
+        headerTitle="Archived Banners"
         columns={disabledTableColumns}
-        dataSource={disabledData}
+        dataSource={archivedBanners}
         rowKey="id"
         search={false}
         pagination={false}

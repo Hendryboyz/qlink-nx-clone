@@ -10,6 +10,8 @@ import {
   Post,
   Put,
   Query,
+  UseGuards,
+  UseInterceptors,
   UsePipes,
   ValidationPipe,
 } from '@nestjs/common';
@@ -21,7 +23,11 @@ import { BannersManagementService } from '$/modules/bo/banners/banners-managemen
 import { BannerEntity } from '@org/types';
 import { PagingParams } from '$/common/common.dto';
 import { ApiCreatedResponse, ApiTags } from '@nestjs/swagger';
+import { JwtAuthGuard } from '$/modules/bo/verification/jwt-auth.guard';
+import { TransformInterceptor } from '$/interceptors/response.interceptor';
 
+@UseGuards(JwtAuthGuard)
+@UseInterceptors(TransformInterceptor)
 @ApiTags('Bo Banners')
 @Injectable()
 @Controller()
