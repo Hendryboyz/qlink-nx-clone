@@ -5,18 +5,25 @@ import { useRouter } from 'next/navigation';
 import SignUpStep1, { SignUpStep1Title } from './step-1';
 import SignUpStep2, { SignUpStep2Title } from './step-2';
 import SignUpStep3, { SignUpStep3Title } from './step-3';
-import SignUpSuccess from './success';
 import { ProgressBar } from '@org/components';
+import SuccessModal from './successModal';
+import Success from './success';
 
 type SHARED = { email?: string; sessionId?: string; token?: string };
 
 export default function SignUp() {
   const router = useRouter();
   const [step, setStep] = useState(1);
+  const [isOpenSuccessModal, setIsOpenSuccessModal] = useState(false);
   const [shared, setShared] = useState<SHARED>({});
 
   if (step === 4) {
-    return <SignUpSuccess />;
+    return (
+      <>
+        <Success />
+        {isOpenSuccessModal && <SuccessModal onClose={() => setIsOpenSuccessModal(false)} />}
+      </>
+    );
   }
 
   return (
@@ -35,7 +42,7 @@ export default function SignUp() {
           <ChevronLeftIcon className="w-8 h-8 text-stroke-s" />
         </button>
       </div>
-      <div className='my-6'>
+      <div className="my-6">
         <ProgressBar list={['1', '2', '3']} runningIndex={step - 1} />
       </div>
 
@@ -70,6 +77,7 @@ export default function SignUp() {
           token={shared.token || ''}
           onSuccess={() => {
             setStep(4);
+            setIsOpenSuccessModal(true);
           }}
         />
       )}

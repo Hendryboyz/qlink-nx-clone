@@ -16,6 +16,7 @@ export * from './lib/ui/top-nav';
 export * from './lib/ui/footer';
 export * from './lib/ui/bottom-nav';
 export * from './lib/ui/progress-bar';
+export * from './lib/ui/modal';
 
 // Styles
 import './lib/styles.css';

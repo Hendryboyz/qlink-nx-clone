@@ -229,7 +229,7 @@ const SignUpStep3: FC<SignUpStep3Props> = ({ email, token, onSuccess }) => {
                   options={sourceOptions}
                   value={field.value}
                   onChange={(val) => setFieldValue('source', val)}
-                  label="Registration Source"
+                  label="How did you hear about us?"
                   placeholder="Select source"
                   error={meta.touched && meta.error ? meta.error : undefined}
                 />
