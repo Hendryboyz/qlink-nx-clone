@@ -12,7 +12,7 @@ import {
 type ResetPasswordStep2Props = {
   email: string;
   sessionId: string;
-  onSuccess: (data: unknown) => void;
+  onSuccess: (data: string) => void;
 };
 
 export const ResetPasswordStep2Title = () => {

@@ -6,7 +6,7 @@ import ResetPasswordStep1, { ResetPasswordStep1Title } from './step-1';
 import ResetPasswordStep2, { ResetPasswordStep2Title } from './step-2';
 import ResetPasswordStep3, { ResetPasswordStep3Title } from './step-3';
 
-type SHARED = { email?: string; sessionId?: string };
+type SHARED = { email?: string; sessionId?: string; token?: string };
 
 export default function ResetPassword() {
   const router = useRouter();
@@ -16,13 +16,16 @@ export default function ResetPassword() {
   return (
     <div className="w-full h-screen bg-secondary flex flex-col p-6">
       <div className="flex items-center mb-6 flex-none">
-        <button onClick={() => {
-          if(step === 1) {
-            router.back();
-          } else {
-            setStep(step - 1);
-          }
-        }} className="p-2 -ml-2">
+        <button
+          onClick={() => {
+            if (step === 1) {
+              router.back();
+            } else {
+              setStep(step - 1);
+            }
+          }}
+          className="p-2 -ml-2"
+        >
           <ChevronLeftIcon className="w-8 h-8 text-stroke-s" />
         </button>
         {step === 1 && <ResetPasswordStep1Title />}
@@ -41,16 +44,13 @@ export default function ResetPassword() {
         <ResetPasswordStep2
           email={shared.email!}
           sessionId={shared.sessionId!}
-          onSuccess={() => {
+          onSuccess={(token) => {
+            setShared((pre) => ({ ...pre, token }));
             setStep(3);
           }}
         />
       )}
-      {step === 3 && (
-        <ResetPasswordStep3
-          token=""
-        />
-      )}
+      {step === 3 && <ResetPasswordStep3 token={shared.token!} />}
     </div>
   );
 }

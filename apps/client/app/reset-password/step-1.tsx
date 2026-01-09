@@ -109,7 +109,9 @@ const ResetPasswordStep1: FC<ResetPasswordStep1Props> = ({ onSuccess }) => {
               <TGButton
                 className="mt-6"
                 type="submit"
-                disabled={isSubmitting}
+                disabled={
+                  isSubmitting || !values.email || !values.recaptchaToken
+                }
                 fullWidth
                 size="xl"
                 variant="primary"
