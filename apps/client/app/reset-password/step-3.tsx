@@ -4,27 +4,32 @@ import { CODE_SUCCESS, HEADER_PRE_TOKEN } from '@org/common';
 import API from '$/utils/fetch';
 import { ResetPasswordDto } from '@org/types';
 import { TGButton, TGInput } from '@org/components';
-import { useRouter } from 'next/navigation';
 
 type ResetPasswordStep3Props = {
   token: string;
+  onSuccess: () => void;
 };
 
 export const ResetPasswordStep3Title = () => {
   return (
-    <h4 className="text-xl font-bold text-text-str ml-1">Reset your password</h4>
+    <h4 className="text-xl font-bold text-text-str ml-1">
+      Reset your password
+    </h4>
   );
 };
 
-const ResetPasswordStep3: FC<ResetPasswordStep3Props> = ({ token }) => {
-  const router = useRouter();
+const ResetPasswordStep3: FC<ResetPasswordStep3Props> = ({
+  token,
+  onSuccess,
+}) => {
   const initValue: ResetPasswordDto = { password: '', rePassword: '' };
 
   return (
     <>
       <div className="grid grid-cols-1 place-content-center">
         <div className="text-text-w text-sm font-manrope">
-          Your password must have at least 8 characters, including one English letter (a-z), and one number (0-9).
+          Your password must have at least 8 characters, including one English
+          letter (a-z), and one number (0-9).
         </div>
         <Formik
           initialValues={initValue}
@@ -36,7 +41,8 @@ const ResetPasswordStep3: FC<ResetPasswordStep3Props> = ({ token }) => {
             if (!values.password) {
               errors.password = 'Required';
             } else if (!passwordRegex.test(values.password)) {
-              errors.password = 'Password must be at least 8 characters with 1 letter and 1 number';
+              errors.password =
+                'Password must be at least 8 characters with 1 letter and 1 number';
             }
 
             if (!values.rePassword) {
@@ -50,19 +56,19 @@ const ResetPasswordStep3: FC<ResetPasswordStep3Props> = ({ token }) => {
             setSubmitting(true);
 
             API.post('/auth/reset-password', values, {
-                headers: {
-                    [HEADER_PRE_TOKEN]: token
-                }
+              headers: {
+                [HEADER_PRE_TOKEN]: token,
+              },
             })
               .then((res) => {
                 const { bizCode } = res;
                 if (bizCode === CODE_SUCCESS) {
-                  router.push('/login');
+                  onSuccess();
                 } else {
-                   // If the error is related to a specific field, we could set it.
-                   // Otherwise, we might want to show a general error.
-                   // For simplicity, we'll set a general error on the password field or alert.
-                   alert(res.message || 'Failed to reset password');
+                  // If the error is related to a specific field, we could set it.
+                  // Otherwise, we might want to show a general error.
+                  // For simplicity, we'll set a general error on the password field or alert.
+                   console.error(res.message || 'Failed to reset password');
                 }
               })
               .finally(() => {

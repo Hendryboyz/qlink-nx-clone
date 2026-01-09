@@ -5,12 +5,14 @@ import { useRouter } from 'next/navigation';
 import ResetPasswordStep1, { ResetPasswordStep1Title } from './step-1';
 import ResetPasswordStep2, { ResetPasswordStep2Title } from './step-2';
 import ResetPasswordStep3, { ResetPasswordStep3Title } from './step-3';
+import SuccessModal from './successModal';
 
 type SHARED = { email?: string; sessionId?: string; token?: string };
 
 export default function ResetPassword() {
   const router = useRouter();
   const [step, setStep] = useState(1);
+  const [isShowSuccessModal, setIsShowSuccessModal] = useState(false);
   const [shared, setShared] = useState<SHARED>({});
 
   return (
@@ -50,7 +52,13 @@ export default function ResetPassword() {
           }}
         />
       )}
-      {step === 3 && <ResetPasswordStep3 token={shared.token!} />}
+      {step === 3 && (
+        <ResetPasswordStep3
+          token={shared.token!}
+          onSuccess={() => setIsShowSuccessModal(true)}
+        />
+      )}
+      {isShowSuccessModal && <SuccessModal />}
     </div>
   );
 }
