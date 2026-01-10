@@ -28,6 +28,7 @@ export type User = Omit<UserEntity, 'createdAt' | 'updatedAt' | 'isDelete'>;
 export type UserVO = Omit<User, 'password' | 'birthday'> & {
   birthday?: string;
   avatarImageUrl?: string;
+  coverImageS3Uri?: string;
 }
 export type UserDto = Omit<User, 'id' | 'createdAt' | 'updatedAt' | 'isDelete' | 'birthday'> & {
   birthday?: string;
