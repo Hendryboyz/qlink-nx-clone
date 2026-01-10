@@ -1,1 +1,1 @@
-export { default as BottomNav } from './bottom-nav';
+export { default as BottomNav, BottomNavItem } from './bottom-nav';

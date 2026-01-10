@@ -1,114 +1,70 @@
 'use client';
 
-import React, { useCallback, useEffect, useState, useRef } from 'react';
-import { UserSourceType, UserUpdateDto, UserVO } from '@org/types';
-import Header from '$/components/Header';
-import * as Yup from 'yup';
+import { useEffect, useState, useRef } from 'react';
+import { UserVO } from '@org/types';
+import { TopNav, BottomNav, BottomNavItem } from '@org/components';
+import ListItem from './components/ListItem';
+import SectionHeader from './components/SectionHeader';
 import API from '$/utils/fetch';
-import Editable from '$/components/Fields/Editable';
-import { STATES, UserSourceDisplay } from '@org/common';
-import { Upload, UploadProps } from 'antd';
-import { IconButton } from '@radix-ui/themes';
-import { CheckIcon, Cross2Icon } from '@radix-ui/react-icons';
+import { twMerge } from 'tailwind-merge';
+import { useRouter } from 'next/navigation';
+import { useSession, signOut } from 'next-auth/react';
+import { LogOut } from 'lucide-react';
+import Image from 'next/image';
 
-const StateDropdown = React.forwardRef<
-  { handleSave: () => void; handleCancel: () => void },
-  {
-    value?: string;
-    onChange: (value: string) => void;
-    isEditing: boolean;
-    onSave: () => void;
-    onCancel: () => void;
-  }
->(({ value, onChange, isEditing, onSave, onCancel }, ref) => {
-  const [isOpen, setIsOpen] = useState(false);
-  const [currentValue, setCurrentValue] = useState(value);
-  const displayValue = value || 'None';
+// Member page icons
+import IdIcon from './assets/id.svg';
+import BirthdayIcon from './assets/birthday.svg';
+import GenderIcon from './assets/gender.svg';
+import CityIcon from './assets/city.svg';
+import LocationIcon from './assets/location.svg';
+import MailIcon from './assets/mail.svg';
+import PhoneIcon from './assets/Phone.svg';
+import WhatsappIcon from './assets/whatsapp.svg';
+import FacebookIcon from './assets/facebook.svg';
+import EditButtonIcon from './assets/Button.svg';
+import PersonIcon from './assets/person.svg';
 
-  React.useEffect(() => {
-    setCurrentValue(value);
-  }, [value]);
+const SignedInLinks = [
+  { name: 'Home', href: '/' },
+  { name: 'Member', href: '/member' },
+  { name: 'My Garage', href: '/garage' },
+  { name: 'Coupons', href: '' },
+  { name: 'News', href: '/news' },
+  { name: 'Promotion', href: '' },
+  { name: 'Contact Us', href: '' },
+];
 
-  const handleSave = () => {
-    if (currentValue && currentValue !== value) {
-      onChange(currentValue);
-    }
-    onSave();
-    setIsOpen(false);
-  };
+const guestLinks = [
+  { name: 'Home', href: '/' },
+  { name: 'News', href: '/news' },
+  { name: 'Promotion', href: '' },
+  { name: 'Contact Us', href: '' },
+];
 
-  const handleCancel = () => {
-    setCurrentValue(value);
-    onCancel();
-    setIsOpen(false);
-  };
-
-  React.useImperativeHandle(ref, () => ({
-    handleSave,
-    handleCancel
-  }));
-
-
-  if (!isEditing) {
-    return (
-      <div className="h-6 flex items-center">
-        <span className="font-[GilroySemiBold] text-[1rem]">
-          {displayValue}
-        </span>
-      </div>
-    );
-  }
-
-  return (
-    <div className="relative w-32 sm:w-40 md:w-48">
-      <div
-        className="w-full mr-1 text-[1rem] font-[GilroySemiBold] h-6 py-0 cursor-pointer flex justify-between items-center"
-        onClick={() => setIsOpen(!isOpen)}
-      >
-        <span className={!currentValue ? 'text-gray-400' : ''}>
-          {currentValue || 'Select State'}
-        </span>
-        <img
-          src="/assets/chevron_down.svg"
-          className="flex-shrink-0 ml-2"
-          alt="dropdown arrow"
-        />
-      </div>
-
-      {isOpen && (
-        <>
-          <div
-            className="fixed inset-0 z-40"
-            onClick={() => setIsOpen(false)}
-          />
-          <div className="absolute top-full left-0 z-50 bg-white border border-gray-200 rounded-lg shadow-lg max-h-60 overflow-y-auto min-w-max whitespace-nowrap mt-1">
-            {STATES.map((state) => (
-              <div
-                key={state}
-                className="px-4 py-2 hover:bg-gray-100 cursor-pointer text-gray-700 text-sm"
-                onClick={() => {
-                  setCurrentValue(state);
-                  setIsOpen(false);
-                }}
-              >
-                {state}
-              </div>
-            ))}
-          </div>
-        </>
-      )}
-    </div>
-  );
-});
+const termLinks = [
+  { name: 'Privacy Policy', href: '/privacy-policy' },
+  { name: 'Terms Of Service', href: '/terms-of-service' },
+];
 
 export default function Member() {
   const [user, setUser] = useState<UserVO | null>(null);
-  const [avatarUrl, setAvatarUrl] = useState<string | undefined>('');
-  const [uploading, setUploading] = useState(false);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [isStateEditing, setIsStateEditing] = useState(false);
-  const stateDropdownRef = useRef<{ handleSave: () => void; handleCancel: () => void }>(null);
+
+  // Navigation states
+  const navRef = useRef<HTMLElement>(null);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [navHeight, setNavHeight] = useState(55);
+  const [activeItem, setActiveItem] = useState<string>(BottomNavItem.Member);
+  const router = useRouter();
+  const { status } = useSession();
+  const isSignedIn = status !== 'unauthenticated';
+
+  useEffect(() => {
+    if (navRef.current) {
+      setNavHeight(navRef.current.offsetHeight);
+    }
+  }, []);
 
   useEffect(() => {
     const fetchUserInfo = async () => {
@@ -116,11 +72,8 @@ export default function Member() {
         setLoading(true);
         const data = await API.get<UserVO>('/user/info');
         setUser(data);
-        setAvatarUrl(data.avatarImageUrl);
-        setError(null);
       } catch (err) {
         console.error('Error fetching user info:', err);
-        setError('Failed to load user information. Please try again later.');
       } finally {
         setLoading(false);
       }
@@ -129,228 +82,214 @@ export default function Member() {
     fetchUserInfo();
   }, []);
 
-  const saveChange = useCallback(
-    async (editingKey: string, savingValue: any) => {
-    if (!editingKey || !user) return;
-
-    const payload: UserUpdateDto = {
-      [editingKey]: savingValue,
-    };
-
-    try {
-      const newUserVO = await API.put<UserVO>('/user/info', payload);
-      setUser(newUserVO);
-    } catch (err) {
-      console.error('Error updating user info:', err);
-      // 可以在這裡添加錯誤處理邏輯
-    }
-  }, [user]);
-
-  const handleAvatarUpload = () => {};
-
   if (loading) {
     return <div>Loading...</div>;
   }
 
-  const handleUpload: UploadProps['customRequest'] = async ({ file, onSuccess, onError }) => {
-    const formData = new FormData();
-    formData.append('avatar', file as File);
-    try {
-      setUploading(true);
-      const res = await API.post('/user/avatar', formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
-      });
-      const result = await res.data;
-      setAvatarUrl(result.imageUrl);
-    } catch (err) {
-      console.error(err);
-    } finally {
-      setUploading(false);
-    }
-  };
+  const fullName = [user?.firstName, user?.lastName].filter(Boolean).join(' ');
 
   return (
-    <div className="w-full min-h-full flex-1">
-      <Header title="Member" />
-      <div className="md:px-36">
-        <div className="pt-3 pb-[0.375rem] bg-gray-300 relative flex justify-between">
-          <div className="flex">
-            <Upload
-              name="avatar"
-              showUploadList={false}
-              disabled={uploading}
-              customRequest={handleUpload}
+    <div
+      className="size-full relative bg-secondary"
+      style={{ paddingTop: `${navHeight}px` }}
+    >
+      {/* Fixed TopNav */}
+      <div className="fixed top-0 left-0 w-full z-50">
+        <TopNav
+          ref={navRef}
+          imgSrc="/assets/v2/logo.png"
+          isOpen={isMenuOpen}
+          onMenuOpen={() => setIsMenuOpen(true)}
+          onMenuClose={() => setIsMenuOpen(false)}
+          onSignInClick={() => router?.push('/welcome')}
+          isSignedIn={isSignedIn}
+        />
+      </div>
+
+      {/* Side Menu Overlay */}
+      <div
+        className={twMerge(
+          'fixed inset-0 bg-black/50 z-40 transition-opacity duration-300',
+          isMenuOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'
+        )}
+        onClick={() => setIsMenuOpen(false)}
+      />
+
+      {/* Side Menu */}
+      <div
+        className={twMerge(
+          'fixed top-0 right-0 h-full w-[280px] bg-secondary z-40 transform transition-transform duration-300 ease-in-out flex flex-col',
+          isMenuOpen ? 'translate-x-0' : 'translate-x-full'
+        )}
+        style={{ paddingTop: `${navHeight}px` }}
+      >
+        <div className="flex-1 overflow-y-auto px-4 flex flex-col text-right items-end">
+          <div className="flex flex-col">
+            {!isSignedIn &&
+              guestLinks.map((link) => (
+                <a
+                  key={link.name}
+                  href={link.href}
+                  className="text-base font-bold text-text-str py-4"
+                >
+                  {link.name}
+                </a>
+              ))}
+            {isSignedIn &&
+              SignedInLinks.map((link) => (
+                <a
+                  key={link.name}
+                  href={link.href}
+                  className="text-base font-bold text-text-str py-4"
+                >
+                  {link.name}
+                </a>
+              ))}
+            {termLinks.map((link) => (
+              <a
+                key={link.name}
+                href={link.href}
+                className="text-base text-text-str py-4"
+              >
+                {link.name}
+              </a>
+            ))}
+            <button
+              className="flex items-center gap-2 text-base font-bold text-text-str justify-end py-4"
+              onClick={() => signOut({ callbackUrl: '/' })}
             >
-              <img
-                src={avatarUrl ? avatarUrl : '/assets/user.svg'}
-                className="border-white rounded-full border-4 w-[4.5rem] h-[4.5rem] ml-6 hover:cursor-pointer object-cover shadow-avatar"
-                alt="avatar icon"
-                onClick={handleAvatarUpload}
-              />
-            </Upload>
-            <p className="content-center flex flex-col ml-3 mt-2 font-gilroy-semibold">
-              <span className="text-2xl text-gray-500">{user?.firstName}</span>
-              <span className="text-xl text-gray-500 -mt-1">{user?.lastName}</span>
-            </p>
+              <LogOut className="size-4" />
+              <span>Log out</span>
+            </button>
           </div>
         </div>
-        {user && (
-          <div className='mt-6 pl-1'>
-            <Editable
-              key="id"
-              editKey="id"
-              title="Member ID"
-              defaultValue={user?.memberId}
-              isChangeAllowed={false}
-            />
-            <Editable
-              key="email"
-              editKey="email"
-              title="Email"
-              defaultValue={user?.email}
-              saveChange={saveChange}
-              validation={Yup.string().email().required()}
-              isChangeAllowed={true}
-            />
-            <Editable
-              key="phone"
-              editKey="phone"
-              title="Phone number"
-              defaultValue={user?.phone}
-              isChangeAllowed={false}
-            />
-            <Editable
-              key="type"
-              editKey="type"
-              title="Type"
-              defaultValue={user?.type}
-              isChangeAllowed={false}
-            />
-            <Editable
-              key="firstName"
-              editKey="firstName"
-              title="First name"
-              defaultValue={user?.firstName}
-              saveChange={saveChange}
-              isChangeAllowed={true}
-            />
-            <Editable
-              key="midName"
-              editKey="midName"
-              title="Mid name"
-              defaultValue={user?.midName}
-              saveChange={saveChange}
-              isChangeAllowed={true}
-            />
-            <Editable
-              key="lastName"
-              editKey="lastName"
-              title="Last name"
-              defaultValue={user?.lastName}
-              saveChange={saveChange}
-              isChangeAllowed={true}
-            />
-            <Editable
-              key="addressCity"
-              editKey="addressCity"
-              title="City"
-              defaultValue={user?.addressCity}
-              saveChange={saveChange}
-              isChangeAllowed={true}
-            />
-            <div className="flex justify-between items-start min-h-[3.1875rem] pl-[1.25rem] pr-[1.25rem] border-b-inset-6">
-              <div className="flex flex-col text-gray-400 relative pt-2">
-                <span className="text-xs font-gilroy-regular text-[12px] text-[#D70127]">State</span>
-                <div className="min-h-[1.5rem] flex flex-col justify-start">
-                  <div className="min-h-[1rem]">
-                    <StateDropdown
-                      ref={stateDropdownRef}
-                      value={user?.addressState}
-                      onChange={(value) => saveChange('addressState', value)}
-                      isEditing={isStateEditing}
-                      onSave={() => setIsStateEditing(false)}
-                      onCancel={() => setIsStateEditing(false)}
-                    />
-                  </div>
-                </div>
+      </div>
+
+      {/* Main Content */}
+      <div className="pb-20">
+        {/* Banner Section with Cover Image */}
+        <div className="relative h-[200px]">
+          {/* Cover Image - Default grey background */}
+          <div className="absolute inset-0 bg-stroke-w" />
+          {/* Edit Button */}
+          <button
+            className="absolute top-[20px] right-[24px] z-10"
+            onClick={() => router.push('/member/edit')}
+          >
+            <Image src={EditButtonIcon} alt="Edit" width={36} height={36} />
+          </button>
+          {/* Diagonal white overlay - trapezoid shape, higher on left, lower on right */}
+          <div
+            className="absolute bottom-0 left-0 right-0 h-[114px] bg-secondary"
+            style={{
+              clipPath: 'polygon(0 45%, 100% 0%, 100% 100%, 0 100%)',
+            }}
+          />
+        </div>
+
+        {/* Avatar and Name Section */}
+        <div className="relative bg-secondary -mt-[48px]">
+          {/* Avatar - positioned to overlap banner */}
+          <div className="absolute left-6 -top-[60px]">
+            {user?.avatarImageUrl ? (
+              <img
+                src={user.avatarImageUrl}
+                className="w-24 h-24 rounded-full border-2 border-fill bg-secondary object-cover"
+                alt="avatar"
+              />
+            ) : (
+              <div className="w-24 h-24 rounded-full border-2 border-fill bg-stroke-w flex items-center justify-center">
+                <Image src={PersonIcon} alt="avatar" width={64} height={64} />
               </div>
-              <div className="pt-4">
-                {isStateEditing ? (
-                  <div className="flex gap-1">
-                    <IconButton
-                      className="icon-button-small"
-                      color="blue"
-                      onClick={() => stateDropdownRef.current?.handleSave()}
-                    >
-                      <CheckIcon height={16} width={16} />
-                    </IconButton>
-                    <IconButton
-                      className="icon-button-small"
-                      color="blue"
-                      onClick={() => stateDropdownRef.current?.handleCancel()}
-                    >
-                      <Cross2Icon height={16} width={16} />
-                    </IconButton>
-                  </div>
-                ) : (
-                  <img
-                    src="/assets/edit_pencil.svg"
-                    alt="edit"
-                    className="cursor-pointer"
-                    onClick={() => setIsStateEditing(true)}
-                  />
-                )}
-              </div>
-            </div>
-            <Editable
-              key="addressDetail"
-              editKey="addressDetail"
-              title="Address"
-              defaultValue={user?.addressDetail}
-              saveChange={saveChange}
-              isChangeAllowed={true}
-            />
-            <Editable
-              key="birthday"
-              editKey="birthday"
-              title="Birthday"
-              type="date"
-              defaultValue={user?.birthday}
-              saveChange={saveChange}
-              isChangeAllowed={true}
-            />
-            <Editable
-              key="whatsapp"
-              editKey="whatsapp"
-              title="Whatsapp"
-              defaultValue={user?.whatsapp}
-              saveChange={saveChange}
-              isChangeAllowed={true}
-            />
-            <Editable
-              key="facebook"
-              editKey="facebook"
-              title="Facebook"
-              defaultValue={user?.facebook}
-              saveChange={saveChange}
-              isChangeAllowed={true}
-            />
-            <Editable
-              key="source"
-              editKey="source"
-              title="Source"
-              defaultValue={
-                user && user.source
-                  ? UserSourceDisplay[user.source as UserSourceType]
-                  : UserSourceDisplay[UserSourceType.NONE]
-              }
-              isChangeAllowed={false}
-            />
+            )}
           </div>
+          {/* Name and Registration - aligned right and top */}
+          <div className="absolute right-4 top-0 -translate-y-4 flex flex-col items-end">
+            <h1 className="font-manrope-bold font-bold text-xl leading-[100%] text-text-str">
+              {fullName || 'User'}
+            </h1>
+            <p className="font-manrope font-normal text-xs leading-[100%] text-text-w mt-1">
+              Registered on <span className="font-bold">YYYY-MM-DD</span>
+            </p>
+          </div>
+          {/* Spacer for layout */}
+          <div className="h-12"></div>
+        </div>
+
+        {user && (
+          <>
+            {/* Personal Info Section */}
+            <SectionHeader title="Personal Info" />
+            <div className="flex flex-col border-t border-stroke-w">
+              <ListItem
+                icon={<Image src={IdIcon} alt="" width={24} height={24} />}
+                title="Member ID"
+                value={user.memberId || '-'}
+              />
+              <ListItem
+                icon={<Image src={BirthdayIcon} alt="" width={24} height={24} />}
+                title="Birthday"
+                value={user.birthday || '-'}
+              />
+              <ListItem
+                icon={<Image src={GenderIcon} alt="" width={24} height={24} />}
+                title="Gender"
+                value={user.gender || '-'}
+              />
+              <ListItem
+                icon={<Image src={CityIcon} alt="" width={24} height={24} />}
+                title="City"
+                value={user.addressCity || '-'}
+              />
+              <ListItem
+                icon={<Image src={LocationIcon} alt="" width={24} height={24} />}
+                title="State"
+                value={user.addressState || '-'}
+              />
+            </div>
+
+            {/* Contact Info Section */}
+            <SectionHeader title="Contact Info" />
+            <div className="flex flex-col border-t border-stroke-w">
+              <ListItem
+                icon={<Image src={MailIcon} alt="" width={24} height={24} />}
+                title="Email"
+                value={user.email || '-'}
+              />
+              <ListItem
+                icon={<Image src={PhoneIcon} alt="" width={24} height={24} />}
+                title="Mobile Number"
+                value={user.phone || '-'}
+              />
+              <ListItem
+                icon={<Image src={WhatsappIcon} alt="" width={24} height={24} />}
+                title="Whatsapp ID"
+                value={user.whatsapp || '-'}
+              />
+              <ListItem
+                icon={<Image src={FacebookIcon} alt="" width={24} height={24} />}
+                title="Facebook ID"
+                value={user.facebook || '-'}
+              />
+            </div>
+          </>
         )}
       </div>
+
+      {/* Bottom Navigation */}
+      {isSignedIn && (
+        <div className="fixed bottom-0 left-0 w-full z-50">
+          <BottomNav
+            activeItem={activeItem}
+            onItemClick={(str) => {
+              setActiveItem(str);
+              if (str === BottomNavItem.Home) router.push('/');
+              if (str === BottomNavItem.MyGarage) router.push('/garage');
+              if (str === BottomNavItem.Member) router.push('/member');
+            }}
+          />
+        </div>
+      )}
     </div>
   );
 }

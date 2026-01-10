@@ -32,6 +32,7 @@ module.exports = {
         'manrope-medium': ['Manrope', 'sans-serif'], // weight: 500
         'manrope-semibold': ['Manrope', 'sans-serif'], // weight: 600
         'manrope-bold': ['Manrope', 'sans-serif'], // weight: 700
+        'manrope-extrabold': ['Manrope', 'sans-serif'], // weight: 800
 
         // Poppins - For campaign/marketing content
         poppins: ['Poppins', 'sans-serif'],
