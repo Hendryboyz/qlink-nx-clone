@@ -23,14 +23,24 @@ import PwdAlertIcon from '../assets/pwd-alert.svg';
 import { CODE_SUCCESS, emailRegex } from '@org/common';
 import API from '$/utils/fetch';
 import {
-  ChangeEmailOtpRequestDto,
   IdentifierType,
   OtpTypeEnum,
   OtpVerificationRequestDto,
-  PatchUserEmailDto,
   ResendOtpReqDto,
   StartOtpReqDto,
 } from '@org/types';
+
+interface ChangeEmailOtpRequestDto {
+  recaptchaToken?: string;
+  newEmail: string;
+  emailConfirmSessionId: string;
+}
+
+interface PatchUserEmailDto {
+  sessionId: string;
+  code: string;
+  type?: OtpTypeEnum;
+}
 
 type Step = 1 | 2 | 3 | 4;
 
