@@ -72,7 +72,8 @@ export default function MemberEdit() {
   const [saving, setSaving] = useState(false);
   const [avatarUrl, setAvatarUrl] = useState<string>('');
   const [coverUrl, setCoverUrl] = useState<string>('');
-  const [uploading, setUploading] = useState(false);
+  const [avatarUploading, setAvatarUploading] = useState(false);
+  const [coverUploading, setCoverUploading] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [showDeleteSuccess, setShowDeleteSuccess] = useState(false);
   const [showDeleteError, setShowDeleteError] = useState(false);
@@ -94,6 +95,7 @@ export default function MemberEdit() {
         setLoading(true);
         const data = await API.get<UserVO>('/user/info');
         setAvatarUrl(data.avatarImageUrl || '');
+        setCoverUrl(data.coverImageUrl || '');
         setGender(data.gender || '');
         setInitialGender(data.gender || '');
         const parsedBirthday = data.birthday ? new Date(data.birthday) : undefined;
@@ -165,7 +167,7 @@ export default function MemberEdit() {
     const formDataUpload = new FormData();
     formDataUpload.append('avatar', file as File);
     try {
-      setUploading(true);
+      setAvatarUploading(true);
       const res = await API.post('/user/avatar', formDataUpload, {
         headers: { 'Content-Type': 'multipart/form-data' },
       });
@@ -174,7 +176,24 @@ export default function MemberEdit() {
     } catch (err) {
       console.error(err);
     } finally {
-      setUploading(false);
+      setAvatarUploading(false);
+    }
+  };
+
+  const handleCoverUpload: UploadProps['customRequest'] = async ({ file }) => {
+    const formDataUpload = new FormData();
+    formDataUpload.append('cover', file as File);
+    try {
+      setCoverUploading(true);
+      const res = await API.post('/user/cover', formDataUpload, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+      });
+      const result = await res.data;
+      setCoverUrl(result.imageUrl);
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setCoverUploading(false);
     }
   };
 
@@ -233,7 +252,7 @@ export default function MemberEdit() {
           <Upload
             name="avatar"
             showUploadList={false}
-            disabled={uploading}
+            disabled={avatarUploading}
             customRequest={handleAvatarUpload}
           >
             <div className="relative cursor-pointer">
@@ -248,7 +267,7 @@ export default function MemberEdit() {
                   <Image src={PersonIcon} alt="avatar" width={64} height={64} />
                 </div>
               )}
-              {uploading && (
+              {avatarUploading && (
                 <div className="absolute inset-0 flex items-center justify-center bg-black/50 rounded-full">
                   <span className="text-white text-xs">Uploading...</span>
                 </div>
@@ -264,17 +283,23 @@ export default function MemberEdit() {
         <p className="font-manrope font-bold text-base leading-[140%] text-text-str mb-4">
           Cover Image
         </p>
-        <div className="w-full flex justify-center">
+        <Upload
+          name="cover"
+          showUploadList={false}
+          disabled={coverUploading}
+          customRequest={handleCoverUpload}
+          rootClassName="!block w-full [&_.ant-upload]:block [&_.ant-upload]:w-full"
+        >
           {coverUrl ? (
             <img
               src={coverUrl}
-              className="w-[22.5rem] h-[8.75rem] object-cover"
+              className="w-full h-[8.75rem] object-cover cursor-pointer block"
               alt="cover"
             />
           ) : (
-            <div className="w-[22.5rem] h-[8.75rem] bg-stroke-w" />
+            <div className="w-full h-[8.75rem] bg-stroke-w cursor-pointer" />
           )}
-        </div>
+        </Upload>
       </section>
       <Line />
       {/* Account Section */}

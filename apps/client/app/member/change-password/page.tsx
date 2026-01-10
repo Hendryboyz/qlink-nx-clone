@@ -70,6 +70,7 @@ export default function ChangePassword() {
   };
 
   const handleConfirmChangePassword = async () => {
+    if (loading) return;
     try {
       setLoading(true);
       setErrors({});
@@ -79,17 +80,18 @@ export default function ChangePassword() {
       const verifyResponse = await API.post<{
         bizCode: number;
         data: { isMatched: boolean; userId: string };
+        message?: string;
       }>('/auth/password/verification', {
         password: currentPassword,
       });
 
-      if (!verifyResponse.data?.isMatched) {
-        setErrors({ currentPassword: 'Current password is incorrect' });
+      if (verifyResponse.bizCode !== CODE_SUCCESS || !verifyResponse.data?.isMatched) {
+        setErrors({ currentPassword: verifyResponse.message || 'Current password is incorrect' });
         return;
       }
 
       // Step 2: Change password
-      const changeResponse = await API.patch<{ bizCode: number; message?: string }>(
+      const changeResponse = await API.patch<{ bizCode?: number; message?: string }>(
         '/auth/password',
         {
           newPassword,
@@ -97,7 +99,7 @@ export default function ChangePassword() {
         }
       );
 
-      if (changeResponse.bizCode === CODE_SUCCESS) {
+      if (!changeResponse || changeResponse.bizCode === CODE_SUCCESS) {
         setShowSuccessModal(true);
       } else {
         setErrors({ newPassword: changeResponse.message || 'Failed to change password' });

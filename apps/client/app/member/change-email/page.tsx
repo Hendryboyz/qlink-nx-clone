@@ -4,6 +4,7 @@ import { useState, useRef, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { ChevronLeftIcon } from '@radix-ui/react-icons';
 import ReCAPTCHA from 'react-google-recaptcha';
+import { Field, FieldProps, Formik, FormikErrors } from 'formik';
 import {
   TGButton,
   TGOTPInput,
@@ -15,20 +16,26 @@ import {
   ModalDescription,
   ModalFooter,
 } from '@org/components';
+import Recaptcha from '$/components/Fields/Recaptcha';
 import Image from 'next/image';
 import WarningIcon from '../assets/warning.svg';
 import PwdAlertIcon from '../assets/pwd-alert.svg';
 import { CODE_SUCCESS, emailRegex } from '@org/common';
 import API from '$/utils/fetch';
-import { IdentifierType, OtpTypeEnum } from '@org/types';
+import {
+  ChangeEmailOtpRequestDto,
+  IdentifierType,
+  OtpTypeEnum,
+  OtpVerificationRequestDto,
+  PatchUserEmailDto,
+  ResendOtpReqDto,
+  StartOtpReqDto,
+} from '@org/types';
 
 type Step = 1 | 2 | 3 | 4;
 
-interface SharedData {
-  currentEmail: string;
-  newEmail: string;
-  sessionId: string;
-}
+const ENABLE_RECAPTCHA = true;
+const USE_MOCK_CHANGE_EMAIL_API = false;
 
 function ErrorIcon() {
   return <Image src={PwdAlertIcon} alt="error" width={10} height={9} className="shrink-0" />;
@@ -107,6 +114,7 @@ export default function ChangeEmail() {
         )}
         {step === 3 && (
           <Step3EnterNewEmail
+            sessionId={shared.sessionId}
             onSuccess={(newEmail, sessionId) => {
               setShared((prev) => ({ ...prev, newEmail, sessionId }));
               setStep(4);
@@ -148,85 +156,20 @@ interface Step1Props {
   onSuccess: (email: string, sessionId: string) => void;
 }
 
+interface Step1FormData {
+  email: string;
+  recaptchaToken: string;
+}
+
 function Step1VerifyEmail({ onSuccess }: Step1Props) {
-  const [email, setEmail] = useState('');
-  const [recaptchaToken, setRecaptchaToken] = useState('');
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [emailError, setEmailError] = useState('');
   const [showErrorModal, setShowErrorModal] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
   const recaptchaRef = useRef<ReCAPTCHA>(null);
-  const recaptchaSiteKey = process.env.NEXT_PUBLIC_RECAPTHCA_SITEKEY || '';
-
-  // Check if reCAPTCHA is enabled (has sitekey)
-  const isRecaptchaEnabled = !!recaptchaSiteKey;
-  const isEmailValid = email && emailRegex.test(email);
-  const isFormValid = isEmailValid && (isRecaptchaEnabled ? !!recaptchaToken : true);
-
-  const validateEmail = (value: string) => {
-    if (!value) {
-      setEmailError('');
-    } else if (!emailRegex.test(value)) {
-      setEmailError('Please enter a valid email format');
-    } else {
-      setEmailError('');
-    }
-  };
-
-  const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-    setEmail(value);
-    validateEmail(value);
-  };
+  const isRecaptchaEnabled = ENABLE_RECAPTCHA;
 
   const handleCloseErrorModal = () => {
     setShowErrorModal(false);
-    setEmail('');
-    setEmailError('');
-  };
-
-  const handleSubmit = async () => {
-    if (!email) {
-      setEmailError('Email is required');
-      return;
-    }
-    if (!emailRegex.test(email)) {
-      setEmailError('Please enter a valid email format');
-      return;
-    }
-    if (isRecaptchaEnabled && !recaptchaToken) {
-      return;
-    }
-
-    try {
-      setIsSubmitting(true);
-      console.log('?')
-      // Mock API call - simulate error for testing
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-      const response = { bizCode: CODE_SUCCESS, data: { sessionId: 'mock-session-id' } };
-
-      // Real API call (commented for now)
-      // const response = await API.post('/v2/auth/otp', {
-      //   identifier: email,
-      //   identifierType: IdentifierType.EMAIL,
-      //   type: OtpTypeEnum.CHANGE_EMAIL,
-      //   recaptchaToken,
-      // });
-
-      if (response.bizCode === CODE_SUCCESS) {
-        onSuccess(email, response.data.sessionId);
-      } else {
-        setErrorMessage('Sorry, the email you just entered is not in our system. Please enter it again.');
-        setShowErrorModal(true);
-      }
-    } catch (err) {
-      console.error('Error sending OTP:', err);
-      setErrorMessage('Sorry, the email you just entered is not in our system. Please enter it again.');
-      setShowErrorModal(true);
-    } finally {
-      setIsSubmitting(false);
-      recaptchaRef.current?.reset();
-    }
+    setErrorMessage('');
   };
 
   return (
@@ -237,43 +180,125 @@ function Step1VerifyEmail({ onSuccess }: Step1Props) {
           after clicking the button below.
         </p>
 
-        <div className="space-y-6">
-          <div className="flex flex-col gap-1.5">
-            <label className="font-manrope text-sm font-normal leading-[140%] text-gray-700">
-              Email<span className="font-bold text-xs">(*Required)</span>
-            </label>
-            <TGInput
-              type="email"
-              value={email}
-              onChange={handleEmailChange}
-              placeholder=""
-              className={emailError ? 'text-text-str font-bold !border-[rgba(242,48,48,1)]' : 'text-text-str font-bold'}
-            />
-            {emailError && <ErrorMessage message={emailError} />}
-          </div>
+        <Formik
+          initialValues={{ email: '', recaptchaToken: '' }}
+          validate={(values: Step1FormData) => {
+            const errors: FormikErrors<Step1FormData> = {};
+            if (!values.email) {
+              errors.email = 'Email is required';
+            } else if (!emailRegex.test(values.email)) {
+              errors.email = 'Please enter a valid email format';
+            }
+            if (isRecaptchaEnabled && !values.recaptchaToken) {
+              errors.recaptchaToken = 'Please verify that you are not a robot';
+            }
+            return errors;
+          }}
+          onSubmit={async (values, { setSubmitting, setFieldValue }) => {
+            setSubmitting(true);
+            try {
+              const payload: StartOtpReqDto = {
+                identifier: values.email,
+                identifierType: IdentifierType.EMAIL,
+                type: OtpTypeEnum.EMAIL_CONFIRM,
+                recaptchaToken: values.recaptchaToken,
+              };
+              const response = USE_MOCK_CHANGE_EMAIL_API
+                ? await new Promise<{
+                    bizCode: number;
+                    data: { sessionId: string };
+                    message?: string;
+                  }>(
+                    (resolve) => {
+                      setTimeout(() => {
+                        resolve({
+                          bizCode: CODE_SUCCESS,
+                          data: { sessionId: 'mock-email-confirm-session' },
+                        });
+                      }, 500);
+                    }
+                  )
+                : await API.post('/v2/auth/otp', payload);
+              if (response.bizCode === CODE_SUCCESS && response.data?.sessionId) {
+                onSuccess(values.email, response.data.sessionId);
+              } else {
+                setErrorMessage(
+                  response.message ||
+                    'Sorry, the email you just entered is not in our system. Please enter it again.'
+                );
+                setShowErrorModal(true);
+              }
+            } catch (err) {
+              console.error('Error sending OTP:', err);
+              setErrorMessage(
+                err?.message ||
+                  'Sorry, the email you just entered is not in our system. Please enter it again.'
+              );
+              setShowErrorModal(true);
+            } finally {
+              setSubmitting(false);
+              recaptchaRef.current?.reset();
+              setFieldValue('recaptchaToken', '');
+            }
+          }}
+        >
+          {({ values, errors, isSubmitting, setFieldValue, handleSubmit }) => {
+            const isFormValid =
+              values.email &&
+              emailRegex.test(values.email) &&
+              (isRecaptchaEnabled ? !!values.recaptchaToken : true);
+            return (
+              <form onSubmit={handleSubmit}>
+                <div className="space-y-6">
+                  <div className="flex flex-col gap-1.5">
+                    <label className="font-manrope text-sm font-normal leading-[140%] text-gray-700">
+                      Email<span className="font-bold text-xs">(*Required)</span>
+                    </label>
+                    <Field name="email">
+                      {({ field, meta }: FieldProps) => (
+                        <TGInput
+                          {...field}
+                          type="email"
+                          placeholder=""
+                          className={
+                            meta.touched && meta.error
+                              ? 'text-text-str font-bold !border-[rgba(242,48,48,1)]'
+                              : 'text-text-str font-bold'
+                          }
+                        />
+                      )}
+                    </Field>
+                    {errors.email && <ErrorMessage message={errors.email} />}
+                  </div>
 
-          <div id="email-input-container">
-            {isRecaptchaEnabled && (
-              <ReCAPTCHA
-                ref={recaptchaRef}
-                sitekey={recaptchaSiteKey}
-                onChange={(token) => setRecaptchaToken(token || '')}
-              />
-            )}
-          </div>
-        </div>
+                  <div id="email-input-container">
+                    {isRecaptchaEnabled && (
+                      <Recaptcha
+                        ref={recaptchaRef}
+                        recaptchaToken={values.recaptchaToken}
+                        recaptchaError={errors.recaptchaToken}
+                        setFieldValue={setFieldValue}
+                        targetElementId="email-input-container"
+                      />
+                    )}
+                  </div>
+                </div>
 
-        <div className="mt-6">
-          <TGButton
-            fullWidth
-            size="xl"
-            onClick={handleSubmit}
-            loading={isSubmitting}
-            disabled={!isFormValid}
-          >
-            Email me a code
-          </TGButton>
-        </div>
+                <div className="mt-6">
+                  <TGButton
+                    fullWidth
+                    size="xl"
+                    type="submit"
+                    loading={isSubmitting}
+                    disabled={!isFormValid}
+                  >
+                    Email me a code
+                  </TGButton>
+                </div>
+              </form>
+            );
+          }}
+        </Formik>
       </div>
 
       {/* Email Invalid Modal */}
@@ -330,22 +355,24 @@ function Step2VerifyOTP({ email, sessionId, onSuccess }: Step2Props) {
     setError(null);
 
     try {
-      // Mock API call
-      await new Promise((resolve) => setTimeout(resolve, 500));
-      setCountdown(60);
-
-      // Real API call (commented for now)
-      // const res = await API.post('/v2/auth/otp/resend', {
-      //   identifier: email,
-      //   identifierType: IdentifierType.EMAIL,
-      //   type: OtpTypeEnum.CHANGE_EMAIL,
-      //   sessionId,
-      // });
-      // if (res.bizCode === CODE_SUCCESS) {
-      //   setCountdown(60);
-      // } else {
-      //   setError(res.message || 'Failed to resend code');
-      // }
+      const payload: ResendOtpReqDto = {
+        identifier: email,
+        identifierType: IdentifierType.EMAIL,
+        type: OtpTypeEnum.EMAIL_CONFIRM,
+        sessionId,
+      };
+      const res = USE_MOCK_CHANGE_EMAIL_API
+        ? await new Promise<{ bizCode: number; message?: string }>((resolve) => {
+            setTimeout(() => {
+              resolve({ bizCode: CODE_SUCCESS });
+            }, 300);
+          })
+        : await API.post('/v2/auth/otp/resend', payload);
+      if (res.bizCode === CODE_SUCCESS) {
+        setCountdown(60);
+      } else {
+        setError(res.message || 'Failed to resend code');
+      }
     } catch (err) {
       setError('An error occurred while resending code');
     } finally {
@@ -360,23 +387,25 @@ function Step2VerifyOTP({ email, sessionId, onSuccess }: Step2Props) {
     setError(null);
 
     try {
-      // Mock API call
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-      const response = { bizCode: CODE_SUCCESS };
-
-      // Real API call (commented for now)
-      // const response = await API.post('/v2/auth/otp/verification', {
-      //   identifier: email,
-      //   identifierType: IdentifierType.EMAIL,
-      //   type: OtpTypeEnum.CHANGE_EMAIL,
-      //   code: val,
-      //   sessionId,
-      // });
+      const payload: OtpVerificationRequestDto = {
+        identifier: email,
+        identifierType: IdentifierType.EMAIL,
+        type: OtpTypeEnum.EMAIL_CONFIRM,
+        code: val,
+        sessionId,
+      };
+      const response = USE_MOCK_CHANGE_EMAIL_API
+        ? await new Promise<{ bizCode: number; message?: string }>((resolve) => {
+            setTimeout(() => {
+              resolve({ bizCode: CODE_SUCCESS });
+            }, 500);
+          })
+        : await API.post('/v2/auth/otp/verification', payload);
 
       if (response.bizCode === CODE_SUCCESS) {
         onSuccess();
       } else {
-        setError('Invalid code');
+        setError(response.message || 'Invalid code');
       }
     } catch (err) {
       setError('An error occurred during verification');
@@ -425,88 +454,24 @@ function Step2VerifyOTP({ email, sessionId, onSuccess }: Step2Props) {
 
 // Step 3: Enter New Email
 interface Step3Props {
+  sessionId: string;
   onSuccess: (newEmail: string, sessionId: string) => void;
 }
 
-function Step3EnterNewEmail({ onSuccess }: Step3Props) {
-  const [newEmail, setNewEmail] = useState('');
-  const [recaptchaToken, setRecaptchaToken] = useState('');
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [emailError, setEmailError] = useState('');
+interface Step3FormData {
+  newEmail: string;
+  recaptchaToken: string;
+}
+
+function Step3EnterNewEmail({ sessionId, onSuccess }: Step3Props) {
   const [showErrorModal, setShowErrorModal] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
   const recaptchaRef = useRef<ReCAPTCHA>(null);
-  const recaptchaSiteKey = process.env.NEXT_PUBLIC_RECAPTHCA_SITEKEY || '';
-
-  // Check if reCAPTCHA is enabled (has sitekey)
-  const isRecaptchaEnabled = !!recaptchaSiteKey;
-  const isEmailValid = newEmail && emailRegex.test(newEmail);
-  const isFormValid = isEmailValid && (isRecaptchaEnabled ? !!recaptchaToken : true);
-
-  const validateEmail = (value: string) => {
-    if (!value) {
-      setEmailError('');
-    } else if (!emailRegex.test(value)) {
-      setEmailError('Please enter a valid email format');
-    } else {
-      setEmailError('');
-    }
-  };
-
-  const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-    setNewEmail(value);
-    validateEmail(value);
-  };
+  const isRecaptchaEnabled = ENABLE_RECAPTCHA;
 
   const handleCloseErrorModal = () => {
     setShowErrorModal(false);
-    setNewEmail('');
-    setEmailError('');
-  };
-
-  const handleSubmit = async () => {
-    if (!newEmail) {
-      setEmailError('Email is required');
-      return;
-    }
-    if (!emailRegex.test(newEmail)) {
-      setEmailError('Please enter a valid email format');
-      return;
-    }
-    if (isRecaptchaEnabled && !recaptchaToken) {
-      return;
-    }
-
-    try {
-      setIsSubmitting(true);
-
-      // Mock API call
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-      const response = { bizCode: CODE_SUCCESS, data: { sessionId: 'mock-session-id-2' } };
-
-      // Real API call (commented for now)
-      // const response = await API.post('/v2/auth/otp', {
-      //   identifier: newEmail,
-      //   identifierType: IdentifierType.EMAIL,
-      //   type: OtpTypeEnum.CHANGE_EMAIL_NEW,
-      //   recaptchaToken,
-      // });
-
-      if (response.bizCode === CODE_SUCCESS) {
-        onSuccess(newEmail, response.data.sessionId);
-      } else {
-        setErrorMessage('Sorry, the email you just entered is not valid. Please enter it again.');
-        setShowErrorModal(true);
-      }
-    } catch (err) {
-      console.error('Error sending OTP:', err);
-      setErrorMessage('Sorry, the email you just entered is not valid. Please enter it again.');
-      setShowErrorModal(true);
-    } finally {
-      setIsSubmitting(false);
-      recaptchaRef.current?.reset();
-    }
+    setErrorMessage('');
   };
 
   return (
@@ -517,43 +482,126 @@ function Step3EnterNewEmail({ onSuccess }: Step3Props) {
           after clicking the button below.
         </p>
 
-        <div className="space-y-6">
-          <div className="flex flex-col gap-1.5">
-            <label className="font-manrope text-sm font-normal leading-[140%] text-gray-700">
-              New Email<span className="font-bold text-xs">(*Required)</span>
-            </label>
-            <TGInput
-              type="email"
-              value={newEmail}
-              onChange={handleEmailChange}
-              placeholder="Enter your new email"
-              className={emailError ? 'text-text-str font-bold !border-[rgba(242,48,48,1)]' : 'text-text-str font-bold'}
-            />
-            {emailError && <ErrorMessage message={emailError} />}
-          </div>
+        <Formik
+          initialValues={{ newEmail: '', recaptchaToken: '' }}
+          validate={(values: Step3FormData) => {
+            const errors: FormikErrors<Step3FormData> = {};
+            if (!values.newEmail) {
+              errors.newEmail = 'Email is required';
+            } else if (!emailRegex.test(values.newEmail)) {
+              errors.newEmail = 'Please enter a valid email format';
+            }
+            if (isRecaptchaEnabled && !values.recaptchaToken) {
+              errors.recaptchaToken = 'Please verify that you are not a robot';
+            }
+            return errors;
+          }}
+          onSubmit={async (values, { setSubmitting, setFieldValue }) => {
+            setSubmitting(true);
+            try {
+              const payload: ChangeEmailOtpRequestDto = {
+                newEmail: values.newEmail,
+                emailConfirmSessionId: sessionId,
+                recaptchaToken: values.recaptchaToken,
+              };
+              const response = USE_MOCK_CHANGE_EMAIL_API
+                ? await new Promise<{
+                    bizCode: number;
+                    data: { sessionId: string };
+                    message?: string;
+                  }>(
+                    (resolve) => {
+                      setTimeout(() => {
+                        resolve({
+                          bizCode: CODE_SUCCESS,
+                          data: { sessionId: 'mock-email-change-session' },
+                        });
+                      }, 500);
+                    }
+                  )
+                : await API.post('/v2/auth/otp/email_change', payload);
 
-          <div id="new-email-input-container">
-            {isRecaptchaEnabled && (
-              <ReCAPTCHA
-                ref={recaptchaRef}
-                sitekey={recaptchaSiteKey}
-                onChange={(token) => setRecaptchaToken(token || '')}
-              />
-            )}
-          </div>
-        </div>
+              if (response.bizCode === CODE_SUCCESS) {
+                const nextSessionId = response.data?.sessionId || sessionId;
+                onSuccess(values.newEmail, nextSessionId);
+              } else {
+                setErrorMessage(
+                  response.message ||
+                    'Sorry, the email you just entered is not valid. Please enter it again.'
+                );
+                setShowErrorModal(true);
+              }
+            } catch (err) {
+              console.error('Error sending OTP:', err);
+              setErrorMessage(
+                err?.message ||
+                  'Sorry, the email you just entered is not valid. Please enter it again.'
+              );
+              setShowErrorModal(true);
+            } finally {
+              setSubmitting(false);
+              recaptchaRef.current?.reset();
+              setFieldValue('recaptchaToken', '');
+            }
+          }}
+        >
+          {({ values, errors, isSubmitting, setFieldValue, handleSubmit }) => {
+            const isFormValid =
+              values.newEmail &&
+              emailRegex.test(values.newEmail) &&
+              (isRecaptchaEnabled ? !!values.recaptchaToken : true);
+            return (
+              <form onSubmit={handleSubmit}>
+                <div className="space-y-6">
+                  <div className="flex flex-col gap-1.5">
+                    <label className="font-manrope text-sm font-normal leading-[140%] text-gray-700">
+                      New Email<span className="font-bold text-xs">(*Required)</span>
+                    </label>
+                    <Field name="newEmail">
+                      {({ field, meta }: FieldProps) => (
+                        <TGInput
+                          {...field}
+                          type="email"
+                          placeholder="Enter your new email"
+                          className={
+                            meta.touched && meta.error
+                              ? 'text-text-str font-bold !border-[rgba(242,48,48,1)]'
+                              : 'text-text-str font-bold'
+                          }
+                        />
+                      )}
+                    </Field>
+                    {errors.newEmail && <ErrorMessage message={errors.newEmail} />}
+                  </div>
 
-        <div className="mt-6">
-          <TGButton
-            fullWidth
-            size="xl"
-            onClick={handleSubmit}
-            loading={isSubmitting}
-            disabled={!isFormValid}
-          >
-            Email me a code
-          </TGButton>
-        </div>
+                  <div id="new-email-input-container">
+                    {isRecaptchaEnabled && (
+                      <Recaptcha
+                        ref={recaptchaRef}
+                        recaptchaToken={values.recaptchaToken}
+                        recaptchaError={errors.recaptchaToken}
+                        setFieldValue={setFieldValue}
+                        targetElementId="new-email-input-container"
+                      />
+                    )}
+                  </div>
+                </div>
+
+                <div className="mt-6">
+                  <TGButton
+                    fullWidth
+                    size="xl"
+                    type="submit"
+                    loading={isSubmitting}
+                    disabled={!isFormValid}
+                  >
+                    Email me a code
+                  </TGButton>
+                </div>
+              </form>
+            );
+          }}
+        </Formik>
       </div>
 
       {/* Email Invalid Modal */}
@@ -610,22 +658,24 @@ function Step4VerifyNewEmailOTP({ email, sessionId, onSuccess }: Step4Props) {
     setError(null);
 
     try {
-      // Mock API call
-      await new Promise((resolve) => setTimeout(resolve, 500));
-      setCountdown(60);
-
-      // Real API call (commented for now)
-      // const res = await API.post('/v2/auth/otp/resend', {
-      //   identifier: email,
-      //   identifierType: IdentifierType.EMAIL,
-      //   type: OtpTypeEnum.CHANGE_EMAIL_NEW,
-      //   sessionId,
-      // });
-      // if (res.bizCode === CODE_SUCCESS) {
-      //   setCountdown(60);
-      // } else {
-      //   setError(res.message || 'Failed to resend code');
-      // }
+      const payload: ResendOtpReqDto = {
+        identifier: email,
+        identifierType: IdentifierType.EMAIL,
+        type: OtpTypeEnum.EMAIL_CHANGE,
+        sessionId,
+      };
+      const res = USE_MOCK_CHANGE_EMAIL_API
+        ? await new Promise<{ bizCode: number; message?: string }>((resolve) => {
+            setTimeout(() => {
+              resolve({ bizCode: CODE_SUCCESS });
+            }, 300);
+          })
+        : await API.post('/v2/auth/otp/resend', payload);
+      if (res.bizCode === CODE_SUCCESS) {
+        setCountdown(60);
+      } else {
+        setError(res.message || 'Failed to resend code');
+      }
     } catch (err) {
       setError('An error occurred while resending code');
     } finally {
@@ -640,26 +690,23 @@ function Step4VerifyNewEmailOTP({ email, sessionId, onSuccess }: Step4Props) {
     setError(null);
 
     try {
-      // Mock API call
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-      const response = { bizCode: CODE_SUCCESS };
-
-      // Real API call (commented for now)
-      // const response = await API.post('/v2/auth/otp/verification', {
-      //   identifier: email,
-      //   identifierType: IdentifierType.EMAIL,
-      //   type: OtpTypeEnum.CHANGE_EMAIL_NEW,
-      //   code: val,
-      //   sessionId,
-      // });
-
-      if (response.bizCode === CODE_SUCCESS) {
-        onSuccess();
-      } else {
-        setError('Invalid code');
+      const payload: PatchUserEmailDto = {
+        sessionId,
+        code: val,
+      };
+      const response = USE_MOCK_CHANGE_EMAIL_API
+        ? await new Promise<{ access_token: string }>((resolve) => {
+            setTimeout(() => {
+              resolve({ access_token: 'mock-access-token' });
+            }, 500);
+          })
+        : await API.patch('/auth/email', payload);
+      if (response?.access_token) {
+        API.setToken(response.access_token);
       }
+      onSuccess();
     } catch (err) {
-      setError('An error occurred during verification');
+      setError(err?.message || 'An error occurred during verification');
     } finally {
       setIsSubmitting(false);
     }
