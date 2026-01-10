@@ -42,6 +42,12 @@ interface PatchUserEmailDto {
   type?: OtpTypeEnum;
 }
 
+interface SharedData {
+  currentEmail: string;
+  newEmail: string;
+  sessionId: string;
+}
+
 type Step = 1 | 2 | 3 | 4;
 
 const ENABLE_RECAPTCHA = true;
@@ -239,9 +245,10 @@ function Step1VerifyEmail({ onSuccess }: Step1Props) {
                 setShowErrorModal(true);
               }
             } catch (err) {
-              console.error('Error sending OTP:', err);
+              const error = err as Error;
+              console.error('Error sending OTP:', error);
               setErrorMessage(
-                err?.message ||
+                error?.message ||
                   'Sorry, the email you just entered is not in our system. Please enter it again.'
               );
               setShowErrorModal(true);
@@ -542,9 +549,10 @@ function Step3EnterNewEmail({ sessionId, onSuccess }: Step3Props) {
                 setShowErrorModal(true);
               }
             } catch (err) {
-              console.error('Error sending OTP:', err);
+              const error = err as Error;
+              console.error('Error sending OTP:', error);
               setErrorMessage(
-                err?.message ||
+                error?.message ||
                   'Sorry, the email you just entered is not valid. Please enter it again.'
               );
               setShowErrorModal(true);
@@ -710,13 +718,14 @@ function Step4VerifyNewEmailOTP({ email, sessionId, onSuccess }: Step4Props) {
               resolve({ access_token: 'mock-access-token' });
             }, 500);
           })
-        : await API.patch('/auth/email', payload);
+        : await API.patch<{ access_token: string }>('/auth/email', payload);
       if (response?.access_token) {
         API.setToken(response.access_token);
       }
       onSuccess();
     } catch (err) {
-      setError(err?.message || 'An error occurred during verification');
+      const error = err as Error;
+      setError(error?.message || 'An error occurred during verification');
     } finally {
       setIsSubmitting(false);
     }
