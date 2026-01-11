@@ -3,10 +3,11 @@ import { Button, Form, Input, Space, Card, Radio, Upload, message } from 'antd';
 import * as Yup from 'yup';
 import { PlusOutlined } from '@ant-design/icons';
 import { UploadChangeParam, UploadFile } from 'antd/es/upload/interface';
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useContext, useEffect, useState } from 'react';
 import API from '$/utils/fetch';
 import { CODE_SUCCESS } from '@org/common';
 import { BannerAlignment, BannerDto, CreateBannerDto } from '@org/types';
+import { BannerContext } from '$/pages/BannerManagement/BannerContext';
 
 type EditBannerProps = {
   // * null initialValues to add a new banner
@@ -47,6 +48,7 @@ const emptyBannerValues: BannerDto = {
 
 function EditBannerPage({ initialValues, onCancel }: EditBannerProps) {
   const [fileList, setFileList] = useState<UploadFile[]>([]);
+  const {setActiveBanners} = useContext(BannerContext);
   useEffect(() => {
     if (initialValues) {
       setFileList([{
@@ -118,6 +120,29 @@ function EditBannerPage({ initialValues, onCancel }: EditBannerProps) {
     [],
   );
 
+  const createBanner = useCallback(async function(values: BannerDto) {
+    const dto: CreateBannerDto = {
+      ...values,
+    }
+    return API.createBanner(dto)
+      .then((res) => {
+        console.debug(res);
+        const createdBanner: BannerDto = {
+          id: res.data.id,
+          ...dto,
+          order: res.data.order,
+          archived: false,
+        }
+        setActiveBanners((prevBanners) => [...prevBanners, createdBanner]);
+        message.error(`new banner created`);
+        onCancel();
+      })
+      .catch((error) => {
+        message.error(`create banner failed: ${error}.`);
+        console.error(error);
+      });
+  }, []);
+
   const uploadButton = (
     <button style={{ border: 0, background: "none" }} type="button">
       <PlusOutlined />
@@ -133,19 +158,10 @@ function EditBannerPage({ initialValues, onCancel }: EditBannerProps) {
         onSubmit={(values, { setSubmitting }) => {
           // Handle form submission logic
           setSubmitting(true);
-          const dto: CreateBannerDto = {
-            ...values,
+          if (!initialValues) {
+            createBanner(values).finally(() => { setSubmitting(false) });
+          } else {
           }
-          API.createBanner(dto)
-            .then((res) => {
-              console.debug(res);
-              onCancel();
-            })
-            .catch((error) => {
-              message.error(`create banner failed: ${error}.`);
-              console.error(error);
-            })
-            .finally(() => setSubmitting(false));
         }}
       >
         {({

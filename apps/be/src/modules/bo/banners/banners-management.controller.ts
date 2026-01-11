@@ -79,8 +79,8 @@ export class BannersManagementController {
 
   @Patch('order')
   @HttpCode(HttpStatus.NO_CONTENT)
-  async patchBannersOrder(@Body() newOrder: ReorderBannerRequest): Promise<void> {
-    this.bannersManagementService.patchBannersOrder(newOrder);
+  patchBannersOrder(@Body() newOrder: ReorderBannerRequest): Promise<void> {
+    return this.bannersManagementService.patchBannersOrder(newOrder);
   }
 
   @Put(':id/active')
