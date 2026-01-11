@@ -2,11 +2,13 @@ import { BannerEntity } from '../banners';
 
 export interface BannerDto extends Omit<BannerEntity, 'createdAt' | 'updatedAt'> {}
 
+export type BannerOrder = {
+  id: string;
+  order: number;
+}
+
 export interface ReorderBannerDto {
-  list: {
-    id: string,
-    order: number,
-  }[]
+  list: BannerOrder[]
 }
 
 export interface CreateBannerDto extends Omit<BannerDto, 'id' | 'archived' | 'order'> {}

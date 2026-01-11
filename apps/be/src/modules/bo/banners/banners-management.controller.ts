@@ -6,18 +6,18 @@ import {
   HttpStatus,
   Injectable,
   Logger,
-  Param,
+  Param, Patch,
   Post,
   Put,
   Query,
   UseGuards,
   UseInterceptors,
   UsePipes,
-  ValidationPipe,
+  ValidationPipe
 } from '@nestjs/common';
 import {
   CreateBannerRequest,
-  CreateBannerResponse,
+  CreateBannerResponse, ReorderBannerRequest
 } from '$/modules/bo/banners/banners.dto';
 import { BannersManagementService } from '$/modules/bo/banners/banners-management.service';
 import { BannerEntity } from '@org/types';
@@ -77,15 +77,21 @@ export class BannersManagementController {
     return this.bannersManagementService.listArchived(page, limit);
   }
 
+  @Patch('order')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  async patchBannersOrder(@Body() newOrder: ReorderBannerRequest): Promise<void> {
+    this.bannersManagementService.patchBannersOrder(newOrder);
+  }
+
   @Put(':id/active')
   @HttpCode(HttpStatus.NO_CONTENT)
-  async activate(@Param('id') bannerId: string) {
+  async activate(@Param('id') bannerId: string): Promise<void> {
     await this.bannersManagementService.active(bannerId);
   }
 
   @Put(':id/archived')
   @HttpCode(HttpStatus.NO_CONTENT)
-  async archive(@Param('id') bannerId: string) {
+  async archive(@Param('id') bannerId: string): Promise<void> {
     await this.bannersManagementService.archive(bannerId);
   }
 

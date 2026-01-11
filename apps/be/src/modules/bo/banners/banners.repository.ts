@@ -1,8 +1,8 @@
 import { Inject, Injectable, Logger } from '@nestjs/common';
 import { Pool } from 'pg';
 import { KNEX_CONNECTION } from '$/database.module';
-import { Knex } from 'knex';
-import { BannerEntity } from '@org/types';
+import { Knex, QueryBuilder } from 'knex';
+import { BannerEntity, BannerOrder } from '@org/types';
 
 @Injectable()
 export class BannersRepository {
@@ -59,4 +59,20 @@ export class BannersRepository {
       }, ['id']);
   }
 
+  async patchBannersOrderBatch(list: BannerOrder[]) {
+    const trx = await this.knex.transaction({isolationLevel: 'read committed'});
+    let queries: QueryBuilder[] = [];
+    list.forEach(item => {
+      const query =
+        this.knex('banners').where('id', item.id).update({order: item.order}).transacting(trx);
+      queries.push(query);
+    });
+    try {
+      await Promise.all(queries);
+      trx.commit();
+    } catch (e) {
+      this.logger.error('fail to reorder banners patch', e);
+      trx.rollback(e);
+    }
+  }
 }

@@ -2,6 +2,7 @@ import { Injectable, Logger } from '@nestjs/common';
 import { BannerEntity } from '@org/types';
 import { BannersRepository } from '$/modules/bo/banners/banners.repository';
 import { S3storageService } from '$/modules/upload/s3storage.service';
+import { ReorderBannerRequest } from '$/modules/bo/banners/banners.dto';
 
 @Injectable()
 export class BannersManagementService {
@@ -35,5 +36,9 @@ export class BannersManagementService {
 
   public archive(bannerId: string) {
     return this.bannersRepository.setArchived(bannerId, true);
+  }
+
+  public patchBannersOrder(newOrder: ReorderBannerRequest): Promise<void> {
+    return this.bannersRepository.patchBannersOrderBatch(newOrder.list);
   }
 }

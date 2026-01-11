@@ -1,4 +1,10 @@
-import { BannerAlignment, CreateBannerDto, CreateBannerResponseDto } from '@org/types';
+import {
+  BannerAlignment,
+  BannerOrder,
+  CreateBannerDto,
+  CreateBannerResponseDto,
+  ReorderBannerDto,
+} from '@org/types';
 import {
   IsEnum,
   IsNotEmpty,
@@ -60,4 +66,8 @@ export class CreateBannerResponse implements CreateBannerResponseDto {
   order: number;
   @ApiResponseProperty()
   createdAt: Date;
+}
+
+export class ReorderBannerRequest implements ReorderBannerDto {
+  list: BannerOrder[];
 }
