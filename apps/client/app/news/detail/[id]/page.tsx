@@ -1,12 +1,16 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import Header from '$/components/Header';
+import Image from 'next/image';
 import { fromDateWithSlash } from '@org/common';
 import { NextPage } from 'next';
+import { useRouter } from 'next/navigation';
 import API from '$/utils/fetch';
 import { PostEntity } from '@org/types';
-import NewsType from '$/components/News/type';
+import NavBar from '$/components/NavBar';
+import AppFooter from '$/components/AppFooter';
+import { useAuth } from '$/hooks/useAuth';
+import { TGButton } from '@org/components';
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.bubble.css';
 
@@ -18,59 +22,95 @@ type Props = {
 
 const Detail: NextPage<Props> = ({ params }) => {
   const [post, setPost] = useState<PostEntity | null>(null);
+  const [navHeight, setNavHeight] = useState(55);
+  const router = useRouter();
+  const { isSignedIn } = useAuth();
+
   useEffect(() => {
     API.get<PostEntity>(`/posts/detail/${params.id}`).then((res) => {
       setPost(res);
-      console.log(res);
     });
-  }, []);
+  }, [params.id]);
 
   return (
-    <div className="w-full min-h-full flex-1 overflow-hidden">
-    <Header title="News" useBackBtn={true} />
-    {post && (
-      <div className="max-w-full">
-        <div
-          className="h-60 flex flex-col justify-between relative"
-          style={{
-            backgroundImage: post.coverImage
-              ? `url(${post.coverImage})`
-              : undefined,
-            backgroundColor: post.coverImage ? undefined : '#D9D9D9',
-            backgroundSize: 'cover',
-            backgroundPosition: 'center center',
-          }}
-        >
-          {/* Gradient overlay for better text readability */}
-          <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-black/0 to-transparent pointer-events-none"></div>
+    <div
+      className="w-full min-h-full flex-1"
+      style={{ paddingTop: `${navHeight}px` }}
+    >
+      <NavBar
+        imgSrc="/assets/v2/logo.png"
+        isSignedIn={isSignedIn}
+        onSignInClick={() => router?.push('/welcome')}
+        onNavHeightChange={setNavHeight}
+      />
 
-          <div className="flex m-5 justify-end relative z-10">
-            <NewsType type={post.category} className="w-[60px] h-[20px] !text-[14px]" />
+      {post && (
+        <div className="w-full">
+          {/* Header with Back Button */}
+          <div className="px-5 pt-4 border-gray-200">
+            <button
+              onClick={() => router.back()}
+              className="text-2xl text-gray-700 hover:text-gray-900"
+            >
+              ←
+            </button>
           </div>
-          <h1 className="font-gilroy-bold text-xl pl-5 pb-3 pr-7 leading-tight text-white relative z-10">{post.title}</h1>
-        </div>
-        <div className="px-[20px] py-6 w-screen max-w-screen overflow-x-hidden">
-          <div className="mb-3 font-[GilroyMedium] text-base">{fromDateWithSlash(new Date(post.createdAt))}</div>
-          <div
-            className="font-helvetica text-base tracking-[0px] leading-[1.2] break-words hyphens-auto"
-          >
-            <ReactQuill
-              readOnly={true}
-              value={post.content}
-              theme="bubble"
+
+          {/* Title Section */}
+          <div className="px-5 pt-6 pb-4">
+            <div className="flex justify-between items-start mb-4">
+              <h1 className="text-2xl font-bold text-black leading-tight flex-1 pr-4">
+                {post.title}
+              </h1>
+            </div>
+            <p className="text-black text-sm mb-5">
+              Check out the latest model available in all our shops. Receive
+              member discount by showing your Qpon on the App!
+            </p>
+            <div className="flex justify-between items-center">
+              <TGButton variant="primary" size="md" className="w-fit">
+                Purchase now
+              </TGButton>
+              <span className="text-text-w font-bold text-sm">
+                {fromDateWithSlash(new Date(post.createdAt))}
+              </span>
+            </div>
+          </div>
+
+          {/* Cover Image */}
+          <div className="px-5 py-4">
+            <Image
+              width={800}
+              height={400}
+              src={post.coverImage || '/assets/v2/news-01.jpg'}
+              alt={post.title}
+              className="w-full h-auto rounded-lg object-cover"
             />
           </div>
+
+          {/* Content Section */}
+          <div className="px-5 py-6">
+            <div className="prose prose-sm max-w-none text-gray-700 leading-relaxed">
+              <ReactQuill readOnly={true} value={post.content} theme="bubble" />
+            </div>
+          </div>
+
+          {/* Back to All News Button */}
+          <div className="px-5 py-8">
+            <TGButton
+              variant="outline"
+              size="md"
+              className="w-full"
+              onClick={() => router.push('/news')}
+            >
+              Back to all news
+            </TGButton>
+          </div>
         </div>
-      </div>
-    )}
-  </div>
+      )}
+      <AppFooter isSignedIn={isSignedIn} />
+    </div>
   );
 };
-
-// export async function getServerSideProps() {
-//     // 從數據庫獲取文章HTML
-//     const articleHtml = await fetchArticleFromDatabase()
-//     return { props: { articleHtml } }
-//   }
 
 export default Detail;

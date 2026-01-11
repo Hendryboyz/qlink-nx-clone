@@ -1,56 +1,17 @@
 'use client';
 
-import { useRef, useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import Image from 'next/image';
-import { LogOut } from 'lucide-react';
-import { TopNav, Footer, TGButton, BottomNav } from '@org/components';
+import { TGButton, BottomNav } from '@org/components';
 import Carousel from '$/components/Carousel';
-import { twMerge } from 'tailwind-merge';
+import NavBar from '$/components/NavBar';
+import AppFooter from '$/components/AppFooter';
+import NewsType from '$/components/News/type';
 import { useRouter } from 'next/navigation';
-import { useSession, signOut } from 'next-auth/react';
+import { useAuth } from '$/hooks/useAuth';
 import API from '$/utils/fetch';
 import { PostEntity } from 'types/src/posts';
 import dayjs from 'dayjs';
-
-const SignedInLinks = [
-  { name: 'Home', href: '/' },
-  { name: 'Member', href: '/member' },
-  { name: 'My Garage', href: '/garage' },
-  { name: 'Coupons', href: '' },
-  { name: 'News', href: '/news' },
-  { name: 'Promotion', href: '' },
-  { name: 'Contact Us', href: '' },
-];
-
-const guestLinks = [
-  { name: 'Home', href: '/' },
-  { name: 'News', href: '/news' },
-  { name: 'Promotion', href: '' },
-  { name: 'Contact Us', href: '' },
-];
-
-const mediaLinks = [
-  {
-    name: 'WhatsApp',
-    href: '',
-    imgSrc: '/assets/v2/whats-app.png',
-  },
-  {
-    name: 'Facebook',
-    href: 'https://www.facebook.com/share/1Da4LHfKBJ/?mibextid=wwXIfr',
-    imgSrc: '/assets/v2/fb.png',
-  },
-  {
-    name: 'Instagram',
-    href: 'https://www.instagram.com/qlink_motorcycle',
-    imgSrc: '/assets/v2/ig.png',
-  },
-];
-
-const termLinks = [
-  { name: 'Privacy Policy', href: '/privacy-policy' },
-  { name: 'Terms Of Service', href: '/terms-of-service' },
-];
 
 const CarouselItems = [
   {
@@ -76,33 +37,11 @@ const CarouselItems = [
   },
 ];
 
-const newsItems = [
-  {
-    categoryColor: '#8F021B',
-    categoryBgColor: '#FFEAEA',
-  },
-  {
-    categoryColor: '#934200',
-    categoryBgColor: '#FFF6E7',
-  },
-  {
-    categoryColor: '#026900',
-    categoryBgColor: '#ECFFE9',
-  },
-  {
-    categoryColor: '#0D1BB7',
-    categoryBgColor: '#E8F0FF',
-  },
-];
-
 export default function Index() {
-  const navRef = useRef<HTMLElement>(null);
   const [activeItem, setActiveItem] = useState<string>();
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [navHeight, setNavHeight] = useState(55);
   const router = useRouter();
-  const { status } = useSession();
-  const isSignedIn = status !== 'unauthenticated';
+  const { isSignedIn } = useAuth();
 
   const [posts, setPosts] = useState<PostEntity[]>([]);
 
@@ -112,87 +51,17 @@ export default function Index() {
     });
   }, []);
 
-  useEffect(() => {
-    if (navRef.current) {
-      setNavHeight(navRef.current.offsetHeight);
-    }
-  }, [navRef]);
-
   return (
     <div
       className="size-full relative bg-secondary"
       style={{ paddingTop: `${navHeight}px` }}
     >
-      <div className="fixed top-0 left-0 w-full z-50">
-        <TopNav
-          ref={navRef}
-          imgSrc="/assets/v2/logo.png"
-          isOpen={isMenuOpen}
-          onMenuOpen={() => setIsMenuOpen(true)}
-          onMenuClose={() => setIsMenuOpen(false)}
-          onSignInClick={() => router?.push('/welcome')}
-          isSignedIn={isSignedIn}
-        />
-      </div>
-
-      {/* Side Menu Overlay */}
-      <div
-        className={twMerge(
-          'fixed inset-0 bg-black/50 z-40 transition-opacity duration-300',
-          isMenuOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'
-        )}
-        onClick={() => setIsMenuOpen(false)}
+      <NavBar
+        imgSrc="/assets/v2/logo.png"
+        isSignedIn={isSignedIn}
+        onSignInClick={() => router?.push('/welcome')}
+        onNavHeightChange={setNavHeight}
       />
-
-      {/* Side Menu */}
-      <div
-        className={twMerge(
-          'fixed top-0 right-0 h-full w-[280px] bg-secondary z-40 transform transition-transform duration-300 ease-in-out flex flex-col',
-          isMenuOpen ? 'translate-x-0' : 'translate-x-full'
-        )}
-        style={{ paddingTop: `${navHeight}px` }}
-      >
-        <div className="flex-1 overflow-y-auto px-4 flex flex-col text-right items-end">
-          <div className="flex flex-col">
-            {!isSignedIn &&
-              guestLinks.map((link) => (
-                <a
-                  key={link.name}
-                  href={link.href}
-                  className="text-base font-bold text-text-s py-4"
-                >
-                  {link.name}
-                </a>
-              ))}
-            {isSignedIn &&
-              SignedInLinks.map((link) => (
-                <a
-                  key={link.name}
-                  href={link.href}
-                  className="text-base font-bold text-text-s py-4"
-                >
-                  {link.name}
-                </a>
-              ))}
-            {termLinks.map((link) => (
-              <a
-                key={link.name}
-                href={link.href}
-                className="text-base text-text-s py-4"
-              >
-                {link.name}
-              </a>
-            ))}
-            <button
-              className="flex items-center gap-2 text-base font-bold text-text-s justify-end"
-              onClick={() => signOut({ callbackUrl: '/' })}
-            >
-              <LogOut className="size-4" />
-              <span>Log out</span>
-            </button>
-          </div>
-        </div>
-      </div>
 
       <span className="p-4 bg-primary text-sm font-manrope text-fill flex items-center py-4 justify-center">
         Exclusive Member Test Ride See details
@@ -256,16 +125,7 @@ export default function Index() {
                   {item.title}
                 </h4>
                 <div className="flex items-center justify-between">
-                  <span
-                    className="py-1 px-4"
-                    style={{
-                      backgroundColor:
-                        newsItems[index % newsItems.length].categoryBgColor,
-                      color: newsItems[index % newsItems.length].categoryColor,
-                    }}
-                  >
-                    {item.category}
-                  </span>
+                  <NewsType type={item.category} index={index} />
                   <span>{dayjs(item.updatedAt).format('YYYY/M/DD')}</span>
                 </div>
               </div>
@@ -278,13 +138,7 @@ export default function Index() {
           View More News
         </TGButton>
       </div>
-      <Footer
-        guestLinks={guestLinks}
-        signedInLinks={SignedInLinks}
-        mediaLinks={mediaLinks}
-        termLinks={termLinks}
-        isSignedIn={isSignedIn}
-      />
+      <AppFooter isSignedIn={isSignedIn} />
       {isSignedIn && (
         <BottomNav
           activeItem={activeItem}

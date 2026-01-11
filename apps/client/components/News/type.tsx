@@ -1,30 +1,51 @@
 import React from 'react';
 import { PostCategoryEnum } from '@org/types';
 
-const getTypeColor = (type: PostCategoryEnum) => {
-  switch (type) {
-    case PostCategoryEnum.NEWS:
-      return 'bg-blue-100';
-    case PostCategoryEnum.PROMO:
-      return 'bg-orange-500';
-    case PostCategoryEnum.EVENT:
-      return 'bg-red-200';
-    case PostCategoryEnum.MEDIA:
-      return 'bg-green-200';
-    default:
-      return 'bg-gray-500';
-  }
+const newsItems = [
+  {
+    categoryColor: '#8F021B',
+    categoryBgColor: '#FFEAEA',
+  },
+  {
+    categoryColor: '#934200',
+    categoryBgColor: '#FFF6E7',
+  },
+  {
+    categoryColor: '#026900',
+    categoryBgColor: '#ECFFE9',
+  },
+  {
+    categoryColor: '#0D1BB7',
+    categoryBgColor: '#E8F0FF',
+  },
+];
+
+const getNewsItemColor = (type: PostCategoryEnum, index: number = 0) => {
+  const typeIndexMap: Record<PostCategoryEnum, number> = {
+    [PostCategoryEnum.NEWS]: 0,
+    [PostCategoryEnum.PROMO]: 1,
+    [PostCategoryEnum.EVENT]: 2,
+    [PostCategoryEnum.MEDIA]: 3,
+  };
+  const idx = typeIndexMap[type] ?? (index % newsItems.length);
+  return newsItems[idx];
 };
 
 type Props = {
   type: PostCategoryEnum;
   className?: string;
-}
+  index?: number;
+};
 
-const NewsType: React.FC<Props> = ({ type, className }: Props) => {
+const NewsType: React.FC<Props> = ({ type, className, index = 0 }: Props) => {
+  const colors = getNewsItemColor(type, index);
   return (
     <span
-      className={`text-[8px] pt-[1px] text-white h-3 w-9 text-center font-gilroy-semibold ${getTypeColor(type)} ${className || ''}`}
+      className={`py-1 px-4 ${className || ''}`}
+      style={{
+        backgroundColor: colors.categoryBgColor,
+        color: colors.categoryColor,
+      }}
     >
       {type}
     </span>
