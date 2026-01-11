@@ -1,9 +1,9 @@
 import React, { useContext } from 'react';
 import { DragSortTable, ProColumns, ProTable } from '@ant-design/pro-components';
-import { Button, message, Space, Tooltip } from 'antd';
+import { Button, message, Space, Tooltip, Typography } from 'antd';
 import { BannerDto } from '@org/types';
-import { EditOutlined } from '@ant-design/icons';
-import { MdOutlineArchive } from "react-icons/md";
+import { DeleteOutlined, EditOutlined } from '@ant-design/icons';
+import { MdOutlineArchive, MdOutlineLaunch } from 'react-icons/md';
 import { BannerContext } from '$/pages/BannerManagement/BannerContext';
 import API from '$/utils/fetch';
 
@@ -52,8 +52,12 @@ const generateEnabledTableColumns = (
     },
     {
       title: 'Link URL',
-      dataIndex: 'url',
-      key: 'url',
+      dataIndex: 'link',
+      key: 'link',
+      search: false,
+      render: (value: string, _: BannerDto) => (
+        <Typography.Link href={value}>{value}</Typography.Link>
+      )
     },
     {
       title: 'Actions',
@@ -76,6 +80,7 @@ const generateEnabledTableColumns = (
     },
   ];
 };
+
 const disabledTableColumns: ProColumns[] = [
   {
     dataIndex: 'id',
@@ -106,8 +111,12 @@ const disabledTableColumns: ProColumns[] = [
   },
   {
     title: 'Link URL',
-    dataIndex: 'url',
-    key: 'url',
+    dataIndex: 'link',
+    key: 'link',
+    search: false,
+    render: (value: string, _: BannerDto) => (
+      <Typography.Link href={value}>{value}</Typography.Link>
+    )
   },
   {
     title: 'Actions',
@@ -117,16 +126,21 @@ const disabledTableColumns: ProColumns[] = [
       <Space size="middle">
         <Button
           color="primary"
-          variant="solid"
+          variant="link"
           onClick={() => {}}
         >
-          Enabled
+          <Tooltip title="activate">
+            <MdOutlineLaunch style={{ fontSize: 16 }} />
+          </Tooltip>
         </Button>
         <Button
-          danger
+          color="danger"
+          variant="link"
           onClick={() => {}}
         >
-          Delete
+          <Tooltip title="delete">
+            <DeleteOutlined style={{ fontSize: 16 }} />
+          </Tooltip>
         </Button>
       </Space>
     ),
@@ -142,8 +156,24 @@ function BannersTable({ setEditingBanner }: BannersTableProps) {
     activeBanners,
     setActiveBanners,
     archivedBanners,
+    setArchivedBanners,
   } = useContext(BannerContext);
-  const archiveBanner = (recordId: string) => {}
+
+  const archiveBanner = async (recordId: string) => {
+    const prevActiveList = activeBanners;
+    const archivingBanner = activeBanners.find((banner) => banner.id === recordId);
+    setActiveBanners((prevActives: BannerDto[]) =>
+      prevActives.filter((banner) => banner.id !== recordId));
+    try {
+      await API.archiveBanner(recordId);
+      archivingBanner.archived = true;
+      setArchivedBanners((prevArchives: BannerDto[]) => [...prevArchives, archivingBanner]);
+    } catch (e) {
+      console.error(e);
+      message.error(`fail to archive banner`)
+      setActiveBanners(prevActiveList);
+    }
+  };
   const handleDragSortEnd = async (
     beforeIndex: number,
     afterIndex: number,
