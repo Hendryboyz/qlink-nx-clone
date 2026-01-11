@@ -1,9 +1,11 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { DragSortTable, ProColumns, ProTable } from '@ant-design/pro-components';
 import { Button, message, Space, Tooltip } from 'antd';
 import { BannerDto } from '@org/types';
 import { EditOutlined } from '@ant-design/icons';
 import { MdOutlineArchive } from "react-icons/md";
+import { BannerContext } from '$/pages/BannerManagement/BannerContext';
+import API from '$/utils/fetch';
 
 const generateEnabledTableColumns = (
   setEditingBanner: (value: any) => void,
@@ -131,15 +133,18 @@ const disabledTableColumns: ProColumns[] = [
   },
 ];
 type BannersTableProps = {
-  activeBanners: BannerDto[];
-  archivedBanners: BannerDto[];
   setEditingBanner: (value: any) => void;
 }
 
-function BannersTable({ activeBanners, archivedBanners, setEditingBanner }: BannersTableProps) {
-
+function BannersTable({ setEditingBanner }: BannersTableProps) {
+  const {
+    isLoading,
+    activeBanners,
+    setActiveBanners,
+    archivedBanners,
+  } = useContext(BannerContext);
   const archiveBanner = (recordId: string) => {}
-  const handleDragSortEnd = (
+  const handleDragSortEnd = async (
     beforeIndex: number,
     afterIndex: number,
     newDataSource: any[],
@@ -148,12 +153,23 @@ function BannersTable({ activeBanners, archivedBanners, setEditingBanner }: Bann
       ...data,
       order: idx,
     }));
-    const orderUpdatedPayload = newDataSource.map(item => ({
-      id: item.id,
-      order: item.order,
-    }));
-    console.debug('sorted payload', orderUpdatedPayload);
-    message.success('revise list order success');
+    const oldBannerList = activeBanners;
+    setActiveBanners(newDataSource);
+    try {
+      const orderUpdatedPayload = {
+        list: newDataSource.map(item => ({
+          id: item.id,
+          order: item.order,
+        }))
+      };
+      await API.reorderBanners(orderUpdatedPayload);
+      console.debug('sorted payload', orderUpdatedPayload);
+      message.success('revise list order success');
+    } catch (e) {
+      console.error(e);
+      setActiveBanners(oldBannerList);
+      message.error('fail to reorder banners');
+    }
   };
 
   return (
@@ -183,6 +199,7 @@ function BannersTable({ activeBanners, archivedBanners, setEditingBanner }: Bann
         onDragSortEnd={handleDragSortEnd}
         dateFormatter="string"
         style={{ marginBottom: '32px' }}
+        loading={isLoading}
       />
       <ProTable
         options={{
@@ -196,6 +213,7 @@ function BannersTable({ activeBanners, archivedBanners, setEditingBanner }: Bann
         rowKey="id"
         search={false}
         pagination={false}
+        loading={isLoading}
       />
     </>
   );

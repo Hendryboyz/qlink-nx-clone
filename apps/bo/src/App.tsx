@@ -28,6 +28,7 @@ import BannerManagement from '$/pages/BannerManagement';
 import PostManagement from './pages/PostManagement';
 import NotFound from '$/pages/NotFound';
 import Unauthorized from './pages/Unauthorized';
+import BannerContextProvider from '$/pages/BannerManagement/BannerContext';
 
 const { Content } = Layout;
 
@@ -114,7 +115,9 @@ function App() {
               path="banners"
               element={
                 <PrivateRoute allowedRoles={[BoRole.ADMIN, BoRole.VIEWER]}>
-                  <BannerManagement />
+                  <BannerContextProvider>
+                    <BannerManagement />
+                  </BannerContextProvider>
                 </PrivateRoute>
               }
             />

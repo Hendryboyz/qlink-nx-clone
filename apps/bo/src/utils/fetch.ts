@@ -10,7 +10,10 @@ import {
   ClientUserUpdateDto,
   VerifyResult,
   UpdateVehicleDTO,
-  CreateBannerDto, CreateBannerResponseDto, BannerDto,
+  CreateBannerDto,
+  CreateBannerResponseDto,
+  BannerDto,
+  ReorderBannerDto,
 } from '@org/types';
 import {
   GetPostsResponse,
@@ -255,8 +258,8 @@ class Api {
     });
   }
 
-  async createBanner(postData: CreateBannerDto): Promise<ApiResponse<CreateBannerResponseDto>> {
-    return this.post('/banners', postData);
+  async createBanner(payloads: CreateBannerDto): Promise<ApiResponse<CreateBannerResponseDto>> {
+    return this.post('/banners', payloads);
   }
 
   async uploadBannerImage(file: File | Blob): Promise<ApiResponse<UploadImageResponse>> {
@@ -267,6 +270,10 @@ class Api {
         'Content-Type': 'multipart/form-data',
       },
     });
+  }
+
+  async reorderBanners(payloads: ReorderBannerDto) {
+    return this.patch('/banners/order', payloads);
   }
 
   async listActiveBanners(): Promise<ApiResponse<BannerDto[]>> {
