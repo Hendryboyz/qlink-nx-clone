@@ -12,6 +12,7 @@ import API from '$/utils/fetch';
 import { useRouter } from 'next/navigation';
 import { twMerge } from 'tailwind-merge';
 import { useAuth } from '$/hooks/useAuth';
+import ReactQuill from 'react-quill';
 
 const News = () => {
   const [navHeight, setNavHeight] = useState(55);
@@ -132,7 +133,7 @@ const News = () => {
             </div>
           </div>
           <p className="text-gray-600 text-sm mb-4 leading-relaxed">
-            {filteredPosts[0].content || '查看最新模型並獲得會員折扣。'}
+            <ReactQuill readOnly={true} value={filteredPosts[0].content} theme="bubble" />
           </p>
           <div className="flex items-center justify-between">
             {selectedCategory === 'all' && (
