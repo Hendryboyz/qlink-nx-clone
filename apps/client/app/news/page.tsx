@@ -1,5 +1,6 @@
 'use client';
 
+import dynamic from 'next/dynamic';
 import React, { useEffect, useState } from 'react';
 import Image from 'next/image';
 import { PostEntity, PostCategoryEnum } from '@org/types';
@@ -12,7 +13,8 @@ import API from '$/utils/fetch';
 import { useRouter } from 'next/navigation';
 import { twMerge } from 'tailwind-merge';
 import { useAuth } from '$/hooks/useAuth';
-import ReactQuill from 'react-quill';
+
+const ReactQuill = dynamic(() => import('react-quill'), { ssr: false });
 
 const News = () => {
   const [navHeight, setNavHeight] = useState(55);
@@ -133,7 +135,7 @@ const News = () => {
             </div>
           </div>
           <p className="text-gray-600 text-sm mb-4 leading-relaxed">
-            <ReactQuill readOnly={true} value={filteredPosts[0].content} theme="bubble" />
+            {filteredPosts[0]?.content && <ReactQuill readOnly={true} value={filteredPosts[0].content} theme="bubble" />}
           </p>
           <div className="flex items-center justify-between">
             {selectedCategory === 'all' && (
