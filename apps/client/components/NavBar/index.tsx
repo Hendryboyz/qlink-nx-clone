@@ -18,7 +18,7 @@ const guestLinks: Link[] = [
   { name: 'Home', href: '/' },
   { name: 'News', href: '/news' },
   { name: 'Promotion', href: '' },
-  { name: 'Contact Us', href: '' },
+  { name: 'Contact Us', href: '/contact' },
 ];
 
 const signedInLinks: Link[] = [
