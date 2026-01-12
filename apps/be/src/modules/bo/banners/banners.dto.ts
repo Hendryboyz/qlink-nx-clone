@@ -1,4 +1,5 @@
 import {
+  ActivateBannerResponseDto,
   BannerAlignment,
   BannerOrder,
   CreateBannerDto,
@@ -18,6 +19,7 @@ import {
   ApiPropertyOptional,
   ApiResponseProperty,
 } from '@nestjs/swagger';
+import { string } from 'yup';
 
 export class CreateBannerRequest implements CreateBannerDto {
   @ApiProperty()
@@ -70,4 +72,11 @@ export class CreateBannerResponse implements CreateBannerResponseDto {
 
 export class ReorderBannerRequest implements ReorderBannerDto {
   list: BannerOrder[];
+}
+
+export class ReactivateBannerResponse implements  ActivateBannerResponseDto {
+  @ApiResponseProperty()
+  id: string;
+  @ApiResponseProperty()
+  newOrder: number;
 }

@@ -1,4 +1,9 @@
-import { Injectable, Logger } from '@nestjs/common';
+import {
+  ForbiddenException,
+  Injectable,
+  Logger,
+  NotFoundException,
+} from '@nestjs/common';
 import { BannerEntity } from '@org/types';
 import { BannersRepository } from '$/modules/bo/banners/banners.repository';
 import { S3storageService } from '$/modules/upload/s3storage.service';
@@ -30,15 +35,44 @@ export class BannersManagementService {
     return this.bannersRepository.listArchived(page, limit);
   }
 
-  public active(bannerId: string) {
-    return this.bannersRepository.setArchived(bannerId, false);
+  public async activate(bannerId: string) {
+    const banner = await this.verifyBanner(bannerId);
+    if (!banner.archived) {
+      throw new ForbiddenException('only archived banner allow to be activated');
+    }
+    const newOrder = await this.bannersRepository.countActive() + 1;
+    const reactivateBanner = await this.bannersRepository.reactivate(bannerId, newOrder);
+    return {
+      id: reactivateBanner.id,
+      newOrder: reactivateBanner.order,
+    }
   }
 
-  public archive(bannerId: string) {
-    return this.bannersRepository.setArchived(bannerId, true);
+  private async verifyBanner(bannerId: string): Promise<BannerEntity> {
+    const banner = await this.bannersRepository.getById(bannerId);
+    if (!banner) {
+      throw new NotFoundException('banner not found');
+    }
+    return banner;
+  }
+
+  public async archive(bannerId: string) {
+    const banner = await this.verifyBanner(bannerId);
+    if (banner.archived) {
+      throw new ForbiddenException('only active banner allow to be archived');
+    }
+    return this.bannersRepository.archive(bannerId);
   }
 
   public patchBannersOrder(newOrder: ReorderBannerRequest): Promise<void> {
     return this.bannersRepository.patchBannersOrderBatch(newOrder.list);
+  }
+
+  public async delete(bannerId: string): Promise<void> {
+    const banner = await this.verifyBanner(bannerId);
+    if (!banner.archived) {
+      throw new ForbiddenException('only archived banner allow to be deleted');
+    }
+    await this.bannersRepository.delete(bannerId);
   }
 }

@@ -1,28 +1,32 @@
 import {
   Body,
-  Controller, ForbiddenException,
+  Controller,
+  Delete,
   Get,
   HttpCode,
   HttpStatus,
   Injectable,
   Logger,
-  Param, Patch,
+  Param,
+  Patch,
   Post,
   Put,
   Query,
   UseGuards,
   UseInterceptors,
   UsePipes,
-  ValidationPipe
+  ValidationPipe,
 } from '@nestjs/common';
 import {
   CreateBannerRequest,
-  CreateBannerResponse, ReorderBannerRequest
+  CreateBannerResponse,
+  ReactivateBannerResponse,
+  ReorderBannerRequest,
 } from '$/modules/bo/banners/banners.dto';
 import { BannersManagementService } from '$/modules/bo/banners/banners-management.service';
 import { BannerEntity } from '@org/types';
 import { PagingParams } from '$/common/common.dto';
-import { ApiCreatedResponse, ApiTags } from '@nestjs/swagger';
+import { ApiCreatedResponse, ApiOkResponse, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from '$/modules/bo/verification/jwt-auth.guard';
 import { TransformInterceptor } from '$/interceptors/response.interceptor';
 
@@ -84,9 +88,12 @@ export class BannersManagementController {
   }
 
   @Put(':id/active')
-  @HttpCode(HttpStatus.NO_CONTENT)
-  async activate(@Param('id') bannerId: string): Promise<void> {
-    await this.bannersManagementService.active(bannerId);
+  @ApiOkResponse({type: ReactivateBannerResponse})
+  async activate(@Param('id') bannerId: string): Promise<ReactivateBannerResponse> {
+    const theResult = await this.bannersManagementService.activate(bannerId);
+    return {
+      ...theResult,
+    }
   }
 
   @Put(':id/archived')
@@ -95,5 +102,10 @@ export class BannersManagementController {
     await this.bannersManagementService.archive(bannerId);
   }
 
+  @Delete(':id')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  async delete(@Param('id') bannerId: string): Promise<void> {
+    await this.bannersManagementService.delete(bannerId);
+  }
 
 }

@@ -4,6 +4,8 @@ import { KNEX_CONNECTION } from '$/database.module';
 import { Knex, QueryBuilder } from 'knex';
 import { BannerEntity, BannerOrder } from '@org/types';
 
+type ReactivateBanner = Pick<BannerEntity, "id" | "order">
+
 @Injectable()
 export class BannersRepository {
   private logger = new Logger(this.constructor.name);
@@ -18,6 +20,10 @@ export class BannersRepository {
       .insert(banner)
       .returning('*');
     return createdBanner;
+  }
+
+  public getById(bannerId: string): Promise<BannerEntity | null> {
+    return this.knex('banners').where('id', bannerId).first();
   }
 
   public listActive(): Promise<BannerEntity[]> {
@@ -51,17 +57,26 @@ export class BannersRepository {
     return +count;
   }
 
-  public setArchived(bannerId: string, archived: boolean): Promise<string> {
+  public reactivate(bannerId: string, newOrder: number): Promise<ReactivateBanner> {
     return this.knex('banners')
       .where({ id: bannerId })
       .update({
-        archived,
+        archived: false,
+        order: newOrder,
+      }, ['id', 'order']);
+  }
+
+  public archive(bannerId: string): Promise<string> {
+    return this.knex('banners')
+      .where({ id: bannerId })
+      .update({
+        archived: true,
       }, ['id']);
   }
 
   async patchBannersOrderBatch(list: BannerOrder[]) {
     const trx = await this.knex.transaction({isolationLevel: 'read committed'});
-    let queries: QueryBuilder[] = [];
+    const queries: QueryBuilder[] = [];
     list.forEach(item => {
       const query =
         this.knex('banners').where('id', item.id).update({order: item.order}).transacting(trx);
@@ -74,5 +89,9 @@ export class BannersRepository {
       this.logger.error('fail to reorder banners patch', e);
       trx.rollback(e);
     }
+  }
+
+  public delete(bannerId: string): Promise<number> {
+    return this.knex('banners').where('id', bannerId).delete();
   }
 }
