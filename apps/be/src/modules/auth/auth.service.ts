@@ -231,7 +231,8 @@ export class AuthService {
     if (!this.isMatchedPassword(newPassword, rePassword)) {
       throw new UnprocessableEntityException('invalid password');
     }
+    const hashedPassword = await hashPassword(newPassword);
 
-    return this.userService.updatePassword(userId, newPassword);
+    return this.userService.updatePassword(userId, hashedPassword);
   }
 }
