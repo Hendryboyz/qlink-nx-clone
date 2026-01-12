@@ -1,6 +1,6 @@
 import React, { useContext } from 'react';
 import { DragSortTable, ProColumns, ProTable } from '@ant-design/pro-components';
-import { Button, message, Space, Tooltip, Typography } from 'antd';
+import { Button, message, Space, Tooltip, Typography, Popconfirm } from 'antd';
 import { BannerDto } from '@org/types';
 import { DeleteOutlined, EditOutlined } from '@ant-design/icons';
 import { MdOutlineArchive, MdOutlineLaunch } from 'react-icons/md';
@@ -81,71 +81,78 @@ const generateEnabledTableColumns = (
   ];
 };
 
-const disabledTableColumns: ProColumns[] = [
-  {
-    dataIndex: 'id',
-    key: 'id',
-    hideInTable: true,
-    search: false,
-  },
-  {
-    dataIndex: 'order',
-    key: 'order',
-    hideInTable: true,
-    search: false,
-  },
-  {
-    title: 'Title',
-    dataIndex: 'title',
-    key: 'title',
-  },
-  {
-    title: 'Subtitle',
-    dataIndex: 'subtitle',
-    key: 'subtitle',
-  },
-  {
-    title: 'Image',
-    dataIndex: 'image',
-    key: 'image',
-  },
-  {
-    title: 'Link URL',
-    dataIndex: 'link',
-    key: 'link',
-    search: false,
-    render: (value: string, _: BannerDto) => (
-      <Typography.Link href={value}>{value}</Typography.Link>
-    )
-  },
-  {
-    title: 'Actions',
-    key: 'actions',
-    search: false,
-    render: (_: unknown, record: BannerDto) => (
-      <Space size="middle">
-        <Button
-          color="primary"
-          variant="link"
-          onClick={() => {}}
-        >
-          <Tooltip title="activate">
-            <MdOutlineLaunch style={{ fontSize: 16 }} />
-          </Tooltip>
-        </Button>
-        <Button
-          color="danger"
-          variant="link"
-          onClick={() => {}}
-        >
-          <Tooltip title="delete">
-            <DeleteOutlined style={{ fontSize: 16 }} />
-          </Tooltip>
-        </Button>
-      </Space>
-    ),
-  },
-];
+const getDisabledTableColumns = (
+  activateBanner: (recordId: string) => void,
+  deleteBanner: (recordId: string) => void,
+): ProColumns[] => {
+  return [
+    {
+      dataIndex: 'id',
+      key: 'id',
+      hideInTable: true,
+      search: false,
+    },
+    {
+      dataIndex: 'order',
+      key: 'order',
+      hideInTable: true,
+      search: false,
+    },
+    {
+      title: 'Title',
+      dataIndex: 'title',
+      key: 'title',
+    },
+    {
+      title: 'Subtitle',
+      dataIndex: 'subtitle',
+      key: 'subtitle',
+    },
+    {
+      title: 'Image',
+      dataIndex: 'image',
+      key: 'image',
+    },
+    {
+      title: 'Link URL',
+      dataIndex: 'link',
+      key: 'link',
+      search: false,
+      render: (value: string, _: BannerDto) => (
+        <Typography.Link href={value}>{value}</Typography.Link>
+      )
+    },
+    {
+      title: 'Actions',
+      key: 'actions',
+      search: false,
+      render: (_: unknown, record: BannerDto) => (
+        <Space size="middle">
+          <Button
+            color="primary"
+            variant="link"
+            onClick={() => { activateBanner(record.id) }}
+          >
+            <Tooltip title="activate">
+              <MdOutlineLaunch style={{ fontSize: 16 }} />
+            </Tooltip>
+          </Button>
+          <Popconfirm
+            title={`Delete Banner: ${record.id}`}
+            description='Are you sure to delete this banner?'
+            onConfirm={() => { deleteBanner(record.id) }}
+          >
+            <Button color="danger" variant="link">
+              <Tooltip title="delete">
+                <DeleteOutlined style={{ fontSize: 16 }} />
+              </Tooltip>
+            </Button>
+          </Popconfirm>
+        </Space>
+      ),
+    },
+  ];
+}
 type BannersTableProps = {
   setEditingBanner: (value: any) => void;
 }
@@ -174,6 +181,7 @@ function BannersTable({ setEditingBanner }: BannersTableProps) {
       setActiveBanners(prevActiveList);
     }
   };
+
   const handleDragSortEnd = async (
     beforeIndex: number,
     afterIndex: number,
@@ -201,6 +209,32 @@ function BannersTable({ setEditingBanner }: BannersTableProps) {
       message.error('fail to reorder banners');
     }
   };
+
+  const activateBanner = async (recordId: string) => {
+    const prevArchivedList = archivedBanners;
+    const reActivateBanner = archivedBanners.find((banner) => banner.id === recordId);
+    setArchivedBanners((prevArchives: BannerDto[]) => prevArchives.filter((banner) => banner.id !== recordId));
+    try {
+      const resp = await API.activateBanner(recordId);
+      reActivateBanner.archived = false;
+      reActivateBanner.order = resp.data.newOrder;
+      setActiveBanners((prevActives: BannerDto[]) => [...prevActives, reActivateBanner]);
+    } catch (e) {
+      console.error(e);
+      setArchivedBanners(prevArchivedList);
+    }
+  }
+
+  const deleteBanner = async (recordId: string) => {
+    const prevArchivedList = archivedBanners;
+    setArchivedBanners((prevArchives: BannerDto[]) => prevArchives.filter((banner) => banner.id !== recordId));
+    try {
+      await API.deleteBanner(recordId)
+    } catch(e) {
+      console.error(e);
+      setArchivedBanners(prevArchivedList);
+    }
+  }
 
   return (
     <>
@@ -238,7 +272,7 @@ function BannersTable({ setEditingBanner }: BannersTableProps) {
           setting: false,
         }}
         headerTitle="Archived Banners"
-        columns={disabledTableColumns}
+        columns={getDisabledTableColumns(activateBanner, deleteBanner)}
         dataSource={archivedBanners}
         rowKey="id"
         search={false}

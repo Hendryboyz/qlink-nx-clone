@@ -19,3 +19,8 @@ export interface CreateBannerResponseDto {
   createdAt: Date;
 }
 
+export interface ActivateBannerResponseDto {
+  id: string;
+  newOrder: number;
+}
+
