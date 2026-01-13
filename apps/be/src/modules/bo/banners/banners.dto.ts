@@ -5,6 +5,7 @@ import {
   CreateBannerDto,
   CreateBannerResponseDto,
   ReorderBannerDto,
+  UpdateBannerDto,
 } from '@org/types';
 import {
   IsEnum,
@@ -19,7 +20,6 @@ import {
   ApiPropertyOptional,
   ApiResponseProperty,
 } from '@nestjs/swagger';
-import { string } from 'yup';
 
 export class CreateBannerRequest implements CreateBannerDto {
   @ApiProperty()
@@ -68,6 +68,40 @@ export class CreateBannerResponse implements CreateBannerResponseDto {
   order: number;
   @ApiResponseProperty()
   createdAt: Date;
+}
+
+export class UpdateBannerRequest implements UpdateBannerDto {
+  @ApiPropertyOptional()
+  @IsString()
+  @IsOptional()
+  label?: string;
+
+  @ApiProperty()
+  @IsString()
+  title: string;
+
+  @ApiPropertyOptional()
+  @IsString()
+  @IsOptional()
+  subtitle?: string;
+
+  @ApiProperty({
+    enum: BannerAlignment,
+  })
+  alignment: BannerAlignment;
+
+  @ApiPropertyOptional()
+  @IsString()
+  @IsOptional()
+  image?: string;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsUrl()
+  link?: string;
+
+  @ApiProperty()
+  button: string;
 }
 
 export class ReorderBannerRequest implements ReorderBannerDto {

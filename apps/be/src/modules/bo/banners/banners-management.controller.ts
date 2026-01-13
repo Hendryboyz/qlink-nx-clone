@@ -21,12 +21,18 @@ import {
   CreateBannerRequest,
   CreateBannerResponse,
   ReactivateBannerResponse,
-  ReorderBannerRequest,
+  ReorderBannerRequest, UpdateBannerRequest,
 } from '$/modules/bo/banners/banners.dto';
 import { BannersManagementService } from '$/modules/bo/banners/banners-management.service';
 import { BannerEntity } from '@org/types';
 import { PagingParams } from '$/common/common.dto';
-import { ApiCreatedResponse, ApiOkResponse, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBody,
+  ApiCreatedResponse,
+  ApiNoContentResponse,
+  ApiOkResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 import { JwtAuthGuard } from '$/modules/bo/verification/jwt-auth.guard';
 import { TransformInterceptor } from '$/interceptors/response.interceptor';
 
@@ -85,6 +91,16 @@ export class BannersManagementController {
   @HttpCode(HttpStatus.NO_CONTENT)
   patchBannersOrder(@Body() newOrder: ReorderBannerRequest): Promise<void> {
     return this.bannersManagementService.patchBannersOrder(newOrder);
+  }
+
+  @Put(':id')
+  @ApiBody({ type: UpdateBannerRequest })
+  @ApiNoContentResponse()
+  @HttpCode(HttpStatus.NO_CONTENT)
+  async updateBanner(
+    @Param('id') id: string,
+    @Body() payload: UpdateBannerRequest): Promise<void> {
+    await this.bannersManagementService.update(id, { ...payload });
   }
 
   @Put(':id/active')

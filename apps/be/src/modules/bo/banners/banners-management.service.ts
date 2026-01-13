@@ -8,6 +8,7 @@ import { BannerEntity } from '@org/types';
 import { BannersRepository } from '$/modules/bo/banners/banners.repository';
 import { S3storageService } from '$/modules/upload/s3storage.service';
 import { ReorderBannerRequest } from '$/modules/bo/banners/banners.dto';
+import { UpdateBannerPayload } from '$/modules/bo/banners/banners.model';
 
 @Injectable()
 export class BannersManagementService {
@@ -33,6 +34,11 @@ export class BannersManagementService {
 
   public listArchived(page: number, limit: number): Promise<BannerEntity[]> {
     return this.bannersRepository.listArchived(page, limit);
+  }
+
+  public async update(bannerId: string, payload: UpdateBannerPayload): Promise<BannerEntity> {
+    await this.verifyBanner(bannerId);
+    return this.bannersRepository.update(bannerId, payload);
   }
 
   public async activate(bannerId: string) {

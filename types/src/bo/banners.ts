@@ -19,6 +19,8 @@ export interface CreateBannerResponseDto {
   createdAt: Date;
 }
 
+export interface UpdateBannerDto extends Omit<BannerDto, 'id' | 'archived' | 'order'> {}
+
 export interface ActivateBannerResponseDto {
   id: string;
   newOrder: number;

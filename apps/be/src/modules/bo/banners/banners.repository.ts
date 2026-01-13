@@ -1,10 +1,20 @@
-import { Inject, Injectable, Logger } from '@nestjs/common';
+import {
+  BadRequestException,
+  Inject,
+  Injectable,
+  Logger,
+} from '@nestjs/common';
 import { Pool } from 'pg';
 import { KNEX_CONNECTION } from '$/database.module';
 import { Knex, QueryBuilder } from 'knex';
 import { BannerEntity, BannerOrder } from '@org/types';
+import {
+  ReactivateBanner,
+  UpdateBannerPayload,
+} from '$/modules/bo/banners/banners.model';
+import buildUpdatingMap from '$/modules/utils/repository.util';
+import { isEmpty } from 'lodash';
 
-type ReactivateBanner = Pick<BannerEntity, "id" | "order">
 
 @Injectable()
 export class BannersRepository {
@@ -55,6 +65,18 @@ export class BannersRepository {
       })
       .count({ count: '*' });
     return +count;
+  }
+
+  async update(bannerId: string, payload: UpdateBannerPayload): Promise<BannerEntity> {
+    const propertiesToUpdate = buildUpdatingMap(payload);
+    if (isEmpty(propertiesToUpdate)) throw new BadRequestException('empty payload');
+    if (isEmpty(bannerId)) throw new BadRequestException('miss banner id');
+
+    const [updated] = await this.knex('banners')
+      .where('id', bannerId)
+      .update(propertiesToUpdate)
+      .returning('*');
+    return updated;
   }
 
   public reactivate(bannerId: string, newOrder: number): Promise<ReactivateBanner> {
