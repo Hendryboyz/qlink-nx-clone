@@ -15,6 +15,8 @@ import {
   BannerDto,
   ReorderBannerDto,
   ActivateBannerResponseDto,
+  UpdateBannerDto,
+  UpdateBannerResponseDto,
 } from '@org/types';
 import {
   GetPostsResponse,
@@ -283,6 +285,10 @@ class Api {
 
   async listArchivedBanners(): Promise<ApiResponse<BannerDto[]>> {
     return this.get('/banners/archived');
+  }
+
+  updateBanner(id: string, payloads: UpdateBannerDto): Promise<ApiResponse<UpdateBannerResponseDto>> {
+    return this.put(`/banners/${id}`, payloads);
   }
 
   async activateBanner(id: string): Promise<ApiResponse<ActivateBannerResponseDto>> {

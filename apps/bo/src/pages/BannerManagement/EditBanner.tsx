@@ -6,7 +6,12 @@ import { UploadChangeParam, UploadFile } from 'antd/es/upload/interface';
 import React, { useCallback, useContext, useEffect, useState } from 'react';
 import API from '$/utils/fetch';
 import { CODE_SUCCESS } from '@org/common';
-import { BannerAlignment, BannerDto, CreateBannerDto } from '@org/types';
+import {
+  BannerAlignment,
+  BannerDto,
+  CreateBannerDto,
+  UpdateBannerDto,
+} from '@org/types';
 import { BannerContext } from '$/pages/BannerManagement/BannerContext';
 
 type EditBannerProps = {
@@ -73,7 +78,7 @@ function EditBannerPage({ initialValues, onCancel }: EditBannerProps) {
       })
       .catch((error) => {
         message.error(
-          'Upload failed: ' + (error.response.data.message || 'Unknown error')
+          'Upload failed: ' + (error.response.data?.message || 'Unknown error')
         );
         return { imageUrl: '' , s3Uri: ''};
       });
@@ -130,18 +135,49 @@ function EditBannerPage({ initialValues, onCancel }: EditBannerProps) {
         const createdBanner: BannerDto = {
           id: res.data.id,
           ...dto,
+          image: res.data.persistImage,
           order: res.data.order,
           archived: false,
         }
         setActiveBanners((prevBanners) => [...prevBanners, createdBanner]);
-        message.error(`new banner created`);
+        message.success(`new banner created`);
         onCancel();
       })
       .catch((error) => {
         message.error(`create banner failed: ${error}.`);
         console.error(error);
       });
-  }, []);
+  }, [onCancel, setActiveBanners]);
+
+  const updateBanner = useCallback(async function(values: BannerDto) {
+    const bannerId = values.id;
+    const dto: UpdateBannerDto = {
+      ...values,
+    }
+    return API.updateBanner(bannerId, dto)
+      .then((res) => {
+        console.debug(res);
+        const updatedBanner: BannerDto = {
+          id: res.data.id,
+          ...dto,
+          image: res.data.persistImage,
+          order: values.order,
+          archived: false,
+        }
+        setActiveBanners((prevBanners: BannerDto[]) => prevBanners.map((banner) => {
+          if (banner.id === updatedBanner.id) {
+            return updatedBanner;
+          }
+          return banner;
+        }));
+        message.success(`banner[${bannerId}] updated`);
+        onCancel();
+      })
+      .catch((error) => {
+        message.error(`update banner failed: ${error}.`);
+        console.error(error);
+      });
+  }, [onCancel, setActiveBanners]);
 
   const uploadButton = (
     <button style={{ border: 0, background: "none" }} type="button">
@@ -161,6 +197,7 @@ function EditBannerPage({ initialValues, onCancel }: EditBannerProps) {
           if (!initialValues) {
             createBanner(values).finally(() => { setSubmitting(false) });
           } else {
+            updateBanner(values).finally(() => { setSubmitting(false) });
           }
         }}
       >
