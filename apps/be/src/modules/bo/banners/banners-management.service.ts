@@ -37,7 +37,12 @@ export class BannersManagementService {
   }
 
   public async update(bannerId: string, payload: UpdateBannerPayload): Promise<BannerEntity> {
-    await this.verifyBanner(bannerId);
+    const existingBanner = await this.verifyBanner(bannerId);
+    const isBannerImageUpdated =
+      existingBanner.image !== payload.image && payload.image.includes("tmp/")
+    if (isBannerImageUpdated) {
+      payload.image = await this.storageService.tryPersistImage(payload.image, 'images/');
+    }
     return this.bannersRepository.update(bannerId, payload);
   }
 

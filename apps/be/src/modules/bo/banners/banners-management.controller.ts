@@ -21,7 +21,9 @@ import {
   CreateBannerRequest,
   CreateBannerResponse,
   ReactivateBannerResponse,
-  ReorderBannerRequest, UpdateBannerRequest,
+  ReorderBannerRequest,
+  UpdateBannerRequest,
+  UpdateBannerResponse,
 } from '$/modules/bo/banners/banners.dto';
 import { BannersManagementService } from '$/modules/bo/banners/banners-management.service';
 import { BannerEntity } from '@org/types';
@@ -29,7 +31,6 @@ import { PagingParams } from '$/common/common.dto';
 import {
   ApiBody,
   ApiCreatedResponse,
-  ApiNoContentResponse,
   ApiOkResponse,
   ApiTags,
 } from '@nestjs/swagger';
@@ -41,7 +42,7 @@ import { TransformInterceptor } from '$/interceptors/response.interceptor';
 @ApiTags('Bo Banners')
 @Injectable()
 @Controller()
-export class BannersManagementController {
+class BannersManagementController {
   private logger = new Logger(this.constructor.name);
 
   constructor(
@@ -59,6 +60,7 @@ export class BannersManagementController {
     return {
       id: createdBanner.id,
       order: createdBanner.order,
+      persistImage: createdBanner.image,
       createdAt : createdBanner.createdAt,
     }
   }
@@ -95,12 +97,18 @@ export class BannersManagementController {
 
   @Put(':id')
   @ApiBody({ type: UpdateBannerRequest })
-  @ApiNoContentResponse()
-  @HttpCode(HttpStatus.NO_CONTENT)
+  @ApiOkResponse({type: UpdateBannerResponse})
   async updateBanner(
     @Param('id') id: string,
-    @Body() payload: UpdateBannerRequest): Promise<void> {
-    await this.bannersManagementService.update(id, { ...payload });
+    @Body() payload: UpdateBannerRequest): Promise<UpdateBannerResponse> {
+    const updatedBanner = await this.bannersManagementService.update(id, {
+      ...payload,
+    });
+    return {
+      id,
+      persistImage: updatedBanner.image,
+      updatedAt: updatedBanner.updatedAt,
+    }
   }
 
   @Put(':id/active')
@@ -123,5 +131,6 @@ export class BannersManagementController {
   async delete(@Param('id') bannerId: string): Promise<void> {
     await this.bannersManagementService.delete(bannerId);
   }
-
 }
+
+export default BannersManagementController;

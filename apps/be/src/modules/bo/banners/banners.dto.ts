@@ -6,6 +6,7 @@ import {
   CreateBannerResponseDto,
   ReorderBannerDto,
   UpdateBannerDto,
+  UpdateBannerResponseDto,
 } from '@org/types';
 import {
   IsEnum,
@@ -67,6 +68,8 @@ export class CreateBannerResponse implements CreateBannerResponseDto {
   @ApiResponseProperty()
   order: number;
   @ApiResponseProperty()
+  persistImage: string;
+  @ApiResponseProperty()
   createdAt: Date;
 }
 
@@ -102,6 +105,16 @@ export class UpdateBannerRequest implements UpdateBannerDto {
 
   @ApiProperty()
   button: string;
+}
+
+export class UpdateBannerResponse implements UpdateBannerResponseDto {
+  @ApiResponseProperty()
+  id: string;
+  @ApiResponseProperty()
+  persistImage: string;
+  @ApiResponseProperty()
+  updatedAt: Date;
+
 }
 
 export class ReorderBannerRequest implements ReorderBannerDto {
