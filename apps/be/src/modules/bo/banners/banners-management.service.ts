@@ -41,9 +41,22 @@ export class BannersManagementService {
     const isBannerImageUpdated =
       existingBanner.image !== payload.image && payload.image.includes("tmp/")
     if (isBannerImageUpdated) {
-      payload.image = await this.storageService.tryPersistImage(payload.image, 'images/');
+      const retiredImage: string = existingBanner.image;
+      const imagePrefix = 'images/';
+      payload.image = await this.storageService.tryPersistImage(payload.image, imagePrefix);
+      if (retiredImage) {
+        await this.deleteBannerImage(retiredImage);
+      }
     }
     return this.bannersRepository.update(bannerId, payload);
+  }
+
+  private async deleteBannerImage(imageUrl: string): Promise<void> {
+    const imagePrefix = 'images/';
+    const objectName = imageUrl.split(imagePrefix).pop();
+    this.logger.debug(`delete image ${imagePrefix}${objectName}`);
+    await this.storageService.deleteObject(`${imagePrefix}${objectName}`);
+    return
   }
 
   public async activate(bannerId: string) {
@@ -84,6 +97,10 @@ export class BannersManagementService {
     if (!banner.archived) {
       throw new ForbiddenException('only archived banner allow to be deleted');
     }
+    if (banner.image) {
+      await this.deleteBannerImage(banner.image);
+    }
     await this.bannersRepository.delete(bannerId);
+    this.logger.debug(`delete archived banner ${banner.id}`);
   }
 }
