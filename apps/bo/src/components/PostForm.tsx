@@ -71,7 +71,7 @@ const PostForm: React.FC<PostFormProps> = ({
   }, [initialValues, form]);
 
   const uploadImage = useCallback(async (file: File | Blob) => {
-    return API.uploadImage(file)
+    return API.uploadPostImage(file)
     .then((res) => {
         if (res.bizCode !== CODE_SUCCESS) {
           message.error('Upload failed: ' + (res.message || 'Unknown error'));

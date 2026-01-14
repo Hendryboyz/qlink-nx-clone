@@ -8,7 +8,7 @@ import { Pool, QueryResult } from 'pg';
 import { KNEX_CONNECTION } from '$/database.module';
 import { Knex } from 'knex';
 import { isEmpty } from 'lodash';
-import { CreatePostDto, UpdatePostDto } from '$/modules/bo/posts/posts.dto';
+import { CreatePostRequest, UpdatePostRequest } from '$/modules/bo/posts/posts.dto';
 import { PostCategoryEnum, PostEntity } from '@org/types';
 import { ConfigService } from '@nestjs/config';
 
@@ -103,7 +103,7 @@ export class PostRepository {
     return +count;
   }
 
-  async create(createPostDto: CreatePostDto): Promise<PostEntity> {
+  async create(createPostDto: CreatePostRequest): Promise<PostEntity> {
     const postToInsert = {
       ...createPostDto,
       created_at: new Date(),
@@ -127,7 +127,7 @@ export class PostRepository {
     }
   }
 
-  async update(id: string, updatePostDto: UpdatePostDto): Promise<PostEntity> {
+  async update(id: string, updatePostDto: UpdatePostRequest): Promise<PostEntity> {
     const postToUpdate = {
       ...updatePostDto,
       updated_at: new Date(),

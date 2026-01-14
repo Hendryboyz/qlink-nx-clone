@@ -30,7 +30,6 @@ migrate -path ./db_migration/scripts -database "$MIGRATING_PG_CONFIG" up
 migrate -path ./db_migration/scripts -database "$MIGRATING_PG_CONFIG" down 1
 # Drop all migration
 migrate -path ./db_migration/scripts -database "$MIGRATING_PG_CONFIG" down
-
 ```
 
 

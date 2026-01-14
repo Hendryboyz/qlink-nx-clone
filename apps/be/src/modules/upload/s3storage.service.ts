@@ -4,6 +4,7 @@ import {
   CopyObjectCommand,
   DeleteObjectCommand,
   S3Client,
+  DeleteObjectCommandOutput,
 } from '@aws-sdk/client-s3';
 import { ConfigService } from '@nestjs/config';
 import { fromContainerMetadata } from '@aws-sdk/credential-providers';
@@ -89,11 +90,7 @@ export class S3storageService {
         `Move ${this.bucketName} object from ${sourcePath} to ${destinationPath}`
       );
 
-      const deleteCmd = new DeleteObjectCommand({
-        Bucket: this.bucketName,
-        Key: sourcePath,
-      });
-      await this.s3Client.send(deleteCmd);
+      await this.deleteObject(sourcePath);
       this.logger.debug(
         `Delete original object ${sourcePath} in ${this.bucketName}`
       );
@@ -105,5 +102,27 @@ export class S3storageService {
       );
       throw error;
     }
+  }
+
+  public async deleteObject(sourcePath: string): Promise<DeleteObjectCommandOutput> {
+    const deleteCmd = new DeleteObjectCommand({
+      Bucket: this.bucketName,
+      Key: sourcePath,
+    });
+    return this.s3Client.send(deleteCmd);
+  }
+
+  public async tryPersistImage(imageUrl: string, perpetualPrefix: string): Promise<string> {
+    if (!imageUrl) return '';
+    const tempPrefix = 'tmp/';
+    const isNewImage: boolean = imageUrl.includes(tempPrefix)
+    if (!isNewImage) return imageUrl;
+
+    const imagePrefix = perpetualPrefix;
+    const [cdnHostname, objectPath] = imageUrl.split(tempPrefix);
+    const destinationPath = `${imagePrefix}${objectPath}`;
+    await this.moveObject(`${tempPrefix}${objectPath}`, destinationPath);
+
+    return `${cdnHostname}${destinationPath}`;
   }
 }

@@ -4,7 +4,7 @@ import { UserModule } from './modules/user/user.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { DatabaseModule } from './database.module';
 import { ProductModule } from './modules/product/product.module';
-import { PostsModule } from './modules/posts/posts.module';
+import { HomepageModule } from '$/modules/homepage/homepage.module';
 import { StorageModule } from '$/modules/upload/storage.module';
 import { NotificationModule } from './notification/notification.module';
 import { VerificationModule } from './modules/bo/verification/verification.module';
@@ -28,7 +28,7 @@ import { RequestLoggerMiddleware } from '$/middlewares/request-logger.middleware
     AuthModule,
     ProductModule,
     StorageModule,
-    PostsModule,
+    HomepageModule,
     BoModule,
   ],
   providers: [TaskService],

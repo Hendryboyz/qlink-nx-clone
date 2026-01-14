@@ -24,10 +24,11 @@ import Dashboard from './pages/Dashboard';
 import VehiclesManagement from '$/pages/VehiclesManagement';
 import UsersManagement from '$/pages/UsersManagement';
 import MemberManagement from './pages/MemberMangement';
-// import BannerManagement from '$/pages/BannerManagement';
+import BannerManagement from '$/pages/BannerManagement';
 import PostManagement from './pages/PostManagement';
 import NotFound from '$/pages/NotFound';
 import Unauthorized from './pages/Unauthorized';
+import BannerContextProvider from '$/pages/BannerManagement/BannerContext';
 
 const { Content } = Layout;
 
@@ -110,14 +111,16 @@ function App() {
                 </PrivateRoute>
               }
             />
-            {/*<Route*/}
-            {/*  path="banners"*/}
-            {/*  element={*/}
-            {/*    <PrivateRoute allowedRoles={[BoRole.ADMIN, BoRole.VIEWER]}>*/}
-            {/*      <BannerManagement />*/}
-            {/*    </PrivateRoute>*/}
-            {/*  }*/}
-            {/*/>*/}
+            <Route
+              path="banners"
+              element={
+                <PrivateRoute allowedRoles={[BoRole.ADMIN, BoRole.VIEWER]}>
+                  <BannerContextProvider>
+                    <BannerManagement />
+                  </BannerContextProvider>
+                </PrivateRoute>
+              }
+            />
             {/*<Route*/}
             {/*  path="dealers"*/}
             {/*  element={*/}

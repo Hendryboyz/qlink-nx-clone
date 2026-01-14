@@ -1,193 +1,245 @@
-import React, { useState } from 'react';
-import { ProColumns, ProTable } from '@ant-design/pro-components';
-import { DragSortTable } from '@ant-design/pro-components';
-import { Button, message, Space } from 'antd';
-import { UserVO } from '@org/types';
-import { EditOutlined, StopOutlined } from '@ant-design/icons';
+import React, { useContext } from 'react';
+import { DragSortTable, ProColumns, ProTable } from '@ant-design/pro-components';
+import { Button, message, Space, Tooltip, Typography, Popconfirm } from 'antd';
+import { BannerDto } from '@org/types';
+import { DeleteOutlined, EditOutlined } from '@ant-design/icons';
+import { MdOutlineArchive, MdOutlineLaunch } from 'react-icons/md';
+import { BannerContext } from '$/pages/BannerManagement/BannerContext';
+import API from '$/utils/fetch';
 
+const generateEnabledTableColumns = (
+  setEditingBanner: (value: any) => void,
+  archiveBanner: (recordId: string) => void,
+): ProColumns[] => {
+  return [
+    {
+      title: 'order',
+      dataIndex: 'sort',
+      width: 60,
+      className: 'drag-visible',
+    },
+    {
+      dataIndex: 'id',
+      key: 'id',
+      hideInTable: true,
+      search: false,
+    },
+    {
+      dataIndex: 'order',
+      key: 'order',
+      hideInTable: true,
+      search: false,
+    },
+    {
+      title: 'Label',
+      dataIndex: 'label',
+      key: 'label',
+    },
+    {
+      title: 'Title',
+      dataIndex: 'title',
+      key: 'title',
+    },
+    {
+      title: 'Subtitle',
+      dataIndex: 'subtitle',
+      key: 'subtitle',
+    },
+    {
+      title: 'Image',
+      dataIndex: 'image',
+      key: 'image',
+    },
+    {
+      title: 'Link URL',
+      dataIndex: 'link',
+      key: 'link',
+      search: false,
+      render: (value: string, _: BannerDto) => (
+        <Typography.Link href={value}>{value}</Typography.Link>
+      )
+    },
+    {
+      title: 'Actions',
+      key: 'actions',
+      search: false,
+      render: (_: unknown, record: BannerDto) => (
+        <Space size="middle">
+          <Button variant="link" color="default" onClick={() => setEditingBanner(record)}>
+            <Tooltip title="update">
+              <EditOutlined style={{ fontSize: 16 }} />
+            </Tooltip>
+          </Button>
+          <Button variant="link" color="danger" onClick={() => archiveBanner(record.id)}>
+            <Tooltip title="archive">
+              <MdOutlineArchive style={{ fontSize: 18 }} />
+            </Tooltip>
+          </Button>
+        </Space>
+      ),
+    },
+  ];
+};
 
-const enabledTableColumns: ProColumns[] = [
-  {
-    title: 'order',
-    dataIndex: 'sort',
-    width: 60,
-    className: 'drag-visible',
-  },
-  {
-    dataIndex: 'id',
-    key: 'id',
-    hideInTable: true,
-    search: false,
-  },
-  {
-    dataIndex: 'order',
-    key: 'order',
-    hideInTable: true,
-    search: false,
-  },
-  {
-    title: 'Title',
-    dataIndex: 'title',
-    key: 'title',
-  },
-  {
-    title: 'Subtitle',
-    dataIndex: 'subtitle',
-    key: 'subtitle',
-  },
-  {
-    title: 'Image',
-    dataIndex: 'image',
-    key: 'image',
-  },
-  {
-    title: 'Link URL',
-    dataIndex: 'url',
-    key: 'url',
-  },
-  {
-    title: 'Actions',
-    key: 'actions',
-    search: false,
-    render: (_: unknown, record: UserVO) => (
-      <Space size="middle">
-        <Button
-          variant='link'
-          color='default'
-          onClick={() => {}}>
-          <EditOutlined style={{ fontSize: 16 }} />
-        </Button>
-        <Button
-          variant='link'
-          color='danger'
-          onClick={() => {}}
-        >
-          <StopOutlined style={{ fontSize: 16 }} />
-        </Button>
-      </Space>
-    ),
-  },
-];
+const getDisabledTableColumns = (
+  activateBanner: (recordId: string) => void,
+  deleteBanner: (recordId: string) => void,
+): ProColumns[] => {
+  return [
+    {
+      dataIndex: 'id',
+      key: 'id',
+      hideInTable: true,
+      search: false,
+    },
+    {
+      dataIndex: 'order',
+      key: 'order',
+      hideInTable: true,
+      search: false,
+    },
+    {
+      title: 'Title',
+      dataIndex: 'title',
+      key: 'title',
+    },
+    {
+      title: 'Subtitle',
+      dataIndex: 'subtitle',
+      key: 'subtitle',
+    },
+    {
+      title: 'Image',
+      dataIndex: 'image',
+      key: 'image',
+    },
+    {
+      title: 'Link URL',
+      dataIndex: 'link',
+      key: 'link',
+      search: false,
+      render: (value: string, _: BannerDto) => (
+        <Typography.Link href={value}>{value}</Typography.Link>
+      )
+    },
+    {
+      title: 'Actions',
+      key: 'actions',
+      search: false,
+      render: (_: unknown, record: BannerDto) => (
+        <Space size="middle">
+          <Button
+            color="primary"
+            variant="link"
+            onClick={() => { activateBanner(record.id) }}
+          >
+            <Tooltip title="activate">
+              <MdOutlineLaunch style={{ fontSize: 16 }} />
+            </Tooltip>
+          </Button>
+          <Popconfirm
+            title={`Delete Banner: ${record.id}`}
+            description='Are you sure to delete this banner?'
+            onConfirm={() => { deleteBanner(record.id) }}
+          >
+            <Button color="danger" variant="link">
+              <Tooltip title="delete">
+                <DeleteOutlined style={{ fontSize: 16 }} />
+              </Tooltip>
+            </Button>
+          </Popconfirm>
+        </Space>
+      ),
+    },
+  ];
+}
+type BannersTableProps = {
+  setEditingBanner: (value: any) => void;
+}
 
-const enabledData = [
-  {
-    id: '1',
-    order: 0,
-    title: 'title 1',
-    subtitle: 'subtitle 1',
-    enabled: true,
-  },
-  {
-    id: '2',
-    order: 1,
-    title: 'title 2',
-    subtitle: 'subtitle 2',
-    enabled: true,
-  },
-  {
-    id: '3',
-    order: 2,
-    title: 'title 3',
-    subtitle: 'subtitle 3',
-    enabled: true,
-  },
-  {
-    id: '4',
-    order: NaN,
-    title: 'title 4',
-    subtitle: 'subtitle 4',
-    enabled: true,
-  },
-];
+function BannersTable({ setEditingBanner }: BannersTableProps) {
+  const {
+    isLoading,
+    activeBanners,
+    setActiveBanners,
+    archivedBanners,
+    setArchivedBanners,
+  } = useContext(BannerContext);
 
-const disabledTableColumns: ProColumns[] = [
-  {
-    dataIndex: 'id',
-    key: 'id',
-    hideInTable: true,
-    search: false,
-  },
-  {
-    dataIndex: 'order',
-    key: 'order',
-    hideInTable: true,
-    search: false,
-  },
-  {
-    title: 'Title',
-    dataIndex: 'title',
-    key: 'title',
-  },
-  {
-    title: 'Subtitle',
-    dataIndex: 'subtitle',
-    key: 'subtitle',
-  },
-  {
-    title: 'Image',
-    dataIndex: 'image',
-    key: 'image',
-  },
-  {
-    title: 'Link URL',
-    dataIndex: 'url',
-    key: 'url',
-  },
-  {
-    title: 'Actions',
-    key: 'actions',
-    search: false,
-    render: (_: unknown, record: UserVO) => (
-      <Space size="middle">
-        <Button
-          color="primary"
-          variant="solid"
-          onClick={() => {}}
-        >
-          Enabled
-        </Button>
-        <Button
-          danger
-          onClick={() => {}}
-        >
-          Delete
-        </Button>
-      </Space>
-    ),
-  },
-];
+  const archiveBanner = async (recordId: string) => {
+    const prevActiveList = activeBanners;
+    const archivingBanner = activeBanners.find((banner) => banner.id === recordId);
+    setActiveBanners((prevActives: BannerDto[]) =>
+      prevActives.filter((banner) => banner.id !== recordId));
+    try {
+      await API.archiveBanner(recordId);
+      archivingBanner.archived = true;
+      setArchivedBanners((prevArchives: BannerDto[]) => [...prevArchives, archivingBanner]);
+      message.success(`banner ${archivingBanner.title} archived`)
+    } catch (e) {
+      console.error(e);
+      message.error(`fail to archive banner`)
+      setActiveBanners(prevActiveList);
+    }
+  };
 
-
-const disabledData = [5, 6, 7, 8, 9, 10, 11].map((num: number) => (
-  {
-    id: num.toString(),
-    order: num,
-    title: `title ${num}`,
-    subtitle: `subtitle ${num}`,
-    enabled: true,
-  }
-));
-
-function BannersTable() {
-  const [dataSource, setDataSource] = useState(enabledData);
-  const handleDragSortEnd = (
+  const handleDragSortEnd = async (
     beforeIndex: number,
     afterIndex: number,
     newDataSource: any[],
   ) => {
-    console.debug('sorted data', newDataSource);
     newDataSource = newDataSource.map((data, idx) => ({
       ...data,
       order: idx,
     }));
-    setDataSource(newDataSource);
-    const orderUpdatedPayload = newDataSource.map(item => ({
-      id: item.id,
-      order: item.order,
-    }));
-    console.debug('sorted payload', orderUpdatedPayload);
-    message.success('revise list order success');
+    const oldBannerList = activeBanners;
+    setActiveBanners(newDataSource);
+    try {
+      const orderUpdatedPayload = {
+        list: newDataSource.map(item => ({
+          id: item.id,
+          order: item.order,
+        }))
+      };
+      await API.reorderBanners(orderUpdatedPayload);
+      console.debug('sorted payload', orderUpdatedPayload);
+      message.success('revise list order success');
+    } catch (e) {
+      console.error(e);
+      setActiveBanners(oldBannerList);
+      message.error('fail to reorder banners');
+    }
   };
+
+  const activateBanner = async (recordId: string) => {
+    const prevArchivedList = archivedBanners;
+    const reActivateBanner = archivedBanners.find((banner) => banner.id === recordId);
+    setArchivedBanners((prevArchives: BannerDto[]) => prevArchives.filter((banner) => banner.id !== recordId));
+    try {
+      const resp = await API.activateBanner(recordId);
+      reActivateBanner.archived = false;
+      reActivateBanner.order = resp.data.newOrder;
+      setActiveBanners((prevActives: BannerDto[]) => [...prevActives, reActivateBanner]);
+      message.success(`banner ${reActivateBanner.title} activated`)
+    } catch (e) {
+      console.error(e);
+      message.error(`fail to activate banner`)
+      setArchivedBanners(prevArchivedList);
+    }
+  }
+
+  const deleteBanner = async (recordId: string) => {
+    const prevArchivedList = archivedBanners;
+    setArchivedBanners((prevArchives: BannerDto[]) => prevArchives.filter((banner) => banner.id !== recordId));
+    try {
+      await API.deleteBanner(recordId)
+      message.success(`banner ${recordId} deleted`)
+    } catch(e) {
+      console.error(e);
+      message.error(`fail to delete banner`)
+      setArchivedBanners(prevArchivedList);
+    }
+  }
 
   return (
     <>
@@ -197,19 +249,26 @@ function BannersTable() {
           density: false,
           setting: false,
         }}
-        headerTitle="Enabled Items"
-        columns={enabledTableColumns}
-        dataSource={dataSource}
+        headerTitle="Active Banners"
+        columns={generateEnabledTableColumns(setEditingBanner, archiveBanner)}
+        dataSource={activeBanners}
         rowKey="id"
-        // search={{
-        //   labelWidth: 'auto',
-        // }}
+        toolBarRender={() => [
+          <Button
+            key="button"
+            type="primary"
+            onClick={() => {  setEditingBanner(null); }}
+          >
+            New Banner
+          </Button>,
+        ]}
         dragSortKey='sort'
         search={false}
         pagination={false}
         onDragSortEnd={handleDragSortEnd}
         dateFormatter="string"
         style={{ marginBottom: '32px' }}
+        loading={isLoading}
       />
       <ProTable
         options={{
@@ -217,15 +276,13 @@ function BannersTable() {
           density: false,
           setting: false,
         }}
-        headerTitle="Disabled Items"
-        columns={disabledTableColumns}
-        dataSource={disabledData}
+        headerTitle="Archived Banners"
+        columns={getDisabledTableColumns(activateBanner, deleteBanner)}
+        dataSource={archivedBanners}
         rowKey="id"
-        // search={{
-        //   labelWidth: 'auto',
-        // }}
         search={false}
         pagination={false}
+        loading={isLoading}
       />
     </>
   );

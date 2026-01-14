@@ -2,16 +2,27 @@ import {
   Controller,
   Post,
   UseInterceptors,
-  UploadedFile, BadRequestException, Logger
+  UploadedFile,
+  BadRequestException,
+  Logger,
+  HttpStatus,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { ConfigService } from '@nestjs/config';
 import { S3storageService } from '$/modules/upload/s3storage.service';
 import { TransformInterceptor } from '$/interceptors/response.interceptor';
 import { imageFileFilter, imageStorage } from '$/modules/utils/file-upload.util';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiResponse, ApiResponseProperty, ApiTags } from '@nestjs/swagger';
 
-@ApiTags("Bo Posts")
+class UploadPostImageResponse {
+  @ApiResponseProperty()
+  s3Uri: string;
+
+  @ApiResponseProperty()
+  imageUrl: string;
+}
+
+@ApiTags("Bo Uploads")
 @Controller('upload')
 export class UploadController {
   private readonly logger: Logger = new Logger(this.constructor.name);
@@ -26,6 +37,7 @@ export class UploadController {
   }
 
 
+  @ApiResponse({type: UploadPostImageResponse, status: HttpStatus.CREATED})
   @Post('image')
   @UseInterceptors(
     FileInterceptor('image', {
@@ -34,7 +46,9 @@ export class UploadController {
     }),
     TransformInterceptor
   )
-  async uploadImage(@UploadedFile() file: Express.Multer.File) {
+  async uploadImage(
+    @UploadedFile() file: Express.Multer.File,
+  ): Promise<UploadPostImageResponse> {
     if (!file) {
       throw new BadRequestException('No file uploaded');
     }

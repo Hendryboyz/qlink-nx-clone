@@ -50,7 +50,8 @@ export class SalesforceSyncService implements OnModuleInit{
   }
 
   async onModuleInit(): Promise<void> {
-    await this.authSalesforce();
+
+    // await this.authSalesforce();
   }
 
   private async authSalesforce() {

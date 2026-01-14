@@ -12,10 +12,15 @@ const BannerManagement: React.FC = () => {
   return (
     <div>
       <h1>Banner Management</h1>
-      {editingBanner === undefined && <BannersTable />}
+      {
+        editingBanner === undefined &&
+          <BannersTable
+            setEditingBanner={setEditingBanner}
+          />
+      }
       {editingBanner !== undefined &&
         <EditBanner
-          banner={editingBanner}
+          initialValues={editingBanner}
           onCancel={cancelBannerEditing}
         />}
     </div>

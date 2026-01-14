@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PostEntity } from '@org/types';
-import {  CreatePostDto, UpdatePostDto } from '$/modules/bo/posts/posts.dto'
+import {  CreatePostRequest, UpdatePostRequest } from '$/modules/bo/posts/posts.dto'
 import { PostRepository } from './posts.repository';
 import * as cheerio from 'cheerio';
 import { S3storageService } from '$/modules/upload/s3storage.service';
@@ -12,7 +12,7 @@ export class PostsService {
     private readonly storageService: S3storageService,
     ) {}
 
-  async create(createPostDto: CreatePostDto): Promise<PostEntity> {
+  async create(createPostDto: CreatePostRequest): Promise<PostEntity> {
     createPostDto.coverImage = await this.tryPersistImage(createPostDto.coverImage);
     createPostDto.content = await this.persistContentImages(createPostDto.content);
 
@@ -30,18 +30,8 @@ export class PostsService {
     return $.html()
   }
 
-  private async tryPersistImage(imageUrl: string): Promise<string> {
-    if (!imageUrl) return '';
-    const tempPrefix = 'tmp/';
-    const isNewImage: boolean = imageUrl.includes(tempPrefix)
-    if (!isNewImage) return imageUrl;
-
-    const imagePrefix = 'images/';
-    const [cdnHostname, objectPath] = imageUrl.split(tempPrefix);
-    const destinationPath = `${imagePrefix}${objectPath}`;
-    await this.storageService.moveObject(`${tempPrefix}${objectPath}`, destinationPath);
-
-    return `${cdnHostname}${destinationPath}`;
+  private tryPersistImage(imageUrl: string): Promise<string> {
+    return this.storageService.tryPersistImage(imageUrl, 'images/');
   }
 
   async findAll(
@@ -81,7 +71,7 @@ export class PostsService {
     return this.postRepository.getHighlightPosts();
   }
 
-  async update(id: string, updatePostDto: UpdatePostDto): Promise<PostEntity> {
+  async update(id: string, updatePostDto: UpdatePostRequest): Promise<PostEntity> {
     const coverImage = updatePostDto.coverImage;
     updatePostDto.coverImage = await this.tryPersistImage(coverImage);
     updatePostDto.content = await this.persistContentImages(updatePostDto.content);

@@ -1,0 +1,136 @@
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  HttpCode,
+  HttpStatus,
+  Injectable,
+  Logger,
+  Param,
+  Patch,
+  Post,
+  Put,
+  Query,
+  UseGuards,
+  UseInterceptors,
+  UsePipes,
+  ValidationPipe,
+} from '@nestjs/common';
+import {
+  CreateBannerRequest,
+  CreateBannerResponse,
+  ReactivateBannerResponse,
+  ReorderBannerRequest,
+  UpdateBannerRequest,
+  UpdateBannerResponse,
+} from '$/modules/bo/banners/banners.dto';
+import { BannersManagementService } from '$/modules/bo/banners/banners-management.service';
+import { BannerEntity } from '@org/types';
+import { PagingParams } from '$/common/common.dto';
+import {
+  ApiBody,
+  ApiCreatedResponse,
+  ApiOkResponse,
+  ApiTags,
+} from '@nestjs/swagger';
+import { JwtAuthGuard } from '$/modules/bo/verification/jwt-auth.guard';
+import { TransformInterceptor } from '$/interceptors/response.interceptor';
+
+@UseGuards(JwtAuthGuard)
+@UseInterceptors(TransformInterceptor)
+@ApiTags('Bo Banners')
+@Injectable()
+@Controller()
+class BannersManagementController {
+  private logger = new Logger(this.constructor.name);
+
+  constructor(
+    private readonly bannersManagementService: BannersManagementService,
+  ) {
+  }
+
+  @ApiCreatedResponse({type: CreateBannerResponse})
+  @Post()
+  @UsePipes(new ValidationPipe())
+  async create(@Body() payload: CreateBannerRequest): Promise<CreateBannerResponse> {
+    this.logger.debug(JSON.stringify(payload));
+    const entity = this.convertToEntity(payload);
+    const createdBanner = await this.bannersManagementService.create(entity);
+    return {
+      id: createdBanner.id,
+      order: createdBanner.order,
+      persistImage: createdBanner.image,
+      createdAt : createdBanner.createdAt,
+    }
+  }
+
+  private convertToEntity(payload: CreateBannerRequest): Partial<BannerEntity> {
+      return {
+        label: payload.label,
+        title: payload.title,
+        subtitle: payload.subtitle,
+        alignment: payload.alignment,
+        button: payload.button,
+        image: payload.image,
+        link: payload.link,
+        archived: false,
+      }
+  }
+
+  @Get('active')
+  listActive() {
+    return this.bannersManagementService.listActive();
+  }
+
+  @Get('archived')
+  listArchived(@Query() pagingParams: PagingParams): Promise<BannerEntity[]> {
+    const { page, limit } = pagingParams;
+    return this.bannersManagementService.listArchived(page, limit);
+  }
+
+  @Patch('order')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  patchBannersOrder(@Body() newOrder: ReorderBannerRequest): Promise<void> {
+    return this.bannersManagementService.patchBannersOrder(newOrder);
+  }
+
+  @Put(':id')
+  @ApiBody({ type: UpdateBannerRequest })
+  @ApiOkResponse({type: UpdateBannerResponse})
+  async updateBanner(
+    @Param('id') id: string,
+    @Body() payload: UpdateBannerRequest): Promise<UpdateBannerResponse> {
+    const updatedBanner = await this.bannersManagementService.update(id, {
+      ...payload,
+    });
+    return {
+      id,
+      persistImage: updatedBanner.image,
+      updatedAt: updatedBanner.updatedAt,
+    }
+  }
+
+  @Put(':id/active')
+  @ApiOkResponse({type: ReactivateBannerResponse})
+  async activate(@Param('id') bannerId: string): Promise<ReactivateBannerResponse> {
+    const theResult = await this.bannersManagementService.activate(bannerId);
+    return {
+      ...theResult,
+    }
+  }
+
+  @Put(':id/archived')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  async archive(@Param('id') bannerId: string): Promise<void> {
+    await this.bannersManagementService.archive(bannerId);
+  }
+
+  @Delete(':id')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  async delete(@Param('id') bannerId: string): Promise<void> {
+    await this.bannersManagementService.delete(bannerId);
+  }
+}
+
+export default BannersManagementController;

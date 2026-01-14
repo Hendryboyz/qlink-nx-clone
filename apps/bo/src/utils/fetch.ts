@@ -9,7 +9,14 @@ import {
   ResetBoUserPasswordDto,
   ClientUserUpdateDto,
   VerifyResult,
-  UpdateVehicleDTO
+  UpdateVehicleDTO,
+  CreateBannerDto,
+  CreateBannerResponseDto,
+  BannerDto,
+  ReorderBannerDto,
+  ActivateBannerResponseDto,
+  UpdateBannerDto,
+  UpdateBannerResponseDto,
 } from '@org/types';
 import {
   GetPostsResponse,
@@ -244,7 +251,7 @@ class Api {
     await this.delete(`/posts/${id}`);
   }
 
-  async uploadImage(file: File | Blob): Promise<ApiResponse<UploadImageResponse>> {
+  async uploadPostImage(file: File | Blob): Promise<ApiResponse<UploadImageResponse>> {
     const formData = new FormData();
     formData.append('image', file);
     return this.post('/posts/upload/image', formData, {
@@ -252,6 +259,48 @@ class Api {
         'Content-Type': 'multipart/form-data',
       },
     });
+  }
+
+  async createBanner(payloads: CreateBannerDto): Promise<ApiResponse<CreateBannerResponseDto>> {
+    return this.post('/banners', payloads);
+  }
+
+  async uploadBannerImage(file: File | Blob): Promise<ApiResponse<UploadImageResponse>> {
+    const formData = new FormData();
+    formData.append('image', file);
+    return this.post('/banners/upload/image', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
+  }
+
+  async reorderBanners(payloads: ReorderBannerDto) {
+    return this.patch('/banners/order', payloads);
+  }
+
+  async listActiveBanners(): Promise<ApiResponse<BannerDto[]>> {
+    return this.get('/banners/active');
+  }
+
+  async listArchivedBanners(): Promise<ApiResponse<BannerDto[]>> {
+    return this.get('/banners/archived');
+  }
+
+  updateBanner(id: string, payloads: UpdateBannerDto): Promise<ApiResponse<UpdateBannerResponseDto>> {
+    return this.put(`/banners/${id}`, payloads);
+  }
+
+  async activateBanner(id: string): Promise<ApiResponse<ActivateBannerResponseDto>> {
+    return this.put(`/banners/${id}/active`);
+  }
+
+  async archiveBanner(id: string): Promise<void> {
+    return this.put(`/banners/${id}/archived`);
+  }
+
+  async deleteBanner(id: string): Promise<void> {
+    return this.delete(`/banners/${id}`);
   }
 
   logout() {
