@@ -24,14 +24,14 @@ const AgreeTerm: FC<{
         <label htmlFor="agreedToTerms">
           <span>{"I agree to the Qlink Rider Club's "}</span>
           <Link
-            href="/terms-of-service"
+            href="/legal?tab=terms&hideheader=true"
             className="text-primary underline font-bold"
           >
             Terms of Service
           </Link>
           <span>{` and `}</span>
           <Link
-            href="/privacy-policy"
+            href="/legal?tab=policy&hideheader=true"
             className="text-primary underline font-bold"
           >
             Privacy Policy

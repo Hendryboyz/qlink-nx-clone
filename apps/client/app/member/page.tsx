@@ -43,8 +43,8 @@ const guestLinks = [
 ];
 
 const termLinks = [
-  { name: 'Privacy Policy', href: '/privacy-policy' },
-  { name: 'Terms Of Service', href: '/terms-of-service' },
+  { name: 'Privacy Policy', href: '/legal?tab=policy' },
+  { name: 'Terms Of Service', href: '/legal?tab=terms' },
 ];
 
 export default function Member() {

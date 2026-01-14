@@ -15,8 +15,8 @@ const mainItems = [
 ];
 
 const supportItems = [
-  ['Privacy Policy', '/privacy-policy'],
-  ['Terms of Service', '/terms-of-service'],
+  ['Privacy Policy', '/legal?tab=policy'],
+  ['Terms of Service', '/legal?tab=terms'],
 ];
 
 type Props = {

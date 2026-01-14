@@ -50,8 +50,8 @@ const mediaLinks: MediaLink[] = [
 ];
 
 const termLinks: Link[] = [
-  { name: 'Privacy Policy', href: '/privacy-policy' },
-  { name: 'Terms Of Service', href: '/terms-of-service' },
+  { name: 'Privacy Policy', href: '/legal?tab=policy' },
+  { name: 'Terms Of Service', href: '/legal?tab=terms' },
 ];
 
 const AppFooter: React.FC<AppFooterProps> = ({ isSignedIn }) => {

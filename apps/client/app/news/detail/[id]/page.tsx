@@ -13,6 +13,7 @@ import { useAuth } from '$/hooks/useAuth';
 import { TGButton } from '@org/components';
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.bubble.css';
+import { ChevronLeftIcon } from 'lucide-react';
 
 type Props = {
   params: {
@@ -50,9 +51,9 @@ const Detail: NextPage<Props> = ({ params }) => {
           <div className="px-5 pt-4 border-gray-200">
             <button
               onClick={() => router.back()}
-              className="text-2xl text-gray-700 hover:text-gray-900"
+              className="text-gray-700 hover:text-gray-900"
             >
-              ←
+              <ChevronLeftIcon className="w-8 h-8" />
             </button>
           </div>
 
