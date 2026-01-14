@@ -175,6 +175,7 @@ function BannersTable({ setEditingBanner }: BannersTableProps) {
       await API.archiveBanner(recordId);
       archivingBanner.archived = true;
       setArchivedBanners((prevArchives: BannerDto[]) => [...prevArchives, archivingBanner]);
+      message.success(`banner ${archivingBanner.title} archived`)
     } catch (e) {
       console.error(e);
       message.error(`fail to archive banner`)
@@ -219,8 +220,10 @@ function BannersTable({ setEditingBanner }: BannersTableProps) {
       reActivateBanner.archived = false;
       reActivateBanner.order = resp.data.newOrder;
       setActiveBanners((prevActives: BannerDto[]) => [...prevActives, reActivateBanner]);
+      message.success(`banner ${reActivateBanner.title} activated`)
     } catch (e) {
       console.error(e);
+      message.error(`fail to activate banner`)
       setArchivedBanners(prevArchivedList);
     }
   }
@@ -230,8 +233,10 @@ function BannersTable({ setEditingBanner }: BannersTableProps) {
     setArchivedBanners((prevArchives: BannerDto[]) => prevArchives.filter((banner) => banner.id !== recordId));
     try {
       await API.deleteBanner(recordId)
+      message.success(`banner ${recordId} deleted`)
     } catch(e) {
       console.error(e);
+      message.error(`fail to delete banner`)
       setArchivedBanners(prevArchivedList);
     }
   }
