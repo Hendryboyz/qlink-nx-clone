@@ -36,7 +36,7 @@ export class BannersRepository {
     return this.knex('banners').where('id', bannerId).first();
   }
 
-  public listActive(): Promise<BannerEntity[]> {
+  public listOrderedActive(): Promise<BannerEntity[]> {
     const queryBuilder = this.createQueryBuilder(false);
     return queryBuilder.orderBy('order', 'asc');
   }

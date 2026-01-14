@@ -2,26 +2,34 @@ import {
   ForbiddenException,
   Injectable,
   Logger,
-  NotFoundException,
+  NotFoundException, UnprocessableEntityException,
 } from '@nestjs/common';
-import { BannerEntity } from '@org/types';
+import { BannerEntity, BannerOrder } from '@org/types';
 import { BannersRepository } from '$/modules/bo/banners/banners.repository';
 import { S3storageService } from '$/modules/upload/s3storage.service';
 import { ReorderBannerRequest } from '$/modules/bo/banners/banners.dto';
 import { UpdateBannerPayload } from '$/modules/bo/banners/banners.model';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class BannersManagementService {
-  private logger = new Logger(this.constructor.name);
+  private readonly logger: Logger = new Logger(this.constructor.name);
+  private readonly activeBannerLimit: number;
 
   constructor(
+    private readonly config: ConfigService,
     private readonly storageService: S3storageService,
     private readonly bannersRepository: BannersRepository,
   ) {
+    this.activeBannerLimit = +this.config.get<number>('BANNER_LIMIT', 5);
   }
 
   public async create(entity: Partial<BannerEntity>): Promise<BannerEntity> {
-    entity.order = 1 + (await this.bannersRepository.countActive());
+    const activeCount = await this.bannersRepository.countActive();
+    if (activeCount >= this.activeBannerLimit) {
+      throw new UnprocessableEntityException(`only allow ${this.activeBannerLimit} active banners`);
+    }
+    entity.order = 1 + activeCount;
     const tmpImageUrl = entity.image
     entity.image = await this.storageService.tryPersistImage(tmpImageUrl, 'images/');
     this.logger.debug(`Move background image from ${tmpImageUrl} to ${entity.image}`);
@@ -29,7 +37,7 @@ export class BannersManagementService {
   }
 
   public listActive(): Promise<BannerEntity[]> {
-    return this.bannersRepository.listActive();
+    return this.bannersRepository.listOrderedActive();
   }
 
   public listArchived(page: number, limit: number): Promise<BannerEntity[]> {
@@ -64,7 +72,11 @@ export class BannersManagementService {
     if (!banner.archived) {
       throw new ForbiddenException('only archived banner allow to be activated');
     }
-    const newOrder = await this.bannersRepository.countActive() + 1;
+    const activeCount = await this.bannersRepository.countActive();
+    if (activeCount >= this.activeBannerLimit) {
+      throw new UnprocessableEntityException(`only allow ${this.activeBannerLimit} active banners`);
+    }
+    const newOrder = activeCount + 1;
     const reactivateBanner = await this.bannersRepository.reactivate(bannerId, newOrder);
     return {
       id: reactivateBanner.id,
@@ -85,7 +97,13 @@ export class BannersManagementService {
     if (banner.archived) {
       throw new ForbiddenException('only active banner allow to be archived');
     }
-    return this.bannersRepository.archive(bannerId);
+    await this.bannersRepository.archive(bannerId);
+    const activeBanners = await this.bannersRepository.listOrderedActive();
+    const reorderPayloads: BannerOrder[] = activeBanners.map((b: BannerEntity, index: number) => ({
+      id: b.id,
+      order: index+1,
+    }))
+    await this.patchBannersOrder({ list: reorderPayloads });
   }
 
   public patchBannersOrder(newOrder: ReorderBannerRequest): Promise<void> {
