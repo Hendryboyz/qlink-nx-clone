@@ -1,5 +1,5 @@
 import { Controller, Get, Logger, Param } from '@nestjs/common';
-import { PostsService } from '$/modules/posts/posts.service';
+import { PostsService } from '$/modules/bo/posts/posts.service';
 import { ApiTags } from '@nestjs/swagger';
 
 @ApiTags('QRC Posts')

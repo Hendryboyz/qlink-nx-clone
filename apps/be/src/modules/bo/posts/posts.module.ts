@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
-import { PostsService } from '$/modules/posts/posts.service';
+import { PostsService } from '$/modules/bo/posts/posts.service';
 import { PostsController } from './posts.controller';
-import { PostRepository } from '../../posts/posts.repository';
+import { PostRepository } from './posts.repository';
 import { StorageModule } from '$/modules/upload/storage.module';
 import { UploadController } from '$/modules/bo/upload.controller';
 import { VerificationModule } from '$/modules/bo/verification/verification.module';
@@ -12,4 +12,4 @@ import { VerificationModule } from '$/modules/bo/verification/verification.modul
   providers: [PostsService, PostRepository],
   exports: [PostsService],
 })
-export class PostsBoModule {}
+export class PostsManagementModule {}

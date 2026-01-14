@@ -10,7 +10,7 @@ import {
   Query,
   UseGuards,
 } from '@nestjs/common';
-import { PostsService } from '$/modules/posts/posts.service';
+import { PostsService } from '$/modules/bo/posts/posts.service';
 import { CreatePostRequest, UpdatePostRequest } from './posts.dto';
 import { JwtAuthGuard } from '$/modules/bo/verification/jwt-auth.guard';
 import { RolesGuard } from '$/modules/bo/verification/roles.guard';

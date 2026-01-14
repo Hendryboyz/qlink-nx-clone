@@ -22,3 +22,7 @@ export interface BannerEntity {
   updatedAt: Date;
 }
 
+interface ClientBannerDTO extends Omit<BannerEntity, 'id' | 'createdAt' | 'updatedAt'> {}
+
+export interface ActiveBannerDTO extends Omit<ClientBannerDTO, 'archived'> {}
+
