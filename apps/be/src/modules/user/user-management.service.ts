@@ -70,6 +70,10 @@ export class UserManagementService {
   }
 
   private async syncUserToCRM(user: UserEntity): Promise<string> {
+    if (! await this.syncCrmService.isAlive()) {
+      throw new Error(`crm is down, stop sync`);
+    }
+
     if (user.crmId) {
       return user.crmId;
     }
@@ -128,6 +132,9 @@ export class UserManagementService {
   }
 
   private async deleteMemberFromCRM(userEntity: UserEntity): Promise<void> {
+    if (!await this.syncCrmService.isAlive()) {
+      return;
+    }
     try {
       await this.syncCrmService.deleteMember(userEntity.crmId);
     } catch (error) {

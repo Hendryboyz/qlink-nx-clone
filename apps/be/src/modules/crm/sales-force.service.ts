@@ -448,4 +448,35 @@ export class SalesforceSyncService implements OnModuleInit{
       },
     })
   }
+
+   public async isAlive(): Promise<boolean> {
+    if (!this.apiResource.instanceUrl) {
+      return false;
+    }
+
+    try {
+      const syncAction = this.useReAuthQuery(this.healthCheck.bind(this));
+      const response = await syncAction(undefined);
+      return response.status === 200;
+    } catch (error) {
+      if (error.response)  {
+        const { response } = error;
+        this.logger.error(
+          `salesforce is unhealthy, status code: ${response.status}, message:`, response.data);
+      } else {
+        this.logger.error('salesforce is unhealthy, status code: 500', error)
+      }
+      return false;
+    }
+
+  }
+
+  private healthCheck(): Promise<AxiosResponse> {
+    const healthCheckUrl = `${this.apiResource.instanceUrl}/services/data/v49.0/sobjects`;
+    return axios.get(healthCheckUrl, {
+      headers: {
+        'Authorization': `Bearer ${this.apiResource.accessToken}`,
+      }
+    });
+  }
 }
