@@ -46,6 +46,10 @@ export class ProductService {
   }
 
   private async syncProductToCRM(product: ProductEntity): Promise<string> {
+    if (! await this.syncCrmService.isAlive()) {
+      throw new Error(`crm is down, stop sync`);
+    }
+
     if (!product || product.crmId) {
       return product.crmId;
     }
@@ -204,6 +208,10 @@ export class ProductService {
   }
 
   private async verifyWithCRM(product: ProductEntity): Promise<boolean> {
+    if (! await this.syncCrmService.isAlive()) {
+      return false;
+    }
+
     try {
       const isVerified = await this.syncCrmService.verifyVehicle(product);
       if (!isVerified) {
