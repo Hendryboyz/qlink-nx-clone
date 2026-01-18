@@ -1,5 +1,5 @@
 'use client';
-
+console.log('MemberEdit');
 import { useEffect, useMemo, useState } from 'react';
 import { UserVO, ClientUserUpdateDto, GenderType } from '@org/types';
 import {
@@ -135,8 +135,8 @@ export default function MemberEdit() {
   const handleDeleteAccount = async () => {
     try {
       setDeleting(true);
-      const response = await API.delete('/user');
-      if (response.bizCode !== CODE_SUCCESS) {
+      const response = await API.delete('/user', undefined, true);
+      if (response.status !== 204) {
         throw new Error('Delete account failed');
       }
 

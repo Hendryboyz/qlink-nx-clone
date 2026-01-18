@@ -93,10 +93,21 @@ class Api {
   // DELETE 請求
   async delete<T = ApiResponse>(
     url: string,
-    config?: AxiosRequestConfig
-  ): Promise<T> {
+    config?: AxiosRequestConfig,
+    returnFullResponse?: false
+  ): Promise<T>;
+  async delete<T = ApiResponse>(
+    url: string,
+    config: AxiosRequestConfig | undefined,
+    returnFullResponse: true
+  ): Promise<AxiosResponse<T>>;
+  async delete<T = ApiResponse>(
+    url: string,
+    config?: AxiosRequestConfig,
+    returnFullResponse?: boolean
+  ): Promise<T | AxiosResponse<T>> {
     const response: AxiosResponse<T> = await this.instance.delete(url, config);
-    return response.data;
+    return returnFullResponse ? response : response.data;
   }
 
   // PATCH 請求
