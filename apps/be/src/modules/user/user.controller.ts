@@ -59,15 +59,15 @@ export class UserController {
   @Get('/info')
   async getInfo(@UserId() userId: string) {
     const user = await this.userService.getUserInfo(userId);
-    const { avatarS3Uri, coverImageS3Uri } = user;
-    if (avatarS3Uri) {
+    const { avatarS3uri, coverImageS3uri } = user;
+    if (avatarS3uri) {
       user.avatarImageUrl =
-        `${this.cdnHostname}/` + avatarS3Uri.slice(`${this.bucketName}/`.length);
+        `${this.cdnHostname}/` + avatarS3uri.slice(`${this.bucketName}/`.length);
     }
 
-    if (coverImageS3Uri) {
+    if (coverImageS3uri) {
       user.coverImageUrl =
-        `${this.cdnHostname}/` + coverImageS3Uri.slice(`${this.bucketName}/`.length);
+        `${this.cdnHostname}/` + coverImageS3uri.slice(`${this.bucketName}/`.length);
     }
 
     return user;

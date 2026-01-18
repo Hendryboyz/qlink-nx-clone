@@ -25,9 +25,9 @@ export class GetUserProfileResponse implements UserVO {
   type: UserType;
 
   @ApiPropertyOptional()
-  avatarS3Uri?: string;
+  avatarS3uri?: string;
   @ApiPropertyOptional()
-  coverImageS3Uri?: string;
+  coverImageS3uri?: string;
   @ApiPropertyOptional()
   avatarImageUrl?: string;
   @ApiPropertyOptional()

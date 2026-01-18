@@ -65,10 +65,10 @@ export class UserService {
     userId: string,
     s3Key: { avatar?: string, cover?: string },
   ) {
-    this.logger.debug(`Updating user ${userId} avatar with ${s3Key}`);
+    this.logger.debug(`Updating user ${userId} media`, s3Key);
     const userEntity = await this.userRepository.update(userId, {
       avatarS3uri: s3Key.avatar || undefined,
-      coverImageS3Uri: s3Key.cover || undefined,
+      coverImageS3uri: s3Key.cover || undefined,
     });
     return filterUserInfo(userEntity);
   }
