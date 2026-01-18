@@ -121,8 +121,9 @@ export class UserManagementService {
 
     const unlinkedRows = await this.productService.unlinkAllOwnedProduct(userEntity.id);
     this.logger.debug(`products owned by user[${userEntity.id}] soft deleted: ${unlinkedRows}`);
-
-    await this.deleteMemberFromCRM(userEntity);
+    if (userEntity.crmId) {
+      await this.deleteMemberFromCRM(userEntity);
+    }
     await this.userRepository.removeById(id);
   }
 
