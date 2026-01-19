@@ -170,7 +170,14 @@ export default function Member() {
         {/* Banner Section with Cover Image */}
         <div className="relative h-[200px]">
           {/* Cover Image - Default grey background */}
-          <div className="absolute inset-0 bg-stroke-w" />
+          {user?.coverImageUrl ? (
+            <div
+              className="absolute inset-0 bg-cover bg-center"
+              style={{ backgroundImage: `url(${user.coverImageUrl})` }}
+            />
+          ) : (
+            <div className="absolute inset-0 bg-stroke-w" />
+          )}
           {/* Edit Button */}
           <button
             className="absolute top-[20px] right-[24px] z-10"
