@@ -19,7 +19,7 @@ import { AuthGuard } from '@nestjs/passport';
 import { ConfigService } from '@nestjs/config';
 import { UserId } from '$/decorators/userId.decorator';
 import { UserService } from './user.service';
-import { UserUpdateDto } from '@org/types';
+import { UserUpdateDto, UserVO } from '@org/types';
 import {
   imageFileFilter,
   imageStorage,
@@ -57,17 +57,18 @@ export class UserController {
 
   @ApiResponse({status: HttpStatus.OK, type: GetUserProfileResponse})
   @Get('/info')
-  async getInfo(@UserId() userId: string) {
-    const user = await this.userService.getUserInfo(userId);
-    const { avatarS3uri, coverImageS3uri } = user;
-    if (avatarS3uri) {
+  async getInfo(@UserId() userId: string): Promise<GetUserProfileResponse> {
+    const user: UserVO = await this.userService.getUserInfo(userId);
+    const { avatarS3Uri, coverImageS3Uri } = user;
+    this.logger.debug(avatarS3Uri, coverImageS3Uri, user);
+    if (avatarS3Uri) {
       user.avatarImageUrl =
-        `${this.cdnHostname}/` + avatarS3uri.slice(`${this.bucketName}/`.length);
+        `${this.cdnHostname}/` + avatarS3Uri.slice(`${this.bucketName}/`.length);
     }
 
-    if (coverImageS3uri) {
+    if (coverImageS3Uri) {
       user.coverImageUrl =
-        `${this.cdnHostname}/` + coverImageS3uri.slice(`${this.bucketName}/`.length);
+        `${this.cdnHostname}/` + coverImageS3Uri.slice(`${this.bucketName}/`.length);
     }
 
     return user;

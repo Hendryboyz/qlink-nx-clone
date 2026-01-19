@@ -9,8 +9,8 @@ export interface UserEntity {
   midName?: string;
   lastName: string;
   gender: GenderType;
-  coverImageS3uri?: string;
-  avatarS3uri?: string;
+  coverImageS3Uri?: string;
+  avatarS3Uri?: string;
   addressState: string;
   addressCity: string;
   addressDetail?: string;
