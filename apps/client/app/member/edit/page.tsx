@@ -95,7 +95,7 @@ export default function MemberEdit() {
         setLoading(true);
         const data = await API.get<UserVO>('/user/info');
         setAvatarUrl(data.avatarImageUrl || '');
-        setCoverUrl(data.coverImageS3Uri || '');
+        setCoverUrl(data.coverImageUrl || '');
         setGender(data.gender || '');
         setInitialGender(data.gender || '');
         const parsedBirthday = data.birthday ? new Date(data.birthday) : undefined;
