@@ -76,13 +76,17 @@ export class OtpService {
 
   async allowResendV2(sessionId: string, type: OtpTypeEnum): Promise<boolean> {
     if (process.env.IS_OTP_ENABLED === 'false') return true;
-
-    const availableSession =
-      await this.generalOtpRepository.findAvailableSession(sessionId, type);
-    if (!availableSession) {
+    try {
+      const availableSession =
+        await this.generalOtpRepository.findAvailableSession(sessionId, type);
+      if (!availableSession) {
+        return false;
+      }
+      return this.isOTPAlive(availableSession);
+    } catch (error) {
+      this.logger.error(`failed to verify OTP session`, error);
       return false;
     }
-    return this.isOTPAlive(availableSession);
   }
 
   async generateOtpV2(

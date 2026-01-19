@@ -1,5 +1,6 @@
 import {
   BadRequestException,
+  ConflictException,
   Injectable,
   Logger,
   NotFoundException,
@@ -83,7 +84,9 @@ export class AuthService {
     this.validateRegisterPayload(payload);
 
     if (await this.userService.isEmailExist(payload.email)) {
-      throw this.generateBadRequest(`Duplicate email: ${payload.email}`, 'email');
+      const message = `Duplicate email: ${payload.email}`;
+      const field = 'email';
+      throw new ConflictException({ bizCode: INVALID_PAYLOAD, data: { error: {field, message}} });
     }
 
     const hashedPassword = await hashPassword(payload.password);
@@ -123,24 +126,13 @@ export class AuthService {
 
   async resetPassword(payload: ResetPasswordDto, token: string) {
     const verifiedPayload: OtpJwtPayload = this.jwtService.verify(token);
-
-    if (
-      verifiedPayload.type !== OtpTypeEnum.RESET_PASSWORD
-      || !this.isValidEmailIdentifier(verifiedPayload, verifiedPayload.identifier)
-    )
-      throw new UnauthorizedException();
+    const isResetPasswordToken = verifiedPayload.type === OtpTypeEnum.RESET_PASSWORD
+    if (!isResetPasswordToken || !this.isValidEmailIdentifier(verifiedPayload, verifiedPayload.identifier))
+      throw new UnauthorizedException(`misuse jwt token: ${verifiedPayload.identifier}`);
 
     const { password, rePassword } = payload;
     if (!this.isMatchedPassword(password, rePassword)) {
-      return {
-        bizCode: INVALID_PAYLOAD,
-        data: {
-          error: {
-            type: 'password',
-            message: 'Invalid Password',
-          },
-        },
-      };
+      throw this.generateBadRequest('Invalid password', 'password');
     }
 
     const hashedPassword = await hashPassword(payload.password);

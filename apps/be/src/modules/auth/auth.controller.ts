@@ -8,6 +8,7 @@ import {
   HttpStatus,
   InternalServerErrorException,
   Logger,
+  MethodNotAllowedException,
   Patch,
   Post,
   Req,
@@ -198,7 +199,7 @@ export class AuthController {
     @Res({ passthrough: true }) resp: Response,
   ): Promise<SendOtpResponse> {
     if (body.type === OtpTypeEnum.EMAIL_CHANGE) {
-      throw new BadRequestException(
+      throw new MethodNotAllowedException(
         'wrong API to change email, please use v2/auth/otp/email_change'
       );
     }
