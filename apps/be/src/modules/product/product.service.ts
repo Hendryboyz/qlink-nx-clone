@@ -79,11 +79,13 @@ export class ProductService {
     try {
       await this.syncProductToCRM(productEntity);
       await this.verifyWithCRM(productEntity);
+      productEntity.isVerified = true;
     } catch(e) {
       this.logger.error(
         `fail to sync CRM while vehicle[${productEntity.id}] created`,
         productEntity,
       );
+      productEntity.isVerified = false;
     }
 
     return { img: '', ...productEntity };

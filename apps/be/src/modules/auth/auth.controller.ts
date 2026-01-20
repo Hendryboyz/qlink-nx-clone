@@ -14,6 +14,7 @@ import {
   Req,
   Res,
   UnauthorizedException,
+  UnprocessableEntityException,
   UseGuards,
   UsePipes,
   ValidationPipe,
@@ -306,19 +307,24 @@ export class AuthController {
         'please start change email session before sending this OTP'
       );
     }
-
-    const response = await this.sendOtpV2({
-      identifier: body.newEmail,
-      identifierType: IdentifierType.EMAIL,
-      sessionId: body.emailConfirmSessionId,
-      type: OtpTypeEnum.EMAIL_CHANGE,
-    });
-    if (response.bizCode === INVALID) {
-      resp.status(HttpStatus.UNPROCESSABLE_ENTITY);
-    } else {
-      resp.status(HttpStatus.CREATED);
+    try {
+      const response = await this.sendOtpV2({
+        identifier: body.newEmail,
+        identifierType: IdentifierType.EMAIL,
+        sessionId: body.emailConfirmSessionId,
+        type: OtpTypeEnum.EMAIL_CHANGE,
+      });
+      if (response.bizCode === INVALID) {
+        resp.status(HttpStatus.UNPROCESSABLE_ENTITY);
+      } else {
+        resp.status(HttpStatus.CREATED);
+      }
+      return response;
+    } catch (e) {
+      this.logger.error(e);
+      resp.status(HttpStatus.INTERNAL_SERVER_ERROR);
+      throw e;
     }
-    return response;
   }
 
   private async validateRecaptcha(
@@ -464,7 +470,11 @@ export class AuthController {
       resp.status(HttpStatus.NO_CONTENT);
     } catch (e) {
       this.logger.error(e);
-      resp.status(HttpStatus.UNPROCESSABLE_ENTITY);
+      if (e instanceof UnprocessableEntityException) {
+        resp.status(HttpStatus.UNPROCESSABLE_ENTITY);
+      } else {
+        resp.status(HttpStatus.INTERNAL_SERVER_ERROR);
+      }
       return {
         bizCode: INVALID,
         message: 'invalid password'

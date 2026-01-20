@@ -2,8 +2,13 @@ import { Controller, UseGuards, Get, Body, Post, Put, Delete, HttpStatus } from 
 import { AuthGuard } from '@nestjs/passport';
 import { UserId } from '$/decorators/userId.decorator';
 import { ProductService } from './product.service';
-import { CreateProductRequest, ProductDto, ProductRemoveDto, ProductUpdateDto } from '@org/types';
-import { ApiBearerAuth, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ProductDto, ProductRemoveDto, ProductUpdateDto } from '@org/types';
+import {
+  ApiBearerAuth,
+  ApiCreatedResponse,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 import { ListProductResponse } from '$/modules/product/product.dto';
 
 @ApiTags("QRC Products")
@@ -15,13 +20,14 @@ export class ProductController {
   @ApiResponse({status: HttpStatus.OK, type: ListProductResponse, isArray: true})
   @UseGuards(AuthGuard('jwt'))
   @Get('/list')
-  async getProducts(@UserId() userId: string) {
+  async getProducts(@UserId() userId: string): Promise<ListProductResponse[]> {
     return this.productService.findByUser(userId);
   }
 
   @ApiBearerAuth()
   @UseGuards(AuthGuard('jwt'))
   @Post('/save')
+  @ApiCreatedResponse({})
   async createProduct(@UserId() userId: string, @Body() payload: ProductDto) {
     return this.productService.create(userId, payload);
   }
