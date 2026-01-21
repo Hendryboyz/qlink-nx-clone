@@ -1,0 +1,3 @@
+DROP TABLE IF EXISTS crm_pending_entities;
+
+DROP TYPE IF EXISTS CRM_ENTITIES;

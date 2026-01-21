@@ -41,6 +41,7 @@ jobs:
       task-definition: deployments/tasks/demo/backend.json
       task-container-name: backend-app
       ecs-service: qapp-dev-backend-service
+      enable-db-migration: true
 #      dry-run: true
 
   Build-Backoffice:

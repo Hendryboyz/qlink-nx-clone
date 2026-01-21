@@ -20,6 +20,9 @@ on:
       ecs-service:
         required: true
         type: string
+      enable-db-migration:
+        required: false
+        type: boolean
       dry-run:
         required: false
         type: boolean
@@ -64,7 +67,13 @@ jobs:
           echo ${{ steps.render-task-def.outputs.task-definition }}
           cat ${{ steps.render-task-def.outputs.task-definition }}
 
-
+      - name: Database Migration
+        if: ${{ inputs.enable-db-migration }}
+        uses: vovavc/migrate-github-action@v0.2.1
+        with:
+          path: ./db_migration/scripts
+          database: postgres://${{ secrets.DB_USERNAME }}:${{ secrets.DB_PASSWORD }}@${{ vars.DB_HOST }}:${{ vars.DB_PORT }}/${{ vars.DB_NAME }}
+          command: up
 # Deploy Action Repo: https://github.com/aws-actions/amazon-ecs-deploy-task-definition
       - name: Deploy to ECS cluster
         if: ${{ inputs.dry-run == null || inputs.dry-run == false }}
