@@ -22,6 +22,7 @@ function SignInForm() {
   const searchParams = useSearchParams();
   const signInCallback = searchParams.get('callbackUrl') ?? '/';
   const { showPopup } = usePopup();
+  const router = useRouter();
 
   return (
     <Formik
@@ -51,12 +52,11 @@ function SignInForm() {
         })
           .then((res) => {
             if (res && res.ok) {
-              const callbackUrl = res.url ? res.url : '/';
-              window.location.replace(`${callbackUrl}`);
-              return;
+              router.replace('/');
+            } else {
+              console.error(res);
+              showPopup({ title: 'Incorrect Credentials' });
             }
-            console.error(res);
-            showPopup({ title: 'Incorrect Credentials' });
           })
           .finally(() => setSubmitting(false));
       }}
