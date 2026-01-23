@@ -43,25 +43,6 @@ export default function VehiclesTable(): ReactElement {
   const [messageApi, contextHolder] = message.useMessage();
   const [verifying, setVerifying] = useState(false);
 
-  async function handleReVerify() {
-    try {
-      setVerifying(true);
-      const syncResults = await API.verifyAllVehicles();
-      const successCount = syncResults.reduce((count: number, result) =>
-        count + (result.isVerified ? 1 : 0), 0);
-      const failureCount = syncResults.length - successCount;
-      message.info(
-        `try to re-sync ${syncResults.length} products: success: ${successCount}, failure: ${failureCount}`,
-        5,
-        );
-      reloadVehicles();
-    } catch(e) {
-      message.error('something unexpected error while re-verify vehicles');
-    } finally {
-      setVerifying(false);
-    }
-  }
-
   function handleDelete(vehicleId: string) {
     Modal.confirm({
       title: 'Confirm to delete user?',
@@ -230,17 +211,7 @@ export default function VehiclesTable(): ReactElement {
         }}
         scroll={{ x: 'max-content' }}
         dateFormatter="string"
-        toolBarRender={() => [
-          <Button
-            key="button"
-            type="primary"
-            onClick={handleReVerify}
-            disabled={verifying}
-            loading={verifying}
-          >
-            ReVerify
-          </Button>,
-        ]}
+        toolBarRender={() => []}
       />
     </>
   );

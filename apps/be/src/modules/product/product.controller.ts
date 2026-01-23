@@ -45,9 +45,4 @@ export class ProductController {
   async removeProduct(@UserId() userId: string, @Body() payload: ProductRemoveDto) {
     return this.productService.unlinkOwnedProduct(userId, payload.id);
   }
-
-  @Post('verify')
-  async verifyAllProductsInCRM(): Promise<void> {
-    await this.productService.verifyAllProducts();
-  }
 }

@@ -11,7 +11,6 @@ import {
   ProductEntity,
   ProductUpdateDto,
   ProductVO,
-  VerifyResult,
 } from '@org/types';
 import { ProductRepository } from './product.repository';
 import {
@@ -20,9 +19,9 @@ import {
   generateSalesForceId,
 } from '$/modules/utils/auth.util';
 import { ConfigService } from '@nestjs/config';
-import { SalesforceSyncService } from '$/modules/crm/sales-force.service';
 import * as _ from 'lodash';
 import { VehicleQueryFilters } from '$/modules/bo/vehicles/vehicles.types';
+import { CrmService } from '$/modules/crm/crm.service';
 
 function isCreateProductRequest(
   dto: ProductDto | CreateProductRequest
@@ -37,7 +36,7 @@ export class ProductService {
   private readonly reVerifyLimitTimes: number;
   constructor(
     private readonly configService: ConfigService,
-    private readonly syncCrmService: SalesforceSyncService,
+    private readonly crmService: CrmService,
     private readonly productRepository: ProductRepository,
   ) {
     const nodeEnv = this.configService.get<string>('NODE_ENV');
@@ -45,18 +44,19 @@ export class ProductService {
     this.reVerifyLimitTimes = this.configService.get<number>('AUTO_RE_VERIFY_VEHICLE_LIMIT_TIMES', 1);
   }
 
-  private async syncProductToCRM(product: ProductEntity): Promise<string> {
-    if (!product || product.crmId) {
+  private async createProductToCRM(product: ProductEntity): Promise<string> {
+    if (product && product.crmId) {
       return product.crmId;
     }
 
     try {
-      const { vehicleId } = await this.syncCrmService.syncVehicle(product);
-      product.crmId = vehicleId;
+      const { crmId, isVerified } = await this.crmService.syncVehicle(product);
+      product.crmId = crmId;
       await this.productRepository.update(product.id, {
-        crmId: vehicleId,
+        crmId: crmId,
+        isVerified: isVerified,
       });
-      return vehicleId;
+      return crmId;
     } catch(e) {
       this.logger.error(`fail to sync vehicle to salesforce`, e);
       throw e;
@@ -77,15 +77,12 @@ export class ProductService {
     );
 
     try {
-      await this.syncProductToCRM(productEntity);
-      await this.verifyWithCRM(productEntity);
-      productEntity.isVerified = true;
+      await this.createProductToCRM(productEntity);
     } catch(e) {
       this.logger.error(
         `fail to sync CRM while vehicle[${productEntity.id}] created`,
         productEntity,
       );
-      productEntity.isVerified = false;
     }
 
     return { img: '', ...productEntity };
@@ -168,11 +165,10 @@ export class ProductService {
     );
 
     try {
-      const syncError = await this.syncCrmService.updateVehicle(updatedProduct);
-      await this.verifyWithCRM(updatedProduct);
-      if (syncError) {
-        this.logger.error(`fail to sync vehicle to salesforce reason: ${syncError.message}`)
-      }
+      const { isVerified } = await this.crmService.syncVehicle(updatedProduct);
+      await this.productRepository.update(updatedProduct.id, {
+        isVerified: isVerified,
+      });
     } catch (e) {
       this.logger.error(`fail to sync vehicle to salesforce`, e);
     }
@@ -189,38 +185,6 @@ export class ProductService {
       throw new ForbiddenException(`only owner allow to update vehicle`);
     }
     return existingProduct;
-  }
-
-  async verifyAllProducts(): Promise<VerifyResult[]> {
-    const unverifiedProducts =
-      await this.productRepository.findAllowReVerifyProducts(this.reVerifyLimitTimes);
-    const result: VerifyResult[] = [];
-    for (const product of unverifiedProducts) {
-      const isVerified = await this.verifyWithCRM(product);
-      result.push({
-        productId: product.id,
-        isVerified: isVerified,
-      })
-    }
-    return result;
-  }
-
-  private async verifyWithCRM(product: ProductEntity): Promise<boolean> {
-    try {
-      const isVerified = await this.syncCrmService.verifyVehicle(product);
-      if (!isVerified) {
-        this.logger.warn(`fail to verify vehicle with id ${product.id} with salesforce`);
-        // await this.productRepository.increaseVerifyTimes(product.id);
-      } else {
-        await this.productRepository.update(product.id, {
-          isVerified: true,
-        });
-      }
-      return isVerified;
-    } catch (e) {
-      this.logger.error(`fail to verify vehicle with id ${product.id} with salesforce`, e);
-      return false;
-    }
   }
 
   async unlinkOwnedProduct(userId: string, productId: string): Promise<void> {
@@ -252,8 +216,8 @@ export class ProductService {
         failure = 0;
     for (const product of unSyncProducts) {
       try {
-        await this.syncProductToCRM(product);
-        await this.verifyWithCRM(product);
+        await this.createProductToCRM(product);
+        // todo update to db ?
         this.logger.debug('Resync user to CRM successfully', JSON.stringify(product));
         succeed++;
       } catch (e) {

@@ -23,11 +23,6 @@ type SalesForceErrorMessage = {
   fields: string[];
 }
 
-type VehicleSyncResult = {
-  vehicleId: string | null;
-  isVerified: boolean;
-};
-
 type ActionFunctionType = (payload: any | undefined) => Promise<AxiosResponse>
 
 @Injectable()
@@ -50,7 +45,11 @@ export class SalesforceSyncService implements OnModuleInit{
   }
 
   async onModuleInit(): Promise<void> {
-    await this.authSalesforce();
+    try {
+      await this.authSalesforce();
+    } catch (error) {
+      this.logger.error('fail to auth with salesforce API', error);
+    }
   }
 
   private async authSalesforce() {
@@ -222,17 +221,14 @@ export class SalesforceSyncService implements OnModuleInit{
     });
   }
 
-  public async syncVehicle(vehicleEntity: ProductEntity): Promise<VehicleSyncResult> {
+  public async syncVehicle(vehicleEntity: ProductEntity): Promise<string> {
     try {
       const payload = this.castSalesforceVehiclePayload(vehicleEntity);
       const syncAction = this.useReAuthQuery(this.postVehicle.bind(this));
       const response = await syncAction(payload);
       const {data, status} = response;
       this.logger.debug(`sync vehicle to salesforce successfully, status code: ${status}, message: ${data}`);
-      return {
-        vehicleId: data.id,
-        isVerified: false,
-      }
+      return data.id;
     } catch (error) {
       if (error.response)  {
         const { response } = error;
@@ -443,6 +439,40 @@ export class SalesforceSyncService implements OnModuleInit{
     const {vehicleObjectId} = request;
     const deleteVehicleUrl = `${this.apiResource.instanceUrl}/services/data/v49.0/sobjects/Vehicle_Registration_Data__c/${vehicleObjectId}`;
     return axios.delete(deleteVehicleUrl, {
+      headers: {
+        'Authorization': `Bearer ${this.apiResource.accessToken}`,
+      },
+    })
+  }
+
+  public async isAlive(): Promise<boolean> {
+    if (this.apiResource.instanceUrl === undefined) {
+      try {
+        await this.authSalesforce()
+      } catch (e) {
+        this.logger.error('fail to get salesforce credentials', e);
+        return false;
+      }
+    }
+    try {
+      const syncAction = this.useReAuthQuery(this.healthcheck.bind(this));
+      const response = await syncAction(undefined);
+      const {status} = response;
+      return status === 200;
+    } catch (error) {
+      if (error.response)  {
+        const { response } = error;
+        this.logger.error(`healthcheck failed, status code ${response.status}, message `, response.data);
+      } else {
+        this.logger.error(`healthcheck failed, status code 500, message `, error);
+      }
+      return false;
+    }
+  }
+
+  private async healthcheck(): Promise<AxiosResponse> {
+    const healthcheckUrl = `${this.apiResource.instanceUrl}/services/data/v49.0/sobjects`;
+    return axios.get(healthcheckUrl, {
       headers: {
         'Authorization': `Bearer ${this.apiResource.accessToken}`,
       },

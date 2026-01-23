@@ -389,10 +389,6 @@ class Api {
     return this.delete(`/vehicles/${vehicleId}`);
   }
 
-  async verifyAllVehicles(): Promise<VerifyResult[]> {
-    return this.post(`/vehicles/verification`);
-  }
-
   async countTotalMember(from?: Date): Promise<number> {
     let resourceUrl = '/statistic/users/count';
     if (from) {

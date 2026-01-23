@@ -8,20 +8,15 @@ import {
 import { ConfigService } from '@nestjs/config';
 import { filterUserInfo } from '$/modules/user/user.utils';
 import { UserRepository } from '$/modules/user/user.repository';
-import {
-  UserEntity,
-  RegisterDto,
-  UserVO,
-  UserUpdateDto,
-} from '@org/types';
+import { RegisterDto, UserEntity, UserUpdateDto, UserVO } from '@org/types';
 import {
   AppEnv,
   ENTITY_PREFIX,
   generateSalesForceId,
 } from '$/modules/utils/auth.util';
 import { omit } from 'lodash';
-import { SalesforceSyncService } from '$/modules/crm/sales-force.service';
 import { ProductService } from '$/modules/product/product.service';
+import { CrmService } from '$/modules/crm/crm.service';
 
 @Injectable()
 export class UserManagementService {
@@ -30,15 +25,18 @@ export class UserManagementService {
 
   constructor(
     private readonly configService: ConfigService,
-    private readonly syncCrmService: SalesforceSyncService,
+    private readonly crmService: CrmService,
     private readonly productService: ProductService,
-    private readonly userRepository: UserRepository,
+    private readonly userRepository: UserRepository
   ) {
     const nodeEnv = this.configService.get<string>('NODE_ENV');
     this.envPrefix = AppEnv[nodeEnv];
   }
 
-  public async create(createUserDto: RegisterDto, hashedPassword: string): Promise<UserVO> {
+  public async create(
+    createUserDto: RegisterDto,
+    hashedPassword: string
+  ): Promise<UserVO> {
     const userEntity = await this.userRepository.create({
       ...omit(createUserDto, ['password', 'rePassword']),
       password: hashedPassword,
@@ -49,33 +47,33 @@ export class UserManagementService {
     this.logger.debug(`user[${userEntity.id}] created`, userEntity);
 
     try {
-      await this.syncUserToCRM(userEntity);
+      await this.createMemberToCRM(userEntity);
     } catch (error) {
-      this.logger.error(`fail to sync CRM after user[${userEntity.id}] created`);
+      this.logger.error(
+        `fail to sync CRM after user[${userEntity.id}] created`
+      );
     }
 
     return {
-      ...omit(userEntity, [
-        'createdAt',
-        'updatedAt',
-        'isDelete',
-        'password',
-      ]),
+      ...omit(userEntity, ['createdAt', 'updatedAt', 'isDelete', 'password']),
     };
   }
 
   private async generateMemberId() {
     const memberSeq = await this.userRepository.getMemberSequence();
-    return generateSalesForceId(ENTITY_PREFIX.member, memberSeq, this.envPrefix);
+    return generateSalesForceId(
+      ENTITY_PREFIX.member,
+      memberSeq,
+      this.envPrefix
+    );
   }
 
-  private async syncUserToCRM(user: UserEntity): Promise<string> {
+  private async createMemberToCRM(user: UserEntity): Promise<string> {
     if (user.crmId) {
       return user.crmId;
     }
-
     try {
-      const salesforceId = await this.syncCrmService.createMember(user);
+      const salesforceId = await this.crmService.syncMember(user);
       this.logger.debug(salesforceId);
       user.crmId = salesforceId;
       await this.userRepository.update(user.id, {crmId: salesforceId});
@@ -86,30 +84,45 @@ export class UserManagementService {
     }
   }
 
-  public async updateUser(userId: string, updateData: UserUpdateDto): Promise<UserVO> {
+  public async updateUser(
+    userId: string,
+    updateData: UserUpdateDto
+  ): Promise<UserVO> {
     this.logger.debug(`user[${userId}] updating`, updateData);
     if (updateData.password) {
-      throw new BadRequestException('not allow to update password with user profile');
+      throw new BadRequestException(
+        'not allow to update password with user profile'
+      );
     }
     const updatedUser = await this.userRepository.update(userId, updateData);
 
     this.logger.debug(`user[${updatedUser.id}] updated`, updatedUser);
 
     try {
-      const salesforceId = await this.syncCrmService.updateMember(updatedUser);
+      const salesforceId = await this.crmService.syncMember(updatedUser);
       if (salesforceId) {
-        this.logger.debug(`user[${updatedUser.id}(${updatedUser.crmId})] update to salesforce`)
+        this.logger.debug(
+          `user[${updatedUser.id}(${updatedUser.crmId})] update to salesforce`
+        );
       } else {
-        this.logger.warn(`fail to update user[${updatedUser.id}(${updatedUser.crmId})] to salesforce`);
+        this.logger.warn(
+          `fail to update user[${updatedUser.id}(${updatedUser.crmId})] to salesforce`
+        );
       }
-    } catch(e) {
-      this.logger.error(`fail to update user[${updatedUser.id}(${updatedUser.crmId})] to salesforce`, e);
+    } catch (e) {
+      this.logger.error(
+        `fail to update user[${updatedUser.id}(${updatedUser.crmId})] to salesforce`,
+        e
+      );
     }
 
     return filterUserInfo(updatedUser);
   }
 
-  public async patchUserEmail(userId: string, newUserEmail: string): Promise<UserVO> {
+  public async patchUserEmail(
+    userId: string,
+    newUserEmail: string
+  ): Promise<UserVO> {
     return await this.updateUser(userId, { email: newUserEmail });
   }
 
@@ -119,49 +132,44 @@ export class UserManagementService {
       throw new NotFoundException(`user[${id}] not found`);
     }
 
-    const unlinkedRows = await this.productService.unlinkAllOwnedProduct(userEntity.id);
-    this.logger.debug(`products owned by user[${userEntity.id}] soft deleted: ${unlinkedRows}`);
+    const unlinkedRows = await this.productService.unlinkAllOwnedProduct(
+      userEntity.id
+    );
+    this.logger.debug(
+      `products owned by user[${userEntity.id}] soft deleted: ${unlinkedRows}`
+    );
     if (userEntity.crmId) {
-      await this.deleteMemberFromCRM(userEntity);
+      await this.crmService.deleteMember(userEntity);
     }
     await this.userRepository.removeById(id);
   }
 
-  private async deleteMemberFromCRM(userEntity: UserEntity): Promise<void> {
-    try {
-      await this.syncCrmService.deleteMember(userEntity.crmId);
-    } catch (error) {
-      this.logger.error(JSON.stringify(error));
-      const { response } = error;
-      if (response && response.status === 404) {
-        this.logger.warn(`the member with crm id: ${userEntity.crmId} not found in the CRM`)
-      } else {
-        throw new InternalServerErrorException(error);
-      }
-    }
-  }
 
   // logic to sync CRM
   public async reSyncCRM(): Promise<number> {
     const unSyncUsers = await this.userRepository.findNotSyncCRM();
     if (!unSyncUsers || unSyncUsers.length < 1) {
       return 0;
-
     }
 
     let succeed = 0,
       failure = 0;
     for (const user of unSyncUsers) {
       try {
-        await this.syncUserToCRM(user);
-        this.logger.debug('Resync user to CRM successfully', JSON.stringify(user));
+        await this.createMemberToCRM(user);
+        this.logger.debug(
+          'Resync user to CRM successfully',
+          JSON.stringify(user)
+        );
         succeed++;
       } catch (e) {
         this.logger.error(`fail to reSync user to CRM`, e);
         failure++;
       }
     }
-    this.logger.log(`Re sync ${unSyncUsers.length} users to CRM, succeed: ${succeed}, failure: ${failure}`);
+    this.logger.log(
+      `Re sync ${unSyncUsers.length} users to CRM, succeed: ${succeed}, failure: ${failure}`
+    );
     return succeed;
   }
 
@@ -172,6 +180,6 @@ export class UserManagementService {
       throw new BadRequestException('User not found');
     }
 
-    return this.syncUserToCRM(userEntity);
+    return this.createMemberToCRM(userEntity);
   }
 }

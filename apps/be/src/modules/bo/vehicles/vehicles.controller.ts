@@ -85,10 +85,4 @@ export class VehiclesController {
   async delete(@Param('id') vehicleId: string): Promise<void> {
     await this.productService.removeById(vehicleId);
   }
-
-  @Roles(BoRole.ADMIN)
-  @Post('verification')
-  async verifyAllProductsInCRM(): Promise<VerifyResult[]> {
-    return this.productService.verifyAllProducts();
-  }
 }

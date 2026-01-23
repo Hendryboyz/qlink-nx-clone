@@ -12,15 +12,6 @@ export class TaskService {
     private readonly userManagementService: UserManagementService,
   ) {}
 
-  // @Cron("0 9/12 * * *", {
-  //   name: "job to verify product with salesforce",
-  //   timeZone: 'Asia/Taipei',
-  // })
-  async autoVerifyProductJob() {
-    this.logger.debug('start to verify product');
-    await this.productService.verifyAllProducts();
-  }
-
   @Cron("0 0/6 * * *", {
     name: 'job to re-sync members to salesforce',
     timeZone: 'Asia/Taipei',
