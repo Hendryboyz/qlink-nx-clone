@@ -1,6 +1,6 @@
 export const STATES = [
   'Abia',
-  'Abuja (FCT)',
+  'Abuja',
   'Adamawa',
   'Akwa Ibom',
   'Anambra',
@@ -35,5 +35,5 @@ export const STATES = [
   'Sokoto',
   'Taraba',
   'Yobe',
-  'Zamfara',
+  'Zamfara'
 ];
