@@ -4,7 +4,15 @@ import * as React from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { DayPicker, getDefaultClassNames } from 'react-day-picker';
 import { cn } from '../../../utils';
-import { buttonVariants } from '../button/button';
+
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '../../select/select';
 
 export type CalendarProps = React.ComponentProps<typeof DayPicker>;
 
@@ -100,6 +108,40 @@ function Calendar({
           ) : (
             <ChevronRight className="h-4 w-4" />
           ),
+        Dropdown: ({ value, onChange, options }) => {
+          const selected = options?.find((option) => option.value === value);
+          const handleChange = (value: string) => {
+            const changeEvent = {
+              target: { value },
+            } as React.ChangeEvent<HTMLSelectElement>;
+            onChange?.(changeEvent);
+          };
+          return (
+            <Select
+              value={value?.toString()}
+              onValueChange={(value) => {
+                handleChange(value);
+              }}
+            >
+              <SelectTrigger className="pr-1.5 focus:ring-0 w-fit h-[28px]">
+                <SelectValue>{selected?.label}</SelectValue>
+              </SelectTrigger>
+              <SelectContent position="popper">
+                <SelectGroup>
+                  {options?.map((option) => (
+                    <SelectItem
+                      key={option.value}
+                      value={option.value.toString()}
+                      disabled={option.disabled}
+                    >
+                      {option.label}
+                    </SelectItem>
+                  ))}
+                </SelectGroup>
+              </SelectContent>
+            </Select>
+          );
+        },
       }}
       {...props}
     />
