@@ -97,7 +97,7 @@ export default function Member() {
       <div className="fixed top-0 left-0 w-full z-50">
         <TopNav
           ref={navRef}
-          imgSrc="/assets/v2/logo.png"
+          imgSrc="/assets/v2/logo.svg"
           isOpen={isMenuOpen}
           onMenuOpen={() => setIsMenuOpen(true)}
           onMenuClose={() => setIsMenuOpen(false)}

@@ -42,7 +42,7 @@ export default function LegalContent() {
     >
       {!isHideHeader && (
         <NavBar
-          imgSrc="/assets/v2/logo.png"
+          imgSrc="/assets/v2/logo.svg"
           isSignedIn={isSignedIn}
           onSignInClick={() => router?.push('/welcome')}
           onNavHeightChange={setNavHeight}

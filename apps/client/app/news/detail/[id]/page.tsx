@@ -39,7 +39,7 @@ const Detail: NextPage<Props> = ({ params }) => {
       style={{ paddingTop: `${navHeight}px` }}
     >
       <NavBar
-        imgSrc="/assets/v2/logo.png"
+        imgSrc="/assets/v2/logo.svg"
         isSignedIn={isSignedIn}
         onSignInClick={() => router?.push('/welcome')}
         onNavHeightChange={setNavHeight}
