@@ -23,7 +23,7 @@ export const SignUpSuccess: FC = () => {
           fullWidth
           size="xl"
           variant="outline"
-          onClick={() => router.push('/sign-in')}
+          onClick={() => router.push('/')}
         >
           Start Explore
         </TGButton>
