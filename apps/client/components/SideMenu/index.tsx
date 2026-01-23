@@ -2,6 +2,7 @@ import React from 'react';
 import { LogOut } from 'lucide-react';
 import { signOut } from 'next-auth/react';
 import { twMerge } from 'tailwind-merge';
+import { useRouter } from 'next/navigation';
 
 type Link = {
   name: string;
@@ -27,6 +28,8 @@ const SideMenu: React.FC<SideMenuProps> = ({
   termLinks,
   isSignedIn,
 }) => {
+  const router = useRouter();
+
   return (
     <>
       {/* Side Menu Overlay */}
@@ -79,7 +82,14 @@ const SideMenu: React.FC<SideMenuProps> = ({
             {isSignedIn && (
               <button
                 className="flex items-center gap-2 text-base font-bold text-text-s justify-end"
-                onClick={() => signOut({ callbackUrl: '/' })}
+                onClick={() =>
+                  signOut({
+                    redirect: false,
+                    callbackUrl: '/',
+                  }).then(() => {
+                    router.replace('/');
+                  })
+                }
               >
                 <LogOut className="size-4" />
                 <span>Log out</span>

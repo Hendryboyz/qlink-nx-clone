@@ -15,7 +15,7 @@ import {
   TGInput,
   TextFieldButton,
 } from '@org/components';
-import { STATES, CODE_SUCCESS } from '@org/common';
+import { STATES } from '@org/common';
 import { useRouter } from 'next/navigation';
 import { ChevronLeftIcon } from '@radix-ui/react-icons';
 import TrashIcon from '../assets/trash.svg';
@@ -31,9 +31,18 @@ import API from '$/utils/fetch';
 
 const GENDER_OPTIONS = ['Male', 'Female', 'Other'];
 const CITY_OPTIONS = ['Lagos', 'Abuja', 'Port Harcourt', 'Ibadan', 'Kano'];
-const GENDER_DROPDOWN_OPTIONS = GENDER_OPTIONS.map((option) => ({ label: option, value: option }));
-const CITY_DROPDOWN_OPTIONS = CITY_OPTIONS.map((option) => ({ label: option, value: option }));
-const STATE_DROPDOWN_OPTIONS = STATES.map((state) => ({ label: state, value: state }));
+const GENDER_DROPDOWN_OPTIONS = GENDER_OPTIONS.map((option) => ({
+  label: option,
+  value: option,
+}));
+const CITY_DROPDOWN_OPTIONS = CITY_OPTIONS.map((option) => ({
+  label: option,
+  value: option,
+}));
+const STATE_DROPDOWN_OPTIONS = STATES.map((state) => ({
+  label: state,
+  value: state,
+}));
 const DEFAULT_FORM_DATA: ClientUserUpdateDto = {
   firstName: '',
   lastName: '',
@@ -46,7 +55,8 @@ const DEFAULT_FORM_DATA: ClientUserUpdateDto = {
   facebook: '',
 };
 const INPUT_TEXT_CLASS = '!text-text-str !font-bold placeholder:!font-normal';
-const DROPDOWN_TEXT_CLASS = '!text-text-str font-bold [&_span]:!text-text-str [&_span]:!font-bold';
+const DROPDOWN_TEXT_CLASS =
+  '!text-text-str font-bold [&_span]:!text-text-str [&_span]:!font-bold';
 const DATE_PICKER_TEXT_CLASS =
   '[&_button]:!text-text-str [&_button]:!font-bold [&_button>span]:!text-text-str [&_button>span]:!font-bold';
 
@@ -81,8 +91,10 @@ export default function MemberEdit() {
   const [birthday, setBirthday] = useState<Date | undefined>(undefined);
 
   // Form state
-  const [formData, setFormData] = useState<ClientUserUpdateDto>(DEFAULT_FORM_DATA);
-  const [initialFormData, setInitialFormData] = useState<ClientUserUpdateDto>(DEFAULT_FORM_DATA);
+  const [formData, setFormData] =
+    useState<ClientUserUpdateDto>(DEFAULT_FORM_DATA);
+  const [initialFormData, setInitialFormData] =
+    useState<ClientUserUpdateDto>(DEFAULT_FORM_DATA);
   const [gender, setGender] = useState<GenderType | ''>('');
   const [initialGender, setInitialGender] = useState<GenderType | ''>('');
   const [showUpdateSuccess, setShowUpdateSuccess] = useState(false);
@@ -98,8 +110,14 @@ export default function MemberEdit() {
         setCoverUrl(data.coverImageUrl || '');
         setGender(data.gender || '');
         setInitialGender(data.gender || '');
-        const parsedBirthday = data.birthday ? new Date(data.birthday) : undefined;
-        setBirthday(parsedBirthday && !Number.isNaN(parsedBirthday.getTime()) ? parsedBirthday : undefined);
+        const parsedBirthday = data.birthday
+          ? new Date(data.birthday)
+          : undefined;
+        setBirthday(
+          parsedBirthday && !Number.isNaN(parsedBirthday.getTime())
+            ? parsedBirthday
+            : undefined
+        );
         const normalizedData: ClientUserUpdateDto = {
           firstName: data.firstName || '',
           lastName: data.lastName || '',
@@ -123,7 +141,10 @@ export default function MemberEdit() {
     fetchUserInfo();
   }, []);
 
-  const handleFieldChange = (field: keyof ClientUserUpdateDto, value: string) => {
+  const handleFieldChange = (
+    field: keyof ClientUserUpdateDto,
+    value: string
+  ) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
   };
 
@@ -197,7 +218,9 @@ export default function MemberEdit() {
     }
   };
 
-  const fullName = [formData.firstName, formData.lastName].filter(Boolean).join(' ');
+  const fullName = [formData.firstName, formData.lastName]
+    .filter(Boolean)
+    .join(' ');
 
   const handleNameChange = (value: string) => {
     const parts = value.split(' ');
@@ -216,7 +239,7 @@ export default function MemberEdit() {
       ...Object.keys(formData),
     ] as (keyof ClientUserUpdateDto)[]);
     const formChanged = Array.from(keys).some(
-      (key) => (formData[key] ?? '') !== (initialFormData[key] ?? ''),
+      (key) => (formData[key] ?? '') !== (initialFormData[key] ?? '')
     );
     const genderChanged = gender !== initialGender;
     return formChanged || genderChanged;
@@ -239,7 +262,9 @@ export default function MemberEdit() {
           className="flex items-center gap-1 text-text-str"
         >
           <ChevronLeftIcon className="w-8 h-8 text-stroke-s" />
-          <span className="font-manrope font-bold text-[1.25rem] text-base leading-[140%]">Edit Profile</span>
+          <span className="font-manrope font-bold text-[1.25rem] text-base leading-[140%]">
+            Edit Profile
+          </span>
         </button>
       </header>
       <Line />
@@ -305,8 +330,14 @@ export default function MemberEdit() {
       {/* Account Section */}
       <SectionHeader title="Account" />
       <div className="w-full px-6 bg-secondary space-y-3 mb-6">
-        <TextFieldButton label="Change Email" onClick={() => router.push('/member/change-email')} />
-        <TextFieldButton label="Change Password" onClick={() => router.push('/member/change-password')} />
+        <TextFieldButton
+          label="Change Email"
+          onClick={() => router.push('/member/change-email')}
+        />
+        <TextFieldButton
+          label="Change Password"
+          onClick={() => router.push('/member/change-password')}
+        />
       </div>
       <Line />
       {/* Personal Info Section */}
@@ -401,8 +432,16 @@ export default function MemberEdit() {
           className="gap-2 text-text-str hover:text-text-str"
           onClick={() => setShowDeleteModal(true)}
         >
-          <Image src={TrashIcon} alt="trash" width={16} height={16} className="w-4 h-4" />
-          <span className="font-manrope font-bold text-base leading-[140%] text-text-str">Delete Account</span>
+          <Image
+            src={TrashIcon}
+            alt="trash"
+            width={16}
+            height={16}
+            className="w-4 h-4"
+          />
+          <span className="font-manrope font-bold text-base leading-[140%] text-text-str">
+            Delete Account
+          </span>
         </TGButton>
       </div>
       <Line />
@@ -412,13 +451,20 @@ export default function MemberEdit() {
       <Modal isOpen={showDeleteModal}>
         <ModalHeader>
           <ModalIcon>
-            <Image src={WarningIcon} alt="warning" width={20} height={18} className="w-8 h-8" />
+            <Image
+              src={WarningIcon}
+              alt="warning"
+              width={20}
+              height={18}
+              className="w-8 h-8"
+            />
           </ModalIcon>
           <ModalTitle className="text-base leading-[140%] text-text-str font-bold">
             Delete your member account?
           </ModalTitle>
           <ModalDescription className="text-[12px] leading-[140%] text-text-str font-medium text-center">
-            Once you delete your account, your data will be deleted and cannot be restored.
+            Once you delete your account, your data will be deleted and cannot
+            be restored.
           </ModalDescription>
         </ModalHeader>
         <ModalFooter>
@@ -455,7 +501,14 @@ export default function MemberEdit() {
           <TGButton
             variant="primary"
             fullWidth
-            onClick={async () => await signOut({ callbackUrl: '/' })}
+            onClick={async () => {
+              await signOut({
+                redirect: false,
+                callbackUrl: '/',
+              });
+              await handleLogout();
+              router.replace('/');
+            }}
           >
             OK
           </TGButton>
@@ -466,7 +519,13 @@ export default function MemberEdit() {
       <Modal isOpen={showDeleteError}>
         <ModalHeader>
           <ModalIcon>
-            <Image src={WarningIcon} alt="warning" width={20} height={18} className="w-8 h-8" />
+            <Image
+              src={WarningIcon}
+              alt="warning"
+              width={20}
+              height={18}
+              className="w-8 h-8"
+            />
           </ModalIcon>
           <ModalTitle className="text-base leading-[140%] text-text-str font-bold">
             Failed to delete account

@@ -156,7 +156,14 @@ export default function Member() {
             ))}
             <button
               className="flex items-center gap-2 text-base font-bold text-text-str justify-end py-4"
-              onClick={() => signOut({ callbackUrl: '/' })}
+              onClick={() =>
+                signOut({
+                  redirect: false,
+                  callbackUrl: '/',
+                }).then(() => {
+                  router.replace('/');
+                })
+              }
             >
               <LogOut className="size-4" />
               <span>Log out</span>
@@ -234,7 +241,9 @@ export default function Member() {
                 value={user.memberId || '-'}
               />
               <ListItem
-                icon={<Image src={BirthdayIcon} alt="" width={24} height={24} />}
+                icon={
+                  <Image src={BirthdayIcon} alt="" width={24} height={24} />
+                }
                 title="Birthday"
                 value={user.birthday || '-'}
               />
@@ -249,7 +258,9 @@ export default function Member() {
                 value={user.addressCity || '-'}
               />
               <ListItem
-                icon={<Image src={LocationIcon} alt="" width={24} height={24} />}
+                icon={
+                  <Image src={LocationIcon} alt="" width={24} height={24} />
+                }
                 title="State"
                 value={user.addressState || '-'}
               />
@@ -269,12 +280,16 @@ export default function Member() {
                 value={user.phone || '-'}
               />
               <ListItem
-                icon={<Image src={WhatsappIcon} alt="" width={24} height={24} />}
+                icon={
+                  <Image src={WhatsappIcon} alt="" width={24} height={24} />
+                }
                 title="Whatsapp ID"
                 value={user.whatsapp || '-'}
               />
               <ListItem
-                icon={<Image src={FacebookIcon} alt="" width={24} height={24} />}
+                icon={
+                  <Image src={FacebookIcon} alt="" width={24} height={24} />
+                }
                 title="Facebook ID"
                 value={user.facebook || '-'}
               />
