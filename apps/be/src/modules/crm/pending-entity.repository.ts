@@ -60,4 +60,20 @@ export class PendingEntityRepository {
       }, [ 'updated_at' ])
     return updateDate;
   }
+
+  async markDone(handledIDs: string[]): Promise<number> {
+    const updatedObjects = await this.knex('crm_pending_entities')
+      .whereIn('id', handledIDs)
+      .update({
+        'updated_at': Date.now(),
+        'is_done': true,
+      }, ['id']);
+    return updatedObjects.length || 0;
+  }
+
+  remove(handledID: string[]): Promise<number> {
+    return this.knex('crm_pending_entities').whereIn('id', handledID).del();
+  }
+
+
 }

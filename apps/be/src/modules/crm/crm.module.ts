@@ -8,6 +8,6 @@ import { CrmService } from '$/modules/crm/crm.service';
 @Module({
   imports:[ConfigModule],
   providers:[SalesforceSyncService, FallbackService, PendingEntityRepository, CrmService],
-  exports: [CrmService],
+  exports: [CrmService, FallbackService],
 })
 export class CrmModule {}

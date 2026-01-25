@@ -47,7 +47,11 @@ export class UserRepository {
     return this.findOneByFilter(filterField, identifier);
   }
 
-  public async findById(id: string): Promise<UserEntity | null> {
+  public findByMemberID(memberID: string): Promise<UserEntity | null> {
+    return this.findOneByFilter('member_id', memberID);
+  }
+
+  public findById(id: string): Promise<UserEntity | null> {
     return this.findOneByFilter('id', id);
   }
 

@@ -1,7 +1,6 @@
 import {
   BadRequestException,
   Injectable,
-  InternalServerErrorException,
   Logger,
   NotFoundException,
 } from '@nestjs/common';
@@ -86,7 +85,7 @@ export class UserManagementService {
 
   public async updateUser(
     userId: string,
-    updateData: UserUpdateDto
+    updateData: UserUpdateDto,
   ): Promise<UserVO> {
     this.logger.debug(`user[${userId}] updating`, updateData);
     if (updateData.password) {

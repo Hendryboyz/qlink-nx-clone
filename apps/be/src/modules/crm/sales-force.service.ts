@@ -447,12 +447,7 @@ export class SalesforceSyncService implements OnModuleInit{
 
   public async isAlive(): Promise<boolean> {
     if (this.apiResource.instanceUrl === undefined) {
-      try {
-        await this.authSalesforce()
-      } catch (e) {
-        this.logger.error('fail to get salesforce credentials', e);
-        return false;
-      }
+      await this.authSalesforce();
     }
     try {
       const syncAction = this.useReAuthQuery(this.healthcheck.bind(this));
@@ -463,10 +458,8 @@ export class SalesforceSyncService implements OnModuleInit{
       if (error.response)  {
         const { response } = error;
         this.logger.error(`healthcheck failed, status code ${response.status}, message `, response.data);
-      } else {
-        this.logger.error(`healthcheck failed, status code 500, message `, error);
       }
-      return false;
+      throw error;
     }
   }
 

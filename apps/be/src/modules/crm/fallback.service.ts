@@ -34,4 +34,8 @@ export class FallbackService {
     return this.pendingEntities.fetchAwaitingItems(limit, updatedDateOrderAsc);
   }
 
+  public async markRecordsDone(handledIDs: string[]): Promise<void> {
+    await this.pendingEntities.markDone(handledIDs);
+    return
+  }
 }

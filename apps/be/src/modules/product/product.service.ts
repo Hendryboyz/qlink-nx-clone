@@ -124,6 +124,10 @@ export class ProductService {
     return product.isVerified ? 0 : 2;
   }
 
+  public findById(productID: string): Promise<ProductEntity> {
+    return this.productRepository.findById(productID);
+  }
+
   async list(
     page: number,
     limit: number,

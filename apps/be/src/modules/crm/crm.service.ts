@@ -1,8 +1,4 @@
-import {
-  Injectable,
-  InternalServerErrorException,
-  Logger,
-} from '@nestjs/common';
+import { Injectable, InternalServerErrorException, Logger } from '@nestjs/common';
 import { SalesforceSyncService } from '$/modules/crm/sales-force.service';
 import { FallbackService } from '$/modules/crm/fallback.service';
 import { ProductEntity, UserEntity } from '@org/types';

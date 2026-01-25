@@ -49,6 +49,10 @@ export class UserService {
     return this.userRepository.findById(userId);
   }
 
+  public findByMemberId(memberID: string): Promise<UserEntity> {
+    return this.userRepository.findByMemberID(memberID);
+  }
+
   public isEmailExist(email: string): Promise<boolean> {
     return this.userRepository.isEmailExist(email);
   }
