@@ -211,7 +211,7 @@ export class ProductService {
   }
 
   public async reSyncCRM(): Promise<number> {
-    const unSyncProducts = await this.productRepository.findNotSyncCRM();
+    const unSyncProducts = await this.productRepository.findCrmNotCreated();
     if (!unSyncProducts || unSyncProducts.length < 1) {
       return 0;
     }
@@ -221,7 +221,6 @@ export class ProductService {
     for (const product of unSyncProducts) {
       try {
         await this.createProductToCRM(product);
-        // todo update to db ?
         this.logger.debug('Resync user to CRM successfully', JSON.stringify(product));
         succeed++;
       } catch (e) {

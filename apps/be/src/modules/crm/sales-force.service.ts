@@ -446,7 +446,7 @@ export class SalesforceSyncService implements OnModuleInit{
   }
 
   public async isAlive(): Promise<boolean> {
-    if (this.apiResource.instanceUrl === undefined) {
+    if (!this.apiResource || this.apiResource.instanceUrl === undefined) {
       await this.authSalesforce();
     }
     try {
