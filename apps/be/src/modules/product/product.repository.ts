@@ -106,7 +106,7 @@ export class ProductRepository {
     }
   }
 
-  public async findNotSyncCRM(): Promise<ProductEntity[] | null> {
+  public async findCrmNotCreated(): Promise<ProductEntity[] | null> {
     return this.knex<ProductEntity>('product')
       .whereNull('crm_id')
       .andWhere('is_delete', false)

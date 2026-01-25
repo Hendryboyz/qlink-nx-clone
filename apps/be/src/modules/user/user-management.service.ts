@@ -146,7 +146,7 @@ export class UserManagementService {
 
   // logic to sync CRM
   public async reSyncCRM(): Promise<number> {
-    const unSyncUsers = await this.userRepository.findNotSyncCRM();
+    const unSyncUsers = await this.userRepository.findCrmNotCreated();
     if (!unSyncUsers || unSyncUsers.length < 1) {
       return 0;
     }

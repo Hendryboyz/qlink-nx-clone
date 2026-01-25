@@ -14,7 +14,8 @@ export interface CrmPendingEntity {
   entityId: string;
   type: CrmEntityType;
   action: CrmAction;
+  attempt: number,
+  isDone: boolean;
   createdAt: Date;
   updatedAt: Date;
-  isDone: boolean;
 }

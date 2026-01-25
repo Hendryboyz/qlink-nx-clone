@@ -183,7 +183,7 @@ export class UserRepository {
     return +count;
   }
 
-  public async findNotSyncCRM(): Promise<UserEntity[] | null> {
+  public async findCrmNotCreated(): Promise<UserEntity[] | null> {
     return this.knex('users')
       .whereNull('crm_id')
       .andWhere({ is_delete: false })

@@ -43,8 +43,8 @@ export class PendingEntityRepository {
 
   public fetchAwaitingItems(limit: number, updatedDateOrderAsc: boolean = true): Promise<CrmPendingEntity[]> {
     return this.knex('crm_pending_entities')
-      .where(
-
+      .where('attempt', '<', 5)
+      .andWhere(
         'is_done', false
       )
       .orderBy('updated_at', updatedDateOrderAsc ? 'asc' : 'desc')
@@ -64,16 +64,23 @@ export class PendingEntityRepository {
   async markDone(handledIDs: string[]): Promise<number> {
     const updatedObjects = await this.knex('crm_pending_entities')
       .whereIn('id', handledIDs)
+      .increment({ attempt: 1 })
       .update({
-        'updated_at': Date.now(),
         'is_done': true,
       }, ['id']);
+    return updatedObjects.length || 0;
+  }
+
+  async increaseAttemptTimes(handledIDs: string[]) {
+    const updatedObjects = await this.knex('crm_pending_entities')
+      .whereIn('id', handledIDs)
+      .increment({ attempt: 1 })
+      .returning(['id']);
     return updatedObjects.length || 0;
   }
 
   remove(handledID: string[]): Promise<number> {
     return this.knex('crm_pending_entities').whereIn('id', handledID).del();
   }
-
 
 }

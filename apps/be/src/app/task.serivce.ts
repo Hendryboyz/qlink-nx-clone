@@ -18,10 +18,14 @@ export class TaskService {
     private readonly crmFallbackService: FallbackService,
   ) {}
 
-  @Cron(CronExpression.EVERY_HOUR, {
-    name: 'health check salesforce',
-    timeZone: 'Asia/Taipei',
-  })
+  @Cron(
+    // CronExpression.EVERY_5_MINUTES,
+    CronExpression.EVERY_HOUR,
+    {
+      name: 'health check salesforce',
+      timeZone: 'Asia/Taipei',
+    },
+  )
   async healthcheckCrm() {
     const isAlive = await this.crmService.isAlive();
     if (!isAlive) {
@@ -29,10 +33,14 @@ export class TaskService {
     }
   }
 
-  @Cron("5 0/1 * * *", {
-    name: 'retry pending sync crm entities',
-    timeZone: 'Asia/Taipei',
-  })
+  @Cron(
+    "5 0/1 * * *",
+    // CronExpression.EVERY_10_SECONDS,
+    {
+      name: 'retry pending sync crm entities',
+      timeZone: 'Asia/Taipei',
+    },
+  )
   async resyncCrmPendingEntities () {
     if (!await this.crmService.isAlive()) {
       return
@@ -40,10 +48,18 @@ export class TaskService {
     const batchSize = 30;
     let pendingEntities = await this.crmFallbackService.findAwaitingRecord(batchSize, true);
     while (pendingEntities && pendingEntities.length > 0) {
+      const succeedIDs = [],
+            failedIDs = [];
       for (const pending of pendingEntities) {
-        await this.fetchAndResyncPendingEntity(pending);
+        try {
+          await this.fetchAndResyncPendingEntity(pending);
+          succeedIDs.push(pending.id);
+        } catch (e) {
+          this.logger.error(`fail to sync pending entity: id=${pending.id}`, e);
+          failedIDs.push(pending.id);
+        }
       }
-      await this.crmFallbackService.markRecordsDone(pendingEntities.map(e => e.id));
+      await this.crmFallbackService.markProcessedRecords(succeedIDs, failedIDs);
       pendingEntities = await this.crmFallbackService.findAwaitingRecord(batchSize, true);
     }
   }

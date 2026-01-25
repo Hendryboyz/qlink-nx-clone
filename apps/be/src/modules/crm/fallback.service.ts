@@ -1,4 +1,5 @@
 import { Injectable, Logger } from '@nestjs/common';
+import { v4 as uuidv4 } from 'uuid';
 import { PendingEntityRepository } from '$/modules/crm/pending-entity.repository';
 import {
   CrmAction,
@@ -22,6 +23,7 @@ export class FallbackService {
       return existingPending;
     } else {
       const entity: Partial<CrmPendingEntity> = {
+        id: uuidv4(),
         entityId,
         type: entityType,
         action,
@@ -34,8 +36,9 @@ export class FallbackService {
     return this.pendingEntities.fetchAwaitingItems(limit, updatedDateOrderAsc);
   }
 
-  public async markRecordsDone(handledIDs: string[]): Promise<void> {
-    await this.pendingEntities.markDone(handledIDs);
+  public async markProcessedRecords(succeeds: string[], fails: string[]): Promise<void> {
+    await this.pendingEntities.markDone(succeeds);
+    await this.pendingEntities.increaseAttemptTimes(fails);
     return
   }
 }
