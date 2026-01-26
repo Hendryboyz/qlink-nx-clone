@@ -80,13 +80,13 @@ export class TaskService {
       // handle vehicle sync
       const product = await this.productService.findById(pending.entityId);
       const {crmId, isVerified} = await this.crmService.syncVehicle(product);
-      await this.productService.updateProduct({
+      await this.productService.persistUpdatedProduct({
         id: product.id,
         data: {
           crmId,
           isVerified,
         }
-      })
+      });
     }
   }
 

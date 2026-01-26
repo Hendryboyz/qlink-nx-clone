@@ -152,6 +152,13 @@ export class ProductService {
     return { img: '', ...updatedProduct };
   }
 
+  async persistUpdatedProduct(payload: ProductUpdateDto): Promise<ProductEntity> {
+    return this.productRepository.update(
+      payload.id,
+      payload.data,
+    );
+  }
+
   async updateProduct(payload: ProductUpdateDto): Promise<ProductEntity> {
     const {data: dto} = payload;
     // await this.avoidRedundantMutation(dto.vin, dto.engineNumber);
@@ -163,10 +170,7 @@ export class ProductService {
       dto.verifyTimes = 0;
     }
 
-    const updatedProduct = await this.productRepository.update(
-      payload.id,
-      dto
-    );
+    const updatedProduct = await this.persistUpdatedProduct(payload);
 
     try {
       const { isVerified } = await this.crmService.syncVehicle(updatedProduct);
